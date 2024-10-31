@@ -1,0 +1,180 @@
+<div class="container">
+  <div class="modal-header">
+    <h5 class="modal-title">Editar gasto</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
+  </div>
+
+  <form [formGroup]="updateBill" (ngSubmit)="onSubmit()" class="container mt-4">
+    <!-- Primera fila: Proveedor y Categoría -->
+    <div class="row mb-3">
+      <!-- Proveedor -->
+      <div class="col-md-6">
+        <div class="row align-items-center">
+          <label for="supplier" class="col-md-4 col-form-label">Proveedor</label>
+          <div class="col-md-8">
+            <select id="supplier" formControlName="supplier" class="form-select"
+              [ngClass]="{'is-invalid': updateBill.get('supplier')?.invalid && (updateBill.get('supplier')?.dirty || updateBill.get('supplier')?.touched)}">
+              <option value="">Seleccione un proveedor</option>
+              @for (provider of suppliersList ; track provider.id) {
+              <option [value]="provider.id">{{ provider.name }}</option>
+              }
+            </select>
+            <div class="invalid-feedback">
+              Por favor, seleccione un proveedor.
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Categoría -->
+      <div class="col-md-6">
+        <div class="row align-items-center">
+          <label for="category" class="col-md-4 col-form-label">Categoria</label>
+          <div class="col-md-8 d-flex">
+            <select id="category" formControlName="category" class="form-select"
+              [ngClass]="{'is-invalid': updateBill.get('category')?.invalid && (updateBill.get('category')?.dirty || updateBill.get('category')?.touched)}">
+              <option value="">Seleccione una categoría</option>
+              @for (category of categoriesList ; track category.category_id) {
+              <option [value]="category.category_id">{{ category.name }}</option>
+              }
+            </select>
+            <button class="btn ms-2 btn-outline-secondary" type="button" (click)="openNewCategoryModal()">
+              <i class="bi bi-plus-lg"></i>
+            </button>
+            <div class="invalid-feedback">
+              Por favor, seleccione una categoría.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Segunda fila: Periodo y Tipo -->
+    <div class="row mb-3">
+      <!-- Periodo -->
+      <div class="col-md-6">
+        <div class="row align-items-center">
+          <label for="period" class="col-md-4 col-form-label">Periodo</label>
+          <div class="col-md-8">
+            <select id="period" formControlName="period" class="form-select"
+              [ngClass]="{'is-invalid': updateBill.get('period')?.invalid && (updateBill.get('period')?.dirty || updateBill.get('period')?.touched)}">
+              <option value="">Seleccione un periodo</option>
+              @for (period of periodsList ; track period.id) {
+              <option [value]="period.id">{{ period.month + '/' + period.year }}</option>
+              }
+            </select>
+            <div class="invalid-feedback">
+              Por favor, seleccione un periodo.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tipo -->
+      <div class="col-md-6">
+        <div class="row align-items-center">
+          <label for="billType" class="col-md-4 col-form-label">Tipo</label>
+          <div class="col-md-8">
+            <select id="billType" formControlName="billType" class="form-select"
+              [ngClass]="{'is-invalid': updateBill.get('billType')?.invalid && (updateBill.get('billType')?.dirty || updateBill.get('billType')?.touched)}">
+              <option value="">Seleccione un tipo</option>
+              @for (type of billTypesList ; track type.bill_type_id) {
+              <option [value]="type.bill_type_id">{{ type.name }}</option>
+              }
+            </select>
+            <div class="invalid-feedback">
+              Por favor, seleccione un tipo.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Descripción (fila completa) -->
+    <div class="row mb-3">
+      <div class="col-12">
+        <div class="row align-items-center">
+          <label for="description" class="col-md-2 col-form-label">Descripción</label>
+          <div class="col-md-10">
+            <textarea id="description" formControlName="description" class="form-control" rows="3"
+              [ngClass]="{'is-invalid': updateBill.get('description')?.invalid && (updateBill.get('description')?.dirty || updateBill.get('description')?.touched)}"></textarea>
+            <div class="invalid-feedback">
+              Por favor, ingrese una descripción.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cuarta fila: Monto y Fecha -->
+    <div class="row mb-3">
+      <!-- Monto -->
+      <div class="col-md-6">
+        <div class="row align-items-center">
+          <label for="amount" class="col-md-4 col-form-label">Monto</label>
+          <div class="col-md-8">
+            <input type="number" id="amount" formControlName="amount" class="form-control"
+              [ngClass]="{'is-invalid': updateBill.get('amount')?.invalid && (updateBill.get('amount')?.dirty || updateBill.get('amount')?.touched)}">
+            <div class="invalid-feedback">
+              Por favor, ingrese un monto válido.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fecha -->
+      <div class="col-md-6">
+        <div class="row align-items-center">
+          <label for="date" class="col-md-4 col-form-label">Fecha</label>
+          <div class="col-md-8">
+            <input type="date" id="date" formControlName="date" class="form-control"
+              [ngClass]="{'is-invalid': updateBill.get('date')?.invalid && (updateBill.get('date')?.dirty || updateBill.get('date')?.touched)}">
+            <div class="invalid-feedback">
+              Por favor, seleccione una fecha válida.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón de envío -->
+    <div class="modal-footer">
+      <!-- Botón "Volver" alineado a la izquierda del botón "Aplicar" -->
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="dismiss()">Volver</button>
+      <button type="button" class="btn btn-primary" (click)="onSubmit()"
+        data-bs-dismiss="modal">Enviar</button>
+    </div>
+  </form>
+
+  <ng-template #newCategoryModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Nueva Categoría</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="newCategoryForm">
+        <div class="mb-3">
+          <label for="newCategoryName" class="form-label">Nombre de la categoría</label>
+          <input type="text" class="form-control" id="newCategoryName" formControlName="name"
+            [ngClass]="{'is-invalid': newCategoryForm.get('name')?.invalid && (newCategoryForm.get('name')?.dirty || newCategoryForm.get('name')?.touched)}">
+          <div class="invalid-feedback">
+            Por favor, ingrese un nombre para la categoría.
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="newCategoryDescription" class="form-label">Descripcion</label>
+          <input type="text" class="form-control" id="newCategoryDescription" formControlName="description"
+            [ngClass]="{'is-invalid': newCategoryForm.get('description')?.invalid && (newCategoryForm.get('description')?.dirty || newCategoryForm.get('description')?.touched)}">
+          <div class="invalid-feedback">
+            Por favor, ingrese una descripción para la categoría.
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-success" (click)="saveNewCategory()"
+        [disabled]="newCategoryForm.invalid">Confirmar</button>
+      <button type="button" class="btn btn-danger" (click)="modal.dismiss()">Cancelar</button>
+    </div>
+  </ng-template>

@@ -1,0 +1,519 @@
+<app-main-container title="Registrar Usuario">
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
+
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="emailForm" class="col-form-label col-md-2">Email<label class="text-danger">*</label></label>
+        <input type="email" class="form-control m-2" id="emailForm" formControlName="email"
+               [ngClass]="{'is-invalid': userForm.get('email')?.invalid && userForm.get('email')?.touched, 'is-valid': userForm.get('email')?.valid && userForm.get('email')?.touched}">
+      </div>
+      <div>
+        @if (userForm.get('email')?.invalid && userForm.get('email')?.touched) {
+          @if (userForm.get('email')?.getError('required')) {
+            <small class="text-danger ms-2">El email es obligatorio</small>
+          }
+          @if (userForm.get('email')?.getError('email')) {
+            <small class="text-danger ms-2">El email tiene que ser valido</small>
+          }
+          @if (userForm.get('email')?.getError('maxlength')) {
+            <small class="text-danger ms-2">Máximo 50 caracteres</small>
+          }
+          @if (userForm.get('email')?.getError('emailExists')) {
+            <small class="text-danger ms-2">Email ya registrado</small>
+          }
+          @if (userForm.get('email')?.getError('serverError')) {
+            <small class="text-danger ms-2">El servidor no responde</small>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="firstNameForm" class="col-form-label col-md-2">Nombre<label class="text-danger">*</label></label>
+        <input type="text" class="form-control m-2" id="firstNameForm" formControlName="firstName"
+               [ngClass]="{'is-invalid': userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched,
+                'is-valid': userForm.get('firstName')?.valid && userForm.get('firstName')?.touched}">
+      </div>
+      <div>
+        @if (userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched) {
+          @if (userForm.get('firstName')?.getError('required')) {
+            <small class="text-danger ms-2">El nombre es obligatorio</small>
+          }
+          @if (userForm.get('firstName')?.getError('maxlength')) {
+            <small class="text-danger ms-2">Máximo 50 caracteres</small>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="userNameForm" class="col-form-label col-md-2">Nombre de usuario<label class="text-danger">*</label></label>
+        <input type="text" class="form-control m-2" id="userNameForm" formControlName="userName"
+               [ngClass]="{'is-invalid': userForm.get('userName')?.invalid && userForm.get('userName')?.touched, 'is-valid': userForm.get('userName')?.valid && userForm.get('userName')?.touched}">
+      </div>
+      <div>
+        @if (userForm.get('userName')?.invalid && userForm.get('userName')?.touched) {
+          @if (userForm.get('userName')?.getError('required')) {
+            <small class="text-danger ms-2">El nombre de usuario es obligatorio</small>
+          }
+          @if (userForm.get('userName')?.getError('maxlength')) {
+            <small class="text-danger ms-2">Máximo 50 caracteres</small>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="lastNameForm" class="col-form-label col-md-2">Apellido<label class="text-danger">*</label></label>
+        <input type="text" class="form-control m-2" id="lastNameForm" formControlName="lastName"
+               [ngClass]="{'is-invalid': userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched, 'is-valid': userForm.get('lastName')?.valid && userForm.get('lastName')?.touched}">
+      </div>
+      <div>
+        @if (userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched) {
+          @if (userForm.get('lastName')?.getError('required')) {
+            <small class="text-danger ms-2">El apellido es obligatorio</small>
+          }
+          @if (userForm.get('lastName')?.getError('maxlength')) {
+            <small class="text-danger ms-2">Máximo 50 caracteres</small>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="mb-3"></div>
+    <hr>
+
+    <!-- Roles -->
+    <!-- Roles -->
+    <!-- Roles -->
+    <!-- Roles -->
+    <!-- Roles -->
+    <!-- Roles -->
+    <!-- Roles -->
+    <!-- Roles -->
+    <div formGroupName="rolesForm" class="row g-3">
+      <h5 class="mt-2 p-2">Añadir Roles</h5>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="row g-0 align-items-center">
+            <div class="col-auto">
+              <label for="contact-type" class="col-form-label me-5">Roles</label>
+            </div>
+            <div class="col">
+              <select
+                id="contact-type"
+                class="form-select"
+                formControlName="rol"
+              >
+                <option disabled selected>Selecciona un rol</option>
+                @for (rol of rolesForCombo; track rol) {
+                  <option [ngValue]="rol">{{rol.prettyName}}</option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-1 d-flex justify-content-center">
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            (click)="addRol()"
+          >
+            +
+          </button>
+        </div>
+
+      </div>
+      @if (roles.length !== 0) {
+
+        <div class="col-12">
+          <h5 class="mb-3">Lista de Roles</h5>
+          <div class="list-group">
+            @for (rol of roles; track $index) {
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <button type="button"
+                        class="list-group-item list-group-item-action btn btn-primary btn-sm me-2" disabled>
+                  {{ rol.prettyName }}
+                </button>
+                @if (id !== undefined) {
+                  <button type="button" class="btn btn-danger btn-sm" (click)="removeRol($index)">
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+
+    <div class="mb-3"></div>
+    <hr />
+
+    <!-- Asignar un lote -->
+    <!-- Asignar un lote -->
+    <!-- Asignar un lote -->
+    <!-- Asignar un lote -->
+    <!-- Asignar un lote -->
+    <!-- Asignar un lote -->
+    <!-- Asignar un lote -->
+    <!-- Asignar un lote -->
+    <div formGroupName="plotForm" class="row g-3">
+      <h5 class="mt-2 p-2">Asociar un lote</h5>
+      <div class="col-md-6">
+        <div class="row g-0 align-items-center">
+          <label for="plot-select" class="col-form-label col-md-3">Lotes en tenencia<label class="text-danger">*</label></label>
+          <div class="col">
+            <select
+              id="plot-select"
+              class="form-select"
+              formControlName="plotAssign"
+              [ngClass]="{
+            'is-invalid': userForm.get('plotForm.plotAssign')?.invalid && userForm.get('plotForm.plotAssign')?.touched,
+            'is-valid': userForm.get('plotForm.plotAssign')?.valid && userForm.get('plotForm.plotAssign')?.touched
+              }">
+              <option value="" disabled selected>Selecciona un lote</option>
+              @for (plot of actualPlotOfOwner; track plot) {
+                <option [value]="plot.id">Manzana: {{plot.blockNumber}} | Lote Nro: {{plot.plotNumber}}</option>
+              }
+            </select>
+          </div>
+          <div >
+            @if(userForm.get('plotForm.plotAssign')?.invalid && userForm.get('plotForm.plotAssign')?.touched) {
+              @if(userForm.get('plotForm.plotAssign')?.errors?.['required']) {
+                <small class="text-danger ms-2">Campo obligatorio.</small>
+              }
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="row g-0 align-items-center">
+          <label for="plot-select" class="col-form-label col-md-3">Lotes en tenencia<label class="text-danger">*</label></label>
+          <div class="col">
+            <input
+              type="date"
+              class="form-control"
+              id="plot-number"
+              [min]="minDate"
+              formControlName="plotNumber"
+              [ngClass]="{'is-invalid': userForm.get('plotForm')?.get('plotNumber')?.invalid && userForm.get('plotForm')?.get('plotNumber')?.touched,
+                     'is-valid': userForm.get('plotForm')?.get('plotNumber')?.valid && userForm.get('plotForm')?.get('plotNumber')?.touched}"
+            >
+          </div>
+          <div >
+            @if(userForm.get('plotForm.plotAssign')?.invalid && userForm.get('plotForm.plotAssign')?.touched) {
+              @if(userForm.get('plotForm.plotAssign')?.errors?.['required']) {
+                <small class="text-danger ms-2">Campo obligatorio.</small>
+              }
+            }
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="mb-3"></div>
+    <hr />
+
+
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <div formGroupName="addressForm" class="row g-3">
+      <h5 class="mt-2 p-2">Añadir Dirección</h5>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="street-address" class="col-form-label col-md-2">Calle<label class="text-danger">*</label></label>
+          <input type="text" class="form-control" id="street-address" formControlName="streetAddress"
+                 [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('streetAddress')?.invalid && userForm.get('addressForm')?.get('streetAddress')?.touched,
+                    'is-valid': userForm.get('streetAddress')?.get('streetAddress')?.valid && userForm.get('addressForm')?.get('streetAddress')?.touched}"
+          >
+        </div>
+        <div>
+          @if(userForm.get('addressForm.streetAddress')?.invalid && userForm.get('addressForm.streetAddress')?.touched) {
+            @if(userForm.get('addressForm.streetAddress')?.errors?.['required']) {
+              <small class="text-danger ms-2">Campo obligatorio.</small>
+            }
+          }
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="number" class="col-form-label col-md-2">Número<label class="text-danger">*</label></label>
+          <input type="number" class="form-control" id="number" formControlName="number"
+                 [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('number')?.invalid && userForm.get('addressForm')?.get('number')?.touched,
+                     'is-valid': userForm.get('addressForm')?.get('number')?.valid && userForm.get('addressForm')?.get('number')?.touched}"
+          >
+        </div>
+        <div>
+          @if(userForm.get('addressForm.number')?.invalid && userForm.get('addressForm.number')?.touched) {
+            @if(userForm.get('addressForm.number')?.errors?.['required']) {
+              <small class="text-danger ms-2">Campo obligatorio.</small>
+            }
+          }
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="floor" class="col-form-label col-md-2">Piso</label>
+          <input type="number" class="form-control" id="floor" formControlName="floor"
+                 [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('floor')?.invalid && userForm.get('addressForm')?.get('floor')?.touched,
+                    'is-valid': userForm.get('addressForm')?.get('floor')?.valid && userForm.get('addressForm')?.get('floor')?.touched}"
+          >
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="apartment" class="col-form-label col-md-2">Depto</label>
+          <input type="text" class="form-control" id="apartment" formControlName="apartment"
+                 [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('apartment')?.invalid && userForm.get('addressForm')?.get('apartment')?.touched,
+                     'is-valid': userForm.get('addressForm')?.get('apartment')?.valid && userForm.get('addressForm')?.get('apartment')?.touched}"
+          >
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="country" class="col-form-label col-md-2">País<label class="text-danger">*</label></label>
+          <select id="country" class="form-select" formControlName="country"
+                  [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('country')?.invalid && userForm.get('addressForm')?.get('country')?.touched,
+                     'is-valid': userForm.get('addressForm')?.get('country')?.valid && userForm.get('addressForm')?.get('country')?.touched}"
+          >
+            @for(country of countryOptions; track $index) {
+              <option [value]="country.value">{{ country.display }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          @if(userForm.get('addressForm.country')?.invalid && userForm.get('addressForm.country')?.touched) {
+            @if(userForm.get('addressForm.country')?.errors?.['required']) {
+              <small class="text-danger ms-2">Campo obligatorio.</small>
+            }
+          }
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="province" class="col-form-label col-md-2">Provincia<label class="text-danger">*</label></label>
+          <select id="province" class="form-select" formControlName="province"
+                  [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('province')?.invalid && userForm.get('addressForm')?.get('province')?.touched,
+                    'is-valid': userForm.get('addressForm')?.get('province')?.valid && userForm.get('addressForm')?.get('province')?.touched}"
+          >
+            @for(province of provinceOptions; track $index) {
+              <option [value]="province.value">{{ province.display }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          @if(userForm.get('addressForm.province')?.invalid && userForm.get('addressForm.province')?.touched) {
+            @if(userForm.get('addressForm.province')?.errors?.['required']) {
+              <small class="text-danger ms-2">Campo obligatorio.</small>
+            }
+          }
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="city" class="col-form-label col-md-2">Ciudad<label class="text-danger">*</label></label>
+          <input
+            type="text"
+            class="form-control w-100"
+            id="city"
+            formControlName="city"
+            [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('city')?.invalid && userForm.get('addressForm')?.get('city')?.touched,
+                   'is-valid': userForm.get('addressForm')?.get('city')?.valid && userForm.get('addressForm')?.get('city')?.touched}"
+          />
+        </div>
+        <div>
+          @if(userForm.get('addressForm.city')?.invalid &&
+          userForm.get('addressForm.city')?.touched ) {
+            @if(userForm.get('addressForm.city')?.errors?.['required']){
+              <small class="text-danger ms-2">Campo obligatorio.</small> } }
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="row g-0 align-items-center">
+          <label for="postal-code" class="col-form-label col-md-2"
+          >Codigo Postal<label class="text-danger">*</label></label
+          >
+          <div class="col">
+            <input
+              type="number"
+              class="form-control"
+              id="postal-code"
+              formControlName="postalCode"
+              [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('postalCode')?.invalid && userForm.get('addressForm')?.get('postalCode')?.touched,
+                     'is-valid': userForm.get('addressForm')?.get('postalCode')?.valid && userForm.get('addressForm')?.get('postalCode')?.touched}"
+            >
+          </div>
+          <div class="col-12">
+            @if(userForm.get('addressForm.postalCode')?.invalid &&
+            userForm.get('addressForm.postalCode')?.touched ) {
+              @if(userForm.get('addressForm.postalCode')?.errors?.['required']){
+                <small class="text-danger">Campo obligatorio.</small>
+              } }
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 d-flex justify-content-end align-items-center">
+      <div class="me-2">
+        @if (addressIndex !== undefined) {
+          <button type="button" class="btn btn-danger" (click)="cancelEditionAddress()">Cancelar Edición</button>
+        }
+      </div>
+      <div>
+        <button type="button" class="btn btn-primary" (click)="addAddress()">Añadir Dirección</button>
+      </div>
+    </div>
+    @if (addresses.length !== 0) {
+
+      <div class="col-12">
+        <h5 class="mb-3">Lista de Direcciones</h5>
+        <div class="list-group">
+          @for (address of addresses; track $index) {
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <button type="button"
+                      class="list-group-item list-group-item-action btn btn-primary btn-sm me-2"
+                      (click)="setAddressValue($index)">
+                {{address.streetAddress}} {{address.number}}
+              </button>
+              @if (id !== undefined) {
+                <button type="button" class="btn btn-danger btn-sm" (click)="removeAddress($index)">
+                  <i class="bi bi-trash-fill"></i>
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+
+    <div class="mb-3"></div>
+    <hr />
+
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <div formGroupName="contactsForm" class="row g-3 pb-5">
+      <h5 class="mt-2 p-2 pb-4">Añadir Contactos</h5>
+      <div class="row">
+        <div class="col-md-4 mx-auto">
+          <div class="row g-0 align-items-center">
+            <div class="col-auto">
+              <label for="contact-type" class="col-form-label me-2">Tipo Contacto</label>
+            </div>
+            <div class="col">
+              <select
+                id="contact-type"
+                class="form-select"
+                formControlName="contactType"
+              >
+                <option disabled selected>Selecciona un tipo</option>
+                <option value="PHONE">Telefono</option>
+                <option value="EMAIL">Email</option>
+                <option value="SOCIAL_MEDIA_LINK">Otro</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 mx-auto">
+          <div class="row g-0 align-items-center">
+            <div class="col-auto">
+              <label for="contact-info" class="col-form-label me-2">Contacto</label>
+            </div>
+            <div class="col">
+              <input
+                type="text"
+                class="form-control"
+                id="contact-info"
+                formControlName="contactValue"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-1 d-flex justify-content-center">
+          <button
+            type="button"
+            class="btn btn-outline-primary me-2"
+            (click)="addContact()"
+          >
+            <i class="bi bi-plus-lg"></i>
+          </button>
+          @if (contactIndex !== undefined) {
+            <button
+              type="button"
+              class="btn btn-outline-danger"
+              (click)="cancelEditContact()"
+            >
+              <i class="bi bi-x-lg"></i>
+            </button>
+          }
+        </div>
+      </div>
+      @if (contacts.length !== 0) {
+
+        <div class="col-12">
+          <h5 class="mb-3">Lista de Contactos</h5>
+          <div class="list-group">
+            @for (contact of contacts; track $index) {
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <button type="button"
+                        class="list-group-item list-group-item-action btn btn-primary btn-sm me-2"
+                        (click)="setContactValue($index)">
+                  {{ contact.contactType }} - {{ contact.contactValue }}
+                </button>
+                @if (id !== undefined) {
+                  <button type="button" class="btn btn-danger btn-sm" (click)="removeContact($index)">
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Botones -->
+    <!-- Botones -->
+    <!-- Botones -->
+    <!-- Botones -->
+    <!-- Botones -->
+    <!-- Botones -->
+    <!-- Botones -->
+    <div class="col-12 d-flex justify-content-end">
+      <div class="mx-2">
+        <button type="button" class="btn btn-danger" (click)="cancel()">Cancelar</button>
+      </div>
+      <div>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </form>
+</app-main-container>

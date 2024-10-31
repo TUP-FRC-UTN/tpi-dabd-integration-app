@@ -1,0 +1,197 @@
+<ng-template #actionsTemplate let-item>
+  <div class="col">
+    <div ngbDropdown class="d-inline-block">
+      <button
+        type="button"
+        class="btn btn-sm btn-secondary"
+        id="dropdownBasic1"
+        ngbDropdownToggle
+      >
+        <i class="bi bi-three-dots-vertical"></i>
+      </button>
+      <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+        <button ngbDropdownItem (click)="goToDetails(item.id, 'detail')">
+          Ver detalle
+        </button>
+        @if((this.role === 'ADMIN' || userId === item.created_by) &&
+        item.claim_status === 'SENT') {
+        <button ngbDropdownItem (click)="goToDetails(item.id, 'edit')">
+          Editar
+        </button>
+        } @if((this.role === 'ADMIN' ) && item.claim_status === 'SENT') {
+        <button ngbDropdownItem (click)="disapproveClaim(item.id)">
+          Desaprobar
+        </button>
+        }
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #sanctionType let-item>
+  {{ item.sanction_type.name }}
+</ng-template>
+
+<ng-template #infraction let-item>
+  @if (item.infraction_id) {
+  <a [href]="['/infraction/' + item.infraction_id]">
+    {{ item.infraction_id }}
+  </a>
+  }@else { N/A }
+</ng-template>
+
+<ng-template #date let-item>
+  {{ item.created_date | date : "dd/MM/yyyy HH:mm" }}
+</ng-template>
+
+<ng-template #claimStatus let-item>
+  @if(item.claim_status === 'APPROVED') {
+  <span class="badge border border-success text-success p-2">{{
+    item.claim_status | getValueByKeyForEnum : ClaimStatusEnum
+  }}</span>
+  } @else if(item.claim_status === 'REJECTED') {
+  <span class="badge border border-danger text-danger p-2">{{
+    item.claim_status | getValueByKeyForEnum : ClaimStatusEnum
+  }}</span>
+  } @else if (item.claim_status === 'SENT') {
+  <span class="badge text-secondary border border-secondary p-2">{{
+    item.claim_status | getValueByKeyForEnum : ClaimStatusEnum
+  }}</span>
+  }
+</ng-template>
+
+<ng-template #check let-item>
+  <div class="d-inline-flex align-items-center">
+    <div
+      class="form-check me-2"
+      [ngClass]="{
+        invisible: !(item.claim_status === 'SENT' && role === 'ADMIN')
+      }"
+    >
+      <input
+        class="form-check-input"
+        type="checkbox"
+        value=""
+        id="flexCheckChecked"
+        [checked]="includesClaimById(item)"
+        (click)="checkClaim(item)"
+        [disabled]="disbledCheck(item)"
+      />
+    </div>
+    <span>{{ item.id }}</span>
+  </div>
+</ng-template>
+
+<ng-template #description let-item>
+  {{ item.description | truncate : 60 }}
+</ng-template>
+
+<app-main-container title="Reclamos">
+  <app-table
+    [items]="(items$ | async) || []"
+    [columns]="columns"
+    [pagination]="{
+      totalItems: (totalItems$ | async) || 0,
+      page: page,
+      size: size,
+      onPageChange: onPageChange,
+      onPageSizeChange: onPageSizeChange
+    }"
+    [isLoading]="(isLoading$ | async) || false"
+    (searchValueChange)="onSearchValueChange('partialSearch', $event)"
+    searchPlaceHolder="Nº, Descripción..."
+    [headerButtonText]="'Nuevo'"
+    (headerButtonClick)="openFormModal()"
+    (infoButtonClick)="onInfoButtonClick()"
+  >
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="btn-group me-5" role="group">
+        <div class="d-flex align-items-center">
+          <div class="btn-group me-2">
+            <button
+              type="button"
+              class="btn btn-outline-danger"
+              (click)="clearFilters()"
+            >
+              <i class="bi bi-trash-fill"></i> Limpiar
+            </button>
+            <div
+              class="btn-group"
+              ngbDropdown
+              role="group"
+              aria-label="Button group with nested dropdown"
+            >
+              <button
+                type="button"
+                class="btn btn-outline-info dropdown-toggle"
+                ngbDropdownToggle
+              >
+                <i class="bi bi-funnel-fill"></i> Filtros
+              </button>
+              <div class="dropdown-menu" ngbDropdownMenu>
+                <button ngbDropdownItem (click)="setFilterType('fecha')">
+                  Por fecha
+                </button>
+                <button ngbDropdownItem (click)="setFilterType('estado')">
+                  Por estado
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Fecha -->
+          @if(filterType === 'fecha'){
+          <div class="d-flex">
+            <input
+              type="date"
+              class="form-control me-2"
+              placeholder="Fecha de inicio"
+              [(ngModel)]="startDate"
+              [max]="endDate"
+            />
+            <input
+              type="date"
+              class="form-control me-2"
+              placeholder="Fecha de fin"
+              [(ngModel)]="endDate"
+              [min]="startDate"
+            />
+            <button class="btn btn-dark" type="button" (click)="applyFilters()">
+              Buscar
+            </button>
+          </div>
+
+          }
+          <!-- Estado -->
+          @if(filterType === 'estado'){
+          <div class="d-flex">
+            <select class="form-select me-2" [(ngModel)]="status">
+              <option [ngValue]="''">Todos</option>
+              @for (key of claimStatusKeys; track $index) {
+              <option [value]="key">
+                {{ key | getValueByKeyForEnum : ClaimStatusEnum }}
+              </option>
+              }
+            </select>
+            <button class="btn btn-dark" type="button" (click)="applyFilters()">
+              Buscar
+            </button>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+    @if(checkedClaims.length!=0){
+    <div class="row justify-content-end align-items-center g-2 mb-2">
+      <div class="col-2">
+        <button
+          class="btn btn-outline-primary"
+          (click)="openCreateInfractionModal()"
+        >
+          Crear Infracción
+        </button>
+      </div>
+    </div>
+
+    }
+  </app-table>
+</app-main-container>

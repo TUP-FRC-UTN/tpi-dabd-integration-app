@@ -1,0 +1,319 @@
+<app-main-container title="Listar Contactos">
+  <div class="card-body">
+
+    <!-- Botones de exportación -->
+    <div class="col row d-flex justify-content-end mb-3">
+      <div class="col-auto me-1">
+        <button type="button" (click)="saveContact()" class="btn btn-outline-primary" aria-expanded="false">
+          Nuevo
+        </button>
+      </div>
+
+      <div class="col-auto">
+        <button class="btn" (click)="exportToExcel()" style="background-color: #239b56; color: white;">
+          <i class="bi bi-file-earmark-excel"></i>
+        </button>
+      </div>
+
+      <div class="col-auto btn-export-pdf">
+        <button class="btn " (click)="exportToPDF()" style="background-color: red; color: white;">
+          <i class="bi bi-file-pdf"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <!-- Grupo de botones izquierdo -->
+      <div class="btn-group me-5" role="group">
+        <div class="d-flex align-items-center">
+          <div class="btn-group me-2">
+            <button class="btn btn-outline-danger " (click)="clearSearch()">
+              <i class="bi bi-trash-fill"></i> Limpiar
+            </button>
+
+            <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <i class="bi bi-funnel-fill"></i> Filtros
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <h6 class="dropdown-header">Tipo de Contacto</h6>
+              </li>
+              <li><a class="dropdown-item" (click)="filterByContactType('')">Todos</a></li>
+              <li><a class="dropdown-item" (click)="filterByContactType('EMAIL')">Email</a></li>
+              <li><a class="dropdown-item" (click)="filterByContactType('PHONE')">Teléfono</a></li>
+              <li><a class="dropdown-item" (click)="filterByContactType('SOCIAL_MEDIA_LINK')">Redes Sociales</a></li>
+            </ul>
+            <div class="input-group" *ngIf="showInput">
+              <input type="text" class="form-control rounded-start" [(ngModel)]="searchTerm"
+                (input)="onSearchTextChange(searchTerm)" placeholder="Buscar...">
+              <button class="btn btn-dark rounded-start ms-2">Buscar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Botones de estado -->
+      <div class="btn-group" role="group">
+        <input type="radio" class="btn-check" name="btnradio" id="btnradio1" (change)="filterByStatus('active')">
+        <label class="btn btn-outline-primary" for="btnradio1">Contactos Activos</label>
+
+        <input type="radio" class="btn-check" name="btnradio" id="btnradio2" (change)="filterByStatus('inactive')">
+        <label class="btn btn-outline-primary" for="btnradio2">Contactos Inactivos</label>
+
+        <input type="radio" class="btn-check" name="btnradio" id="btnradio3" (change)="filterByStatus('all')" checked>
+        <label class="btn btn-outline-primary" for="btnradio3">Todos</label>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-container">
+      <table class="table table-striped fixed-table"
+        style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;">
+        @if (contacts.length === 0) {
+        <thead>
+          <td colspan="5">
+            <div class="text-center p-2">
+              <div class="alert alert-secondary text-center" role="alert">
+                No hay elementos para mostrar
+              </div>
+            </div>
+          </td>
+        </thead>
+        } @else {
+        <thead>
+          <tr>
+            <th>Contacto</th>
+            <th>Tipo de Contacto</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for(contact of paginatedContacts; track contact.id) {
+          <tr>
+            <td>{{contact.contactValue}}</td>
+            <td>{{contact.contactType}}</td>
+
+            <td>
+              @if (contact.active) {
+              <p class="mb-0">
+                <i class="bi bi-check2-circle text-success" style="font-size: 1.5rem;"></i>
+              </p>
+              } @else {
+              <p class="mb-0">
+                <i class="bi bi-x-circle text-danger" style="font-size: 1.5rem;"></i>
+              </p>
+              }
+            </td>
+            <td>
+              <div class="btn-group" ngbDropdown role="group">
+                <button type="button" class="btn btn-sm btn-secondary" ngbDropdownToggle>
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <div class="dropdown-menu" ngbDropdownMenu>
+                  <button ngbDropdownItem (click)="openDetailModal(contact)">
+                    Ver Detalle
+                  </button>
+                  <button ngbDropdownItem (click)="openEditModal(contact)">
+                    Editar
+                  </button>
+                  <button ngbDropdownItem (click)="openDeleteModal(contact)">
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+        }
+      </table>
+    </div>
+
+    <!-- Paginación e Info -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div class="d-flex align-items-center">
+        <select class="form-select me-3" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+          <option [value]="10">10 Elementos</option>
+          <option [value]="25">25 Elementos</option>
+          <option [value]="50">50 Elementos</option>
+        </select>
+      </div>
+
+      <div class="d-flex align-items-center">
+        <ngb-pagination [(page)]="currentPage" [pageSize]="itemsPerPage" [collectionSize]="totalItems"
+          (pageChange)="changePage($event)" [maxSize]="5" [boundaryLinks]="false"></ngb-pagination>
+
+        <button class="btn btn-secondary ms-3 mb-3" (click)="showInfo()">
+          <i class="bi bi-info-circle"></i>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+
+
+</app-main-container>
+
+
+<!-- Modal de Edición -->
+<div [class.show]="isEditModalOpen" [style.display]="isEditModalOpen ? 'block' : 'none'" class="modal fade"
+  tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar Contacto</h5>
+        <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form #editForm="ngForm">
+          <!-- Tipo de Contacto (No editable) -->
+          <div class="mb-3">
+            <label for="contactType" class="form-label">Tipo de Contacto</label>
+            <input type="text" class="form-control" id="contactType" name="contactType" [(ngModel)]="editingContact.contactType" disabled>
+          </div>
+
+          <!-- Valor del Contacto -->
+          <div class="mb-3">
+            <label for="contactValue" class="form-label">Valor del Contacto</label>
+            <input type="text" class="form-control" id="contactValue" name="contactValue"
+              [(ngModel)]="editingContact.contactValue" required>
+          </div>
+
+          <!-- Suscripciones -->
+          <div class="mb-3">
+            <label class="form-label">Suscripciones</label>
+            <div *ngFor="let subscription of availableSubscriptions; let i = index">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" [id]="'subscription-' + i"
+                  [checked]="isSubscribed(subscription)" (change)="toggleSubscription(subscription)">
+                <label class="form-check-label" [for]="'subscription-' + i">
+                  {{subscription}}
+                </label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="saveEditedContact()" [disabled]="!editForm.form.valid">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal de Detalle del Contacto -->
+<div [class.show]="isDetailModalOpen" [style.display]="isDetailModalOpen ? 'block' : 'none'" class="modal fade"
+  tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalle del Contacto</h5>
+        <button type="button" class="btn-close" (click)="closeDetailModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <!-- Tipo de Contacto -->
+          <div class="mb-3">
+            <label for="contactTypeDetail" class="form-label">Tipo de Contacto</label>
+            <input type="text" class="form-control" id="contactTypeDetail" [value]="selectedContact?.contactType"
+              readonly>
+          </div>
+
+          <!-- Valor del Contacto -->
+          <div class="mb-3">
+            <label for="contactValueDetail" class="form-label">Valor del Contacto</label>
+            <input type="text" class="form-control" id="contactValueDetail" [value]="selectedContact?.contactValue"
+              readonly>
+          </div>
+
+          <!-- Estado del Contacto -->
+          <div class="mb-3">
+            <label for="contactStatusDetail" class="form-label">Estado</label>
+            <input type="text" class="form-control" id="contactStatusDetail"
+              [value]="selectedContact?.active ? 'Activo' : 'Inactivo'" readonly>
+          </div>
+
+          <div *ngIf="selectedContact && selectedContact.subscriptions && selectedContact.subscriptions.length > 0"
+            class="mb-3">
+            <label class="form-label">Suscripciones</label>
+            <ul class="list-unstyled">
+              <li *ngFor="let subscription of selectedContact.subscriptions">
+                <i class="bi bi-dot"></i> {{subscription}}
+              </li>
+            </ul>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeDetailModal()">Volver</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div [class.show]="isDeleteModalOpen" [style.display]="isDeleteModalOpen ? 'block' : 'none'"
+  class="modal fade delete-modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmar Eliminación</h5>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
+      </div>
+      <div class="modal-body">
+        @if(contactToDelete){
+        <p>¿Está seguro que desea eliminar el siguiente contacto?</p>
+        <div class="contact-details mt-3">
+          <p><strong>Tipo de Contacto:</strong> {{contactToDelete.contactType}}</p>
+          <p><strong>Valor:</strong> {{contactToDelete.contactValue}}</p>
+          @if(contactToDelete.subscriptions.length > 0){
+          <p><strong>Suscripciones:</strong></p>
+          <ul class="list-unstyled">
+            @for(subscription of contactToDelete.subscriptions; track $index){
+            <li><i class="bi bi-dot"></i> {{subscription}}</li>
+            }
+          </ul>
+          }
+        </div>
+        } @else {
+        <p>No se ha seleccionado ningún contacto para eliminar.</p>
+        }
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" (click)="confirmDelete()" [disabled]="!contactToDelete">
+          Eliminar
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal de Información -->
+<div [class.show]="isModalOpen" [style.display]="isModalOpen ? 'block' : 'none'" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ modalTitle }}</h5>
+        <button type="button" class="btn-close" (click)="isModalOpen = false"></button>
+      </div>
+      <div class="modal-body">
+        <div [innerHTML]="modalMessage"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="isModalOpen = false">Volver</button>
+      </div>
+    </div>
+  </div>
+</div>

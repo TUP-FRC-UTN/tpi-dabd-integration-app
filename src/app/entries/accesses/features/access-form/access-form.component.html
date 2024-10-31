@@ -1,0 +1,67 @@
+<div class="d-flex justify-content-center align-items-center min-vh-100" style="background-color: #000000;">
+    <div class="card p-4 w-100" style="max-width: 600px; border-radius: 15px;">
+        <h2 class="text-center mb-4">Registrar Acceso</h2>
+
+        <form (ngSubmit)="submitAccessForm()">
+            <div class="row">
+                <div class="col-12 col-md-6 mb-3">
+                    <label for="first_name" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="first_name" [(ngModel)]="access.first_name"
+                        name="first_name" required>
+                </div>
+
+                <div class="col-12 col-md-6 mb-3">
+                    <label for="last_name" class="form-label">Apellido</label>
+                    <input type="text" class="form-control" id="last_name" [(ngModel)]="access.last_name"
+                        name="last_name" required>
+                </div>
+
+                <div class="col-12 mb-3">
+                    <label for="doc_number" class="form-label">Número de Documento</label>
+                    <input type="number" class="form-control" id="doc_number" [(ngModel)]="access.doc_number"
+                        name="doc_number" required>
+                </div>
+
+                <div class="col-12 col-md-6 mb-3">
+                    <label for="action" class="form-label">Acción</label>
+                    <select class="form-control" id="action" [(ngModel)]="access.action" name="action" required>
+                        <option value="ENTRY">Entrada</option>
+                        <option value="EXIT">Salida</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-6 mb-3">
+                    <label for="vehicle_type" class="form-label">Tipo de Vehículo</label>
+                    <select class="form-control" id="vehicle_type" [(ngModel)]="access.vehicle_type" name="vehicle_type"
+                        required>
+                        <option value="CAR">Automóvil</option>
+                    </select>
+                </div>
+
+                <div class="col-12 mb-3">
+                    <label for="vehicle_reg" class="form-label">Matrícula del Vehículo</label>
+                    <input type="text" class="form-control" id="vehicle_reg" [(ngModel)]="access.vehicle_reg"
+                        name="vehicle_reg">
+                </div>
+
+                <div class="col-12 mb-3">
+                    <label for="vehicle_description" class="form-label">Descripción del Vehículo</label>
+                    <input type="text" class="form-control" id="vehicle_description"
+                        [(ngModel)]="access.vehicle_description" name="vehicle_description">
+                </div>
+
+                <div class="col-12 mb-3">
+                    <label for="comments" class="form-label">Comentarios</label>
+                    <textarea class="form-control" id="comments" [(ngModel)]="access.comments"
+                        name="comments"></textarea>
+                </div>
+
+                <div class="col-12">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Registrar Acceso</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

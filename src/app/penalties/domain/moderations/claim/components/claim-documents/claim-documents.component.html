@@ -1,0 +1,37 @@
+<ng-template #actionsTemplate let-item>
+  <button
+    class="btn btn-primary btn-sm me-2"
+    placement="top"
+    ngbTooltip="Descargar"
+    (click)="downnload(item.id, item.document_identifier)"
+  >
+    <i class="bi bi-download"></i>
+  </button>
+  <!-- <button
+    class="btn btn-danger btn-sm me-2"
+    placement="top"
+    ngbTooltip="Eliminar"
+    (click)="deleteDocument(item)"
+  >
+    <i class="bi bi-trash"></i>
+  </button> -->
+</ng-template>
+
+<h3>Puebas</h3>
+
+<div class="px-5 py-4 border border-top-0">
+  <app-table
+    [height]="'200px'"
+    [items]="claim?.proofs || []"
+    [columns]="columns"
+    [showSearchBar]="false"
+    [showExportOptions]="false"
+    [showSearchBar]="false"
+    [showExportOptions]="false"
+    [showHeaderButton]="false"
+    [headerButtonIcon]="'bi bi-upload'"
+    [headerButtonText]="'Subir documento'"
+    (headerButtonClick)="openFormModal()"
+  >
+  </app-table>
+</div>

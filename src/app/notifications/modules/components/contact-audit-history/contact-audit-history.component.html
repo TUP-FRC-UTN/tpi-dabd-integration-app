@@ -1,0 +1,142 @@
+<app-main-container title="Auditoría de Contactos">
+    <div class="card-body">
+  
+      <!-- Botones de exportación -->
+      <div class="col row d-flex justify-content-end mb-3">
+      
+        <div class="col-auto">
+          <button class="btn" (click)="exportToExcel()" style="background-color: #239b56; color: white;">
+            <i class="bi bi-file-earmark-excel"></i>
+          </button>
+        </div>
+  
+        <div class="col-auto btn-export-pdf">
+          <button class="btn " (click)="exportToPDF()" style="background-color: red; color: white;">
+            <i class="bi bi-file-pdf"></i>
+          </button>
+        </div>
+      </div>
+  
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Grupo de botones izquierdo -->
+        <div class="btn-group me-5" role="group">
+          <div class="d-flex align-items-center">
+            <div class="btn-group me-2">
+              <button class="btn btn-outline-danger " (click)="clearSearch()">
+                <i class="bi bi-trash-fill"></i> Limpiar
+              </button>
+  
+              <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <i class="bi bi-funnel-fill"></i> Filtros
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <h6 class="dropdown-header">Tipo de Contacto</h6>
+                </li>
+                <li><a class="dropdown-item" (click)="filterByContactType('')">Todos</a></li>
+                <li><a class="dropdown-item" (click)="filterByContactType('EMAIL')">Email</a></li>
+                <li><a class="dropdown-item" (click)="filterByContactType('PHONE')">Teléfono</a></li>
+                <li><a class="dropdown-item" (click)="filterByContactType('SOCIAL_MEDIA_LINK')">Redes Sociales</a></li>
+              </ul>
+              <div class="input-group" *ngIf="showInput">
+                <input type="text" class="form-control rounded-start" [(ngModel)]="searchTerm"
+                  (input)="onSearchTextChange(searchTerm)" placeholder="Buscar...">
+                <button class="btn btn-dark rounded-start ms-2">Buscar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+  
+        <!-- Botones de estado -->
+
+      </div>
+  
+      <!-- Tabla -->
+      <div class="table-container">
+        <table class="table table-striped fixed-table"
+          style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;">
+          @if (filteredContactAuditItems.length === 0) {
+          <thead>
+            <td colspan="5">
+              <div class="text-center p-2">
+                <div class="alert alert-secondary text-center" role="alert">
+                  No hay elementos para mostrar
+                </div>
+              </div>
+            </td>
+          </thead>
+          } @else {
+          <thead>
+            <tr>
+              <th>ID del Contacto</th>
+              <th>Fecha del cambio</th>
+              <th>ID de revisión</th>
+              <th>Tipo de revisión</th>
+              <th>Tipo de contacto</th>
+              <th>Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(auditItem of paginatedContacts; track auditItem.auditId) {
+            <tr>
+              <td>{{auditItem.contactId}}</td>
+              <td>{{auditItem.revisionDate}}</td>
+              <td>{{auditItem.revisionId}}</td>
+              <td>{{auditItem.revisionType}}</td>
+              <td>{{auditItem.contactType}}</td>
+              <td>{{auditItem.value}}</td>
+            </tr>
+            }
+          </tbody>
+          }
+        </table>
+      </div>
+  
+      <!-- Paginación e Info -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="d-flex align-items-center">
+          <select class="form-select me-3" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+            <option [value]="10">10 Elementos</option>
+            <option [value]="25">25 Elementos</option>
+            <option [value]="50">50 Elementos</option>
+          </select>
+        </div>
+  
+        <div class="d-flex align-items-center">
+          <ngb-pagination [(page)]="currentPage" [pageSize]="itemsPerPage" [collectionSize]="totalItems"
+            (pageChange)="changePage($event)" [maxSize]="5" [boundaryLinks]="false"></ngb-pagination>
+  
+          <button class="btn btn-secondary ms-3 mb-3" (click)="showInfo()">
+            <i class="bi bi-info-circle"></i>
+          </button>
+        </div>
+      </div>
+  
+    </div>
+  
+  
+  
+  </app-main-container>
+  
+  
+  
+  
+  <!-- Modal de Información -->
+  <div [class.show]="isInformationModalOpen" [style.display]="isInformationModalOpen ? 'block' : 'none'" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ informationModalTitle }}</h5>
+          <button type="button" class="btn-close" (click)="isInformationModalOpen = false"></button>
+        </div>
+        <div class="modal-body">
+          <div [innerHTML]="informationModalMessage"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="isInformationModalOpen = false">Volver</button>
+        </div>
+      </div>
+    </div>
+  </div>

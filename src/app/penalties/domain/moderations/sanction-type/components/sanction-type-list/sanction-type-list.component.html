@@ -1,0 +1,33 @@
+<ng-template #actionsTemplate let-item>
+  <button class="btn btn-primary btn-sm me-2" (click)="goToDetails(item.id)">
+    Ver más
+  </button>
+</ng-template>
+<ng-template #chargeType let-item>
+  {{ item.charge_type | getValueByKeyForEnum : ChargeTypeEnum }}
+</ng-template>
+
+<ng-template #description let-item>
+  {{ item.description | truncate : 40 }}
+</ng-template>
+
+<app-main-container title="Tipos de sanciones">
+  <app-table
+    [items]="(items$ | async) || []"
+    [columns]="columns"
+    [pagination]="{
+      totalItems: (totalItems$ | async) || 0,
+      page: page,
+      size: size,
+      onPageChange: onPageChange,
+      onPageSizeChange: onPageSizeChange
+    }"
+    [isLoading]="(isLoading$ | async) || false"
+    (searchValueChange)="onSearchValueChange('partialName', $event)"
+    searchPlaceHolder="Nombre..."
+    [headerButtonText]="'Nuevo'"
+    (headerButtonClick)="openFormModal()"
+    (infoButtonClick)="infoModal()"
+  >
+  </app-table>
+</app-main-container>

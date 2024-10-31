@@ -1,0 +1,386 @@
+<div class="container mt-5">
+  <h3 class="h3">Lista de Inventarios</h3>
+  <div class="card">
+  <div class="card-body">
+  <!-- Botonera -->
+   <!-- Search and Actions Bar -->    
+   <div class="row align-items-center">
+    <div class="col-lg-8 d-flex">
+      <button class="btn btn-secondary col-lg-1 " type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 20px; height: 20px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+    </button>
+        <input 
+            type="text" 
+            placeholder="Buscar Articulos"
+            class="form-control w-50 col-lg-4" 
+            [formControl]="searchInput"
+            >
+    </div>  
+
+    <!-- Espaciador para la separación -->
+    <div class="col-lg-2"></div> <!-- Espacio más largo en el medio -->
+
+    <div class="col-lg-2 d-flex justify-content-end">
+      <button class="btn btn-primary mx-1" [routerLink]="['/articles/article']">
+        Nuevo
+    </button>
+    <button class="btn btn-success mx-1" (click)="exportToExcel()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-excel" viewBox="0 0 16 16" style="width: 20px; height: 20px;">
+            <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z"/>
+            <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+        </svg>
+    </button>
+    <button class="btn btn-danger d-flex align-items-center justify-content-center mx-1" (click)="exportToPDF()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-file-earmark-pdf me-1" viewBox="0 0 16 16">
+        <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+        <path d="M4.603 14.087a.8.8 0 0 1-.438-.42c-.195-.388-.13-.776.08-1.102.198-.307.526-.568.897-.787a7.7 7.7 0 0 1 1.482-.645 20 20 0 0 0 1.062-2.227 7.3 7.3 0 0 1-.43-1.295c-.086-.4-.119-.796-.046-1.136.075-.354.274-.672.65-.823.192-.077.4-.12.602-.077a.7.7 0 0 1 .477.365c.088.164.12.356.127.538.007.188-.012.396-.047.614-.084.51-.27 1.134-.52 1.794a11 11 0 0 0 .98 1.686 5.8 5.8 0 0 1 1.334.05c.364.066.734.195.96.465.12.144.193.32.2.518.007.192-.047.382-.138.563a1.04 1.04 0 0 1-.354.416.86.86 0 0 1-.51.138c-.331-.014-.654-.196-.933-.417a5.7 5.7 0 0 1-.911-.95 11.7 11.7 0 0 0-1.997.406 11.3 11.3 0 0 1-1.02 1.51c-.292.35-.609.656-.927.787a.8.8 0 0 1-.58.029m1.379-1.901q-.25.115-.459.238c-.328.194-.541.383-.647.547-.094.145-.096.25-.04.361q.016.032.026.044l.035-.012c.137-.056.355-.235.635-.572a8 8 0 0 0 .45-.606m1.64-1.33a13 13 0 0 1 1.01-.193 12 12 0 0 1-.51-.858 21 21 0 0 1-.5 1.05zm2.446.45q.226.245.435.41c.24.19.407.253.498.256a.1.1 0 0 0 .07-.015.3.3 0 0 0 .094-.125.44.44 0 0 0 .059-.2.1.1 0 0 0-.026-.063c-.052-.062-.2-.152-.518-.209a4 4 0 0 0-.612-.053zM8.078 7.8a7 7 0 0 0 .2-.828q.046-.282.038-.465a.6.6 0 0 0-.032-.198.5.5 0 0 0-.145.04c-.087.035-.158.106-.196.283-.04.192-.03.469.046.822q.036.167.09.346z"/>
+      </svg>
+    </button>
+    </div>
+  </div>
+
+  <!-- Segunda fila -->
+  <div class="row align-items-center mt-3">
+    <button class="btn btn-outline-danger col-lg-1 d-flex align-items-center justify-content-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash me-1" viewBox="0 0 16 16">
+        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+      </svg>
+      Limpiar
+    </button>
+    <button class="btn btn-outline-info col-lg-1" data-bs-toggle="modal" data-bs-target="#filterModal">
+
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel-fill" viewBox="0 0 16 16">
+        <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
+      </svg>
+      Filtros
+    </button>
+  
+    <!-- Modal -->
+    <!-- Modal de Filtros -->
+      <div
+      class="modal fade"
+      id="filterModal"
+      tabindex="-1"
+      aria-labelledby="filterModalLabel"
+      aria-hidden="true"
+      >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="filterModalLabel">Modal de Inventario</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="card mb-4">
+              <div class="card-body">
+                <div class="row">
+                  <!-- Filtro por Artículo -->
+                  <div class="col-md-3 mb-3">
+                    <input
+                      type="text"
+                      class="form-control"
+                      [formControl]="articleNameFilter"
+                      placeholder="Buscar por artículo"
+                    />
+                  </div>
+
+                  <!-- Filtro por Stock -->
+                  <div class="col-md-3 mb-3">
+                    <input
+                      type="text"
+                      class="form-control"
+                      [formControl]="stockFilter"
+                      placeholder="Stock"
+                    />
+                  </div>
+
+                  <!-- Filtro por Locación -->
+                  <div class="col-md-3 mb-3">
+                    <input
+                      type="text"
+                      class="form-control"
+                      [formControl]="locationFilter"
+                      placeholder="Locación"
+                    />
+                  </div>
+
+                  <!-- Filtro por Unidad de Medida -->
+                  <div class="col-md-3 mb-3">
+                    <select class="form-select" formControlName="measure">
+                      <option [value]="MeasurementUnit.UNITS">Unidades</option>
+                      <option [value]="MeasurementUnit.LITERS">Litros</option>
+                      <option [value]="MeasurementUnit.KILOS">Kilogramos</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+
+    <div class="col-lg-4"></div> <!-- Espacio central para separación -->
+  
+    <button class="btn btn-outline-primary col-lg-2 mx-1"
+     [class.active]="currentFilter === 'active'" 
+          (click)="filterActiveInventories()">
+     Inventarios Activos
+    </button>
+    <button class="btn btn-outline-primary col-lg-2 mx-1"
+    [class.active]="currentFilter === 'inactive'"
+          (click)="filterInactiveInventories()">
+      Inventarios Inactivos
+    </button>
+  
+    <button class="btn btn-outline-primary col-lg-1 mx-1"
+    [class.active]="currentFilter === 'all'"
+          (click)="showAllInventories()">
+      Todos
+    </button>
+  </div>
+  <!-- Indicador de carga 
+  <div *ngIf="isLoading" class="text-center my-3">
+  <div class="spinner-border text-primary" role="status">
+  <span class="visually-hidden">Cargando...</span>
+ 
+
+
+ Mensaje de no hay resultados -->
+  <div *ngIf="!isLoading && inventories.length === 0" class="alert alert-info">
+    No se encontraron inventarios con los filtros seleccionados.
+  </div>
+       <!-- FormGroup filters -->
+        <div class="bg-white rounded-lg shadow">
+    <form [formGroup]="filterForm" class="row g-3 mt-3">
+      <div class="container">
+        <table class="table table-striped border rounded-lg-overflow-hidden">
+          <thead class="bg-dark text-white">
+            <tr>
+              <th (click)="sort('article')">
+                Identificador <span [ngClass]="{'asc': sortColumn === 'identifier' && sortDirection === 'asc', 'desc': sortColumn === 'identifier' && sortDirection === 'desc'}">⇅</span>
+              </th>
+              <th >
+                 Artículo <span [ngClass]="{'asc': sortColumn === 'article' && sortDirection === 'asc', 'desc': sortColumn === 'article' && sortDirection === 'desc'}">⇅</span>
+                </th>
+              <th >
+                Descripción <span [ngClass]="{'asc': sortColumn === 'description' && sortDirection === 'asc', 'desc': sortColumn === 'description' && sortDirection === 'desc'}">⇅</span>
+              </th>
+              <th (click)="sort('stock')">
+                Stock <span [ngClass]="{'asc': sortColumn === 'stock' && sortDirection === 'asc', 'desc': sortColumn === 'stock' && sortDirection === 'desc'}">⇅</span>
+              </th>
+              <th >
+                Medida <span [ngClass]="{'asc': sortColumn === 'measurementUnit' && sortDirection === 'asc', 'desc': sortColumn === 'measurementUnit' && sortDirection === 'desc'}">⇅</span>
+              </th>
+              <th (click)="sort('minStock')">
+                Stock Mínimo <span [ngClass]="{'asc': sortColumn === 'minStock' && sortDirection === 'asc', 'desc': sortColumn === 'minStock' && sortDirection === 'desc'}">⇅</span>
+              </th>
+              <th (click)="sort('location')">
+                Ubicación <span [ngClass]="{'asc': sortColumn === 'location' && sortDirection === 'asc', 'desc': sortColumn === 'location' && sortDirection === 'desc'}">⇅</span>
+              </th>
+              <th (click)="sort('status')">
+                Estado <span [ngClass]="{'asc': sortColumn === 'status' && sortDirection === 'asc', 'desc': sortColumn === 'status' && sortDirection === 'desc'}">⇅</span>
+              </th>
+              <th >Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let inventory of inventories">
+              <td class="text-center">{{ inventory.article.identifier || "-" }}</td>
+              <td>{{ inventory.article.name }}</td>
+              <td>{{ inventory.article.description }}</td>
+              <td class="text-center">{{ inventory.stock }}</td>
+              <td>{{ getDisplayUnit(inventory.article.measurementUnit) }}</td>
+              <td class="text-center">{{ inventory.minStock || "-" }}</td>
+              <td [ngClass]="{ 'text-center': !inventory.location }">{{ inventory.location || "-" }}</td>
+              <td>
+                @if (inventory.status.toString() == "ACTIVE") {
+                  <p class="mb-0">
+                    <i class="bi bi-check2-circle text-success" style="font-size: 1.5rem;"></i>
+                  </p>
+                } @else {
+                  <p class="mb-0">
+                    <i class="bi bi-x-circle text-danger" style="font-size: 1.5rem;"></i>
+                  </p>
+                }
+              </td>
+              <!--Clases de activo o inactivo-->
+              <td>
+                <div class="btn-group" role="group">
+                  <!-- Botón principal que despliega el menú -->
+                  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-three-dots-vertical"></i>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <!-- Opción para ver transacciones -->
+                    <li>
+                      <a class="dropdown-item" (click)="onTransactions(inventory)" title="Ver Movimientos">
+                        <!-- <i class="bi bi-eye"></i> -->
+                        Ver Movimientos
+                      </a>
+                    </li>
+
+                    @if (inventory.status.toString() == "ACTIVE") {
+                      <!-- Opción para realizar transacción -->
+                      <li>
+                        <a class="dropdown-item" (click)="onNewTransaction(inventory.id)" title="Realizar Movimiento">
+                          <!-- <i class="bi bi-plus-circle"></i> -->
+                          Realizar Movimiento
+                        </a>
+                      </li>
+                      <!-- Opción para editar el inventario -->
+                      <li>
+                        <a class="dropdown-item" (click)="onInventoryUpdate(inventory)" title="Editar">
+                          <!-- <i class="bi bi-pencil"></i> -->
+                          Editar
+                        </a>
+                      </li>
+                      <!-- Opción para eliminar el inventario -->
+                      <li>
+                        <a class="dropdown-item text-danger" (click)="deleteInventory(inventory.id!)" title="Eliminar">
+                          <!-- <i class="bi bi-trash"></i> -->
+                          Eliminar
+                        </a>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      
+        <!-- Pagination Section -->
+        <div class="d-flex justify-content-between align-items-center p-3 border-top">
+          <!-- Left side - Page number -->
+          <div class="text-muted">
+            Página {{ currentPage+1 }} de {{ totalPages }}
+          </div>
+
+          <!-- Right side - Items per page dropdown -->
+          <div class="d-flex align-items-center">
+            <span class="me-2">Elementos por página:</span>
+            <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="itemsPerPage">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+
+            <!-- Navigation buttons -->
+            <div class="ms-3">
+              <button class="btn btn-outline-secondary btn-sm me-1"
+                      [disabled]="currentPage === 1"
+                      (click)="goToPreviousPage()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                </svg>
+              </button>
+              <button class="btn btn-outline-secondary btn-sm"
+                      [disabled]="currentPage === totalPages"
+                      (click)="goToNextPage()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    </div>
+  <app-article *ngIf="showRegisterForm" (closeRegister)="onRegisterClose()" />
+  <app-transaction
+    *ngIf="showRegisterTransactionForm"
+    [inventoryId]="selectedInventoryId"
+    (closeRegisterTransaction)="onRegisterTransactionClose()"
+  />
+  <app-inventory-transaction-table
+    *ngIf="showTransactions"
+    [inventory]="selectedInventory"
+    (closeTransactions)="onTransactionsClose()"
+  ></app-inventory-transaction-table>
+
+  <app-inventory-inventories-update
+  *ngIf="showInventoryUpdate"
+  [inventory]="selectedInventory"
+  (closeModal)="onInventoryUpdateClose()"
+></app-inventory-inventories-update>
+
+<ng-template #infoModal let-modal>
+    <div class="modal-header fs-6 py-1">
+        <h4 class="modal-title">Información de la Lista de Inventarios</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+      </div>
+      <div class="modal-body fs-6 py-2">
+        <div class="container-fluid">
+          <!-- Introducción -->
+          <div class="alert alert-info mb-2 py-2">
+            <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
+            <p class="mb-0 small">Esta pantalla te permite visualizar los inventarios registrados e ingresar nuevos. Cada sección está diseñada para ofrecer acceso a la información necesario de manera sencilla.</p>
+          </div>
+      
+          <!-- Campos Principales -->
+          <div class="card mb-2">
+            <div class="card-header py-1">
+              <h5 class="mb-0">Datos de Inventarios</h5>
+            </div>
+            <div class="card-body py-2">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item py-1">
+                  <strong>Lista de Inventarios:</strong> Muestra los detalles de cada inventario, incluyendo Identificador, Artículo,	Descripción, Stock,	Medida,	Stock mínimo,	Ubicación y Estado.
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>Búsqueda:</strong> Funcionalidad para filtrar la lista de inventarios, por inventarios activos y/o inactivos, o por otros filtros de búsqueda.
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>Limpiar:</strong> Permite limpiar los filtros seleccionados para la búsqueda.
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>Paginación:</strong> Control para navegar entre múltiples páginas de inventarios.
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>Nuevo:</strong> Permite ingresar un nuevo inventario, nos redireccionará a un formulario para completarlo.
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>Exportar:</strong> Botones para exportar la lista a formatos PDF o Excel.
+                </li>
+              </ul>
+            </div>
+          </div>
+      
+          <!-- Acciones -->
+          <div class="card mb-2">
+            <div class="card-header py-1">
+              <h5 class="mb-0">Acciones Disponibles</h5>
+            </div>
+            <div class="card-body py-2">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item py-1">
+                  <strong>Ver movimientos:</strong> Muestra los movimientos de cada inventario.
+                </li>
+              </ul>
+            </div>
+          </div>
+      
+          <!-- Nota (OPCIONAL) -->
+          <div class="alert alert-warning py-2 mb-0">
+            <h5 class="alert-heading">Nota:</h5>
+            <p class="mb-0 small">Asegúrate de verificar la información antes de ingresar un nuevo inventario.</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer py-2">
+        <button type="button" class="btn btn-primary" (click)="modal.close()">Entendido</button>
+      </div>
+      
+</ng-template>

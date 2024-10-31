@@ -1,0 +1,144 @@
+<!-- employee-edit-modal.component.html -->
+@if (isModalOpen) {
+    <div class="modal show d-block" tabindex="-1" role="dialog" aria-labelledby="employeeEditModal">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="employeeEditModal">Editar Empleado</h5>
+            <button type="button" class="btn-close" aria-label="Close" (click)="onClose()"></button>
+          </div>
+          <div class="modal-body">
+            @if (employee) {
+              <form #employeeForm="ngForm" class="row g-3">
+                <!-- Primera fila -->
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="firstName" class="form-label">Nombre</label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="firstName" 
+                      name="firstName"
+                      [(ngModel)]="employee.firstName" 
+                      required
+                    >
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="lastName" class="form-label">Apellido</label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="lastName" 
+                      name="lastName"
+                      [(ngModel)]="employee.lastName" 
+                      required
+                    >
+                  </div>
+                </div>
+    
+                <!-- Segunda fila -->
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="documentType" class="form-label">Tipo de Documento</label>
+                    <select 
+                      class="form-select" 
+                      id="documentType" 
+                      name="documentType"
+                      [(ngModel)]="employee.documentType" 
+                      required
+                    >
+                      @for (type of documentTypes; track type) {
+                        <option [value]="type">{{type}}</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="docNumber" class="form-label">Número de Documento</label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="docNumber" 
+                      name="docNumber"
+                      [(ngModel)]="employee.docNumber" 
+                      required
+                    >
+                  </div>
+                </div>
+    
+                <!-- Tercera fila -->
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="employeeType" class="form-label">Tipo de Empleado</label>
+                    <select 
+                      class="form-select" 
+                      id="employeeType" 
+                      name="employeeType"
+                      [(ngModel)]="employee.employeeType" 
+                      required
+                    >
+                      @for (type of employeeTypes; track type) {
+                        <option [value]="type">{{type}}</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="state" class="form-label">Estado</label>
+                    <select 
+                      class="form-select" 
+                      id="state" 
+                      name="state"
+                      [(ngModel)]="employee.state" 
+                      required
+                    >
+                      @for (status of statusTypes; track status) {
+                        <option [value]="status">{{status}}</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+    
+                <!-- Cuarta fila -->
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="hiringDate" class="form-label">Fecha de Contratación</label>
+                    <input 
+                      type="date" 
+                      class="form-control" 
+                      id="hiringDate" 
+                      name="hiringDate"
+                      [(ngModel)]="employee.hiringDate" 
+                      required
+                    >
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="salary" class="form-label">Salario</label>
+                    <input 
+                      type="number" 
+                      class="form-control" 
+                      id="salary" 
+                      name="salary"
+                      [(ngModel)]="employee.salary" 
+                      required
+                    >
+                  </div>
+                </div>
+              </form>
+            }
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="onClose()">Cancelar</button>
+            <button type="button" class="btn btn-primary" (click)="onSave()">Guardar Cambios</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-backdrop show"></div>
+    }

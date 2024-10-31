@@ -1,0 +1,73 @@
+<ng-template #isApprovedTemplate let-item>
+  @if(item.state === 'APPROVED') {
+  <span class="badge border border-success text-success p-2">Aprobado</span>
+  } @else if(item.state === 'REJECTED') {
+  <span class="badge border border-danger text-danger p-2">Rechazado</span>
+  } @else if (item.state === 'PENDING_APPROVAL') {
+  <span class="badge text-secondary border border-secondary p-2">Pendiente</span>
+  }
+</ng-template>
+
+<ng-template #documentTypeNameTemplate let-item>
+  {{ item.documentation_type.name }}
+</ng-template>
+
+<ng-template #revisionTemplate let-item>
+  <button
+    class="btn btn-success btn-sm me-2"
+    placement="top"
+    ngbTooltip="Aprobar"
+    (click)="approveDocument(item)"
+    [disabled]="
+      item.state === 'APPROVED' || currentConstructionStatus !== 'ON_REVISION' || role !== 'ADMIN'
+    "
+  >
+    <i class="bi bi-check-lg"></i>
+  </button>
+  <button
+    class="btn btn-danger btn-sm me-2"
+    placement="top"
+    ngbTooltip="Rechazar"
+    (click)="rejectDocument(item)"
+    [disabled]="
+      item.state === 'REJECTED' || currentConstructionStatus !== 'ON_REVISION' || role !== 'ADMIN'
+    "
+  >
+    <i class="bi bi-x"></i>
+  </button>
+</ng-template>
+
+<ng-template #actionsTemplate let-item>
+  <button
+    class="btn btn-primary btn-sm me-2"
+    placement="top"
+    ngbTooltip="Descargar"
+    (click)="download(item.id)"
+  >
+    <i class="bi bi-download"></i>
+  </button>
+  <button
+    class="btn btn-danger btn-sm me-2"
+    placement="top"
+    ngbTooltip="Eliminar"
+    (click)="deleteDocument(item)"
+    [disabled]="role !== 'OWNER' || currentConstructionStatus !== 'LOADING' && currentConstructionStatus !== 'REJECTED'" 
+  >
+    <i class="bi bi-trash"></i>
+  </button>
+</ng-template>
+
+<div class="px-5 py-4 border border-top-0">
+  <app-table
+    [height]="'200px'"
+    [items]="construction?.construction_documentation || []"
+    [columns]="columns"
+    [showExportOptions]="false"
+    [headerButtonIcon]="'bi bi-upload'"
+    [headerButtonText]="'Subir documento'"
+    [showHeaderButton]="role === 'OWNER' && currentConstructionStatus === 'LOADING'"
+    (headerButtonClick)="openFormModal()"
+    [showSearchBar]="false"
+  >
+  </app-table>
+</div>

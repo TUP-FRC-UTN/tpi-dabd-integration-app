@@ -1,0 +1,234 @@
+<div class="container mt-4">
+  <h1 class="mb-4">Liquidación de Expensa</h1>
+
+  <div class="general-details">
+    <div class="row">
+      <div class="col-3">
+        <label><b>Tipo de expensa</b></label>
+        <p>{{ liquidationExpense.bill_type?.name }}</p>
+      </div>
+      <div class="col-3">
+        <label><b>Monto Total</b></label>
+        <p>
+          {{
+            liquidationExpense.total_amount?.toLocaleString("es-AR", {
+              style: "currency",
+              currency: "ARS",
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })
+          }}
+        </p>
+      </div>
+      <div class="col-3">
+        <label><b>Periodo</b></label>
+        <p>
+          {{ liquidationExpense.period?.month }} /
+          {{ liquidationExpense.period?.year }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="container-fluid text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-between"
+    style="padding: 0;"
+  >
+    <div class="row align-items-center mb-3">
+      <div class="col-sm-12 col-md-12 col-xl-12">
+        <div class="input-group" style="max-width: 360px">
+          <span class="input-group-text" id="search-icon">
+            <i class="bi bi-search"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control"
+            id="filter-text-box"
+            [(ngModel)]="searchTerm"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="col-sm-12 col-md-4 col-xl-64 text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-end"
+    >
+      <div class="col align-items-center mb-3 d-flex justify-content-end">
+        <button class="btn btn-success me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0">
+          <i class="bi bi-file-earmark-excel" (click)="downloadTable()"></i>
+        </button>
+        <button class="btn btn-danger me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0">
+          <i class="bi bi-file-earmark-pdf" (click)="imprimir()"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="container-fluid text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-start"
+    style="padding: 0;"
+  >
+    <!-- Tercera fila: Filtros de estado -->
+    <div class="row mb-3">
+      <div class="col-12 text-end d-flex">
+        <div class="dropdown">
+          <div class="btn-group">
+            <button class="btn btn-outline-danger" (click)="clean()">
+              <i class="bi bi-trash-fill"></i> Limpiar
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-outline-info dropdown-toggle"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="bi bi-funnel-fill"></i> Filtros
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li>
+                <a class="dropdown-item" (click)="selectFilter('categoria')"
+                  >Categoria</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+        @if (typeFilter==="categoria") {
+        <div>
+          <select
+            class="form-select"
+            aria-label="Seleccione una categoría"
+            style="margin-left: 5px"
+          >
+            <option disabled selected [value]="">
+              Seleccione una categoría
+            </option>
+            @for (category of categories; track $index) {
+            <option
+              [value]="category.category_id"
+              (click)="handleCategoryChange(category.category_id)"
+            >
+              {{ category.name }}
+            </option>
+            }
+          </select>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <table
+    class="table table-striped fixed-table"
+    style="border: 1px solid rgba(0, 0, 0, 0.15); border-collapse: collapse"
+  >
+    <thead class="thead-light">
+      <tr>
+        <th scope="col" class="text-start"><b>Categoría</b></th>
+        <th scope="col" class="text-start"><b>Fecha</b></th>
+        <th scope="col" class="text-start"><b>Proveedor</b></th>
+        <th scope="col" class="text-end"><b>Monto</b></th>
+        <th scope="col" class="text-start"><b>Descripción</b></th>
+        <th scope="col" class="text-start"><b>Pagado</b></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for(bill of bills | filterBy : ['category.name', 'description',
+      'supplier.name' ,'amount', 'date']: searchTerm; track $index) {
+      <tr>
+        <td class="text-start">{{ bill.category.name }}</td>
+        <td class="text-start">{{ bill.date | date : "dd/MM/yyyy" }}</td>
+        <td class="text-start">{{ bill.supplier.name }}</td>
+        <td class="text-end">
+          {{
+            bill.amount.toLocaleString("es-AR", {
+              style: "currency",
+              currency: "ARS",
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })
+          }}
+        </td>
+        <td class="text-start">{{ bill.description }}</td>
+        <td
+          class="text-start"
+          style="display: flex; flex-direction: row; gap: 4px"
+        >
+          <button type="button" class="btn btn-primary" (click)="openModal()">
+            <i class="bi bi-eye"></i>
+          </button>
+          <button
+            type="button"
+            class="btn btn-warning"
+            (click)="edit(bill.expenditureId)"
+          >
+            <i class="bi bi-pencil"></i>
+          </button>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+
+  <!-- Última fila: Paginador e Información -->
+
+  <div class="row d-flex align-items-between">
+    <div class="col-1">
+      <select
+        name="tipoExpensa"
+        id="tipoExpensa"
+        class="form-select"
+        aria-label="Default select example"
+        [(ngModel)]="itemsPerPage"
+        (change)="onItemsPerPageChange()"
+      >
+        <option [value]="10">10</option>
+        <option [value]="25">25</option>
+        <option [value]="50">50</option>
+      </select>
+    </div>
+    <div
+      class="col-11"
+      style="display: flex; flex-direction: row; justify-content: end"
+    >
+      <ngb-pagination
+        [(page)]="currentPage"
+        [pageSize]="itemsPerPage"
+        [collectionSize]="cantPages"
+        (pageChange)="changePage($event)"
+        [maxSize]="5"
+        [boundaryLinks]="false"
+      ></ngb-pagination>
+      <div style="margin-left: 10px;">
+        <button
+        class="btn btn-outline-secondary"
+        (click)="showModal(modalTemplate)"
+      >
+        <i class="bi bi-info-circle"></i>
+      </button>
+      </div>
+
+    </div>
+  </div>
+
+  <div
+    style="
+      display: flex;
+      flex-direction: row;
+      justify-content: start;
+      margin-top: 10px;
+    "
+  >
+    <button class="btn btn-secondary" (click)="goBack()">Volver</button>
+  </div>
+</div>
+
+
+<ng-template #modalTemplate let-modal>
+  <app-info-modal
+    [title]="'Acerca de Gastos de expensa'"
+    [body]="'En esta pantalla se desplliegan los gastos de la expensa previamente seleccionada. Los gastos puede ser filtrada tanto por categoría o por sus proveedores y presentan botones para ver la factura del pago o para editarla'"
+    (onAccept)="modal.dismiss('cancel')"
+  ></app-info-modal>
+</ng-template>

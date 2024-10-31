@@ -1,0 +1,10 @@
+.table-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  
+  max-height: 580px;
+  min-height: 580px;
+  overflow-y: auto;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.36); 
+}

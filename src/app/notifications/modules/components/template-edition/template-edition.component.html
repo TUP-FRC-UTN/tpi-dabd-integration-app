@@ -1,0 +1,68 @@
+<div class="container mt-5 custom-form">
+    <h1 class="text-orange">Editar Template</h1><br>
+  
+    <form #form="ngForm" (ngSubmit)="sendForm(form)" class="row g-3 container">
+      <div class="form-group row mb-2">
+        <label for="templateNameCustomValidation" class="col-md-2 col-form-label text-orange">Nombre</label>
+        <div class="col-md-10">
+          <input #templateNameModel="ngModel"
+            [ngClass]="{'is-invalid': templateNameModel.invalid ,'is-valid': templateNameModel.valid }" type="text"
+            class="form-control custom-input" id="templateNameModel" name="templateNameModel" [(ngModel)]="templateName"
+            required minlength="5">
+          @if(templateNameModel.invalid){
+          @if(templateNameModel.getError('minlength')) {
+          <div class="text-danger">El nombre es obligatorio</div>
+          }@else{
+          <div class="text-danger">Debe contener como minimo 1 caracter.</div>
+          }}
+        </div>
+      </div>
+  
+      <!-- Campo para el Cuerpo del Correo -->
+      <div class="form-group row mb-3">
+        <label for="templateBodyModelCustomValidation" class="col-md-2 col-form-label text-orange">Template</label>
+        <div class="col-md-10">
+          <textarea #templateBodyModel="ngModel"
+            [ngClass]="{'is-invalid': templateBodyModel.invalid ,'is-valid': templateBodyModel.valid }"
+            class="form-control custom-textarea" id="templateBodyModel" name="templateBodyModel"
+            [(ngModel)]="templateBody" required minlength="100" rows="10"></textarea>
+          @if(templateBodyModel.invalid){
+          @if(templateBodyModel.getError('minlength')) {
+          <div class="text-danger">El HTML es obligatorio</div>
+          }@else{
+          <div class="text-danger">Debe contener como minimo 100 caracteres.</div>
+          }}
+        </div>
+      </div>
+  
+      <!-- Botones de Acción alineados a la derecha -->
+      <div class="d-flex justify-content-end mb-3">
+        <button type="button" class="btn btn-danger me-2">Cancelar</button>
+        <!-- <button type="submit" class="btn btn-primary"
+          (click)="sendEmailTemplate(this.templateName,this.templateBody)">Guardar</button> -->
+        <button type="submit" class="btn btn-primary">Editar</button>
+      </div>
+    </form>
+  </div>
+  
+  
+  <!-- Modal -->
+  <div [class.show]="isModalOpen" [style.display]="isModalOpen ? 'block' : 'none'" class="modal fade" id="myModal"
+    tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalLabel">{{ modalTitle }}</h5>
+          <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>{{ modalMessage }}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" (click)="closeModal()">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Backdrop para la modal -->
+  <div *ngIf="isModalOpen" class="modal-backdrop fade show"></div>

@@ -1,0 +1,72 @@
+  <div class="notifications-wrapper">
+    <button class="btn btn-link position-relative" (click)="toggleNotifications()">
+      <i class="bi bi-bell-fill fs-5"></i>
+      @if(unreadCount>0){
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        {{ unreadCount }}
+      </span>
+    }
+    </button>
+    @if(showNotifications){
+    <div class="notifications-dropdown">
+      <div class="notifications-header">
+        <h6 class="mb-0">Notificaciones</h6>
+      </div>
+      <div class="notifications-list">
+        @for (notification of notifications; track notification) {
+        <div class="notification-item">
+          <div class="notification-content">
+            <div class="d-flex justify-content-between align-items-start">
+              <h6 class="notification-title mb-1">{{ notification.subject }}</h6>
+              <i class="bi" [class.bi-circle-fill]="!notification.isRead"
+                [class.bi-check-circle-double-fill]="notification.isRead"
+                [style.color]="notification.isRead ? '#28a745' : '#007bff'">
+              </i>
+            </div>
+            <p class="notification-time">{{ notification.dateNotification }}</p>
+            <div class="d-flex justify-content-end">
+              <button class="btn btn-link btn-sm text-primary" (click)="showNotificationDetails(notification)">
+                Leer más
+              </button>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+
+
+  <!-- Modal -->
+  <div class="modal" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{selectedNotification?.subject }}</h5>
+          <button type="button" class="btn-close"  data-bs-dismiss="modal" (click)="closeModal()"></button>
+        </div>
+        <p class="notification-time-modal">{{ selectedNotification?.dateSend | date:'short' }}</p>
+        <div class="modal-body" [innerHTML]="selectedNotification?.body">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeModal()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+    <!-- Esto hace que si tocas cualquier parte de la pantalla cuando esta el modal se cierre, pero hace que se vea borroso -->
+    <!-- @if(showModal){
+    <div class="modal-backdrop" (click)="closeModal()"></div>} -->
+  </div>
+
+
+<!-- Modal Notificación -->
+<div class="modal" *ngIf="showModalToRenderHTML" (click)="closeModalToRenderHTML()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+      <span class="close" (click)="closeModalToRenderHTML()">&times;</span>
+      <iframe #iframePreview style="width: 100%; border: none;"></iframe>
+      <div class="mt-3 text-end">
+        <button type="button" class="btn btn-secondary" (click)="closeModalToRenderHTML()">Volver</button>
+      </div>
+  </div>
+</div>

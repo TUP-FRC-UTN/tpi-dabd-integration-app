@@ -1,0 +1,122 @@
+@if (isModalOpen) {
+<div class="register-overlay">
+  <div class="register-container">
+    <div class="card mx-auto" style="width: 50rem">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Registrar Movimiento</h5>
+          <button
+            type="button"
+            class="btn-close text-white"
+            (click)="onClose()"
+          ></button>
+        </div>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="transactionForm" (ngSubmit)="addTransaction()">
+          <!-- Primera fila - Dos columnas -->
+          <div class="row">
+            <!-- Tipo de Transacción -->
+            <div class="col-md-6 d-flex align-items-center mb-3">
+              <label
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  margin-right: 8px;
+                "
+                for="transactionType"
+              >
+                Tipo <span style="color: red; margin-left: 2px">*</span>
+              </label>
+              <select
+                id="transactionType"
+                formControlName="transactionType"
+                class="form-select"
+              >
+                <option value="ENTRY">Ingreso</option>
+                <option value="OUTPUT">Egreso</option>
+              </select>
+            </div>
+            <!-- Cantidad -->
+            <div class="col-md-6 d-flex align-items-center mb-3">
+              <label
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  margin-right: 8px;
+                "
+                for="quantity"
+              >
+                Cantidad <span style="color: red; margin-left: 2px">*</span>
+              </label>
+              <input
+                id="quantity"
+                formControlName="quantity"
+                type="text"
+                class="form-control"
+              />
+            </div>
+          </div>
+
+          <!-- Segunda fila - Dos columnas -->
+          <div class="row">
+            <!-- Precio -->
+            <div class="col-md-6 d-flex align-items-center mb-3">
+              <label
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  margin-right: 8px;
+                "
+                for="price"
+                >Precio:</label
+              >
+              <input
+                id="price"
+                formControlName="price"
+                type="text"
+                class="form-control"
+              />
+            </div>
+            <!-- Fecha -->
+            <div class="col-md-6 d-flex align-items-center mb-3">
+              <label
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  margin-right: 8px;
+                "
+                for="transactionDate"
+              >
+                Fecha <span style="color: red; margin-left: 2px">*</span>
+              </label>
+              <input
+                id="transactionDate"
+                formControlName="transactionDate"
+                type="date"
+                class="form-control"
+              />
+            </div>
+          </div>
+          <!-- Botones -->
+          <div class="row text-end">
+            <div class="col-md-12">
+              <button type="submit" class="btn btn-primary">
+                {{ isEditing ? "Guardar Cambios" : "Registrar" }}
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary mt-3 ms-2"
+                (click)="resetForm()"
+                *ngIf="isEditing"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+}

@@ -1,0 +1,99 @@
+<app-main-container title="Propietarios en proceso de Validación">
+    <div class="card-body">
+      
+      <!-- Filtros y acciones -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="btn-group me-5" role="group">
+          <div class="d-flex align-items-center">
+            <div class="btn-group me-2">
+              <button type="button" class="btn btn-outline-danger" (click)="clearFilters()">
+                <i class="bi bi-x-octagon-fill"></i> Limpiar
+              </button>
+              
+              <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-funnel-fill"></i> Filtros
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" (click)="applyFilter('kycStatus')">Estado de KYC</a></li>
+              </ul>
+            </div>
+        
+            @if (applyFilterWithInput === true) {
+              <div class="d-flex">
+                <input type="text" class="form-control me-2" [(ngModel)]="filterInput" placeholder="Filtro">
+                <button class="btn btn-dark" type="button" (click)="confirmFilter()">Buscar</button>
+              </div>
+            }
+          </div>
+        </div>
+        
+        <!-- Alternar entre tipos de visualización -->
+        <div class="btn-group" role="group">
+          <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" (change)="toggleView('all')" checked>
+          <label class="btn btn-outline-primary" for="btnradio1">Todos</label>
+  
+          <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" (change)="toggleView('approved')">
+          <label class="btn btn-outline-primary" for="btnradio2">Activos</label>
+  
+          <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off" (change)="toggleView('pending')">
+          <label class="btn btn-outline-primary" for="btnradio3">Inactivos</label>
+        </div>
+      </div>
+  
+      <!-- Tabla de archivos para validar -->
+      <div class="table-container">
+        <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;">
+          <thead>
+            <tr>
+              <th scope="col">Nombre y Apellido</th>
+              <th scope="col">Documento</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(owner of (filteredOwnersList.length ? filteredOwnersList : owners); track owner) {
+              <tr>
+                <td>{{ owner.firstName + " " + owner.lastName }}</td>
+                <td>{{ translateTable(owner.documentType, documentTypeDictionary) }}  {{ owner.documentNumber }}</td>
+                <td>{{ translateTable(owner.kycStatus, ownerStatusDictionary) }}</td>
+                <td>
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item btn btn-info" (click)="ownerFilesDetail(owner.id)">Ver Detalle</a></li>
+                      <li><a class="dropdown-item btn btn-success" (click)="approbeOwnerFiles(owner.id)">Aprobar</a></li>
+                      <li><a class="dropdown-item btn btn-danger" (click)="rejectOwnerFiles(owner.id)">Rechazar</a></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Paginación y elementos por página -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <ngb-pagination
+          [(page)]="currentPage"                   
+          [pageSize]="pageSize"                    
+          [collectionSize]="totalItems"            
+          (pageChange)="onPageChange($event)"      
+          [maxSize]="5"                            
+          [boundaryLinks]="false">
+        </ngb-pagination>
+        
+        <div class="form-group mb-3 me-2">
+          <select id="itemsPerPage" class="form-select" [(ngModel)]="pageSize" (change)="onItemsPerPageChange()">
+            @for(option of sizeOptions; track $index) {
+              <option [value]="option">{{ option }} Elementos</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+  </app-main-container>
+  

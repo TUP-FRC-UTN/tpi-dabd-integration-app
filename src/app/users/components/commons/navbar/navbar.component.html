@@ -1,0 +1,41 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="navCadastre">
+  <div class="container-fluid">
+    <a class="navbar-brand text-color" href="#">
+      <img src="assets/villa_del_condor.png" alt="logo" class="navbar-logo" style="height: 40px; width: auto;"/>
+    </a>
+    
+    
+    <button 
+      class="navbar-toggler" 
+      type="button" 
+      data-bs-toggle="collapse" 
+      data-bs-target="#navbarNavAltMarkup" 
+      aria-controls="navbarNavAltMarkup" 
+      aria-expanded="false" 
+      aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+
+        <a class="nav-link" routerLink="/plot/list" routerLinkActive="active" ariaCurrentWhenActive="page">Accesos</a>
+        <a class="nav-link" routerLink="/plot/list" routerLinkActive="active" ariaCurrentWhenActive="page">Catastro</a>
+        <a class="nav-link" routerLink="/plot/list" routerLinkActive="active" ariaCurrentWhenActive="page">Expensas</a>
+        <a class="nav-link" routerLink="/plot/list" routerLinkActive="active" ariaCurrentWhenActive="page">Multas</a>
+        <a class="nav-link" routerLink="/plot/list" routerLinkActive="active" ariaCurrentWhenActive="page">Obras</a>
+        <a class="nav-link" routerLink="/plot/list" routerLinkActive="active" ariaCurrentWhenActive="page">Notificaciones</a>
+        <a class="nav-link" routerLink="/plot/list" routerLinkActive="active" ariaCurrentWhenActive="page">Pagos</a>
+        <a class="nav-link" routerLink="/plot/list" routerLinkActive="active" ariaCurrentWhenActive="page">Proveedores</a>
+        <a class="nav-link" routerLink="/plot/list" routerLinkActive="active" ariaCurrentWhenActive="page">Usuarios</a>
+      </div>
+      <div class="ms-auto d-flex align-items-center">
+        <app-notifications class="text-white me-5"></app-notifications>
+        <button class="btn btn-danger d-flex align-items-center" (click)="logout()">
+          <i class="bi bi-box-arrow-right me-2"></i>
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

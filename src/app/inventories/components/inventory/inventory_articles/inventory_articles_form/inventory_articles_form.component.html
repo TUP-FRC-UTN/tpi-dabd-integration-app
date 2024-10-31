@@ -1,0 +1,226 @@
+<div class="card">
+  <div class="card-body">
+<div class="container">
+  <form [formGroup]="articleForm" (ngSubmit)="addArticle()">
+    <h2 class="h1 mb-4">Registrar Inventario</h2>
+
+    <!-- Primera fila - Dos columnas -->
+    <div class="row">
+      <!-- Tipo de Artículo -->
+      <div class="col-md-6 mb-3">
+        <div style="position: relative;">
+          <div style="display: flex; align-items: center;">
+            <label style="display: inline-flex; align-items: center; margin-right: 8px; margin-bottom: 0;" for="articleType">
+              Tipo <span style="color: red; margin-left: 2px;">*</span>
+            </label>
+            <select id="articleType" formControlName="articleType" class="form-select">
+              <option [value]="ArticleType.REGISTRABLE">Registrable</option>
+              <option [value]="ArticleType.NON_REGISTRABLE">No Registrable</option>
+            </select>
+          </div>
+          <div *ngIf="articleForm.get('articleType')?.hasError('required') && articleForm.get('articleType')?.touched"
+               style="position: absolute; left: 0; margin-top: 4px; margin-left: 120px;">
+            <small class="text-danger">El tipo es obligatorio.</small>
+          </div>
+        </div>
+      </div>
+      <!-- Identificador -->
+      <div class="col-md-6 mb-3">
+        <div style="display: flex; align-items: center;">
+          <label style="display: inline-flex; align-items: center; margin-right: 8px;" for="identifier">Identificador</label>
+          <input id="identifier" formControlName="identifier" class="form-control disabled" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Segunda fila - Dos columnas -->
+    <div class="row">
+      <!-- Nombre -->
+      <div class="col-md-6 mb-4"> <!-- Aumentado el margin-bottom para el mensaje de error -->
+        <div style="position: relative;">
+          <div style="display: flex; align-items: center;">
+            <label style="display: inline-flex; align-items: center; margin-right: 8px; margin-bottom: 0;" for="name">
+              Nombre <span style="color: red; margin-left: 2px;">*</span>
+            </label>
+            <input id="name" formControlName="name" class="form-control" />
+          </div>
+          <div *ngIf="articleForm.get('name')?.hasError('required') && articleForm.get('name')?.touched"
+               style="position: absolute; left: 0; margin-top: 4px; margin-left: 120px;">
+            <small class="text-danger">El nombre es obligatorio.</small>
+          </div>
+        </div>
+      </div>
+      <!-- Descripción -->
+      <div class="col-md-6 mb-3">
+        <div style="display: flex; align-items: center;">
+          <label style="display: inline-flex; align-items: center; margin-right: 8px;" for="description">Descripción</label>
+          <input id="description" formControlName="description" class="form-control" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Tercera fila - Dos columnas -->
+    <div class="row">
+      <!-- Categoría -->
+      <div class="col-md-6 mb-4">
+        <div style="position: relative;">
+          <div style="display: flex; align-items: center;">
+            <label style="display: inline-flex; align-items: center; margin-right: 8px; margin-bottom: 0;" for="articleCategory">
+              Categoría <span style="color: red; margin-left: 2px;">*</span>
+            </label>
+            <select id="articleCategory" formControlName="articleCategory" class="form-select">
+              <option [value]="ArticleCategory.DURABLES">Durables</option>
+              <option [value]="ArticleCategory.CONSUMABLES">Consumibles</option>
+              <option [value]="ArticleCategory.MATERIALS_CONSTRUCTION">Materiales de Construcción</option>
+              <option [value]="ArticleCategory.OTHERS">Otros</option>
+            </select>
+          </div>
+          <div *ngIf="articleForm.get('articleCategory')?.hasError('required') && articleForm.get('articleCategory')?.touched"
+               style="position: absolute; left: 0; margin-top: 4px; margin-left: 120px;">
+            <small class="text-danger">La categoría es obligatoria.</small>
+          </div>
+        </div>
+      </div>
+      <!-- Unidad de Medida -->
+      <div class="col-md-6 mb-4">
+        <div style="position: relative;">
+          <div style="display: flex; align-items: center;">
+            <label style="display: inline-flex; align-items: center; margin-right: 8px; margin-bottom: 0;" for="measurementUnit">
+              Medida <span style="color: red; margin-left: 2px;">*</span>
+            </label>
+            <select id="measurementUnit" formControlName="measurementUnit" class="form-select">
+              <option [value]="MeasurementUnit.LITERS">Litros</option>
+              <option [value]="MeasurementUnit.KILOS">Kilos</option>
+              <option [value]="MeasurementUnit.UNITS">Unidades</option>
+            </select>
+          </div>
+          <div *ngIf="articleForm.get('measurementUnit')?.hasError('required') && articleForm.get('measurementUnit')?.touched"
+               style="position: absolute; left: 0; margin-top: 4px; margin-left: 120px;">
+            <small class="text-danger">La unidad de medida es obligatoria.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cuarta fila - Dos columnas -->
+    <div class="row">
+      <!-- Ubicación -->
+      <div class="col-md-6 mb-4">
+        <div style="position: relative;">
+          <div style="display: flex; align-items: center;">
+            <label style="display: inline-flex; align-items: center; margin-right: 8px; margin-bottom: 0;" for="location">
+              Ubicación <span style="color: red; margin-left: 2px;">*</span>
+            </label>
+            <input id="location" formControlName="location" class="form-control" />
+          </div>
+          <div *ngIf="articleForm.get('location')?.hasError('required') && articleForm.get('location')?.touched"
+               style="position: absolute; left: 0; margin-top: 4px; margin-left: 120px;">
+            <small class="text-danger">La ubicación es obligatoria.</small>
+          </div>
+        </div>
+      </div>
+      <!-- Precio -->
+      <div class="col-md-6 mb-3">
+        <div style="display: flex; align-items: center;">
+          <label style="display: inline-flex; align-items: center; margin-right: 8px;" for="price">Precio</label>
+          <input id="price" formControlName="price" class="form-control" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Quinta fila - Dos columnas -->
+    <div class="row">
+      <!-- Stock -->
+      <div class="col-md-6 mb-4">
+        <div style="position: relative;">
+          <div style="display: flex; align-items: center;">
+            <label style="display: inline-flex; align-items: center; margin-right: 8px; margin-bottom: 0;" for="stock">
+              Stock <span style="color: red; margin-left: 2px;">*</span>
+            </label>
+            <input id="stock" formControlName="stock" class="form-control" />
+          </div>
+          <div *ngIf="articleForm.get('stock')?.hasError('required') && articleForm.get('stock')?.touched"
+               style="position: absolute; left: 0; margin-top: 4px; margin-left: 120px;">
+            <small class="text-danger">El stock es obligatorio.</small>
+          </div>
+        </div>
+      </div>
+      <!-- Stock Mínimo -->
+      <div class="col-md-6 mb-3">
+        <div style="display: flex; align-items: center;">
+          <label style="display: inline-flex; align-items: center; margin-right: 8px;" for="stockMin">Stock Mínimo</label>
+          <input id="stockMin" formControlName="stockMin" class="form-control" />
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-between mt-3">
+      <button type="button" class="btn btn-secondary" (click)="return()">Cancelar</button>
+      <button type="submit" class="btn btn-primary" >Guardar</button>
+    </div>
+  </form>
+  <div class="d-flex justify-content-end">
+    <button class="btn btn-secondary custom-button" (click)="showInfo()">
+        <i class="bi bi-info-circle"></i>
+    </button>
+</div>
+</div>
+
+<ng-template #infoModal let-modal>
+  <div class="modal-header fs-6 py-1">
+      <h4 class="modal-title">Formulario de Artículos</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body fs-6 py-2">
+      <div class="container-fluid">
+        <!-- Introducción -->
+        <div class="alert alert-info mb-2 py-2">
+          <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
+          <p class="mb-0 small">Esta pantalla te permite registrar un nuevo artículo.</p>
+        </div>
+    
+        <!-- Campos Principales -->
+        <div class="card mb-2">
+          <div class="card-header py-1">
+            <h5 class="mb-0">Datos de Artículos</h5>
+          </div>
+          <div class="card-body py-2">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item py-1">
+                <strong>Campos a ingresar:</strong><br> Se solicitarán: Tipo, Nombre, Categoría, Descripción, Precio, Stock, Stock Mínimo, Ubicación y Medida.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>CAMPOS OBLIGATORIOS:</strong><br> Los campos marcados con * son obligatorios.
+              </li>
+            </ul>
+          </div>
+        </div>
+    
+        <!-- Acciones -->
+        <div class="card mb-2">
+          <div class="card-header py-1">
+            <h5 class="mb-0">Acciones Disponibles</h5>
+          </div>
+          <div class="card-body py-2">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item py-1">
+                <strong>Guardar:</strong> En caso de que todos los campos se encuentren correctamente completados se guardará el nuevo artículo.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Cancelar:</strong> Se cancela el registro del artículo y nos devuelve al listado de inventario.
+              </li>
+            </ul>
+          </div>
+        </div>
+    
+        <!-- Nota (OPCIONAL) -->
+        <div class="alert alert-warning py-2 mb-0">
+          <h5 class="alert-heading">Nota:</h5>
+          <p class="mb-0 small">Asegúrate de verificar la información antes de ingresar un artículo.</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer py-2">
+      <button type="button" class="btn btn-primary" (click)="modal.close()">Entendido</button>
+    </div>
+    
+</ng-template>

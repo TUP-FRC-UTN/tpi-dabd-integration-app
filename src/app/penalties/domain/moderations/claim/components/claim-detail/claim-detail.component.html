@@ -1,0 +1,144 @@
+<app-main-container title="Reclamo" subTitle="{{ claim?.id }}">
+  <form #sanctionTypeForm="ngForm" (ngSubmit)="saveEdit()" novalidate>
+    <div class="row justify-content-between">
+      <div class="mb-3 col-2 d-flex align-items-center gap-3">
+        <label for="plotSelectionClaim" class="form-label">Lote: </label>
+        <select
+          #plotControlClaim="ngModel"
+          [ngClass]="{
+            'is-invalid':
+              plotControlClaim.invalid &&
+              (plotControlClaim.dirty || plotControlClaim.touched)
+          }"
+          class="form-select"
+          id="plotSelectionClaim"
+          [(ngModel)]="claim!.plot_id"
+          name="plotIdClaim"
+          [disabled]="!editing"
+          required
+        >
+          @if (plots) { @for (plot of plots; track plot.plot_number) {
+          <option value="{{ plot.plot_number }}">
+            {{ plot.plot_number }} - {{ plot.plot_type }}
+          </option>
+          } } @else {
+          <option value="1">1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          }
+        </select>
+        @if (plotControlClaim.invalid && (plotControlClaim.dirty ||
+        plotControlClaim.touched)) { @if (plotControlClaim.getError('required'))
+        {
+        <div class="invalid-feedback">Este campo es obligatorio</div>
+        } }
+      </div>
+
+      <div class="mb-3 col-2 d-flex align-items-center gap-3">
+        <label for="complainant" class="form-label">Denunciante: </label>
+        <input
+          id="complainant"
+          name="complainant"
+          class="form-control"
+          value="{{ claim?.created_by! }}"
+          disabled
+        />
+      </div>
+
+      <div class="mb-3 d-flex col-2 align-items-center gap-3">
+        <label for="date" class="form-label">Fecha:</label>
+        <input
+          id="date"
+          name="date"
+          class="form-control"
+          value="{{ claim?.created_date! | date : 'dd/MM/yyyy HH:mm' }}"
+          disabled
+        />
+      </div>
+
+      <div class="col-3 mb-3 d-flex align-items-center gap-3">
+        <label for="typeahead-template" class="mb-2">Tipo:</label>
+        <app-sanction-type-select
+          [selectedSanctionType]="claim?.sanction_type"
+          [disabled]="!editing"
+          (selectedSanctionTypeChange)="onSanctionTypeChange($event)"
+        ></app-sanction-type-select>
+      </div>
+
+      <div class="mb-3 col-3 d-flex align-items-center gap-3">
+        <label for="status" class="form-label">Estado</label>
+        <input
+          id="status"
+          name="status"
+          class="form-control"
+          [ngClass]="{
+            'border-success': claim?.claim_status === ClaimStatusEnum.APPROVED,
+            'bg-success-subtle': claim?.claim_status === ClaimStatusEnum.APPROVED,
+            'text-success':claim?.claim_status === ClaimStatusEnum.APPROVED,
+            'border-danger': claim?.claim_status === ClaimStatusEnum.REJECTED,
+            'bg-danger-subtle': claim?.claim_status === ClaimStatusEnum.REJECTED,
+            'text-danger': claim?.claim_status === ClaimStatusEnum.REJECTED,
+            'border-info':
+            claim?.claim_status === ClaimStatusEnum.SENT,
+            'bg-info-subtle':
+            claim?.claim_status === ClaimStatusEnum.SENT,
+            'text-dark':
+            claim?.claim_status === ClaimStatusEnum.SENT,
+          }"
+          value="{{
+            claim?.claim_status! | getValueByKeyForEnum : ClaimStatusEnum
+          }}"
+          disabled
+        />
+      </div>
+
+      <div class="row">
+        <div class="mb-3 col-12">
+          <label for="description" class="form-label">Descripción</label>
+          <textarea
+            id="description"
+            name="description"
+            class="form-control"
+            rows="4"
+            [readonly]="!editing"
+            [(ngModel)]="claim!.description!"
+            #description="ngModel"
+            required
+          ></textarea>
+          @if(description.invalid && description.touched) {
+          <div class="text-danger">
+            @if (description.errors?.['required']) { La descripción es
+            requerida. }
+          </div>
+          }
+        </div>
+
+        @if (editing) {
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button class="btn btn-danger" (click)="cancelEdit()" type="button">
+            Cancelar
+          </button>
+          <button
+            class="btn btn-primary"
+            type="submit"
+            [disabled]="!sanctionTypeForm.valid"
+          >
+            Guardar
+          </button>
+        </div>
+        }@else {
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button class="btn btn-secondary" (click)="goBack()" type="button">
+            Volver
+          </button>
+        </div>
+        }
+      </div>
+    </div>
+  </form>
+  @if(!editing){
+
+  <app-claim-documents [claim]="claim"></app-claim-documents>
+  }
+</app-main-container>

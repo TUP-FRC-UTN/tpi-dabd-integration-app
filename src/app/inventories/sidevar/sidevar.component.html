@@ -1,0 +1,41 @@
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="container-fluid">
+            <div class="row flex-nowrap">
+                <!-- Sidebar -->
+                <div class="bg-dark col-auto col-md-4 col-lg-3 min-vh-100">
+                    <div class="bg-dark p-2">
+                        <a class="d-flex text-decoration-none mt-1 justify-content-center align-items-center text-white text-center">
+                            <span class="fs-4 d-none d-md-inline text-center"></span>
+                        </a>
+                        <ul class="nav nav-pills flex-column mt-4">
+                            <!-- Empleados con submenú -->
+                            <li class="nav-item" ngbDropdown>
+                                <a class="nav-link" id="navbarDropdown" role="button" ngbDropdownToggle>Empleados</a>
+                                <div ngbDropdownMenu aria-labelledby="navbarDropdown">
+                                <a ngbDropdownItem routerLink="/employees/list">Listado</a>
+                                <a ngbDropdownItem routerLink="/employees/form">Registrar Empleado</a>
+                                </div>
+                            </li>
+                    
+                            <li class="nav-item" ngbDropdown>
+                                <a class="nav-link" id="navbarDropdown" role="button" ngbDropdownToggle>Proveedores</a>
+                                <div ngbDropdownMenu aria-labelledby="navbarDropdown">
+                                <a ngbDropdownItem routerLink="/providers/list">Listado</a>
+                                <a ngbDropdownItem routerLink="/providers/form">Registrar Proveedor</a>
+                                </div>
+                            </li>
+                            <li class="nav-item" ngbDropdown>
+                                <a class="nav-link" id="navbarDropdown" role="button" ngbDropdownToggle>Inventario</a>
+                                <div ngbDropdownMenu aria-labelledby="navbarDropdown">
+                                <a ngbDropdownItem routerLink="/inventories">Listado</a>
+                                <a ngbDropdownItem routerLink="/articles/article">Registrar Artículo</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+         </div>
+    </div>
+</div>

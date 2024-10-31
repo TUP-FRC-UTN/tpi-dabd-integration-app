@@ -1,0 +1,116 @@
+<div class="card mt-5">
+    <div class="card-body">
+        <h1> Notificaciones a varios Contactos </h1> <br>
+        <form #form="ngForm" (submit)="submit()">
+            <!---->
+            <div class="row">
+                <div class="col-6">
+                    <label class="form-label">Elegir Contactos:</label>
+                    <div class="d-flex align-items-center">
+                        <select #contactos="ngModel" class="form-select me-2" style="max-width: 350px;" name="Contactos" id="contactos" [(ngModel)]="selectedContactId"
+                        required
+                        [ngClass]="{'is-invalid': contactos.invalid && (contactos.dirty || contactos.touched), 'is-valid': contactos.valid && (contactos.dirty || contactos.touched)}">
+                            @for (c of allContacts; track $index) {
+                                <option [value]="c.id"> {{c.contactValue}} </option>
+                            }
+                            @if (contactos.invalid && (contactos.dirty || contactos.touched)) {
+                                @if (contactos.getError('required')) {
+                                    <div class="text-danger"> Campo Obligatorio </div>
+                                }
+                            }
+                        </select>
+                        <button type="button" class="btn btn-secondary"(click)="addContact()"> + </button>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <h6>Contactos Seleccionados:</h6>
+                    @for (selectedContactId of contacts_id; track $index) {
+                        <p> {{showContactById(selectedContactId)}} </p>
+                    }
+                    @if (contacts_id.length == 0) {
+                        <div class="text-danger"> Debe seleccionar al menos un contacto </div>
+                    }
+                </div>
+            </div>
+            <!---->
+            <label class="form-label mt-3">Asunto:</label>
+            <input #asunto="ngModel" name="subject" type="text" class="form-control mb-3" style="max-width: 350px;" [(ngModel)]="subjectToSend"
+            required minlength="3"
+                [ngClass]="{'is-invalid' : asunto.invalid && (asunto.dirty || asunto.touched), 'is-valid' : asunto.valid}"/>
+                @if (asunto.invalid && (asunto.dirty || asunto.touched)) {
+                    @if (asunto.getError('minlength')) {
+                        <div class="text-danger"> Debe contener mínimo tres caracteres </div>
+                    }@else {
+                        <div class="text-danger"> Campo Obligatorio </div>
+                    }
+                }
+            <!--
+            <h6 class="mt-3">Variables</h6>
+            <div class="mb-3">
+                <div class="row">
+                    <div class="col-6">
+                        <label class="form-label">Nombre:</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" style="max-width: 200px;"
+                        [(ngModel)]="variableName"/>
+                        <label class="form-label">Valor:</label>
+                        <input type="text" class="form-control" id="valor" name="valor" style="max-width: 200px;"
+                        [(ngModel)]="variableValue"/>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-secondary mb-3" (click)="addVariables()">+</button>
+                        <br>
+                        <h6>Tus Variables:</h6>
+                        @for (item of variables; track $index) {
+                            <p>Nombre: {{item.key}} Valor: {{item.value}}</p>
+                        }
+                    </div>
+                </div>
+            </div>
+            -->
+            <h6>Plantillas</h6>
+                <select #plantillas="ngModel" class="form-select" style="max-width: 200px;" name="plantillas" id="plantillas"
+                [(ngModel)]="template_id"
+                required
+                [ngClass]="{'is-invalid': plantillas.invalid && (plantillas.dirty || plantillas.touched), 'is-valid': plantillas.valid && (plantillas.dirty || plantillas.touched)}">
+
+                @for (item of allTemplates; track $index) {
+                    <option [value]=item.id> {{item.name}} </option>
+                }
+                </select>
+                @if (plantillas.invalid && (plantillas.dirty || plantillas.touched)) {
+                    @if (plantillas.getError('required')) {
+                        <div class="text-danger"> Campo Obligatorio </div>
+                    }
+                }
+            <button type="button" class="btn btn-secondary mt-3" (click)="previewSelectedTemplate()">Previsualizar</button>
+            <!-- Si encuentran otra forma de hacerlo, haganlo-->
+            <div class="row">
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"><button type="submit" class="btn btn-primary" [disabled]="form.invalid">Enviar</button></div>
+            </div>
+        </form>
+    </div>
+    
+</div>
+
+
+<!-- Modal de previsualización -->
+<div class="modal" *ngIf="showModalToRenderHTML" (click)="closeModalToRenderHTML()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <span class="close" (click)="closeModalToRenderHTML()">&times;</span>
+        <iframe #iframePreview style="width: 100%; border: none;"></iframe>
+        <div class="mt-3 text-end">
+          <button type="button" class="btn btn-secondary" (click)="closeModalToRenderHTML()">Aceptar</button>
+        </div>
+    </div>
+  </div>

@@ -1,0 +1,108 @@
+<div class="container">
+  <div class="modal-header">
+    <h5 class="modal-title">Ver Gasto</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="viewBill" class="container mt-4">
+      <!-- Primera fila: Proveedor y Categoría -->
+      <div class="row mb-3">
+        <!-- Proveedor -->
+        <div class="col-md-6">
+          <div class="row align-items-center">
+            <label for="supplier" class="col-md-4 col-form-label">Proveedor</label>
+            <div class="col-md-8">
+              <input id="supplier" formControlName="supplier" class="form-control" />
+            </div>
+          </div>
+        </div>
+
+
+        
+        <!-- Categoría -->
+        <div class="col-md-6">
+          <div class="row align-items-center">
+            <label for="category" class="col-md-4 col-form-label">Categoria</label>
+            <div class="col-md-8">
+              <div class="input-group">
+                <input id="category" formControlName="category" class="form-control" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Segunda fila: Periodo y Tipo -->
+      <div class="row mb-3">
+        <!-- Periodo -->
+        <div class="col-md-6">
+          <div class="row align-items-center">
+            <label for="period" class="col-md-4 col-form-label">Periodo</label>
+            <div class="col-md-8">
+              <input id="period" formControlName="period" class="form-control" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Tipo -->
+        <div class="col-md-6">
+          <div class="row align-items-center">
+            <label for="billType" class="col-md-4 col-form-label">Tipo</label>
+            <div class="col-md-8">
+              <input id="billType" formControlName="billType" class="form-control" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Descripción (fila completa) -->
+      <div class="row mb-3">
+        <div class="col-12">
+          <div class="row align-items-center">
+            <label for="description" class="col-md-2 col-form-label">Descripción</label>
+            <div class="col-md-10">
+              <textarea id="description" formControlName="description" class="form-control" rows="3"></textarea>
+              <div class="invalid-feedback">
+                Por favor, ingrese una descripción.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cuarta fila: Monto y Fecha -->
+      <div class="row mb-3">
+        <!-- Monto -->
+        <div class="col-md-6">
+          <div class="row align-items-center">
+            <label for="amount" class="col-md-4 col-form-label">Monto</label>
+            <div class="col-md-8">
+              <input type="number" id="amount" formControlName="amount" class="form-control">
+              <div class="invalid-feedback">
+                Por favor, ingrese un monto válido.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fecha -->
+        <div class="col-md-6">
+          <div class="row align-items-center">
+            <label for="date" class="col-md-4 col-form-label">Fecha</label>
+            <div class="col-md-8">
+              <input type="date" id="date" formControlName="date" class="form-control">
+              <div class="invalid-feedback">
+                Por favor, seleccione una fecha válida.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón "Volver" -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="dismiss()">Volver</button>
+      </div>
+    </form>
+  </div>
+</div>

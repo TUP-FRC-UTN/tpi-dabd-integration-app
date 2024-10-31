@@ -1,0 +1,268 @@
+<div class="container" style="margin-top: 18px;"> 
+  <div class="row" style="align-items:end">
+    <div class="position-relative">
+      <h2>Listado de cargos</h2>
+    </div>
+    <div class="input-group w-25">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar cargos..."
+        [(ngModel)]="searchTerm">
+      <span class="input-group-text">
+        <i class="bi bi-search"></i>
+      </span>
+    </div>
+
+    <!-- Modal con los selectores -->
+    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style=" z-index: 1040;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="filterModalLabel">Filtrar por:</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Selectores dentro del modal -->
+             <div class="form-row ">
+              <div class="col-auto d-flex align-items-start ">
+                <label for="periodo" class="form-label" >Periodo</label>
+                <div class="col-1 " style="margin-right: 15px;" ></div>
+                <select name="periodo" id="periodo" class="form-select" aria-label="Default select example" [(ngModel)]="selectedPeriodId">                
+                  <option [value]="0">Todos</option>
+                  @for (period of periodos; track $index) {
+                    <option [value]="period.id">{{period.month}} / {{period.year}}</option>
+                  }
+                </select>
+              </div>
+             </div>
+            
+            <div class="col-auto d-flex align-items-start  mt-1">
+              <label for="lote" class="form-label" >Lote</label>
+              <div class="col-2"></div>
+              <select name="lote" id="lote" class="form-select" aria-label="Default select example" [(ngModel)]="selectedLotId">
+                <option [value]="0">Todos</option>
+                @for (lot of lots; track $index) {
+                  <option [value]="lot.id">{{lot.plot_number}}</option>
+                }
+              </select>
+            </div>
+            <div class="form-row  mt-1 mb-1">
+              <div class="col-auto d-flex align-items-start " >
+                <label for="categoryCargos" class="form-label" >Categoría</label>
+                <div class="col-1"></div>
+                <select name="categoryCargos" id="categoryCargos" class="form-select " aria-label="Default select example" [(ngModel)]="selectedCategoryId">
+                  <option [value]="0">Todas</option>
+                  @for (category of categorias; track $index) {
+                    <option [value]="category.categoryChargeId">{{category.name}}</option>
+                  }
+                </select>
+              </div>
+            </div>
+            
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              <button type="button" class="btn btn-primary" (click)="applyFilters()" data-bs-dismiss="modal">Aplicar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col d-flex gap-1 justify-content-end">
+      <div class="col-1">
+        <button (click)="addCharge()" class="btn btn-outline-primary">
+          Nuevo
+        </button>
+      </div>
+      <div class="vertical-line mx-3"></div>
+      <div class="col-auto">
+        <button class="btn me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0" (click)="downloadTable()" style="background-color: #239b56  ; color: white;" data-toggle="tooltip" data-placement="bottom" title="Descargar cargos en excel">
+            <i class="bi bi-file-earmark-excel"></i><!-- Icono de excel -->
+        </button>
+      </div>
+      <div class="col-auto">
+        <button class="btn me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0" (click)="imprimir()" style="background-color: red; color: white;" data-toggle="tooltip" data-placement="top" title="Descargar cargos en pdf">
+          <i class="bi bi-file-pdf"></i> <!-- Icono de pdf -->
+        </button>
+      </div>
+    </div>   
+
+  </div>
+  <br>
+
+  <div class="row">
+    <div class="col-auto">
+      <div class="btn-group me-2">
+        <button type="button" class="btn btn-outline-danger" (click)="clearFilters()">
+          <i class="bi bi-trash-fill"></i> Limpiar
+        </button>
+        
+        <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#filterModal">
+          <i class="bi bi-funnel-fill"></i> Filtros
+        </button>
+      </div>
+    </div>
+  </div>
+  <br>
+
+  <div class="card">
+    <table class="table table-striped fixed-table">
+      <thead>
+        <tr>
+          <th scope="col" style="text-align:center;" >Fecha</th>
+          <th scope="col" style="text-align: center;">Número de Lote</th>
+          <th scope="col" style="text-align: center;">Categoría</th>
+          <th scope="col" style="text-align: center;">Descripción</th>
+          <th scope="col" style="text-align: center;">Monto</th>
+          <th scope="col" style="text-align: center;">Acciones</th>
+        </tr>        
+      </thead>
+      <tbody>
+        @for (charge of charges | filterBy: ['lotId', 'amount','description','categoryCharge.name','plotNumber','date']: searchTerm; track $index) {<tr>                    
+          <td style="text-align: center;" >{{charge.date | date:'MMM d, yyyy'}}</td>
+          <td style="text-align: center;">{{getPlotNumber(charge.lotId)}}</td>
+          <td>{{charge.categoryCharge.name}}</td>
+          <td>{{charge.description}}</td>
+          <td style="text-align: right;" >{{charge.amount.toLocaleString("es-AR", {
+            style: "currency",
+            currency: "ARS",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }) }}</td>
+          <td  style="display: flex; flex-direction: row; gap: 2px; justify-content: center;" >
+            @if(charge.categoryCharge.name == "Multa" ||charge.period.state == "CLOSE") {
+              
+              <button class="btn btn-primary btn-sm m-1" (click)="openViewModal(charge)">
+                <i class="bi bi-eye"></i>
+              </button>
+            
+            } @else {
+              <div class="btn-group" role="group">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-secondary dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a
+                      class="dropdown-item btn btn-primary"
+                      (click)="openViewModal(charge)"
+                      >Ver</a
+                    ><!--aca modal ver cargo-->
+                  </li>            
+                  @if (charge.period.state != "CLOSE") {
+                  <li>
+                    <a
+                      class="dropdown-item btn btn-info"
+                      (click)="openUpdateModal(charge)"
+                      >Editar</a
+                    ><!--aca modal editar cargo-->
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item btn btn-danger"
+                      data-bs-target="#exampleModal"
+                      data-bs-toggle="modal"
+                      (click)="open(modalTemplate, charge.chargeId)"
+                      >Eliminar</a
+                    >
+                  </li>
+                  }
+                </ul>
+              </div>
+
+            }
+          </td>
+          
+
+      </tr> 
+      }@empty {
+          <td colspan="7" class="text-center">
+            <div class="text-center p-3">
+              <div class="alert alert-secondary">
+                No hay cargos para mostrar
+              </div>
+            </div>
+          </td>
+      }
+      </tbody>
+    </table>
+  </div>
+
+    <div class="row d-flex align-items-between">
+      <div class="col-md-5">
+        <!-- <label for="rowsPerPageSelect">Mostrar </label> -->
+        <select class="form-select m-lg-1 w-auto d-inline" [(ngModel)]="pageSize" (ngModelChange)="changesPageSize($event)">            
+          <option value=10>10</option>
+          <option value=25>25</option>
+          <option value=50>50</option>
+        </select>
+        <!-- <span> registros por página de {{this.totalItems}}</span> -->
+      </div>
+      <div class="col-md-6">
+        <nav aria-label="Page navigation example" style="cursor: pointer;">
+          <ul class="pagination justify-content-end">
+            <li class="page-item" [class.disabled]="currentPage === 0">
+              <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+      
+            <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+                [class.active]="i === currentPage">
+              <a class="page-link" (click)="onPageChange(i)">{{ i + 1 }}</a>
+            </li>
+      
+            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+              <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-secondary ms-3 mb-3" (click)="showInfo()">
+          <i class="bi bi-info-circle"></i>
+        </button>
+      </div>
+      
+              
+    </div>  
+
+</div>
+
+
+<ng-template #modalTemplate let-modal >
+  <app-expenses-modal
+    [title]="'Eliminar Cargo'"
+    [paragraph]="'¿Desea eliminar el cargo registado al lote?'"
+    (onAccept)="deleteCharge2()"
+    (onCancel)="modal.dismiss('cancel')"
+  ></app-expenses-modal>
+</ng-template>
+
+<!-- Modal --> 
+<!-- <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Eliminar Cargo</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              ¿Estás seguro de que deseas eliminar este Cargo?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger">Confirmar</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+      </div>
+  </div> -->
+
+<!------------------- LISTADO VIEJO, USAR LOS DATOS------------------------------------------------------------------------------------->

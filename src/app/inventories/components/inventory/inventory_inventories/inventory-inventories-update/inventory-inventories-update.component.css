@@ -1,0 +1,84 @@
+/* Estilos generales para el modal */
+.register-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.register-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  max-width: 840px;
+  width: 100%;
+}
+
+/* Estilos para la tarjeta de formulario */
+.card {
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+
+
+.h1 {
+  font-size: 1.5rem;
+  color: #333;
+}
+
+/* Estilos para los campos del formulario */
+.form-control,
+.form-select {
+  border-radius: 4px;
+}
+
+label {
+  font-weight: 500;
+  color: #333;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+form label span {
+  color: red;
+  margin-left: 2px;
+}
+
+/* Estilos para los botones */
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  margin-left: 5px;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+.text-end {
+  text-align: end;
+}

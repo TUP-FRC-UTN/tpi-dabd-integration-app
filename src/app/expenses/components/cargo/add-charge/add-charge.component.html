@@ -1,0 +1,167 @@
+<div class="container" style="padding-top: 16px">
+  <h3 class="card-title mb-4">Registrar cargo a lote</h3>
+
+  <div class="card-body">
+    <form [formGroup]="chargeForm" (ngSubmit)="onSubmit()">
+      <div class="row mb-3">
+        <div class="col-md-6 d-flex align-items-start">
+          
+          <label for="fechaEmision" class="form-label col-md-3">Fecha de emisión<span style="color: red;">*</span></label>   
+          <div class="col-md-9">
+            <input 
+            type="date"
+            class="form-control"
+            id="fechaEmision"
+            formControlName="date"
+            [ngClass]="{ 'is-invalid': chargeForm.controls['date'].touched && chargeForm.controls['date'].hasError('required') }"
+            />
+            @if (chargeForm.controls['date'].touched &&
+            chargeForm.controls['date'].hasError('required')) {
+            <div class="text-danger">La fecha es obligatorio.</div>
+            }
+          </div>       
+          
+        </div>
+        <div class="col-md-6 d-flex align-items-start">
+          <label for="lote" class="form-label col-md-3"  >Lote<span style="color: red;">*</span></label>
+          <div class="col-md-9">
+            <select 
+              class="form-select"
+              id="lote"
+              formControlName="lotId"
+              [ngClass]="{ 'is-invalid': chargeForm.controls['lotId'].touched && chargeForm.controls['lotId'].hasError('required') }"
+            >
+              <option value="">Seleccione un lote</option>
+              @for (lot of lots; track $index) {
+                <option [value]="lot.id">{{lot.plot_number}}</option>
+              }
+            </select>            
+            @if (chargeForm.controls['lotId'].touched &&
+            chargeForm.controls['lotId'].hasError('required')) {
+            <div class="text-danger">El lote es obligatorio.</div>
+            }
+          </div>
+          
+        </div>
+      </div>
+
+      <div class="row mb-3 ">
+        <div class="col-md-6 d-flex align-items-center">
+          <label for="tipo" class="form-label col-md-3 "  >Categoría<span style="color: red;">*</span></label>
+          <div class="col-md-9">
+            <div class="input-group">
+              <select
+                id="tipo"
+                class="form-select"
+                formControlName="categoryChargeId"
+                [ngClass]="{ 'is-invalid': chargeForm.controls['categoryChargeId'].touched && chargeForm.controls['categoryChargeId'].hasError('required') }"
+                >
+                <option value="">Seleccione una categoría </option>
+                @for (item of categoriaCargos; track $index) {
+                  <option value={{item.categoryChargeId}}>{{item.name}} </option>
+              }
+              </select>
+            </div>            
+            @if (chargeForm.controls['categoryChargeId'].touched &&
+            chargeForm.controls['categoryChargeId'].hasError('required')) {
+            <div class="text-danger">La categoría es obligatoria.</div>
+            }
+          </div>         
+          
+        </div>
+        <div class="col-md-6 d-flex align-items-center">
+          <label for="periodo" class="form-label col-md-3"   >Periodo<span style="color: red;">*</span></label>
+          <div class="col-md-9">
+            <select
+            class="form-select"
+            aria-label="Default select example"
+            formControlName="periodId"
+            [ngClass]="{ 'is-invalid': chargeForm.controls['periodId'].touched && chargeForm.controls['periodId'].hasError('required') }"      
+            >
+            <option value="">Seleccione un periodo </option>
+              @for (item of listPeriodo; track $index) {
+              <option value="{{ item.id }}">
+                {{ item.month }} / {{ item.year }}
+              </option>
+              }
+            </select>
+            @if (chargeForm.controls['periodId'].touched &&
+            chargeForm.controls['periodId'].hasError('required')) {
+            <div class="text-danger">El periodo es obligatorio.</div>
+            }
+          </div>
+        </div>
+          
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6 d-flex align-items-center">
+          <label for="monto" class="form-label col-md-3"  >Monto<span style="color: red;">*</span></label>
+          <div class="col-md-9">
+            <input
+            type="number"
+            class="form-control"
+            id="monto"
+            formControlName="amount"
+            [ngClass]="{ 'is-invalid': chargeForm.controls['amount'].touched && chargeForm.controls['amount'].hasError('required') }"      
+            />
+            @if (chargeForm.controls['amount'].touched &&
+            chargeForm.controls['amount'].hasError('required')) {
+            <div class="text-danger">El monto es obligatorio.</div>
+            }
+          </div>
+        </div>
+          
+      </div>
+
+      <div class="col-md-6 d-flex align-items-start">
+        <label for="descripcion" class="form-label col-md-3"  >Descripción</label>
+        <textarea
+          id="descripcion"
+          class="form-control"
+          rows="3"
+          formControlName="description"
+        ></textarea>
+      </div>
+
+      <div class="form row mt-2">
+        <button
+          type="button"
+          class="btn btn-secondary col-1 mr-2 "   
+          (click)="onBack()"      
+        >
+          Volver
+        </button>
+        <div class="col justify-content-end" style="display: flex; flex-wrap: nowrap; justify-content: flex-end;">
+        
+          <button
+            type="button"
+            class="btn btn-danger mr-2 "
+            
+            (click)="onCancel()"
+          >
+            Cancelar
+          </button>
+          <div class="m-2"></div>
+          <button
+          
+            type="submit"
+            class="btn btn-primary "
+            
+            [disabled]="chargeForm.invalid"
+          >
+            Guardar
+          </button>
+          <button type="button" class="btn btn-secondary ms-3" (click)="showInfo()"><i class="bi bi-info-circle"></i></button>
+        </div>
+      </div>
+      
+    </form>
+  </div>
+  
+</div>
+<!-- Vertically centered modal -->
+<div id="myModal" class="modal-dialog modal-dialog-centered" style="display: none;">
+  ...
+</div>
+

@@ -1,0 +1,132 @@
+<ng-template #statusTemplate let-item>
+  <span class="badge text-secondary border border-secondary p-2">{{
+    item.construction_status | getValueByKeyForEnum : CONSTRUCTION_STATUSES_ENUM
+  }}</span>
+</ng-template>
+
+<ng-template #actionsTemplate let-item>
+  <div class="col">
+    <div ngbDropdown class="d-inline-block">
+      <button
+        type="button"
+        class="btn btn-sm btn-secondary"
+        id="dropdownBasic1"
+        ngbDropdownToggle
+      >
+        <i class="bi bi-three-dots-vertical"></i>
+      </button>
+      <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+        <button
+          ngbDropdownItem
+          (click)="goToDetails(item.construction_id, 'detail')"
+        >
+          Ver detalle
+        </button>
+        @if(role !== "ADMIN") {
+        <button
+          ngbDropdownItem
+          (click)="goToDetails(item.construction_id, 'edit')"
+        >
+          Editar
+        </button>
+        }
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<app-main-container title="Obras">
+  <app-table
+    [items]="(items$ | async) || []"
+    [columns]="columns"
+    [pagination]="{
+      totalItems: (totalItems$ | async) || 0,
+      page: page,
+      size: size,
+      onPageChange: onPageChange,
+      onPageSizeChange: onPageSizeChange
+    }"
+    [isLoading]="(isLoading$ | async) || false"
+    (searchValueChange)="onSearchValueChange($event)"
+    (headerButtonClick)="openFormModal()"
+    [showHeaderButton]="role === 'OWNER'"
+    (infoButtonClick)="infoModal()"
+  >
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="btn-group me-5" role="group">
+        <div class="d-flex align-items-center">
+          <div class="btn-group me-2">
+            <button
+              type="button"
+              class="btn btn-outline-danger"
+              (click)="clearFilters()"
+            >
+              <i class="bi bi-trash-fill"></i> Limpiar
+            </button>
+            <div
+              class="btn-group"
+              ngbDropdown
+              role="group"
+              aria-label="Button group with nested dropdown"
+            >
+              <button
+                type="button"
+                class="btn btn-outline-info dropdown-toggle"
+                ngbDropdownToggle
+              >
+                <i class="bi bi-funnel-fill"></i> Filtros
+              </button>
+              <div class="dropdown-menu" ngbDropdownMenu>
+                <button ngbDropdownItem (click)="setFilterType('fecha')">
+                  Por fecha
+                </button>
+                <button ngbDropdownItem (click)="setFilterType('estado')">
+                  Por estado
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Fecha -->
+          @if(filterType === 'fecha'){
+          <div class="d-flex">
+            <input
+              type="date"
+              class="form-control me-2"
+              [(ngModel)]="startDate"
+              placeholder="Fecha de inicio"
+            />
+            <input
+              type="date"
+              class="form-control me-2"
+              [(ngModel)]="endDate"
+              placeholder="Fecha de fin"
+            />
+            <button class="btn btn-dark" type="button" (click)="applyFilters()">
+              Buscar
+            </button>
+          </div>
+          }
+          <!-- Estado -->
+          @if(filterType === 'estado'){
+          <div class="d-flex">
+            <select class="form-select me-2" [(ngModel)]="status">
+              <option value="">Selecciona estado</option>
+              <option value="LOADING">En carga</option>
+              <option value="ON_REVISION">En revisión</option>
+              <option value="APPROVED">Aprobado</option>
+              <option value="REJECTED">Rechazado</option>
+              <option value="IN_PROGRESS">En proceso</option>
+              <option value="COMPLETED">Completado</option>
+              <option value="STOPPED">Parado</option>
+              <option value="CANCELLED">Cancelado</option>
+            </select>
+            <button class="btn btn-dark" type="button" (click)="applyFilters()">
+              Buscar
+            </button>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </app-table>
+</app-main-container>

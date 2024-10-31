@@ -1,0 +1,371 @@
+<div class="container mt-5">
+  <div class="mb-4">
+    <!-- Header with title -->
+    <h3 class="text-xl font-semibold mb-4">Lista de Empleados</h3>
+    <div class="card">
+    <div class="card-body">
+   <!-- Search and Actions Bar -->    
+    <div class="row align-items-center">
+      <div class="col-lg-8 d-flex">
+        <button class="btn btn-secondary col-lg-1 " type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 20px; height: 20px;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+      </button>
+          <input 
+              type="text" 
+              placeholder="Buscar empleado"
+              class="form-control w-50 col-lg-4"
+              [formControl]="searchFilter">
+      </div>  
+
+      <!-- Espaciador para la separación -->
+      <div class="col-lg-2"></div> <!-- Espacio más largo en el medio -->
+
+      <div class="col-lg-2 d-flex justify-content-end">
+        <button class="btn btn-primary mx-1" [routerLink]="['/employees/form']">
+          Nuevo
+      </button>
+      <button class="btn btn-success mx-1" (click)="exportToExcel()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-excel" viewBox="0 0 16 16" style="width: 20px; height: 20px;">
+              <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z"/>
+              <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+          </svg>
+      </button>
+      <button class="btn btn-danger d-flex align-items-center justify-content-center mx-1" (click)="exportToPDF()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-file-earmark-pdf me-1" viewBox="0 0 16 16">
+          <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+          <path d="M4.603 14.087a.8.8 0 0 1-.438-.42c-.195-.388-.13-.776.08-1.102.198-.307.526-.568.897-.787a7.7 7.7 0 0 1 1.482-.645 20 20 0 0 0 1.062-2.227 7.3 7.3 0 0 1-.43-1.295c-.086-.4-.119-.796-.046-1.136.075-.354.274-.672.65-.823.192-.077.4-.12.602-.077a.7.7 0 0 1 .477.365c.088.164.12.356.127.538.007.188-.012.396-.047.614-.084.51-.27 1.134-.52 1.794a11 11 0 0 0 .98 1.686 5.8 5.8 0 0 1 1.334.05c.364.066.734.195.96.465.12.144.193.32.2.518.007.192-.047.382-.138.563a1.04 1.04 0 0 1-.354.416.86.86 0 0 1-.51.138c-.331-.014-.654-.196-.933-.417a5.7 5.7 0 0 1-.911-.95 11.7 11.7 0 0 0-1.997.406 11.3 11.3 0 0 1-1.02 1.51c-.292.35-.609.656-.927.787a.8.8 0 0 1-.58.029m1.379-1.901q-.25.115-.459.238c-.328.194-.541.383-.647.547-.094.145-.096.25-.04.361q.016.032.026.044l.035-.012c.137-.056.355-.235.635-.572a8 8 0 0 0 .45-.606m1.64-1.33a13 13 0 0 1 1.01-.193 12 12 0 0 1-.51-.858 21 21 0 0 1-.5 1.05zm2.446.45q.226.245.435.41c.24.19.407.253.498.256a.1.1 0 0 0 .07-.015.3.3 0 0 0 .094-.125.44.44 0 0 0 .059-.2.1.1 0 0 0-.026-.063c-.052-.062-.2-.152-.518-.209a4 4 0 0 0-.612-.053zM8.078 7.8a7 7 0 0 0 .2-.828q.046-.282.038-.465a.6.6 0 0 0-.032-.198.5.5 0 0 0-.145.04c-.087.035-.158.106-.196.283-.04.192-.03.469.046.822q.036.167.09.346z"/>
+        </svg>
+      </button>
+      </div>
+    </div>
+
+    <!-- Segunda fila -->
+    <div class="row align-items-center mt-3">
+      <button class="btn btn-outline-danger col-lg-1 me-2 d-flex align-items-center justify-content-center" (click)="clearFilters()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash me-1" viewBox="0 0 16 16">
+          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+          <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+        </svg>
+        Limpiar
+      </button>
+      <button class="btn btn-outline-info col-lg-1" data-bs-toggle="modal" data-bs-target="#filterModal">
+
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel-fill" viewBox="0 0 16 16">
+          <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
+        </svg>
+        Filtros
+      </button>
+    
+      <!-- Modal -->
+      <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="filterModalLabel">Filtros de Búsqueda</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form [formGroup]="filterForm" class="row g-3">
+                <div class="col-md-3">
+                  <input type="text" 
+                         class="form-control" 
+                         placeholder="Nombre"
+                         formControlName="firstName">
+                </div>
+                <div class="col-md-3">
+                  <input type="text" 
+                         class="form-control" 
+                         placeholder="Apellido"
+                         formControlName="lastName">
+                </div>
+                <div class="col-md-3">
+                  <select class="form-select" formControlName="employeeType">
+                    <option value="">Tipo de Empleado</option>
+                    @for(type of employeeTypes; track type) {
+                      <option [value]="type">{{type}}</option>
+                    }
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <select class="form-select" formControlName="docType">
+                    <option value="">Tipo de Documento</option>
+                    @for(type of documentTypes; track type) {
+                      <option [value]="type">{{type}}</option>
+                    }
+                  </select>
+                </div> 
+                <div class="col-md-3">
+                  <input type="text" 
+                         class="form-control" 
+                         placeholder="Número de Documento"
+                         formControlName="docNumber">
+                </div>
+                <div class="col-md-3">
+                  <input type="date" 
+                         class="form-control" 
+                         formControlName="hiringDate">
+                </div>
+                <div class="col-md-3">
+                  <select class="form-select" formControlName="state">
+                    <option value="">Estado</option>
+                    @for(status of statusTypes; track status) {
+                      <option [value]="status">{{status}}</option>
+                    }
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <input type="number" 
+                         class="form-control" 
+                         placeholder="Salario"
+                         formControlName="salary">
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" (click)="applyFilters()">Aplicar Filtros</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
+        </div>      
+      </div>
+        
+      <div class="col-lg-4"></div> <!-- Espacio central para separación -->
+    
+      <button class="btn btn-outline-primary col-lg-2 mx-1"
+      [class.active]="currentFilter === 'active'"
+            (click)="filterActiveEmployees()">
+        Empleados Activos
+      </button>
+      <button class="btn btn-outline-primary col-lg-2 mx-1"
+      [class.active]="currentFilter === 'inactive'"
+            (click)="filterInactiveEmployees()">
+        Empleados Inactivos
+      </button>
+    
+      <button class="btn btn-outline-primary col-lg-1 mx-1"
+      [class.active]="currentFilter === 'all'"
+            (click)="showAllEmployees()">
+        Todos
+      </button>
+    </div>
+    
+    <!-- Indicador de carga -->
+    <div *ngIf="isLoading" class="text-center my-3">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+
+    <!-- Mensaje de no hay resultados -->
+    <div *ngIf="!isLoading && employeeList.length === 0" class="alert alert-info mt-3">
+      No se encontraron empleados con los filtros seleccionados.
+    </div>
+      <!-- Table Section -->
+      <div class="bg-white rounded-lg shadow">
+        <div class="table-responsive mt-3"  *ngIf="!isLoading && employeeList.length > 0">
+          <table class="table table-striped table-hover border rounded-lg-overflow-hidden">
+            <thead class="bg-light">
+              <tr>
+                <th class="px-4 py-3" (click)="sort('firstName')">
+                  Empleado <span [ngClass]="{'asc': sortColumn === 'firstName' && sortDirection === 'asc', 'desc': sortColumn === 'firstName' && sortDirection === 'desc'}">⇅</span>
+                </th>
+                <th class="px-4 py-3" (click)="sort('employeeType')">
+                  Tipo <span [ngClass]="{'asc': sortColumn === 'employeeType' && sortDirection === 'asc', 'desc': sortColumn === 'employeeType' && sortDirection === 'desc'}">⇅</span>
+                </th>
+                <th class="px-4 py-3" (click)="sort('documentType')">
+                  Documento <span [ngClass]="{'asc': sortColumn === 'documentType' && sortDirection === 'asc', 'desc': sortColumn === 'documentType' && sortDirection === 'desc'}">⇅</span>
+                </th>
+                <th class="px-4 py-3" (click)="sort('hiringDate')">
+                  Fecha Contratación <span [ngClass]="{'asc': sortColumn === 'hiringDate' && sortDirection === 'asc', 'desc': sortColumn === 'hiringDate' && sortDirection === 'desc'}">⇅</span>
+                 </th>
+                <th class="px-4 py-3" (click)="sort('state')">
+                  
+                  Estado <span [ngClass]="{'asc': sortColumn === 'state' && sortDirection === 'asc', 'desc': sortColumn === 'state' && sortDirection === 'desc'}">⇅</span>
+                </th>
+                <th class="px-4 py-3 text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (employee of employeeList; track $index) {
+                <tr>
+                  <td class="px-4 py-3">{{ employee.lastName }}, {{ employee.firstName }}</td>
+                  <td class="px-4 py-3">{{ employee.employeeType }}</td>
+                  <td class="px-4 py-3">{{ employee.documentType }}: {{ employee.docNumber }}</td>
+                  <td class="px-4 py-3">{{ employee.hiringDate | date:'dd/MM/yyyy' }}</td>
+                  <td class="px-4 py-3">
+                    @if (employee.state.toString() == "IN_SERVICE") {
+                    <p class="mb-0">
+                      <i class="bi bi-check2-circle text-success" style="font-size: 1.5rem;"></i>
+                    </p>
+                  } @else {
+                    <p class="mb-0">
+                      <i class="bi bi-x-circle text-danger" style="font-size: 1.5rem;"></i>
+                    </p>
+                  }</td>
+                  <td class="px-4 py-3">
+                    <div class="flex justify-center gap-2">
+                      <button (click)="editEmployee(employee)" 
+                        class="btn btn-sm rounded-md px-2 py-1 me-2 transition-colors duration-200"
+                        style="background-color: #f59e0b; border-color: #d97706;"
+                        onmouseover="this.style.backgroundColor='#d97706';" 
+                        onmouseout="this.style.backgroundColor='#f59e0b';">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                          <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                          <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                        </svg>
+                      </button>
+                      @if (employee.state != 'DOWN') {
+                        <button (click)="deleteEmployee(employee.id)" 
+                        class="btn btn-sm rounded-md px-2 py-1 transition-colors duration-200"
+                        style="background-color: #ef4444; border-color: #dc2626;"
+                        onmouseover="this.style.backgroundColor='#dc2626';" 
+                        onmouseout="this.style.backgroundColor='#ef4444';">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-trash" viewBox="0 0 16 16">
+                          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                          <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                        </svg>
+                      </button>
+                      }
+                      @else {
+                        <button disabled (click)="deleteEmployee(employee.id)" 
+                        class="btn btn-sm rounded-md px-2 py-1 transition-colors duration-200"
+                        style="background-color: #ef4444; border-color: #dc2626;"
+                        onmouseover="this.style.backgroundColor='#dc2626';" 
+                        onmouseout="this.style.backgroundColor='#ef4444';">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-trash" viewBox="0 0 16 16">
+                          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                          <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                        </svg>
+                      </button>
+                      }
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+      <!-- Pagination Section -->
+      <div class="d-flex justify-content-between align-items-center p-3 border-top">
+        <!-- Left side - Page number -->
+        <div class="text-muted">
+          Página {{ currentPage }} de {{ totalPages }}
+        </div>
+
+        <!-- Right side - Items per page dropdown -->
+        <div class="d-flex align-items-center">
+          <span class="me-2">Elementos por página:</span>
+          <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="itemsPerPage">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
+
+          <!-- Navigation buttons -->
+          <div class="ms-3">
+            <button class="btn btn-outline-secondary btn-sm me-1" 
+                    [disabled]="currentPage === 1"
+                    (click)="goToPreviousPage()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+              </svg>
+            </button>
+            <button class="btn btn-outline-secondary btn-sm"
+                    [disabled]="currentPage === totalPages"
+                    (click)="goToNextPage()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+              </svg>
+            </button>
+            <button class="btn btn-secondary ms-3 mb-3 custom-button">
+              <i class="bi bi-info-circle"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+  <!-- Modal component -->
+  <app-employee-edit-modal
+    [isModalOpen]="showEditForm"
+    (closeModal)="onModalClose()">
+  </app-employee-edit-modal>
+</div>
+
+<ng-template #infoModal let-modal>
+  <div class="modal-header fs-6 py-1">
+      <h4 class="modal-title">Información de la Lista de Empleados</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body fs-6 py-2">
+      <div class="container-fluid">
+        <!-- Introducción -->
+        <div class="alert alert-info mb-2 py-2">
+          <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
+          <p class="mb-0 small">Esta pantalla te permite visualizar y gestionar los empleados registrados. Cada sección está diseñada para ofrecer un acceso a la información de manera ordenada y sencilla.</p>
+        </div>
+    
+        <!-- Campos Principales -->
+        <div class="card mb-2">
+          <div class="card-header py-1">
+            <h5 class="mb-0">Datos de Empleados</h5>
+          </div>
+          <div class="card-body py-2">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item py-1">
+                <strong>Lista de Empleados:</strong> Muestra los detalles de cada empleado, incluyendo Empleado,	Tipo,	Documento,	Fecha, Contratación,	Estado.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Búsqueda:</strong> Funcionalidad para filtrar la lista de empleados, por empleados activos y/o inactivos, o por otros filtros de búsqueda.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Limpiar:</strong> Permite limpiar los filtros seleccionados para la búsqueda.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Paginación:</strong> Control para navegar entre múltiples páginas de empleados.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Nuevo:</strong> Permite ingresar un nuevo empleado, nos redireccionará a un formulario para completarlo.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Exportar:</strong> Botones para exportar la lista a formatos PDF o Excel.
+              </li>
+            </ul>
+          </div>
+        </div>
+    
+        <!-- Acciones -->
+        <div class="card mb-2">
+          <div class="card-header py-1">
+            <h5 class="mb-0">Acciones Disponibles</h5>
+          </div>
+          <div class="card-body py-2">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item py-1">
+                <strong>Editar:</strong> Nos redireccionará a un formulario para editar el empleado seleccionado.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Eliminar:</strong> Nos solicitará confirmación para eliminar el empleado seleccionado.
+              </li>
+            </ul>
+          </div>
+        </div>
+    
+        <!-- Nota (OPCIONAL) -->
+        <div class="alert alert-warning py-2 mb-0">
+          <h5 class="alert-heading">Nota:</h5>
+          <p class="mb-0 small">Asegúrate de verificar la información antes de modificar, ingresar o eliminar un empleado.</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer py-2">
+      <button type="button" class="btn btn-primary" (click)="modal.close()">Entendido</button>
+    </div>
+    
+</ng-template>

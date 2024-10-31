@@ -1,0 +1,91 @@
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #000000;">
+    <div class="card p-4 m-3" style="max-width: 600px; width: 100%; border-radius: 15px;">
+        <h4 class="text-center mb-4">Registrar Rango Autorizado</h4>
+        <form (ngSubmit)="onSubmit()">
+            <div class="row">
+                <div class="col-lg-6 col-sm-12">
+                    <div class="form-group mb-3">
+                        <label for="authEntityId" class="form-label">ID de la Entidad de Autorización</label>
+                        <input type="number" class="form-control" id="authEntityId"
+                            [(ngModel)]="authorizedRange.auth_entity_id" name="authEntityId" required
+                            placeholder="ID de la Entidad de Autorización">
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-sm-12">
+                    <div class="form-group mb-3">
+                        <label for="visitorId" class="form-label">ID del Visitante</label>
+                        <input type="number" class="form-control" id="visitorId"
+                            [(ngModel)]="authorizedRange.visitor_id" name="visitorId" required
+                            placeholder="ID del Visitante">
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-sm-12">
+                    <div class="form-group mb-3">
+                        <label for="dateFrom" class="form-label">Fecha Desde</label>
+                        <input type="date" class="form-control" id="dateFrom" [(ngModel)]="authorizedRange.date_from"
+                            name="dateFrom" required>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-sm-12">
+                    <div class="form-group mb-3">
+                        <label for="dateTo" class="form-label">Fecha Hasta</label>
+                        <input type="date" class="form-control" id="dateTo" [(ngModel)]="authorizedRange.date_to"
+                            name="dateTo" required>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-sm-12">
+                    <div class="form-group mb-3">
+                        <label for="hourFrom" class="form-label">Hora Desde</label>
+                        <input type="time" class="form-control" id="hourFrom" [(ngModel)]="authorizedRange.hour_from"
+                            name="hourFrom" required>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-sm-12">
+                    <div class="form-group mb-3">
+                        <label for="hourTo" class="form-label">Hora Hasta</label>
+                        <input type="time" class="form-control" id="hourTo" [(ngModel)]="authorizedRange.hour_to"
+                            name="hourTo" required>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-sm-12">
+                    <div class="form-group mb-3">
+                        <label for="dayOfWeeks" class="form-label">Días de la Semana</label>
+                        <select multiple class="form-control" id="dayOfWeeks" [(ngModel)]="authorizedRange.day_of_weeks"
+                            name="dayOfWeeks" required>
+                            @for (day of daysOfWeek; track day) {
+                            <option [ngValue]="day">{{ day }}</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-sm-12">
+                    <div class="form-group mb-3">
+                        <label for="plotId" class="form-label">ID de la Parcela</label>
+                        <input type="number" class="form-control" id="plotId" [(ngModel)]="authorizedRange.plot_id"
+                            name="plotId" required placeholder="ID de la Parcela">
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="form-group mb-3">
+                        <label for="comment" class="form-label">Comentarios</label>
+                        <textarea class="form-control" id="comment" [(ngModel)]="authorizedRange.comment" name="comment"
+                            placeholder="Comentarios"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary py-2">Registrar</button>
+                <button type="button" class="btn btn-secondary py-2" routerLink="/cancelar">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>

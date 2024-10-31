@@ -1,0 +1,83 @@
+
+<app-main-container title="Registrar Contacto">
+
+<div class="container mt-5 custom-form">
+
+  <form #form="ngForm" (ngSubmit)="sendForm(form)" class="row g-3 container">
+    <!-- Selector de tipo de contacto -->
+    <div class="form-group row mb-2">
+      <label for="contactType" class="col-md-2 col-form-label text-orange">Tipo de Contacto</label>
+      <div class="col-md-4">
+        <select #contactTypeSelect="ngModel" class="form-select" name="contactType" [(ngModel)]="selectedContactType"
+          (ngModelChange)="onContactTypeChange()" required
+          [ngClass]="{'is-invalid': contactTypeSelect.invalid && (contactTypeSelect.dirty || contactTypeSelect.touched),
+                           'is-valid': contactTypeSelect.valid && (contactTypeSelect.dirty || contactTypeSelect.touched)}">
+          <option value="" disabled selected>Seleccione tipo de contacto</option>
+          <option value="EMAIL">Email</option>
+          <option value="PHONE">Teléfono</option>
+        </select>
+        <div class="invalid-feedback"
+          *ngIf="contactTypeSelect.invalid && (contactTypeSelect.dirty || contactTypeSelect.touched)">
+          Por favor seleccione un tipo de contacto
+        </div>
+      </div>
+    </div>
+
+    <!-- Campo Email -->
+    <div class="form-group row mb-2" *ngIf="selectedContactType === 'EMAIL'">
+      <label for="email" class="col-md-2 col-form-label text-orange">Email</label>
+      <div class="col-md-10">
+        <input #emailInput="ngModel" type="email" class="form-control custom-input" id="email" name="email"
+          [(ngModel)]="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" [ngClass]="{'is-invalid': emailInput.invalid && (emailInput.dirty || emailInput.touched),
+                          'is-valid': emailInput.valid && (emailInput.dirty || emailInput.touched)}">
+        <div class="invalid-feedback" *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)">
+          <div *ngIf="emailInput.errors?.['required']">El email es requerido</div>
+          <div *ngIf="emailInput.errors?.['pattern']">Por favor ingrese un email válido</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Campo Teléfono -->
+    <div class="form-group row mb-2" *ngIf="selectedContactType === 'PHONE'">
+      <label for="phone" class="col-md-2 col-form-label text-orange">Teléfono</label>
+      <div class="col-md-10">
+        <input #phoneInput="ngModel" type="tel" class="form-control custom-input" id="phone" name="phone"
+          [(ngModel)]="phone" required pattern="[0-9]{10}" [ngClass]="{'is-invalid': phoneInput.invalid && (phoneInput.dirty || phoneInput.touched),
+                          'is-valid': phoneInput.valid && (phoneInput.dirty || phoneInput.touched)}">
+        <div class="invalid-feedback" *ngIf="phoneInput.invalid && (phoneInput.dirty || phoneInput.touched)">
+          <div *ngIf="phoneInput.errors?.['required']">El teléfono es requerido</div>
+          <div *ngIf="phoneInput.errors?.['pattern']">Por favor ingrese un teléfono válido (10 dígitos)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div class="d-flex justify-content-end mb-3">
+      <button type="button" class="btn btn-danger me-2" (click)="resetForm(form)">Cancelar</button>
+      <button type="submit" class="btn btn-primary" [disabled]="!form.valid">Guardar</button>
+    </div>
+  </form>
+</div>
+
+<!-- Modal -->
+<div [class.show]="isModalOpen" [style.display]="isModalOpen ? 'block' : 'none'" class="modal fade" id="myModal"
+  tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">{{ modalTitle }}</h5>
+        <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>{{ modalMessage }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" (click)="closeModal()">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop para la modal -->
+<div *ngIf="isModalOpen" class="modal-backdrop fade show"></div>
+</app-main-container>

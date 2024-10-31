@@ -1,0 +1,47 @@
+<h1 class="mt-2 p-2">Registrar Usuario</h1>
+<form [formGroup]="userForm" class="row g-3 m-2">
+
+    <div class="col-md-6">
+        <div class="flex-row d-flex align-items-center">
+            <label for="emailForm" class="form-label">Email</label>
+            <input type="email" class="form-control m-2" id="emailForm" formControlName="email">
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="flex-row d-flex align-items-center">
+            <label for="firstNameForm" class="form-label">Nombre</label>
+            <input type="text" class="form-control m-2" id="firstNameForm" formControlName="firstName">
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="flex-row d-flex align-items-center">
+            <label for="userNameForm" class="form-label">Nombre de usuario</label>
+            <input type="text" class="form-control m-2" id="userNameForm" formControlName="userName">
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="flex-row d-flex align-items-center">
+            <label for="lastNameForm" class="form-label">Apellido</label>
+            <input type="text" class="form-control m-2" id="lastNameForm" formControlName="lastName">
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="flex-row d-flex align-items-center">
+            <label for="plot-status" class="form-label">Roles</label>
+            <select id="plot-status" class="form-select m-2" formControlName="role">
+                <option value="" disabled selected>Selecciona un rol</option>
+                <option value="admin">Admin</option>
+                <option value="user">Usuario</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="col-12 d-flex justify-content-end">
+        <button type="submit" class="btn btn-secondary">Registrar Usuario</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="goBack()">Volver</button>
+    </div>
+</form>

@@ -1,0 +1,115 @@
+<app-main-container title="{{title}}">
+
+  <app-cadastre-plot-owner-filter-buttons
+  #filterComponent
+  [itemsList]="plotsList" 
+  [tableName]="tableName.nativeElement" 
+  formPath="/plot/form" 
+  ownerId="{{ownerId.toString()}}"
+  [dictionaries]="plotDictionaries"
+  objectName="LOTES_ACTUALES"></app-cadastre-plot-owner-filter-buttons>
+
+  <div class="table-container">
+    <table class="table table-striped" #plotOwnersTable>
+      <thead>
+        <tr>
+          <th scope="col">N.º de Manzana</th>
+          <th scope="col">N.º de Lote</th>
+          <th scope="col">Area Total</th>
+          <th scope="col">Area Construida</th>
+          <th scope="col">Tipo de Lote</th>
+          <th scope="col">Estado del Lote</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+          @for (plot of (plotsList); track plot) {
+
+              <tr>
+                <td>
+                  {{ plot.plotNumber }}
+                </td>
+                <td>
+                  {{ plot.blockNumber }}
+                </td>
+                <td>
+                  {{ plot.totalArea }} m²
+                </td>
+                <td>
+                  {{ plot.builtArea }} m²
+                </td>
+                <td>
+                  {{ translateTable(plot.plotType, plotTypeDictionary) }}
+                </td>
+                <td>
+                  {{ translateTable(plot.plotStatus, plotStatusDictionary) }}
+                </td>
+            <td>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  ...
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item btn btn-primary" (click)="viewOwnerDetail()">Ver Dueño</a></li>
+                  <li><a class="dropdown-item btn btn-info" (click)="viewPlotDetail(plot.id)" >Ver Lote</a></li>
+                  <li><a class="dropdown-item btn btn-info" (click)="assignPlotToRemove(plot)" data-bs-target="#exampleModal" data-bs-toggle="modal">Remover Lote</a></li>
+                </ul>
+              </div>
+            </td>
+        </tr>
+  
+          }
+      </tbody>
+    </table>
+  </div>
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <ngb-pagination
+    [(page)]="currentPage"                   
+    [pageSize]="pageSize"                    
+    [collectionSize]="totalItems"            
+    (pageChange)="onPageChange($event)"      
+    [maxSize]="5"                            
+    [boundaryLinks]="false"                   
+    ></ngb-pagination>
+    
+    <div class="ms-auto"> 
+    </div>
+
+    <div class="form-group mb-3 me-2">
+      <select
+        id="itemsPerPage"
+        class="form-select"
+        [(ngModel)]="pageSize"
+        (change)="onItemsPerPageChange()"
+      >
+      @for(option of sizeOptions; track $index) {
+        <option [value]="option">{{ option }} Elementos</option>
+      }
+      </select>
+  </div>
+
+  <div class="modal fade" id="exampleModal" tabindex="-1">
+    <div class="modal-dialog model-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Cuidado</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Seguro que desea eliminar el lote {{plotNumber}} de la manzana {{plotBlock}} del dueño {{ ownerFirstName + " " + ownerLastName }}?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" (click)="removePlot()">Eliminar</button>
+          <button type="button" class="btn btn-primary"data-bs-dismiss="modal" (click)="cleanPlotId()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+  
+  <div class="col-12 d-flex">
+    <button type="submit" class="btn btn-secondary" (click)="goBack()">Volver</button>
+  </div>
+</app-main-container>
+    

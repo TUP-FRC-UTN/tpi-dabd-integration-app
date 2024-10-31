@@ -1,0 +1,283 @@
+
+<!--
+<div class="row mt-4">
+  <div class="row mb-3 align-items-center">
+    <div class="col">
+      <h1>Lista de categorías</h1>
+    </div>
+
+    <div class="col">
+      <div class="row justify-content-end align-items-center gap-0">
+        <div class="col-auto">
+          <button class="btn btn-outline-primary" (click)="openNewCategoryModal()">
+            Nuevo
+          </button>
+        </div>
+
+        <div class="col-auto">
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Buscar..."
+              [(ngModel)]="searchTerm">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  } @else if (categories.length > 0) {
+    <div class="row">
+      <div class="table-responsive">
+        <table class="table table-hover table-striped" style="border: 1px solid rgba(0, 0, 0, 0.15); border-collapse: collapse">
+          <thead class="text-center">
+          <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Descripción</th>
+            <th scope="col">Acciones</th>
+          </tr>
+          </thead>
+          <tbody class="">
+            @for (category of categories | filterBy: ['name', 'description']: searchTerm; track category.category_id) {
+              @if (!category.is_delete){
+                <tr>
+                  <td>{{ category.name }}</td>
+                  <td>{{ category.description }}</td>
+                  <td class="text-center">
+                    @if (category.is_updatable) {
+                      <button
+                        type="button"
+                        class="btn btn-warning btn-sm m-1"
+                        (click)="editCategory(category)"
+                        title="Editar">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-danger btn-sm"
+                        (click)="deleteCategory(category)"
+                        title="Eliminar">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    }
+                  </td>
+                </tr>
+              }
+            } @empty {
+              <tr>
+                <td colspan="3" class="text-center">No se encontraron categorías</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-6 d-flex justify-content-start">
+      <button type="button" class="btn btn-secondary" routerLink="/gastos/nuevo">Volver</button>
+    </div>
+  } @else {
+    <div class="alert alert-info">
+      No hay categorías registradas.
+    </div>
+  }
+</div>
+-->
+
+<div class="row mt-4">
+  <div class="row mb-3 align-items-center">
+    <div class="col">
+      <h1>Lista de categorías</h1>
+    </div>
+
+    <div class="col">
+      <div class="row justify-content-end align-items-center gap-0">
+        <div class="col-auto">
+          <button class="btn btn-outline-primary" (click)="openNewCategoryModal()">
+            Nuevo
+          </button>
+        </div>
+
+        <div class="col-auto">
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Buscar..."
+              [(ngModel)]="searchTerm">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  } @else if (categories.length > 0) {
+    <!-- Envolvemos la tabla en un div con altura fija y scroll -->
+    <div class="container" style=" overflow-y: auto;">
+      <table class="table table-hover table-striped border">
+        <!-- Hacemos el thead sticky con una clase de Bootstrap -->
+        <thead class="table-light sticky-top bg-light">
+        <tr>
+          <th scope="col">Nombre</th>
+          <th scope="col">Descripción</th>
+          <th scope="col">Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (category of categories | filterBy: ['name', 'description']: searchTerm | orderBy: 'name'; track category.category_id) {
+            @if (!category.is_delete){
+              <tr>
+                <td>{{ category.name }}</td>
+                <td>{{ category.description }}</td>
+                <td class="text-center">
+                  @if (category.is_updatable) {
+                    <button
+                      type="button"
+                      class="btn btn-warning btn-sm m-1"
+                      (click)="editCategory(category)"
+                      title="Editar">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-danger btn-sm"
+                      (click)="deleteCategory(category)"
+                      title="Eliminar">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          } @empty {
+            <tr>
+              <td colspan="3" class="text-center">No se encontraron categorías</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="col-6 d-flex justify-content-start mt-3">
+      <button type="button" class="btn btn-secondary" routerLink="/gastos/nuevo">Volver</button>
+    </div>
+    <div class="col-6 d-flex justify-content-end mt-3">
+      <button type="button" class="btn btn-outline-secondary ms-2" (click)="showInfo()"><i class="bi bi-info-circle"></i></button>
+    </div>
+
+  } @else {
+    <div class="alert alert-info">
+      No hay categorías registradas.
+    </div>
+  }
+</div>
+
+<!--<div class="row mt-4">
+  <div class="row mb-3 align-items-center">
+    <div class="col">
+      <h1>Listado de categorías</h1>
+    </div>
+
+    <div class="col">
+      <div class="row justify-content-end align-items-center gap-0">
+        <div class="col-auto">
+          <button class="btn btn-outline-primary" (click)="openNewCategoryModal()">
+            Nuevo
+          </button>
+        </div>
+
+        <div class="col-auto">
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Buscar..."
+              [(ngModel)]="searchTerm">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  } @else if (categories.length > 0) {
+    <div class="table-wrapper">
+      <div class="table-scroll">
+        <table class="table table-hover table-striped mb-0 border">
+          <thead class="table-light sticky-top bg-light border-bottom-1">
+          <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Descripción</th>
+            <th scope="col" class="text-center">Acciones</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (category of categories | filterBy: ['name', 'description']: searchTerm | orderBy: 'name'; track category.category_id) {
+              @if (!category.is_delete){
+                <tr>
+                  <td>{{ category.name }}</td>
+                  <td>{{ category.description }}</td>
+                  <td class="text-center">
+                    @if (category.is_updatable) {
+                      <button
+                        type="button"
+                        class="btn btn-warning btn-sm m-1"
+                        (click)="editCategory(category)"
+                        title="Editar">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-danger btn-sm"
+                        (click)="deleteCategory(category)"
+                        title="Eliminar">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    }
+                  </td>
+                </tr>
+              }
+            } @empty {
+              <tr>
+                <td colspan="3" class="text-center">No se encontraron categorías</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      &lt;!&ndash; Botón volver dentro del wrapper &ndash;&gt;
+      <div class="table-footer mt-3">
+        <button type="button" class="btn btn-secondary" routerLink="/gastos/nuevo">Volver</button>
+      </div>
+    </div>
+  } @else {
+    <div class="alert alert-info">
+      No hay categorías registradas.
+    </div>
+  }
+</div>-->

@@ -1,0 +1,36 @@
+<div class="modal-header">
+  <h4 class="modal-title">Nueva Categoría</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body d-flex justify-content-center">
+  <div class="col-10">
+    <form [formGroup]="newCategoryForm">
+      <div class="row mb-3">
+        <label for="newCategoryName" class="text-start">Nombre</label>
+        <div class="col">
+          <input type="text" class="form-control" id="newCategoryName" formControlName="name"
+                  [ngClass]="{'is-invalid': newCategoryForm.get('name')?.invalid && (newCategoryForm.get('name')?.dirty || newCategoryForm.get('name')?.touched)}">
+          <div class="invalid-feedback">
+            Por favor, ingrese un nombre para la categoría.
+          </div>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label for="newCategoryDescription" class="text-start">Descripcion</label>
+        <div class="col">
+          <input type="text" class="form-control" id="newCategoryDescription" formControlName="description"
+                  [ngClass]="{'is-invalid': newCategoryForm.get('description')?.invalid && (newCategoryForm.get('description')?.dirty || newCategoryForm.get('description')?.touched)}">
+          <div class="invalid-feedback">
+            Por favor, ingrese una descripción para la categoría.
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-success" (click)="saveNewCategory()"
+          [disabled]="newCategoryForm.invalid">Confirmar
+  </button>
+  <button type="button" class="btn btn-danger" (click)="activeModal.dismiss()">Cancelar</button>
+</div>

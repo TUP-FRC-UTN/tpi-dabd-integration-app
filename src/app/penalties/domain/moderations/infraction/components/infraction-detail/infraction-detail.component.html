@@ -1,0 +1,81 @@
+<app-main-container title="Detalle Infracción">
+  <div class="row">
+    <div class="mb-3 col-6 d-flex align-items-center gap-3">
+      <label for="name" class="form-label text-nowrap mb-0"
+        >N.° Infracción</label
+      >
+      <input
+        id="name"
+        name="name"
+        class="form-control"
+        value="{{ infraction?.id }}"
+        disabled
+      />
+    </div>
+    <div class="mb-3 col-6 d-flex align-items-center gap-3">
+      <label for="name" class="form-label text-nowrap mb-0">N.° Lote</label>
+      <input
+        id="name"
+        name="name"
+        class="form-control"
+        value="{{ infraction?.plot_id }}"
+        disabled
+      />
+    </div>
+    <div class="mb-3 col-6 d-flex align-items-center gap-3">
+      <label for="name" class="form-label text-nowrap mb-0"
+        >Fecha de alta</label
+      >
+      <input
+        id="name"
+        name="name"
+        class="form-control"
+        value="{{ infraction?.created_date }}"
+        disabled
+      />
+    </div>
+    <div class="mb-3 col-6 d-flex align-items-center gap-3">
+      <label for="name" class="form-label text-nowrap mb-0">Descripción</label>
+      <input
+        id="name"
+        name="name"
+        class="form-control"
+        value="{{ infraction?.description }}"
+        disabled
+      />
+    </div>
+    <div class="mb-3 col-6 d-flex align-items-center gap-3">
+      <label for="name" class="form-label text-nowrap mb-0">N.° de Multa</label>
+      <input
+        id="name"
+        name="name"
+        class="form-control"
+        value="{{ infraction?.fine_id }}"
+        disabled
+      />
+    </div>
+    <div class="mb-3 col-6 d-flex align-items-center gap-3">
+      <label for="name" class="form-label text-nowrap mb-0">Estado</label>
+      <input
+        id="name"
+        name="name"
+        class="form-control"
+        value="{{ infraction?.infraction_state }}"
+        disabled
+      />
+    </div>
+  </div>
+  <hr style="color: #808080" />
+  <div class="d-grid gap-2 d-md-flex justify-content-end">
+    <button class="btn btn-secondary" (click)="goBack()">Volver</button>
+  </div>
+  <hr style="color: #808080" />
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <button class="nav-link active">Infracciones</button>
+    </li>
+  </ul>
+  <app-infraction-claim-list
+    [claims]="infraction?.claims || []"
+  ></app-infraction-claim-list>
+</app-main-container>

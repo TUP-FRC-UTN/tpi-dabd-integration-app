@@ -1,0 +1,27 @@
+<input
+  id="typeahead-template"
+  type="text"
+  class="form-control"
+  name="selectTypeName"
+  #selectTypeControl="ngModel"
+  [(ngModel)]="selectedSanctionType"
+  [ngbTypeahead]="search"
+  [inputFormatter]="formatter"
+  [resultFormatter]="formatter"
+  [selectOnExact]="true"
+  (selectItem)="onSelectedChange($event.item)"
+  [ngClass]="{
+    'is-invalid':
+      selectTypeControl.invalid &&
+      (selectTypeControl.dirty || selectTypeControl.touched)
+  }"
+  (blur)="validateSanctionType(selectedSanctionType)"
+  [disabled]="disabled"
+  [readonly]="readonly"
+  required="{{ requiered }}"
+/>
+
+@if (selectTypeControl.invalid && (selectTypeControl.dirty ||
+selectTypeControl.touched)) { @if (selectTypeControl.getError('required')) {
+<div class="invalid-feedback">Este campo es obligatorio</div>
+} }

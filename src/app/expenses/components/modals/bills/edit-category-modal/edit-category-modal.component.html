@@ -1,0 +1,47 @@
+<div class="modal-header">
+  <h4 class="modal-title">Editar categoría</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body d-flex justify-content-center">
+  <div class="col-10">
+    <form [formGroup]="editCategoryForm">
+      <div class="row mb-3">
+        <label for="categoryName" class="text-start">Nombre</label>
+        <div class="col">
+          <input
+            type="text"
+            class="form-control"
+            id="categoryName"
+            formControlName="name"
+            [ngClass]="{'is-invalid': editCategoryForm.get('name')?.invalid &&
+                      (editCategoryForm.get('name')?.dirty || editCategoryForm.get('name')?.touched)}">
+          <div class="invalid-feedback">
+            Por favor, ingrese un nombre para la categoría.
+          </div>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label for="categoryDescription" class="text-start">Descripción</label>
+        <div class="col">
+          <input
+            type="text"
+            class="form-control"
+            id="categoryDescription"
+            formControlName="description"
+            [ngClass]="{'is-invalid': editCategoryForm.get('description')?.invalid &&
+                      (editCategoryForm.get('description')?.dirty || editCategoryForm.get('description')?.touched)}">
+          <div class="invalid-feedback">
+            Por favor, ingrese una descripción para la categoría.
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-success" (click)="updateCategory()"
+          [disabled]="editCategoryForm.invalid">Actualizar</button>
+  <button type="button" class="btn btn-danger" (click)="activeModal.dismiss()">Cancelar</button>
+</div>

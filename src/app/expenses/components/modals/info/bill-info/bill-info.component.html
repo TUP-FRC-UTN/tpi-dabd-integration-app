@@ -1,0 +1,87 @@
+<div class="modal-header fs-6 py-1">
+  <h4 class="modal-title">Información del Formulario de Gastos</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body fs-6 py-2">
+  <div class="container-fluid">
+    <!-- Introducción -->
+    <div class="alert alert-info mb-2 py-2">
+      <h5 class="alert-heading">¿Qué es este formulario?</h5>
+      <p class="mb-0 small">Este formulario te permite registrar los gastos. Cada campo
+        ha sido diseñado para mantener un registro detallado y organizado de tus transacciones.</p>
+    </div>
+
+<!--    ACA PUEDEN AGREGAR/ELIMINAR LAS CARDS SEGUN NECESITEN-->
+    <!-- Campos Principales -->
+    <div class="card mb-2">
+      <div class="card-header py-1">
+        <h5 class="mb-0">Campos Principales</h5>
+      </div>
+      <div class="card-body py-2">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item py-1">
+            <strong>Proveedor:</strong> Selecciona la empresa que proporciona el servicio o producto.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Categoría:</strong> Clasifica el gasto para un mejor análisis (podes crear nuevas categorías con el <b>+</b>).
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Periodo:</strong> Mes y año al que corresponde el gasto.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Tipo:</strong> Clasificación adicional del gasto según su naturaleza.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Datos del Gasto -->
+    <div class="card mb-2">
+      <div class="card-header py-1">
+        <h5 class="mb-0">Datos del Gasto</h5>
+      </div>
+      <div class="card-body py-2">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item py-1">
+            <strong>Descripción:</strong> Espacio para detallar información adicional.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Monto:</strong> Cantidad monetaria del gasto.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Fecha:</strong> Día en que se realizó el gasto.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="card mb-2">
+      <div class="card-header py-1">
+        <h5 class="mb-0">Acciones Disponibles</h5>
+      </div>
+      <div class="card-body py-2">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item py-1">
+            <strong>Volver:</strong> Regresar a la página anterior.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Cancelar:</strong> Limpiar todos los campos.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Guardar:</strong> Registrar el gasto.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Nota (OPCIONAL)-->
+    <div class="alert alert-warning py-2 mb-0">
+      <h5 class="alert-heading">Nota:</h5>
+      <p class="mb-0 small">Los campos marcados con un asterisco (*) son obligatorios.</p>
+    </div>
+  </div>
+</div>
+<div class="modal-footer py-2">
+  <button type="button" class="btn btn-primary" (click)="activeModal.close()">Entendido</button>
+</div>

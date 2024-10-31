@@ -1,0 +1,62 @@
+.table-container {
+  overflow-x: auto;
+}
+
+.fixed-table {
+  min-width: 100%;
+}
+
+.subscription-list {
+  margin: 0;
+  padding: 0;
+}
+
+.subscription-item {
+  display: flex;
+  align-items: center;
+  padding: 0.1rem 0;
+}
+
+.btn-group .dropdown-menu {
+  min-width: auto;
+}
+
+.input-group {
+  width: auto;
+  margin-left: 1rem;
+}
+
+.dropdown-item {
+  cursor: pointer;
+}
+
+.dropdown-item i {
+  width: 1rem;
+  text-align: center;
+}
+
+.btn-group .dropdown-menu {
+  min-width: 8rem;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.modal {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-backdrop {
+
+  z-index: 1040;
+}
+
+.modal {
+  z-index: 1050;
+}
+
+.btn-export-pdf {
+  margin-left: -1rem;
+}
+

@@ -1,0 +1,85 @@
+<div class="card mt-5">
+    <div class="card-body">
+        <h1> Enviar una Notificación </h1> <br>
+        <form #form="ngForm" (ngSubmit)="enviar(form)">
+            <div class="mb-3">
+                <label class="form-label">Enviar a:</label>
+                <input #email="ngModel" type="email" class="form-control" id="email" name="email" style="max-width: 400px;"
+                [(ngModel)]="emailToSend"
+                required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                [ngClass]="{'is-invalid' : email.invalid && (email.dirty || email.touched), 'is-valid' : email.valid}"/>
+                @if (email.invalid && (email.dirty || email.touched)) {
+                    @if (email.getError('required')) {
+                        <div class="text-danger"> Campo Obligatorio </div>
+                    }
+                    @if (email.getError('pattern')) {
+                        <div class="text-danger"> Correo Inválido </div>
+                    }
+                }
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Asunto:</label>
+                <input #asunto="ngModel" type="text" class="form-control" id="asunto" name="asunto" style="max-width: 400px;"
+                [(ngModel)]="subject"
+                required minlength="3"
+                [ngClass]="{'is-invalid' : asunto.invalid && (asunto.dirty || asunto.touched), 'is-valid' : asunto.valid}"/>
+                @if (asunto.invalid && (asunto.dirty || asunto.touched)) {
+                    @if (asunto.getError('minlength')) {
+                        <div class="text-danger"> Debe contener mínimo tres caracteres </div>
+                    }@else {
+                        <div class="text-danger"> Campo Obligatorio </div>
+                    }
+                }
+            </div>
+     
+            <div>
+                <h6>Plantillas</h6>
+                <select #plantillas="ngModel" class="form-select" style="max-width: 200px;" name="plantillas" id="plantillas"
+                [(ngModel)]="templateID"
+                required
+                [ngClass]="{'is-invalid': plantillas.invalid && (plantillas.dirty || plantillas.touched), 'is-valid': plantillas.valid && (plantillas.dirty || plantillas.touched)}">
+                
+                @for (item of templates; track $index) {
+                    <option [value]=item.id> {{item.name}} </option>
+                }
+                </select>
+                @if (plantillas.invalid && (plantillas.dirty || plantillas.touched)) {
+                    @if (plantillas.getError('required')) {
+                        <div class="text-danger"> Campo Obligatorio </div>
+                    }
+                }
+            </div>
+            <button type="button" class="btn btn-secondary mt-3" (click)="previewSelectedTemplate()">Previsualizar</button>
+            <!-- Si encuentran otra forma de hacerlo, haganlo-->
+            <div class="row"> 
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col-1"><button type="submit" class="btn btn-primary" [disabled]="form.invalid">Enviar</button></div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<!-- Modal de previsualización -->
+    <!-- Modal -->
+<div class="modal" *ngIf="showModalToRenderHTML" (click)="closeModalToRenderHTML()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <span class="close" (click)="closeModalToRenderHTML()">&times;</span>
+        <iframe #iframePreview style="width: 100%; border: none;"></iframe>
+        <div class="mt-3 text-end">
+          <button type="button" class="btn btn-secondary" (click)="closeModalToRenderHTML()">Aceptar</button>
+        </div>
+    </div>
+  </div>
+

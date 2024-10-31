@@ -1,0 +1,25 @@
+<ng-template #actionsTemplate let-item>
+  <button
+    class="btn btn-info btn-sm me-2"
+    (click)="goToInfractionDetail(item.id)"
+  >
+    <i class="bi bi-eye"></i>
+  </button>
+</ng-template>
+
+<ng-template #date let-item>
+  {{ item.created_date | date : "dd/MM/yyyy" }}
+</ng-template>
+
+<div class="px-5 py-4 border border-top-0">
+  <app-table
+    [height]="'200px'"
+    [items]="infractions || []"
+    [columns]="columns"
+    [showExportOptions]="false"
+    [headerButtonText]="'Nuevo'"
+    [showSearchBar]="false"
+    [showHeaderButton]="false"
+  >
+  </app-table>
+</div>

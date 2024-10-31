@@ -1,0 +1,34 @@
+<div class="modal-header">
+  <h4 class="modal-title">
+    Añadir documentacion a la obra {{ constructionId }}
+  </h4>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss('Cross click')"
+  ></button>
+</div>
+<div class="modal-body">
+  <app-form-fields
+    [formConfig]="constructionFormConfig"
+    [isButtonOutside]="isButtonOutside"
+    [onSubmit]="onSubmit"
+  ></app-form-fields>
+
+  <div class="mb-3">
+    <label for="formFile" class="form-label">Seleccione un archivo</label>
+    <input
+      class="form-control"
+      type="file"
+      id="formFile"
+      (change)="onFileChange($event)"
+    />
+  </div>
+</div>
+@if(isButtonOutside) {
+<div class="modal-footer">
+  <button class="btn btn-success" (click)="submitForm()">Confirmar</button>
+  <button class="btn btn-danger" (click)="activeModal.dismiss('Cross click')">Cancelar</button>
+</div>
+}

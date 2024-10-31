@@ -1,0 +1,9 @@
+<select
+  class="form-select"
+  aria-label="Default select example"
+  (change)="onPeriodChange($event)"
+>
+  @for (item of periodList; track $index) {
+  <option value="{{ item.id }}">{{ item.month }} / {{ item.year }}</option>
+  }
+</select>

@@ -1,0 +1,17 @@
+<ng-template #actionsTemplate let-item>
+  <button class="btn btn-primary btn-sm me-2">Ver más</button>
+</ng-template>
+
+<div class="px-5 py-4 border border-top-0">
+  <app-table
+    [height]="'200px'"
+    [items]="notes || []"
+    [columns]="columns"
+    [showExportOptions]="false"
+    [headerButtonText]="'Nuevo'"
+    (headerButtonClick)="openFormModal()"
+    [showSearchBar]="false"
+    [showHeaderButton]="role === 'ADMIN'"
+  >
+  </app-table>
+</div>

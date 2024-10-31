@@ -1,0 +1,120 @@
+<app-main-container title="Lista de Roles">    
+    <app-roles-filter-buttons
+    #filterComponent
+    [itemsList]="roles"
+    [tableName]="tableName.nativeElement"
+    [tableName]="tableName.nativeElement"
+    objectName="ROLES"
+    formPath="/roles/form"
+    >        
+    </app-roles-filter-buttons>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">  
+      <div class="btn-group me-5" role="group">
+      </div>   
+      <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+        <input type="radio" class="btn-check" 
+        name="btnradio" id="btnradio1" 
+        autocomplete="off" (change)="changeActiveFilter(true)" checked>
+        <label class="btn btn-outline-primary" for="btnradio1">Roles activos</label>
+    
+        <input type="radio" class="btn-check" 
+        name="btnradio" id="btnradio2" 
+        autocomplete="off" (change)="changeActiveFilter(false)">
+        <label class="btn btn-outline-primary" for="btnradio2">Roles inactivos</label>
+    
+        <input type="radio" class="btn-check" 
+        name="btnradio" id="btnradio3" 
+        autocomplete="off" (change)="changeActiveFilter()">
+        <label class="btn btn-outline-primary" for="btnradio3">Todos</label>
+      </div>
+    </div>
+    <div class="table-container">
+      <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #rolesTable>
+        @if (filteredRoles.length === 0) {
+          <thead>
+            <td colspan="7"> 
+              <div class="text-center p-2">
+                <div class="alert alert-secondary text-center" role="alert">
+                  No hay elementos para mostrar
+                </div>
+              </div>
+            </td>
+          </thead>
+        } @else {
+          <thead>
+            <tr>
+              <th scope="col">Código</th>
+              <th scope="col">Nombre especial</th>
+              <th scope="col">Descripción</th>
+              <th scope="col">Activo</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (role of (filteredRoles.length > 0 ? filteredRoles : roles); track $index) {  
+              <tr>
+                <td>
+                  {{ role.code }}
+                </td>
+                <td>
+                  {{ role.prettyName }}
+                </td>
+                <td>
+                  {{ role.description }}
+                </td>
+                <td>
+                  @if (role.active) {
+                    <i class="bi bi-check2-circle text-success" style="font-size: 1.5rem;"></i>
+                  } @else {
+                    <i class="bi bi-x-circle text-danger" style="font-size: 1.5rem;"></i>
+                  }              
+                </td>           
+                <td>  
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                      @if (role.active == false) {
+                        <li><a class="dropdown-item btn btn-danger" (click)="reactivatePlot(role.id)">Reactivar</a></li>
+                      } @else {                      
+                      <li><a class="dropdown-item btn btn-info" (click)="updateRole(role.id)">Editar</a></li>
+                      <li><a class="dropdown-item btn btn-danger" (click)="assignPlotToDelete(role)" data-bs-target="#exampleModal" data-bs-toggle="modal">Eliminar</a></li>                      
+                      }
+                      <li><a class="dropdown-item btn btn-info" (click)="detailRole(role.id)" >Detalle</a></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>            
+            }
+          </tbody>
+        }
+      </table>
+    </div>    
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <ngb-pagination
+        [(page)]="currentPage"                   
+        [pageSize]="pageSize"                    
+        [collectionSize]="totalItems"            
+        (pageChange)="onPageChange($event)"      
+        [maxSize]="5"                            
+        [boundaryLinks]="false"                   
+      ></ngb-pagination>        
+      <div class="ms-auto"> 
+      </div>
+
+      <div class="form-group mb-3 me-2">
+        <select
+          id="itemsPerPage"
+          class="form-select"
+          [(ngModel)]="pageSize"
+          (change)="onItemsPerPageChange()"
+        >
+          @for(option of sizeOptions; track $index) {
+            <option [value]="option">{{ option }} Elementos</option>
+          }
+        </select>
+      </div>     
+    </div>
+</app-main-container>

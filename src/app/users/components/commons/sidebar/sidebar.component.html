@@ -1,0 +1,76 @@
+ <aside id="sidebar" class="bg-dark text-white p-3 vh-100 sticky-top">
+  <header class="sidebar-header d-flex align-items-center text-center mb-4">
+    <a class="navbar-brand text-white fs-4" href="#">
+      Menu Expensas
+    </a>
+  </header>
+  <nav class="nav flex-column">
+    <!-- Dropdown Propietarios -->
+    <div class="nav-item">
+      <a class="nav-link dropdown-toggle text-white" data-bs-toggle="collapse" href="#ownersMenu" role="button" aria-expanded="false" aria-controls="ownersMenu">
+        Propietarios
+      </a>
+      <div class="collapse" id="ownersMenu">
+        <ul class="nav flex-column ms-3">
+          <li><a class="nav-link text-white" routerLink="/owner/list" routerLinkActive="active">Propietarios</a></li>
+          <li><a class="nav-link text-white" routerLink="/owner/form" routerLinkActive="active">Cargar Propietario</a></li>
+          <li><a class="nav-link text-white" routerLink="/files/form" routerLinkActive="active">Cargar Archivos</a></li>
+          <li><a class="nav-link text-white" routerLink="/files/view" routerLinkActive="active">Validar Archivos</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Dropdown Lotes -->
+    <div class="nav-item">
+      <a class="nav-link dropdown-toggle text-white" data-bs-toggle="collapse" href="#plotsMenu" role="button" aria-expanded="false" aria-controls="plotsMenu">
+        Lotes
+      </a>
+      <div class="collapse" id="plotsMenu">
+        <ul class="nav flex-column ms-3">
+          <li><a class="nav-link text-white" routerLink="/plot/list" routerLinkActive="active">Lotes</a></li>
+          <li><a class="nav-link text-white" routerLink="/plot/form" routerLinkActive="active">Cargar Lote</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Dropdown Usuarios -->
+    <div class="nav-item">
+      <a class="nav-link dropdown-toggle text-white" data-bs-toggle="collapse" href="#usersMenu" role="button" aria-expanded="false" aria-controls="usersMenu">
+        Usuarios
+      </a>
+      <div class="collapse" id="usersMenu">
+        <ul class="nav flex-column ms-3">
+          <li><a class="nav-link text-white" routerLink="/user/list" routerLinkActive="active">Usuarios</a></li>
+          <li><a class="nav-link text-white" [routerLink]="['/user/form']" routerLinkActive="active">Cargar Usuario</a></li>
+          <li><a class="nav-link text-white" routerLink="/roles/list" routerLinkActive="active">Roles</a></li>
+          <li><a class="nav-link text-white" [routerLink]="['/roles/form', { operation: 'CREATE' }]" routerLinkActive="active">Cargar Roles</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Dropdown Lotes y propietarios -->
+    <div class="nav-item">
+      <a class="nav-link dropdown-toggle text-white" data-bs-toggle="collapse" href="#borrarOwnerXPlotMenu" role="button" aria-expanded="false" aria-controls="borrarOwnerXPlotMenu">
+        Lotes y Propietarios
+      </a>
+      <div class="collapse" id="borrarOwnerXPlotMenu">
+        <ul class="nav flex-column ms-3">
+          <li><a class="nav-link text-white" routerLink="owners/plot/1" routerLinkActive="active">Listado Propietarios de Lotes</a></li>
+          <li><a class="nav-link text-white" routerLink="/plots/owner/1" routerLinkActive="active">Listado Lotes por Propietario</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Dropdown Cuentas -->
+    <div class="nav-item">
+      <a class="nav-link dropdown-toggle text-white" data-bs-toggle="collapse" href="#account" role="button" aria-expanded="false" aria-controls="account">
+        Cuentas
+      </a>
+      <div class="collapse" id="account">
+        <ul class="nav flex-column ms-3">
+          <li><a class="nav-link text-white" routerLink="account/list" routerLinkActive="active">Listado de Cuentas</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</aside>

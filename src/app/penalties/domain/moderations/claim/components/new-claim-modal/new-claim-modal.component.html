@@ -1,0 +1,187 @@
+<div>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Nuevo Reclamo</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="activeModal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form #claimForm="ngForm" (ngSubmit)="submitClaim()">
+      <div class="mb-3">
+        <label for="plotSelectionClaim" class="form-label">Lote*</label>
+        <select
+          #plotControlClaim="ngModel"
+          [ngClass]="{
+            'is-invalid':
+              plotControlClaim.invalid &&
+              (plotControlClaim.dirty || plotControlClaim.touched)
+          }"
+          class="form-select"
+          id="plotSelectionClaim"
+          [(ngModel)]="plotId"
+          name="plotIdClaim"
+          required
+        >
+          @if (plots) { @for (plot of plots; track plot.plot_number) {
+          <option value="{{ plot.plot_number }}">
+            {{ plot.plot_number }} - {{ plot.plot_type }}
+          </option>
+          } } @else {
+          <option value="1">1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          }
+        </select>
+        @if (plotControlClaim.invalid && (plotControlClaim.dirty ||
+        plotControlClaim.touched)) { @if (plotControlClaim.getError('required'))
+        {
+        <div class="invalid-feedback">Este campo es obligatorio</div>
+        } }
+      </div>
+
+      <div class="mb-3">
+        <label for="SanctionTypeSelectClaim" class="form-label"
+          >Tipo de Infracción *</label
+        >
+        <select
+          #sanctionControlClaim="ngModel"
+          [ngClass]="{
+            'is-invalid':
+              sanctionControlClaim.invalid &&
+              (sanctionControlClaim.dirty || sanctionControlClaim.touched)
+          }"
+          class="form-select"
+          id="SanctionTypeSelectClaim"
+          [(ngModel)]="sanctionTypeId"
+          name="sanctionTypeIdClaim"
+          required
+        >
+          @if (sanctionTypes) { @for (sanction of sanctionTypes; track
+          sanction.id) {
+          <option value="{{ sanction.id }}">
+            {{ sanction.name }}
+          </option>
+          } } @else {
+          <option value="999">Ruidos molestos</option>
+          <option value="1000">Egreso tardío</option>
+          }
+        </select>
+        @if (sanctionControlClaim.invalid && (sanctionControlClaim.dirty ||
+        sanctionControlClaim.touched)) { @if
+        (sanctionControlClaim.getError('required')) {
+        <div class="invalid-feedback">Este campo es obligatorio</div>
+        } }
+      </div>
+
+      <div class="mb-3">
+        <label for="ClaimDescription" class="form-label">Descripción</label>
+        <textarea
+          class="form-control"
+          id="ClaimDescription"
+          rows="3"
+          #descriptionControlClaim="ngModel"
+          [ngClass]="{
+            'is-invalid':
+              descriptionControlClaim.invalid &&
+              (descriptionControlClaim.dirty || descriptionControlClaim.touched)
+          }"
+          [(ngModel)]="description"
+          name="descriptionClaim"
+          required
+        ></textarea>
+        @if (descriptionControlClaim.invalid && (descriptionControlClaim.dirty
+        || descriptionControlClaim.touched)) { @if
+        (descriptionControlClaim.getError('required')) {
+        <div class="invalid-feedback">Este campo es obligatorio</div>
+        } }
+      </div>
+
+      <div class="mb-3">
+        <label for="formFileMultiple" class="form-label">Archivos</label>
+        <form [formGroup]="imageForm" class="mb-3">
+          @if(isCameraOpen) {
+          <div class="video-container">
+            <video #videoPreview autoplay class="img-fluid rounded"></video>
+
+            <button
+              type="button"
+              class="btn btn-primary me-2"
+              (click)="capturePhoto()"
+            >
+              <i class="bi bi-camera"></i>
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="toggleCamera()"
+            >
+              <i class="bi bi-arrow-repeat"></i>
+            </button>
+            <hr />
+          </div>
+          } @if(capturedImage) {
+          <div class="d-flex flex-column">
+            <img
+              [src]="capturedImage"
+              alt="Captura de la cámara"
+              class="w-50"
+            />
+            <button
+              class="btn btn-outline-danger border-top-0 mb-3 w-50"
+              style="border-radius: 0px 0 8px 8px"
+              (click)="removeCapturedImage()"
+            >
+              <i class="bi bi-trash-fill"></i>
+            </button>
+          </div>
+          } @if(!isCameraOpen) {
+          <button
+            type="button"
+            class="btn btn-outline-primary mt-0 me-2"
+            (click)="startCamera()"
+          >
+            <i class="bi bi-camera-video-fill"></i> Abrir cámara
+          </button>
+          } @else {
+          <button
+            type="button"
+            class="btn btn-outline-dark mt-0 me-2"
+            (click)="stopCamera()"
+          >
+            <i class="bi bi-camera-video-off-fill"></i> Cerrar Cámara
+          </button>
+          }
+        </form>
+        <input
+          class="form-control"
+          type="file"
+          id="formFileMultiple"
+          (change)="onFilesSelected($event)"
+          multiple
+        />
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-success"
+      [disabled]="claimForm.invalid"
+      (click)="submitClaim()"
+    >
+      Confirmar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="activeModal.dismiss('Cross click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</div>

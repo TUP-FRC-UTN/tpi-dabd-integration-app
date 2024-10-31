@@ -1,0 +1,131 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-basic-title">Nueva infraccion</h4>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss('Cross click')"
+  ></button>
+</div>
+<div class="modal-body">
+  <form #infractionForm="ngForm" (ngSubmit)="submitInfraction()">
+    <div class="mb-3">
+      <label for="plotSelection" class="form-label">Lote</label>
+      <select
+        #plotControl="ngModel"
+        [ngClass]="{
+          'is-invalid':
+            plotControl.invalid && (plotControl.dirty || plotControl.touched)
+        }"
+        class="form-select"
+        id="plotSelection"
+        [(ngModel)]="plotId"
+        name="plotIdName"
+        required
+        [disabled]="claims.length !== 0"
+      >
+        @if (plots) { @for (plot of plots; track plot.plot_number) {
+        <option value="{{ plot.plot_number }}">
+          {{ plot.plot_number }} - {{ plot.plot_type }}
+        </option>
+        } } @else {
+        <option value="1">1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        }
+      </select>
+      @if (plotControl.invalid && (plotControl.dirty || plotControl.touched)) {
+      @if (plotControl.getError('required')) {
+      <div class="invalid-feedback">Este campo es obligatorio</div>
+      } }
+    </div>
+    <div class="mb-3">
+      <label for="SanctionTypeSelect" class="form-label"
+        >Tipo de infraccion</label
+      >
+      <select
+        #sanctionControl="ngModel"
+        [ngClass]="{
+          'is-invalid':
+            sanctionControl.invalid &&
+            (sanctionControl.dirty || sanctionControl.touched)
+        }"
+        class="form-select"
+        id="SanctionTypeSelect"
+        [(ngModel)]="sanctionTypeNumber"
+        name="santionTypeName"
+        required
+        [disabled]="claims.length !== 0"
+      >
+        @if (sanctionTypes) { @for (sanction of sanctionTypes; track
+        sanction.id) {
+        <option value="{{ sanction.id }}">
+          {{ sanction.name }}
+        </option>
+        } } @else {
+        <option value="999">Ruidos molestos</option>
+        <option value="1000">Egreso tardío</option>
+        }
+      </select>
+      @if (sanctionControl.invalid && (sanctionControl.dirty ||
+      sanctionControl.touched)) { @if (sanctionControl.getError('required')) {
+      <div class="invalid-feedback">Este campo es obligatorio</div>
+      } }
+    </div>
+    <div class="mb-3">
+      <label for="InfractionDescription" class="form-label">Descripcion</label>
+      <textarea
+        class="form-control"
+        id="InfractionDescription"
+        rows="3"
+        #descriptionControl="ngModel"
+        [ngClass]="{
+          'is-invalid':
+            descriptionControl.invalid &&
+            (descriptionControl.dirty || descriptionControl.touched)
+        }"
+        [(ngModel)]="description"
+        name="descriptionName"
+        required
+      ></textarea>
+      @if (descriptionControl.invalid && (descriptionControl.dirty ||
+      descriptionControl.touched)) { @if
+      (descriptionControl.getError('required')) {
+      <div class="invalid-feedback">Este campo es obligatorio</div>
+      } }
+    </div>
+
+    @if (claims.length!=0) {
+
+    <div class="mb-3">
+      <label for="InfractionDescription" class="form-label">Reclamos</label>
+      <ul class="list-group">
+        @for (claim of claims; track $index) {
+        <li class="list-group-item">
+          {{ claim.created_date | date : "dd/MM/yyyy HH:mm" }} -
+          {{ claim.description | truncate : 30 }}
+        </li>
+        }
+      </ul>
+    </div>
+    }
+  </form>
+</div>
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-success"
+    [disabled]="infractionForm.invalid"
+    (click)="submitInfraction()"
+  >
+    Confirmar
+  </button>
+  <button
+    type="button"
+    class="btn btn-danger"
+    (click)="activeModal.dismiss('Cross click')"
+  >
+    Cancelar
+  </button>
+</div>

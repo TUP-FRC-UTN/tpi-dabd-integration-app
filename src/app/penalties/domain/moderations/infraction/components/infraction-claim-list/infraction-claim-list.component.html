@@ -1,0 +1,38 @@
+<ng-template #actionsTemplate let-item>
+  <button class="btn btn-info btn-sm me-2" (click)="goToClaimDetail(item.id)">
+    <i class="bi bi-eye"></i>
+  </button>
+</ng-template>
+
+<ng-template #date let-item>
+  {{ item.created_date | date : "dd/MM/yyyy HH:mm" }}
+</ng-template>
+
+<ng-template #claimStatus let-item>
+  @if(item.claim_status === 'APPROVED') {
+  <span class="badge border border-success text-success p-2">{{
+    item.claim_status | getValueByKeyForEnum : ClaimStatusEnum
+  }}</span>
+  } @else if(item.claim_status === 'REJECTED') {
+  <span class="badge border border-danger text-danger p-2">{{
+    item.claim_status | getValueByKeyForEnum : ClaimStatusEnum
+  }}</span>
+  } @else if (item.claim_status === 'SENT') {
+  <span class="badge text-secondary border border-secondary p-2">{{
+    item.claim_status | getValueByKeyForEnum : ClaimStatusEnum
+  }}</span>
+  }
+</ng-template>
+
+<div class="px-5 py-4 border border-top-0">
+  <app-table
+    [height]="'200px'"
+    [items]="claims || []"
+    [columns]="columns"
+    [showExportOptions]="false"
+    [headerButtonText]="'Nuevo'"
+    [showSearchBar]="false"
+    [showHeaderButton]="false"
+  >
+  </app-table>
+</div>

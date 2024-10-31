@@ -1,0 +1,14 @@
+<div class="modal-header d-flex justify-content-end">
+    <button type="button" class="close " aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body text-center">
+    <i class="bi bi-exclamation-triangle-fill" style="font-size: 100px; color: red;"></i>
+    <h5 class="mt-3">¿Está seguro?</h5>
+    <p>No podrá revertir esta acción</p>
+</div>
+<div class="modal-footer justify-content-center">
+    <button type="button" class="btn btn-success" (click)="confirmDelete()">Confirmar</button>
+    <button type="button" class="btn btn-danger" (click)="activeModal.close('cancel')">Cancelar</button>
+</div>

@@ -1,0 +1,35 @@
+.custom-form {
+    background-color: #ffffff; /* Fondo blanco para el formulario */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra suave para un efecto elevado */
+  }
+  
+  .text-orange {
+    color: #333; /* Texto en gris oscuro para etiquetas */
+    font-weight: bold; /* Hacer texto en negrita */
+  }
+  
+  .custom-input,
+  .custom-textarea {
+    border: 2px solid #333; /* Borde más grueso y oscuro para inputs y textareas */
+    background-color: #ffffff; /* Fondo blanco para inputs y textareas */
+    color: #000; /* Texto negro */
+  }
+  
+  .custom-input:focus,
+  .custom-textarea:focus {
+    border-color: #333; /* Borde oscuro al enfocar */
+    box-shadow: 0 0 5px rgba(51, 51, 51, 0.5); /* Sombra al enfocar */
+  }
+  
+  .btn-danger:hover {
+    background-color: #d9534f; /* Color de fondo en hover para botón Cancelar */
+    color: #fff; /* Texto blanco al hacer hover */
+  }
+  
+  .btn-primary:hover {
+    background-color: #007bff; /* Color de fondo en hover para botón Guardar */
+    color: #fff; /* Texto blanco al hacer hover */
+  }
+  

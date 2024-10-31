@@ -1,0 +1,171 @@
+<app-main-container title="Tipo de infraccion" subTitle="{{ sanctionType?.name }}" [onGoBack]="goBack">
+  <form #sanctionTypeForm="ngForm" (ngSubmit)="saveEdit()" novalidate>
+    <div class="row">
+      <div class="mb-3 col-1">
+        <label for="id" class="form-label">Id</label>
+        <input
+          class="form-control"
+          id="id"
+          [(ngModel)]="sanctionType!.id!"
+          name="id"
+          #id="ngModel"
+          disabled
+        />
+      </div>
+      <div class="mb-3 col-2">
+        <label for="chargeTypeSelect" class="form-label">Tipo</label>
+        <select
+          class="form-select"
+          id="chargeTypeSelect"
+          [(ngModel)]="sanctionType!.charge_type!"
+          name="chargeType"
+          #chargeType="ngModel"
+          [disabled]="!editing"
+          required
+        >
+          @for (sanctionTypeKey of chargeTypeKeys; track $index) {
+          <option [value]="sanctionTypeKey">
+            {{ sanctionTypeKey | getValueByKeyForEnum : ChargeTypeEnum }}
+          </option>
+          }
+        </select>
+     
+      </div>
+      <div class="mb-3 col-3">
+        <label for="amountInput" class="form-label">Monto</label>
+        <input
+          class="form-control"
+          id="amountInput"
+          type="number"
+          min="0"
+          step="0.01"
+          [(ngModel)]="sanctionType!.amount!"
+          name="amount"
+          #amount="ngModel"
+          [disabled]="!editing"
+          required
+        />
+        @if(amount.invalid && amount.touched){
+        <div class="text-danger">
+          @if (amount.errors?.['required']) { El monto es requerido. }
+          @else if(amount.errors?.['min']) {El monto debe ser mayor o igual a 0.}
+          @else if (amount.errors?.['pattern']) {El monto debe ser un número válido.}
+        </div>
+
+        }
+       
+      </div>
+      <div class="mb-3 col-3">
+        <label for="daysInput" class="form-label">
+          Días de vencimiento
+          <i
+            class="bi bi-question-circle"
+            ngbTooltip="Cantidad de días a los cuales ya no se considera la infracción para la generación de una multa."
+          ></i>
+        </label>
+        <input
+          class="form-control"
+          id="daysInput"
+          type="number"
+          min="1"
+          step="1"
+          pattern="^[0-9]+$"
+          [(ngModel)]="sanctionType!.infraction_days_to_expire!"
+          name="infraction_days_to_expire"
+          #infraction_days_to_expire="ngModel"
+          [disabled]="!editing"
+          required
+        />
+        @if(infraction_days_to_expire.invalid && infraction_days_to_expire.touched){
+          <div class="text-danger">
+            @if (infraction_days_to_expire.errors?.['required']) {
+              Los días de vencimiento son requeridos.
+            }
+            @else if (infraction_days_to_expire.errors?.['min']) {
+              Los días de vencimiento deben ser al menos 1.
+            }
+            @else if (infraction_days_to_expire.errors?.['pattern']) {Debe ser un entero.}
+
+          </div>
+        }
+      </div>
+      <div class="mb-3 col-3">
+        <label for="strikesInput" class="form-label">
+          Strikes
+          <i
+            class="bi bi-question-circle"
+            ngbTooltip="Cantidad de infracciones que generan una multa."
+          ></i>
+        </label>
+        <input
+          class="form-control"
+          id="strikesInput"
+          type="number"
+          min="1"
+          step="1"
+          pattern="^[0-9]+$"
+          [(ngModel)]="sanctionType!.amount_of_infractions_for_fine!"
+          name="amount_of_infractions_for_fine"
+          #amount_of_infractions_for_fine="ngModel"
+          [disabled]="!editing"
+          required
+        />
+        @if(amount_of_infractions_for_fine.invalid && amount_of_infractions_for_fine.touched){
+          <div class="text-danger">
+            @if (amount_of_infractions_for_fine.errors?.['required']) {
+              La cantidad de strikes es requerida.
+            }
+            @else if (amount_of_infractions_for_fine.errors?.['min']) {
+              La cantidad de strikes debe ser al menos 1.
+            }
+            @else if (amount_of_infractions_for_fine.errors?.['pattern']) {Debe ser un entero.}
+          </div>
+        }
+      </div>
+      
+    <div class="row">
+      <div class="mb-3 col-12">
+        <label for="description" class="form-label">Descripción</label>
+        <textarea
+          id="description"
+          name="description"
+          class="form-control"
+          rows="4"
+          [readonly]="!editing"
+          [(ngModel)]="sanctionType!.description!"
+          #description="ngModel"
+          required
+        ></textarea>
+        @if(description.invalid && description.touched) {
+          <div class="text-danger">
+            @if (description.errors?.['required']) {
+              La descripción es requerida.
+            }
+          </div>
+        }
+      </div>
+      
+      @if(isAdmin){ @if (editing) {
+      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <button class="btn btn-danger" (click)="cancelEdit()" type="button">
+          Cancelar
+        </button>
+        <button
+          class="btn btn-primary"
+          type="submit"
+          [disabled]="!sanctionTypeForm.valid"
+        >
+          Guardar
+        </button>
+      </div>
+      }@else {
+      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <button class="btn btn-warning" (click)="edit()" type="button">
+          Editar
+        </button>
+      </div>
+      } }
+    </div>
+    </div>
+  </form>
+</app-main-container>

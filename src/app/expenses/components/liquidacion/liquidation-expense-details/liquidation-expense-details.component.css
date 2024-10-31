@@ -1,0 +1,17 @@
+.general-details div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.general-details div div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.general-details p {
+  margin: 0;
+}

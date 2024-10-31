@@ -1,0 +1,15 @@
+.ng-template {
+    width: 150%;
+}
+
+.custom-button {
+    font-size: 1.2rem;        
+    margin-right: 0.25rem;     
+    color: #0d6efd;            
+    border: none;                
+    background: transparent;    
+}
+
+.custom-button i {
+    vertical-align: middle;    
+}

@@ -1,0 +1,231 @@
+<app-main-container title="Historial de Notificaciones">
+<div class="card-body">
+
+  <!-- Botones de exportación -->
+<div class="col row d-flex justify-content-end mb-3">
+
+    <div class="col-auto">
+      <button class="btn" (click)="exportToExcel()" style="background-color: #239b56; color: white;" title="Descargar Excel">
+        <i class="bi bi-file-earmark-excel"></i>
+      </button>
+    </div>
+  
+    <div class="col-auto btn-export-pdf">
+      <button class="btn"  (click)="exportToPDF()" style="background-color: red; color: white;" title="Descargar PDF">
+        <i class="bi bi-file-pdf"></i>
+      </button>
+    </div>
+  </div>
+  
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Grupo de botones izquierdo -->
+        <div class="btn-group me-5" role="group">
+          <div class="d-flex align-items-center">
+            <div class="btn-group me-2">
+                <button class="btn btn-outline-danger" (click)="clearFilters()">
+                <i class="bi bi-trash-fill"></i> Limpiar
+              </button>
+  
+              <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-funnel-fill"></i> Filtros
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <h6 class="dropdown-header">Tipo de Filtro</h6>
+                </li>
+                <li><a class="dropdown-item" (click)="onFilterChange('Todos')">Todos</a></li>
+                <li><a class="dropdown-item" (click)="onFilterChange('Estado')">Estado</a></li>
+                <li><a class="dropdown-item" (click)="onFilterChange('Fecha')">Fecha</a></li>
+                <li><a class="dropdown-item" (click)="onFilterChange('Usuario')">Usuario</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+  
+  
+            <!-- Inputs para filtrado -->
+            @if(currentFilter === 'Fecha'){
+              <div  class="mb-3">
+                  <label for="dateFrom">Desde:</label>
+                  <input type="date" id="dateFrom" [(ngModel)]="dateFrom" (ngModelChange)="filterNotifications()" class="form-control mb-2">
+                  
+                  <label for="dateUntil">Hasta:</label>
+                  <input type="date" id="dateUntil" [(ngModel)]="dateUntil"  (ngModelChange)="filterNotifications()" class="form-control">
+                </div>
+            }
+            @if(currentFilter === 'Estado'){
+            <div class="mb-3">
+              <label for="status">Estado:</label>
+                  <select id="status" [(ngModel)]="status" (ngModelChange)="filterNotifications()" class="form-select">
+
+                <option value="">Seleccione Estado</option>
+                <option value="Enviado">Enviado</option>
+                <option value="Visualizado">Visualizado</option>
+              </select>
+            </div>
+          }
+          @if(currentFilter === 'Usuario'){
+              <div  class="mb-3">
+                  <label for="userFilter">Usuario:</label>
+                  <input type="text" id="userFilter" [(ngModel)]="emailFilter"
+                  (ngModelChange)="filterNotifications()" class="form-control" placeholder="Ingresa el correo del usuario">
+                </div>
+            
+          }
+    
+      </div>
+  
+      <!-- Tabla -->
+      <div class="table-container">
+        <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;">
+          
+          @if (filteredNotifications.length === 0) {
+          <thead>
+            <tr>
+              <td colspan="5">
+                <div class="text-center p-2">
+                  <div class="alert alert-secondary text-center" role="alert">
+                    No hay notificaciones para mostrar
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </thead>
+          } @else {
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Asunto</th>
+              <th>Fecha</th>
+              <th>Visualizado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(notification of paginatedNotifications; track $index) {
+            <tr>
+                <td title="{{ notification.recipient }}">
+                    {{ notification.recipient.split('@')[0] }}&#64;...
+                  </td>
+              <td>{{notification.subject}}</td>
+              <td>{{notification.dateSend | date: "short"}} </td>
+              <!-- <td>
+                @if(notification.statusSend === 'VISUALIZED'){
+                  Visto
+                }
+                @if(notification.statusSend === 'SENT'){
+                  No visto
+                }
+              </td> -->
+              <td>
+                @if (notification.statusSend === "VISUALIZED") {
+                <p class="mb-0">
+                  <i class="bi bi-check2-circle text-success" style="font-size: 1.5rem;"></i>
+                </p>
+                } @else {
+                <p class="mb-0">
+                  <i class="bi bi-x-circle text-danger" style="font-size: 1.5rem;"></i>
+                </p>
+                }
+              </td>
+              <td>
+                <button class="btn btn-primary" (click)="previewContent(notification)">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </td>
+            </tr>
+            }
+          </tbody>
+          }
+        </table>
+      </div>
+  
+    
+    <!-- Paginación e Info -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div class="d-flex align-items-center">
+        <select class="form-select me-3" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+          <option [value]="10">10 Elementos</option>
+          <option [value]="25">25 Elementos</option>
+          <option [value]="50">50 Elementos</option>
+        </select>
+      </div>
+
+      <div class="d-flex align-items-center">
+        <ngb-pagination [(page)]="currentPage" [pageSize]="itemsPerPage" [collectionSize]="totalItems"
+          (pageChange)="changePage($event)" [maxSize]="5" [boundaryLinks]="false"></ngb-pagination>
+
+        <button class="btn btn-secondary ms-3 mb-3" (click)="showInfo()">
+          <i class="bi bi-info-circle"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</app-main-container>
+
+
+
+<!-- Modal de Información -->
+<div [class.show]="isModalOpen" [style.display]="isModalOpen ? 'block' : 'none'" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ modalTitle }}</h5>
+        <button type="button" class="btn-close" (click)="isModalOpen = false"></button>
+      </div>
+      <div class="modal-body">
+        <div [innerHTML]="modalMessage"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="isModalOpen = false">Volver</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Notificacion -->
+<div [class.show]="isModalOpenNoti" [style.display]="isModalOpenNoti ? 'block' : 'none'" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ modalTitle }}</h5>
+        <button type="button" class="btn-close" (click)="isModalOpen = false"></button>
+      </div>
+      <div class="modal-body">
+        <div [innerHTML]="modalMessage"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="isModalOpen = false">Volver</button>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="modal" >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{selectedNotification?.subject }}</h5>
+          <button type="button" class="btn-close"  data-bs-dismiss="modal" (click)="closeModal()"></button>
+        </div>
+        <p class="notification-time-modal">{{ selectedNotification?.dateSend | date:'short' }}</p>
+        <div class="modal-body" [innerHTML]="selectedNotification?.body">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeModal()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+    Esto hace que si tocas cualquier parte de la pantalla cuando esta el modal se cierre, pero hace que se vea borroso -->
+    <!-- @if(showModal){
+    <div class="modal-backdrop" (click)="closeModal()"></div>} -->
+  <!-- </div> -->
+</div>
+<!-- Modal Notificación -->
+<div class="modal" *ngIf="showModalToRenderHTML" (click)="closeModalToRenderHTML()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+      <span class="close" (click)="closeModalToRenderHTML()">&times;</span>
+      <iframe #iframePreview style="width: 100%; border: none;"></iframe>
+      <div class="mt-3 text-end">
+        <button type="button" class="btn btn-secondary" (click)="closeModalToRenderHTML()">Volver</button>
+      </div>
+  </div>
+</div>

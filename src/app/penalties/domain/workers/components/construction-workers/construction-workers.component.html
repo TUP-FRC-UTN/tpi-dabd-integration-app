@@ -1,0 +1,23 @@
+<ng-template #actionsTemplate let-item>
+  <button
+    class="btn btn-danger btn-sm me-2"
+    (click)="unAssignWorker(item)"
+    [disabled]="role !== 'OWNER'"
+  >
+    Remover
+  </button>
+</ng-template>
+
+<div class="px-5 py-4 border border-top-0">
+  <app-table
+    [height]="'200px'"
+    [items]="workers || []"
+    [columns]="columns"
+    [showExportOptions]="false"
+    [headerButtonText]="'Nuevo'"
+    (headerButtonClick)="openFormModal()"
+    [showSearchBar]="false"
+    [showHeaderButton]="role === 'OWNER'"
+  >
+  </app-table>
+</div>
