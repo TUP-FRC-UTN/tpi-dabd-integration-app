@@ -16,7 +16,7 @@ import {
 import { TicketService } from '../services/ticket.service';
 import { HttpClient } from '@angular/common/http';
 import { TicketPaymentFilterButtonsComponent } from '../ticket-payment-filter-buttons/ticket-payment-filter-buttons.component';
-import { Filter, FilterConfigBuilder, MainContainerComponent, TableComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
+import { Filter, FilterConfigBuilder, FilterOption, MainContainerComponent, TableComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
 import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateStatusTicketPipe } from '../pipes/translate-status-ticket.pipe';
 import { PaginatedResponse } from '../models/api-response';
@@ -46,20 +46,11 @@ registerLocaleData(localeEs, 'es-ES');
   providers: [DatePipe],	
 })
 export class AdminListExpensasComponent implements OnInit {
-redirectToForm() {
-throw new Error('Method not implemented.');
-}
-filterChange($event: Record<string, any>) {
-  console.log($event)
-}
-  resetFilters() {
-    throw new Error('Method not implemented.');
-  }
 
   //#region ATT de PAGINADO
   currentPage: number = 0;
-  pageSize: number = 2;
-  sizeOptions: number[] = [5, 10, 50];
+  pageSize: number = 10;
+  sizeOptions: number[] = [10, 25, 50];
   ticketList: TicketDto[] = [];
   filteredTicketList: TicketDto[] = [];
   lastPage: boolean | undefined;
@@ -177,7 +168,6 @@ filterChange($event: Record<string, any>) {
     );
   }
   onPageChange(page: number) {
-    debugger
     this.currentPage = --page;
     this.getTickets();
   }
@@ -387,7 +377,6 @@ filterChange($event: Record<string, any>) {
    */
   //#region TIENEN QUE MODIFICAR EL SERIVCIO CON SU GETALL
   exportToExcel() {
-    debugger;
     this.ticketService.getAllTicketsPage(0, this.LIMIT_32BITS_MAX).subscribe(
       (response) => {
         const modifiedContent = response.content.map(({ id, ...rest }) => rest);
@@ -410,7 +399,6 @@ filterChange($event: Record<string, any>) {
    * @param event - The input event from the text box.
    */
   onFilterTextBoxChanged(event: Event) {
-    debugger
     const target = event.target as HTMLInputElement;
     console.log(target);
   
@@ -461,39 +449,28 @@ filterChange($event: Record<string, any>) {
     return;
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
+  filteroptions : FilterOption[] = ["PAGADO", "ANULADO", "PENDIENTE"].map((status) => ({
+    value: status,
+    label: status,
+    }));
 
   filterConfig: Filter[] = new FilterConfigBuilder()
-
-    .numberFilter('Nro. Manzana', 'plotNumber', 'Seleccione una Manzana')
-    .selectFilter('Tipo', 'plotType', 'Seleccione un tipo', [
-      {value: 'COMMERCIAL', label: 'Comercial'},
-      {value: 'PRIVATE', label: 'Privado'},
-      {value: 'COMMUNAL', label: 'Comunal'},
-    ])
-    .selectFilter('Estado', 'plotStatus', 'Seleccione un estado', [
-      {value: 'CREATED', label: 'Creado'},
-      {value: 'FOR_SALE', label: 'En Venta'},
-      {value: 'SALE', label: 'Venta'},
-      {value: 'SALE_PROCESS', label: 'Proceso de Venta'},
-      {value: 'CONSTRUCTION_PROCESS', label: 'En construcciones'},
-      {value: 'EMPTY', label: 'Vacio'},
-    ])
-    .radioFilter('Activo', 'isActive', [
-      {value: 'true', label: 'Activo'},
-      {value: 'false', label: 'Inactivo'},
-      {value: 'undefined', label: 'Todo'},
-    ])
+    .textFilter("Propietario", "ownerId", "Ingrese un propietario")
+    .numberFilter("Numero de lote", "lotId", "Ingrese un numero de lote")
+    .checkboxFilter("Estado", "status", this.filteroptions)
     .build()
+
+
+  redirectToForm() {
+    throw new Error('Method not implemented.');
+    }
+  filterChange($event: Record<string, any>) {
+    console.log($event)
+  }
+  resetFilters() {
+    this.filterConfig = new FilterConfigBuilder()
+    .textFilter("Propietario", "ownerId", "Ingrese un propietario")
+    .numberFilter("Numero de lote", "lotId", "Ingrese un numero de lote")
+    .build()
+  }
 }
