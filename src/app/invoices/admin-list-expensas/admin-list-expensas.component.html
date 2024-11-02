@@ -1,54 +1,4 @@
-<app-main-container title="hola administrador">
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div class="btn-group me-5" role="group">
-    <div class="d-flex align-items-center">
-      <div class="btn-group me-2">
-        <button type="button" class="btn btn-outline-danger" >
-          <i class="bi bi-trash-fill"></i> Limpiar
-        </button>
-        <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="bi bi-funnel-fill"></i> Filtros
-        </button>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item" (click)="setFilterType('estado')">Tipo de Estado</a></li>
-          <li><a class="dropdown-item" (click)="setFilterType('fecha')">Fechas</a></li>
-        </ul>
-      </div>
-      <div class="d-flex">
-        @if (filterType === 'estado') {
-
-          <select class="form-select me-2" [(ngModel)]="filterInput">
-            <option [ngValue]="null" disabled selected>Selecciona un estado</option>
-            <option *ngFor="let status of ticketStatusOptions" [ngValue]="status.key">{{ status.value }}</option>
-          </select>
-          <div class="ms-auto">
-            <button class="btn btn-dark" type="button" >
-              Buscar
-            </button>
-          </div>
-        }
-    
-    
-        @if (filterType === 'fecha') {
-
-          
-        <input type="date" class="form-control me-2" [(ngModel)]="fechaInicio">
-        <input type="date" class="form-control me-2" [(ngModel)]="fechaFin">
-        <div class="ms-auto">
-          <button class="btn btn-dark" type="button" >
-            Buscar
-          </button>
-        </div>
-
-        }
-    
-
-      </div>
-    </div>
-  </div>
-
-
-</div>
+<app-main-container title="Hola Administrador" subTitle="Aca podras modificar el estado de pagos" (infoButtonClick)="showInfo()">
 
 <div class="d-flex justify-content-between align-items-center mb-3">
   <div class="btn-group me-5" role="group">
@@ -59,12 +9,12 @@
         </span>
         <input
           type="text"
-          class="form-control"
+          class="form-control me-2"
           id="filter-text-box"
           (input)="onFilterTextBoxChanged($event)"
           placeholder="Buscar..."
         />
-        <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
+        <app-table-filters class="me-2" [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
 
       </div>
     </div>
@@ -134,32 +84,38 @@
           </span>
         </td>
         <td class="text-center">
-          <div class="btn-group">
-            <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown-menu"
+          <div class="btn-group" ngbDropdown>
+            <button 
+              type="button" 
+              class="btn btn-sm btn-secondary" 
+              ngbDropdownToggle 
               aria-expanded="false">
               <i class="bi bi-three-dots-vertical"></i>
             </button>
-            <ul class="dropdown-menu">
+            <ul ngbDropdownMenu class="dropdown-menu">
               <li>
-                <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#ticketModal"
-                  (click)="selectTicket(item)">Ver ticket
+                <a 
+                  class="dropdown-item" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#ticketModal"
+                  (click)="selectTicket(item)">
+                  Ver ticket
                 </a>
               </li>
               <li>
-                <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#statusModal"
-                  (click)="selectTicket(item)">Cambiar estado</a>
+                <a 
+                  class="dropdown-item" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#statusModal"
+                  (click)="selectTicket(item)">
+                  Cambiar estado
+                </a>
               </li>
-              <!-- <li>
-                <a class="dropdown-item" (click)="downloadPdf(item.id)"
-                  >Descargar PDF</a
-                >
-              </li> -->
-              <!-- <li>
-                <hr class="dropdown-divider" />
-              </li> -->
             </ul>
           </div>
         </td>
+        
+        
       </tr>
       }@empty {
       <td colspan="7" class="text-center">
@@ -175,9 +131,9 @@
 </div>
 
 
+<!-- FINALIZA TABLA PRINCIPAL -->
 
-
-
+<!-- EMPIEZA PAGINACION -->
 
   <div class="d-flex justify-content-between align-items-center mt-3">
 

@@ -16,7 +16,7 @@ import {
 import { TicketService } from '../services/ticket.service';
 import { HttpClient } from '@angular/common/http';
 import { Filter, FilterConfigBuilder, FilterOption, MainContainerComponent, TableComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
-import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModal, NgbModule, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateStatusTicketPipe } from '../pipes/translate-status-ticket.pipe';
 import { PaginatedResponse } from '../models/api-response';
 import { InfoComponent } from '../info/info.component';
@@ -38,10 +38,12 @@ registerLocaleData(localeEs, 'es-ES');
     TranslateStatusTicketPipe,
     MainContainerComponent,
     TableFiltersComponent,
+    NgbDropdownModule,
+    NgbModule
   ],
   templateUrl: './admin-list-expensas.component.html',
   styleUrls: ['./admin-list-expensas.component.css'],
-  providers: [DatePipe],	
+  providers: [DatePipe],
 })
 export class AdminListExpensasComponent implements OnInit {
 
@@ -51,6 +53,8 @@ export class AdminListExpensasComponent implements OnInit {
   sizeOptions: number[] = [10, 25, 50];
   ticketList: TicketDto[] = [];
   filteredTicketList: TicketDto[] = [];
+
+
   lastPage: boolean | undefined;
   totalItems: number = 0;
   //#endregion
@@ -61,7 +65,6 @@ export class AdminListExpensasComponent implements OnInit {
       value: TicketStatus[key as keyof typeof TicketStatus]
     }));
 
-    this.getTickets();
   }
 
   filterType: string = '';
@@ -97,11 +100,20 @@ export class AdminListExpensasComponent implements OnInit {
   fechasForm: FormGroup;
   totalTicketSelected: number = 0;
 
+
+
+  LIMIT_32BITS_MAX = 2147483647;
+
+ 
+
+  @Input() objectName: string = '';
+
   constructor(
     private mercadopagoservice: MercadoPagoServiceService,
     private formBuilder: FormBuilder,
-    private ticketservice: TicketService,
-    private modalService: NgbModal
+    private ticketService: TicketService,
+    private modalService: NgbModal,
+    private excelService:PaymentExcelService
   ) {
     this.fechasForm = this.formBuilder.group({
       fechaInicio: [''],
@@ -127,7 +139,7 @@ export class AdminListExpensasComponent implements OnInit {
 
   // Método para obtener todos los tickets usando el servicio
   getTickets(): void {
-    this.ticketservice.getAll(this.currentPage, this.pageSize).subscribe({
+    this.ticketService.getAll(this.currentPage, this.pageSize).subscribe({
       next: (response: PaginatedResponse<TicketDto>) => {
         console.log('Tickets received:', response.content);
         this.listallticket = response.content;
@@ -148,7 +160,7 @@ export class AdminListExpensasComponent implements OnInit {
   enviarFechas() {
     const fechas = this.fechasForm.value;
     console.log('Fechas Enviadas:', fechas);
-    this.ticketservice.filtrarfechas(fechas).subscribe(
+    this.ticketService.filtrarfechas(fechas).subscribe(
       (filteredTickets: TicketDto[]) => {
         this.filteredTickets = filteredTickets;
       },
@@ -266,7 +278,7 @@ export class AdminListExpensasComponent implements OnInit {
 
 
 
-    // ACA SE ABRE EL MODAL DE INFO
+  // ACA SE ABRE EL MODAL DE INFO
   showInfo(): void {
     const modalRef = this.modalService.open(InfoComponent, {
       size: 'lg',
@@ -281,42 +293,63 @@ export class AdminListExpensasComponent implements OnInit {
 
 
 
+  onFilterTextBoxChanged(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const filterText = target.value.toLowerCase();
+  
+    if (filterText.length <= 2) {
+      // Restaura la lista completa si el texto del filtro tiene menos de 3 caracteres
+      this.filteredTickets = [...this.listallticket];
+    } else {
+      // Filtra los tickets visibles en la tabla
+      this.filteredTickets = this.listallticket.filter(ticket => 
+        this.matchVisibleFields(ticket, filterText)
+      );
+    }
+  }
+  
+  // Función de coincidencia solo en los campos visibles
+  matchVisibleFields(ticket: TicketDto, filterText: string): boolean {
+    // Combina las propiedades visibles en un solo texto y verifica si contiene el filtro
+    const propietario = `${ticket.ownerId.first_name} ${ticket.ownerId.second_name} ${ticket.ownerId.last_name}`.toLowerCase();
+    const lote = ticket.lotId.toString();
+    const periodo = this.formatPeriodo(ticket.issueDate);
+    const total = this.calculateTotal(ticket).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
+    const estado = this.translateStatus(ticket.status).toLowerCase();
+  
+    return (
+      propietario.includes(filterText) ||
+      lote.includes(filterText) ||
+      periodo.includes(filterText) ||
+      total.includes(filterText) ||
+      estado.includes(filterText)
+    );
+  }
+  
+  // Función para formatear la fecha de periodo como "MM/YYYY"
+  formatPeriodo(date: Date): string {
+    const month = new Date(date).getMonth() + 2;
+    const year = new Date(date).getFullYear();
+    return `${month.toString().padStart(2, '0')}/${year}`;
+  }
+  
+  // Traduce el estado del ticket a español
+  translateStatus(status: TicketStatus): string {
+    switch (status) {
+      case TicketStatus.PAID:
+        return 'Pagado';
+      case TicketStatus.CANCELED:
+        return 'Anulado';
+      case TicketStatus.PENDING:
+        return 'Pendiente';
+      default:
+        return '';
+    }
+  }
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  LIMIT_32BITS_MAX = 2147483647;
-  private excelService = inject(PaymentExcelService);
-
-  private ticketService = inject(TicketService);
-  // Input to receive a generic list from the parent component
-  @Input() itemsList!: TicketDto[];
-  // Input to redirect to the form.
-  @Input() formPath: string = '';
-  // Represent the name of the object for the exports.
-  // Se va a usar para los nombres de los archivos.
-  @Input() objectName: string = '';
-  // Represent the dictionaries of ur object.
-  // Se va a usar para las traducciones de enum del back.
-  @Input() dictionaries: Array<{ [key: string]: any }> = [];
-
-  // Subject to emit filtered results
-  private filterSubject = new Subject<TicketDto[]>();
-  // Observable that emits filtered owner list
-  filter$ = this.filterSubject.asObservable();
 
 
   getActualDayFormat() {
@@ -331,36 +364,37 @@ export class AdminListExpensasComponent implements OnInit {
    * Calls the `exportTableToPdf` method from the `CadastreExcelService`.
    */
   exportToPdf() {
-
     const doc = new jsPDF();
-   
+  
     // Título del PDF
     doc.setFontSize(18);
     doc.text('Tickets Report', 14, 20);
-
+  
     this.ticketService.getAllTicketsPage(0, this.LIMIT_32BITS_MAX).subscribe(
-      (response: any) => {
+      (response: PaginatedResponse<TicketDto>) => {
+        // Accede a la propiedad `content` que contiene los tickets
+        const expenses = response.content;
+  
         autoTable(doc, {
           startY: 30,
-          head: [['Periodo', 'Vencimiento', 'Total', 'Estado']],
-          body: response.map((expense: any) => [
-            expense.ownerId.first_name,
-            expense.issueDate instanceof Date ? expense.issueDate.toLocaleDateString() : expense.issueDate, // convertir fecha a string
+          head: [['Propietario', 'Periodo', 'ID', 'Estado']],
+          body: expenses.map((expense: TicketDto) => [
+            `${expense.ownerId.first_name} ${expense.ownerId.last_name}`,
+            expense.issueDate instanceof Date ? expense.issueDate.toLocaleDateString() : new Date(expense.issueDate).toLocaleDateString(),
             expense.id,
             expense.status
           ]),
         });
+  
+        // Guarda el PDF después de agregar la tabla
+        doc.save('expenses_report.pdf');
       },
-      () => {
-        console.log('Error retrieved all, on export component.');
+      (error) => {
+        console.error('Error retrieved all, on export component.', error);
       }
     );
-    
-
-       // Guardar el PDF después de agregar la tabla
-       doc.save('expenses_report.pdf');
   }
-
+  
   /**
    * Export the HTML table to an Excel file (.xlsx).
    * Calls the `exportTableToExcel` method from the `CadastreExcelService`.
@@ -381,68 +415,12 @@ export class AdminListExpensasComponent implements OnInit {
     );
   }
 
-  /**
-   * Filters the list of items based on the input value in the text box.
-   * The filter checks if any property of the item contains the search string (case-insensitive).
-   * The filtered list is then emitted through the `filterSubject`.
-   *
-   * @param event - The input event from the text box.
-   */
-  onFilterTextBoxChanged(event: Event) {
-    const target = event.target as HTMLInputElement;
-    console.log(target);
-  
-    if (target.value?.length <= 2) {
-      this.filterSubject.next(this.itemsList);
-    } else {
-      const filterValue = target.value.toLowerCase();
-  
-      const filteredList = this.itemsList.filter((item) => {
-        return Object.values(item).some((prop) => {
-          const propString = prop ? prop.toString().toLowerCase() : '';
-  
-          const translations =
-            this.dictionaries && this.dictionaries.length
-              ? this.dictionaries
-                  .map((dict) => this.translateDictionary(propString, dict))
-                  .filter(Boolean)
-              : [];
-  
-          return (
-            propString.includes(filterValue) ||
-            translations.some((trans) =>
-              trans?.toLowerCase().includes(filterValue)
-            )
-          );
-        });
-      });
-  
-      this.filterSubject.next(filteredList.length > 0 ? filteredList : []);
-    }
-  }
 
-  /**
-   * Translates a value using the provided dictionary.
-   *
-   * @param value - The value to translate.
-   * @param dictionary - The dictionary used for translation.
-   * @returns The key that matches the value in the dictionary, or undefined if no match is found.
-   */
-  translateDictionary(value: any, dictionary?: { [key: string]: any }) {
-    if (value !== undefined && value !== null && dictionary) {
-      for (const key in dictionary) {
-        if (dictionary[key].toString().toLowerCase() === value.toLowerCase()) {
-          return key;
-        }
-      }
-    }
-    return;
-  }
 
-  filteroptions : FilterOption[] = ["PAGADO", "ANULADO", "PENDIENTE"].map((status) => ({
+  filteroptions: FilterOption[] = ["PAGADO", "ANULADO", "PENDIENTE"].map((status) => ({
     value: status,
     label: status,
-    }));
+  }));
 
   filterConfig: Filter[] = new FilterConfigBuilder()
     .textFilter("Propietario", "ownerId", "Ingrese un propietario")
@@ -451,14 +429,26 @@ export class AdminListExpensasComponent implements OnInit {
     .build()
 
 
-  filterChange($event: Record<string, any>) {
-    console.log($event)
+   // Método que detecta cambios en los filtros
+   filterChange($event: Record<string, any>) {
+    console.log($event); // Muestra los valores actuales de los filtros en la consola
+    
+    // Verifica si el filtro de estado tiene un cambio específico
+    if ($event['status']?.includes("PAGADO")) {
+      this.onPaidStatusSelected();
+    }
+  }
+
+  // Método propio que se ejecuta cuando se selecciona "PAGADO" en el checkbox
+  onPaidStatusSelected() {
+    console.log("Se seleccionó el estado PAGADO.");
+    // Aquí puedes agregar la lógica adicional que necesitas.
   }
 
   resetFilters() {
     this.filterConfig = new FilterConfigBuilder()
-    .textFilter("Propietario", "ownerId", "Ingrese un propietario")
-    .numberFilter("Numero de lote", "lotId", "Ingrese un numero de lote")
-    .build()
+      .textFilter("Propietario", "ownerId", "Ingrese un propietario")
+      .numberFilter("Numero de lote", "lotId", "Ingrese un numero de lote")
+      .build();
   }
 }

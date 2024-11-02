@@ -1,143 +1,45 @@
-<div class="container">
-  <h2 class="mt-4">Hola Propietario</h2>
-  <hr class="my-4" />
-  <div class="row d-flex mb-3 justify-content-center">
-    <!-- <div class="col-md-6 justify-content-center">
-      <label for="searchInput" class="form-label mb-0">Buscador general</label>
-      <input type="text" class="form-control" id="searchInput" [(ngModel)]="searchText" (input)="searchTable()"
-        placeholder="Escribe para buscar...">
-    </div> -->
-
-    <!-- <form [formGroup]="fechasForm" class="col-md-6 justify-content-center">
-      <div class="row g-3 justify-content-center align-items-end">
-        <div class="col-md-4">
-          <label for="fechaInicio" class="form-label mb-0">Fecha Inicio</label>
-          <input type="date" class="form-control" formControlName="fechaInicio" id="fechaInicio">
-        </div>
-        <div class="col-md-4">
-          <label for="fechaFin" class="form-label mb-0">Fecha Fin</label>
-          <input type="date" class="form-control" formControlName="fechaFin" id="fechaFin">
-        </div>
-        <div class="col-md-4">
-          <button class="btn btn-dark" type="button" (click)="enviarFechas()">Buscar</button>
-        </div>
-      </div>
-    </form> -->
-  </div>
-
+<app-main-container title="Hola Propietario" subTitle="Aca podras modificar el estado de pagos" (infoButtonClick)="showInfo()">
 
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="btn-group me-5" role="group">
-      <div class="d-flex align-items-center">
-        <div class="btn-group me-2">
-          <button
-            type="button"
-            class="btn btn-outline-danger"
-            (click)="changeFilterMode(filterTypes.NOTHING)"
-          >
-            <i class="bi bi-trash-fill"></i> Limpiar
-          </button>
-
-          <button
-            type="button"
-            class="btn btn-outline-info dropdown-toggle"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <i class="bi bi-funnel-fill"></i> Filtros
-          </button>
-          <ul class="dropdown-menu">
-            <li>
-              <a
-                class="dropdown-item"
-                (click)="changeFilterMode(filterTypes.PLOT_TYPE)"
-                >Tipo de Estado</a
-              >
-            </li>
-          </ul>
-        </div>
-
-        @if (applyFilterWithNumber === true || applyFilterWithCombo === true) {
-        <div class="d-flex">
-          @if (applyFilterWithNumber === true) {
+      <div class="col-sm-12 col-md-8 col-xl-8">
+        <div class="input-group">
+          <span class="input-group-text" id="search-icon">
+            <i class="bi bi-search"></i>
+          </span>
           <input
-            type="number"
+            type="text"
             class="form-control me-2"
-            id="filter-number"
-            [(ngModel)]="filterInput"
-            name="ngModel"
-            placeholder="Número de Lote"
+            id="filter-text-box"
+           
+            placeholder="Buscar..."
           />
-          } @else if (applyFilterWithCombo === true) {
-          <select
-            id="content-filter"
-            class="form-select me-2"
-            [(ngModel)]="filterInput"
-            name="ngModel"
-          >
-            <option disabled selected>Selecciona un filtro</option>
-            @for (content of contentForFilterCombo; track content) {
-            <option value="{{ content }}">{{ content }}</option>
-            }
-          </select>
-          }
-          <div class="ms-auto">
-            <button
-              class="btn btn-dark"
-              type="button"
-              (click)="confirmFilterPlot()"
-            >
-              Buscar
-            </button>
-          </div>
+          <app-table-filters class="me-2" [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
+  
         </div>
-        }
       </div>
+  
+  
     </div>
-
-    <!-- aca va el codigo para mostrar los filtros soloes -->
-
-    <!-- <div
-      class="btn-group"
-      role="group"
-      aria-label="Basic radio toggle button group"
-    >
-      <input
-        type="radio"
-        class="btn-check"
-        name="btnradio"
-        id="btnradio1"
-        autocomplete="off"
-        (change)="changeActiveFilter(true)"
-        checked
-      />
-      <label class="btn btn-outline-primary" for="btnradio1"
-        >Expensa Pagada</label
-      >
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="btnradio"
-        id="btnradio2"
-        autocomplete="off"
-        (change)="changeActiveFilter(false)"
-      />
-      <label class="btn btn-outline-primary" for="btnradio2"
-        >Expensa Pendiente</label
-      >
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="btnradio"
-        id="btnradio3"
-        autocomplete="off"
-        (change)="changeActiveFilter()"
-      />
-      <label class="btn btn-outline-primary" for="btnradio3">Todos</label>
-    </div> -->
+  
+    <div class="d-flex align-items-center">
+  
+      <!-- <button type="button" class="btn btn-outline-primary" (click)="redirectToForm()">+</button> -->
+  
+  
+      <div class="vertical-line mx-3"></div>
+      <button class="btn btn-success me-2">
+        <i class="bi bi-file-earmark-excel"></i>
+      </button>
+      <button class="btn btn-danger me-2">
+        <i class="bi bi-file-earmark-pdf"></i>
+      </button>
+    </div>
   </div>
+  
+  
+
+
 
   <div class="table-container">
     <table
@@ -156,7 +58,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (item of filteredPlotsList; track $index) {
+        @for (item of filteredTicketList; track $index) {
 
         <tr>
           <th scope="row" class="text-center">
@@ -257,7 +159,31 @@
       [boundaryLinks]="false"
     ></ngb-pagination>
   </div>
-</div>
+</app-main-container>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <!-- Modal -->
 <div
