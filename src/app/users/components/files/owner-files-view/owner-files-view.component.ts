@@ -43,7 +43,7 @@ export class OwnerFilesViewComponent {
   fileTypeDictionary = FileTypeDictionary;
   fileStatusDictionary = FileStatusDictionary;
 
-  
+
 
 
   protected ownerService = inject(OwnerService);
@@ -98,7 +98,7 @@ export class OwnerFilesViewComponent {
       },
     }); */
   }
-  
+
 
   // metodo para abrir el archivo en otra ventana
   openFile(url: string): void {
@@ -132,7 +132,7 @@ export class OwnerFilesViewComponent {
         console.log("HOLA")
         this.noteForm.markAllAsTouched();
       }
-      
+
     };
   }
 
@@ -178,9 +178,9 @@ export class OwnerFilesViewComponent {
       this.getOwnerAndFilesById(this.id);
     }
   }
-  
 
-  
+
+
   goBack() {
     this.location.back()
   }
