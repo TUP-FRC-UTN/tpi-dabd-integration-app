@@ -18,7 +18,6 @@ import {
 } from '@angular/forms';
 import { TicketService } from '../services/ticket.service';
 import { HttpClient } from '@angular/common/http';
-import { TicketPaymentFilterButtonsComponent } from '../ticket-payment-filter-buttons/ticket-payment-filter-buttons.component';
 import { MainContainerComponent, TableComponent } from 'ngx-dabd-grupo01';
 import { NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateStatusTicketPipe } from '../pipes/translate-status-ticket.pipe';
@@ -31,7 +30,7 @@ import { CapitalizePipe } from '../pipes/capitalize.pipe';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    TicketPaymentFilterButtonsComponent,TableComponent,
+    TableComponent,
     MainContainerComponent, NgbPagination,
     TranslateStatusTicketPipe,
     CapitalizePipe
@@ -54,12 +53,6 @@ export class OwnerListExpensasComponent {
     this.confirmFilterPlot();
   }
 
-  ngAfterViewInit(): void {
-    this.filterComponent.filter$.subscribe((filteredList: TicketDto[]) => {
-      this.filteredPlotsList = filteredList;
-      this.currentPage = 0;
-    });
-  }
 
   //#region ATT de DICCIONARIOS
   plotTypeDictionary = PlotTypeDictionary;
@@ -80,8 +73,6 @@ export class OwnerListExpensasComponent {
   filterInput: string = '';
   //#endregion
 
-  @ViewChild('filterComponent')
-  filterComponent!: TicketPaymentFilterButtonsComponent<TicketDto>;
   @ViewChild('ticketsTable', { static: true })
   tableName!: ElementRef<HTMLTableElement>;
 

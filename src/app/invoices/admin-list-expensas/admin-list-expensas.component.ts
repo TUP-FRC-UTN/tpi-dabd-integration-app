@@ -15,7 +15,6 @@ import {
 } from '@angular/forms';
 import { TicketService } from '../services/ticket.service';
 import { HttpClient } from '@angular/common/http';
-import { TicketPaymentFilterButtonsComponent } from '../ticket-payment-filter-buttons/ticket-payment-filter-buttons.component';
 import { Filter, FilterConfigBuilder, FilterOption, MainContainerComponent, TableComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
 import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateStatusTicketPipe } from '../pipes/translate-status-ticket.pipe';
@@ -35,7 +34,6 @@ registerLocaleData(localeEs, 'es-ES');
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    TicketPaymentFilterButtonsComponent,
     NgbPagination,
     TranslateStatusTicketPipe,
     MainContainerComponent,
@@ -66,21 +64,13 @@ export class AdminListExpensasComponent implements OnInit {
     this.getTickets();
   }
 
-  ngAfterViewInit(): void {
-    this.filterComponent.filter$.subscribe((filteredList: TicketDto[]) => {
-      this.filteredTicketList = filteredList;
-      this.currentPage = 0;
-    });
-  }
-
   filterType: string = '';
   ticketStatusOptions: { key: string, value: string }[] = [];
   filterInput: TicketStatus | null = null;
   fechaInicio: Date | null = null;
   fechaFin: Date | null = null;
 
-  @ViewChild('filterComponent')
-  filterComponent!: TicketPaymentFilterButtonsComponent<TicketDto>;
+
   @ViewChild('ticketsTable', { static: true })
   tableName!: ElementRef<HTMLTableElement>;
   requestData: TicketPayDto = {
@@ -461,12 +451,10 @@ export class AdminListExpensasComponent implements OnInit {
     .build()
 
 
-  redirectToForm() {
-    throw new Error('Method not implemented.');
-    }
   filterChange($event: Record<string, any>) {
     console.log($event)
   }
+
   resetFilters() {
     this.filterConfig = new FilterConfigBuilder()
     .textFilter("Propietario", "ownerId", "Ingrese un propietario")
