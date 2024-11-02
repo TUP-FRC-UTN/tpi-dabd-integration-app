@@ -2,30 +2,31 @@ import { AbstractControl, AsyncValidatorFn, ValidationErrors } from "@angular/fo
 import { map, switchMap, timer, of, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { PlotService } from "../services/plot.service";
+import {OwnerPlotService} from "../services/owner-plot.service";
 
-export const plotValidator = (service: PlotService): AsyncValidatorFn => {
+export const cadastrePlotAssociation = (service: OwnerPlotService, plotId: number): AsyncValidatorFn => {
   return (control: AbstractControl): Observable<ValidationErrors | null> => {
 
-    if (!control.parent) {
-      return of(null);
-    }
+    //TODO: Hacer que esto se ejecute, pq no se ejecuta.
 
-    const plotNumber = control.parent.get('plotNumber')?.value;
-    const blockNumber = control.parent.get('blockNumber')?.value;
+    console.log(plotId)
+    console.log(plotId)
+    console.log(plotId)
+    console.log(plotId)
 
-    if (!plotNumber || !blockNumber) {
+    if (!plotId) {
       return of(null);
     }
 
     return timer(1000).pipe(
       switchMap(() =>
-        service.getPlotByPlotNumberAndBlockNumber(plotNumber, blockNumber).pipe(
+        service.giveActualOwner(plotId).pipe(
           map(() => {
-            return { plotExists: true };
+            return null;
           }),
           catchError((error) => {
-            if (error.status === 404) {
-              return of(null); 
+            if (error.status === 204) {
+              return of({ plotWithNoOwner: true });
             }
             return of({ serverError: true });
           })
@@ -34,4 +35,3 @@ export const plotValidator = (service: PlotService): AsyncValidatorFn => {
     );
   };
 };
-
