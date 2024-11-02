@@ -14,7 +14,7 @@ import {
 } from '../../../models/owner';
 import { Router } from '@angular/router';
 import { CadastreFilterButtonsComponent } from '../../commons/cadastre-filter-buttons/cadastre-filter-buttons.component';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   ConfirmAlertComponent,
@@ -44,6 +44,7 @@ import { Subject } from 'rxjs';
   ],
   templateUrl: './owner-list.component.html',
   styleUrl: './owner-list.component.css',
+  providers: [DatePipe]
 })
 export class OwnerListComponent implements OnInit {
   constructor() {}
