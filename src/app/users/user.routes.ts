@@ -43,6 +43,7 @@ export const USER_ROUTES: Routes = [
     { path: 'user/detail/:id', component: UserUserDetailComponent, /* canActivate: [authGuard] */ },
     { path: 'roles/list', component: RolesListComponent, /* canActivate: [authGuard] */ },
     { path: 'user/tenant/form', component: UserUserTenantFormComponent, /* canActivate: [authGuard] */ },
+    { path: 'user/tenant/form/:id', component: UserUserTenantFormComponent, /* canActivate: [authGuard] */ },
     { path: 'roles/form', component: RolesFormComponent, /* canActivate: [authGuard] */ },
     { path: 'roles/form/:roleId', component: RolesFormComponent, /* canActivate: [authGuard] */ },
     { path: 'roles/detail/:roleId', component: RolesDetailComponent, /* canActivate: [authGuard] */ },
