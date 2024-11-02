@@ -24,14 +24,14 @@ export class PlotFormComponent {
 
   //#region ATT
   id: string | null = null;
-  plot : any;  
+  plot : any;
   //#endregion
-  
+
   //#region DICCIONARIOS
   plotTypeDictionary = PlotTypeDictionary;
   plotStatusDictionary = PlotStatusDictionary;
   //#endregion
-  
+
   //#region FORMULARIO REACTIVO
   plotForm = new FormGroup({
     plotNumber:  new FormControl('', [Validators.required, Validators.min(1)], [plotValidator(this.plotService)]),

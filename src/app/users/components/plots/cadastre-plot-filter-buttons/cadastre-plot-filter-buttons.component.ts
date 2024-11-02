@@ -24,12 +24,13 @@ export class CadastrePlotFilterButtonsComponent<T extends Record<string, any>> {
   headers : string[] = ['Nro. de Manzana', 'Nro. de Lote', 'Area Total', 'Area Construida', 'Tipo de Lote', 'Estado del Lote', 'Activo']
 
   private dataMapper = (item: T) => [
-    item["plotNumber"],
     item["blockNumber"],
+    item["plotNumber"],
     item["totalArea"],
     item['builtArea'],
-    item["plotStatus"],
-    item["plotType"]
+    this.translateDictionary(item["plotType"], this.dictionaries[0]),
+    this.translateDictionary(item["plotStatus"], this.dictionaries[1]),    
+    item['isActive']? 'Activo' : 'Inactivo', 
   ];
 
   // Input to receive the HTML table from the parent
@@ -66,7 +67,7 @@ export class CadastrePlotFilterButtonsComponent<T extends Record<string, any>> {
    * Calls the `exportTableToPdf` method from the `CadastreExcelService`.
    */
   exportToPdf() {
-    this.plotService.getAllPlots(0, this.LIMIT_32BITS_MAX, true).subscribe(
+    this.plotService.getAllPlots(0, this.LIMIT_32BITS_MAX).subscribe(
       response => {
         this.excelService.exportListToPdf(response.content, `${this.getActualDayFormat()}_${this.objectName}`, this.headers, this.dataMapper);
       },
