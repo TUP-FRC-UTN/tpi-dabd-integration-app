@@ -72,7 +72,7 @@ export class OwnerDetailComponent implements OnInit {
         error: (error) => {
           console.error("Error al obtener propietarios:", error);
         }
-      });      
+      });
     }
   }
 
@@ -93,16 +93,16 @@ export class OwnerDetailComponent implements OnInit {
     });
     const address: Address | null =
       owner.addresses.length > 0 ? owner.addresses[0] : null;
-      this.ownerForm.get('addressForm')?.patchValue({
-        street_address: address?.streetAddress ? address.streetAddress : '',
-        number: address?.number ? address.number : null,
-        floor: address?.floor ? address.floor : null,
-        apartment: address?.apartment ? address.apartment : '',
-        city: address?.city ? address.city : '',
-        province: address?.province ? address.province : '',
-        country: address?.country ? address.country : '',
-        postal_code: address?.postalCode != null ? address.postalCode : null,
-      });
+    this.ownerForm.get('addressForm')?.patchValue({
+      street_address: address?.streetAddress ? address.streetAddress : '',
+      number: address?.number ? address.number : null,
+      floor: address?.floor ? address.floor : null,
+      apartment: address?.apartment ? address.apartment : '',
+      city: address?.city ? address.city : '',
+      province: address?.province ? address.province : '',
+      country: address?.country ? address.country : '',
+      postal_code: address?.postalCode != null ? address.postalCode : null,
+    });
     this.contacts = owner.contacts;
   }
 
