@@ -1,9 +1,14 @@
-import { Component, inject, Input } from '@angular/core';
+import { AfterViewInit, Component, inject, Input } from '@angular/core';
 import { Subject } from 'rxjs';
 import { PaymentExcelService } from '../services/payment-excel.service';
 import { TicketService } from '../services/ticket.service';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+
+
+import { createPopper } from '@popperjs/core';
+
+
 
 @Component({
   selector: 'app-ticket-payment-filter-buttons',
@@ -15,6 +20,7 @@ import autoTable from 'jspdf-autotable';
 export class TicketPaymentFilterButtonsComponent<
   T extends Record<string, any>
 > {
+
   LIMIT_32BITS_MAX = 2147483647;
   private excelService = inject(PaymentExcelService);
 
@@ -58,12 +64,12 @@ export class TicketPaymentFilterButtonsComponent<
     doc.setFontSize(18);
     doc.text('Tickets Report', 14, 20);
 
-    this.ticketService.getAllTickets().subscribe(
-      (response) => {
+    this.ticketService.getAllTicketsPage(0, this.LIMIT_32BITS_MAX).subscribe(
+      (response: any) => {
         autoTable(doc, {
           startY: 30,
           head: [['Periodo', 'Vencimiento', 'Total', 'Estado']],
-          body: response.map(expense => [
+          body: response.map((expense: any) => [
             expense.ownerId.first_name,
             expense.issueDate instanceof Date ? expense.issueDate.toLocaleDateString() : expense.issueDate, // convertir fecha a string
             expense.id,
@@ -71,7 +77,7 @@ export class TicketPaymentFilterButtonsComponent<
           ]),
         });
       },
-      (error) => {
+      () => {
         console.log('Error retrieved all, on export component.');
       }
     );
@@ -87,10 +93,12 @@ export class TicketPaymentFilterButtonsComponent<
    */
   //#region TIENEN QUE MODIFICAR EL SERIVCIO CON SU GETALL
   exportToExcel() {
+    debugger;
     this.ticketService.getAllTicketsPage(0, this.LIMIT_32BITS_MAX).subscribe(
       (response) => {
+        const modifiedContent = response.content.map(({ id, ...rest }) => rest);
         this.excelService.exportListToExcel(
-          response.content,
+          modifiedContent,
           `${this.getActualDayFormat()}_${this.objectName}`
         );
       },
@@ -108,24 +116,26 @@ export class TicketPaymentFilterButtonsComponent<
    * @param event - The input event from the text box.
    */
   onFilterTextBoxChanged(event: Event) {
+    debugger
     const target = event.target as HTMLInputElement;
-
+    console.log(target);
+  
     if (target.value?.length <= 2) {
       this.filterSubject.next(this.itemsList);
     } else {
       const filterValue = target.value.toLowerCase();
-
+  
       const filteredList = this.itemsList.filter((item) => {
         return Object.values(item).some((prop) => {
           const propString = prop ? prop.toString().toLowerCase() : '';
-
+  
           const translations =
             this.dictionaries && this.dictionaries.length
               ? this.dictionaries
                   .map((dict) => this.translateDictionary(propString, dict))
                   .filter(Boolean)
               : [];
-
+  
           return (
             propString.includes(filterValue) ||
             translations.some((trans) =>
@@ -134,7 +144,7 @@ export class TicketPaymentFilterButtonsComponent<
           );
         });
       });
-
+  
       this.filterSubject.next(filteredList.length > 0 ? filteredList : []);
     }
   }
@@ -156,4 +166,5 @@ export class TicketPaymentFilterButtonsComponent<
     }
     return;
   }
+  
 }

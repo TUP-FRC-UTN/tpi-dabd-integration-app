@@ -1,0 +1,113 @@
+<div class="modal-header fs-6 py-1">
+    <h4 class="modal-title">Información del Formulario de Gastos</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+  </div>
+  <div class="modal-body fs-6 py-2">
+    <div class="container-fluid">
+      <!-- Introducción -->
+      <div class="alert alert-info mb-2 py-2">
+        <h5 class="alert-heading">¿Qué es este formulario?</h5>
+        <p class="mb-0 small">Este formulario te permite registrar los gastos. Cada campo
+          ha sido diseñado para mantener un registro detallado y organizado de tus transacciones.</p>
+      </div>
+  
+      <!-- Contenido específico según el rol -->
+      <ng-container *ngIf="data.role === 'admin'">
+        <!-- Explicación para Admin -->
+        <div class="card mb-2">
+          <div class="card-header py-1">
+            <h5 class="mb-0">Campos para Administrador</h5>
+          </div>
+          <div class="card-body py-2">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item py-1">
+                <strong>Propietario:</strong> Nombre de la persona propietaria del gasto.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Lote:</strong> Identificación del lote relacionado con el gasto.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Periodo:</strong> Mes y año al que corresponde el gasto.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Total:</strong> Monto total de los gastos del periodo.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Estado:</strong> Estado actual del gasto (por ejemplo, pagado o pendiente).
+              </li>
+            </ul>
+          </div>
+        </div>
+  
+        <!-- Acciones para Admin -->
+        <div class="card mb-2">
+          <div class="card-header py-1">
+            <h5 class="mb-0">Acciones Disponibles</h5>
+          </div>
+          <div class="card-body py-2">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item py-1">
+                <strong>Ver Ticket:</strong> Abre un detalle del gasto y las transacciones asociadas.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Cambiar Estado:</strong> Permite modificar el estado del gasto (ej., de pendiente a pagado).
+              </li>
+            </ul>
+          </div>
+        </div>
+      </ng-container>
+  
+      <ng-container *ngIf="data.role === 'owner'">
+        <!-- Explicación para Propietario -->
+        <div class="card mb-2">
+          <div class="card-header py-1">
+            <h5 class="mb-0">Campos para Propietario</h5>
+          </div>
+          <div class="card-body py-2">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item py-1">
+                <strong>Periodo:</strong> Mes y año al que corresponde el gasto.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Vencimiento:</strong> Fecha límite para realizar el pago.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Total:</strong> Monto total de los gastos del periodo.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Estado:</strong> Estado actual del gasto (por ejemplo, pagado o pendiente).
+              </li>
+            </ul>
+          </div>
+        </div>
+  
+        <!-- Acciones para Propietario -->
+        <div class="card mb-2">
+          <div class="card-header py-1">
+            <h5 class="mb-0">Acciones Disponibles</h5>
+          </div>
+          <div class="card-body py-2">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item py-1">
+                <strong>Ver Ticket:</strong> Muestra el detalle del gasto y las transacciones asociadas.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Cambiar Estado:</strong> Permite actualizar el estado del gasto (ej., de pendiente a pagado).
+              </li>
+            </ul>
+          </div>
+        </div>
+      </ng-container>
+  
+      <!-- Nota -->
+      <div class="alert alert-warning py-2 mb-0">
+        <h5 class="alert-heading">Nota:</h5>
+        <p class="mb-0 small">Los campos marcados con un asterisco (*) son obligatorios.</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal-footer py-2">
+    <button type="button" class="btn btn-primary" (click)="activeModal.close()">Entendido</button>
+  </div>
+  

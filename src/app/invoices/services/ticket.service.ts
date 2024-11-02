@@ -11,12 +11,12 @@ import { TransformTicketPipe } from '../pipes/ticket-mapper.pipe';
 })
 export class TicketService {
 
-  private apiUrl = 'http://localhost:8085/tickets';
+  private apiUrl = 'http://localhost:8087/tickets';
 
-  private apiUrlPdf = 'http://localhost:8085/tickets/generateTicket/'; 
+  private apiUrlPdf = 'http://localhost:8087/tickets/generateTicket/'; 
 
-  private api = 'http://localhost:8085/tickets/getAllTicketsByOwner';
-  private apiCounter = 'http://localhost:8085/tickets/getAll';
+  private api = 'http://localhost:8087/tickets/getAllTicketsByOwner';
+  private apiCounter = 'http://localhost:8087/tickets/getAll';
   
 
   constructor(private http: HttpClient) { }
@@ -25,11 +25,14 @@ export class TicketService {
     return this.http.post<any>(`${this.apiUrl}/search`, dtobusqueda);
   }
 
-// Método para obtener todos los tickets
-  getAllTickets(): Observable<TicketDto[]> 
-  {
-    return this.http.get<TicketDto[]>('http://localhost:8085/tickets/getAll');
+
+
+  getAllTicketsContent(): Observable<TicketDto[]> {
+    return this.http.get<{ content: TicketDto[] }>('http://localhost:8080/tickets/getAll').pipe(
+      map(response => response.content) // Extrae solo `content` del objeto de respuesta
+    );
   }
+  
 
   getAll(page : number, size : number): Observable<PaginatedResponse<TicketDto>> {
     let params = new HttpParams()
@@ -88,10 +91,12 @@ export class TicketService {
   }
 
   getAllTicketsPage(page : number, size : number): Observable<PaginatedResponse<TicketDto>> {
+    const ownerId = 1;
     let params = new HttpParams()
+    .set('ownerId', ownerId.toString())
     .set('page', page.toString())
     .set('size', size.toString());
-  
+    debugger
     return this.http.get<PaginatedResponse<TicketDto>>(this.api, { params }).pipe(
       map((response: PaginatedResponse<any>) => {
         const transformPipe = new TransformTicketPipe();
