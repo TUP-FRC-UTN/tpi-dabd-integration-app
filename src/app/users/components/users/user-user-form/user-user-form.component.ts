@@ -76,7 +76,7 @@ export class UserUserFormComponent {
         country: new FormControl('', [Validators.required]),
         postalCode: new FormControl('', [Validators.required]),
       }),
-      
+
       plotForm: new FormGroup({
         plotNumber: new FormControl(
           '',
@@ -126,7 +126,7 @@ export class UserUserFormComponent {
         display: value
       }));
     }
-    
+
     //#endregion
 
     //#region SETEAR VALORES AL FORM
@@ -136,28 +136,32 @@ export class UserUserFormComponent {
           response => {
             console.log(response)
             this.user = response;
-    
+
             this.userForm.patchValue({
               email: this.user.email,
               firstName: this.user.firstName,
               lastName: this.user.lastName,
               userName: this.user.userName,
             });
-    
+
+            if (response.plotId !== undefined) {
+              this.setPlotValue(response.plotId);
+            }
+
             if (this.user.addresses) {
               this.addresses = [...this.user.addresses];
               if (this.addresses.length > 0) {
                 this.setAddressValue(0);
               }
             }
-    
+
             if (this.user.contacts) {
               this.contacts = [...this.user.contacts];
               if (this.contacts.length > 0) {
                 this.setContactValue(0);
               }
             }
-    
+
             if (this.user.roles) {
               this.roles = [...this.user.roles];
               this.userForm.get('rolesForm.rol')?.setValue(this.roles[0]?.id || null);
@@ -183,16 +187,16 @@ export class UserUserFormComponent {
       console.log(contact)
       if (contact) {
           const contactFormGroup = this.userForm.get('contactsForm') as FormGroup;
-        
+
           contactFormGroup.patchValue({
             contactType: contact.contactType,
             contactValue: contact.contactValue,
           })
-          
+
           this.contactIndex = index;
       }
     }
-  
+
     getContactsValues(): Contact {
       const contactFormGroup = this.userForm.get('contactsForm') as FormGroup;
       return {
@@ -225,7 +229,7 @@ export class UserUserFormComponent {
       this.contacts.splice(index, 1);
     }
     //#endregion
-  
+
     //#region FUNCION ROLES
     getRolValue() {
       const rolFormGroup = this.userForm.get('rolesForm') as FormGroup;
@@ -245,7 +249,7 @@ export class UserUserFormComponent {
         this.toastService.sendError("Rol no valido.")
       }
     }
-  
+
     removeRol(index: number): void {
       this.roles.splice(index, 1);
     }
@@ -260,7 +264,7 @@ export class UserUserFormComponent {
       return user.roles?.map(role => role.id);
     }
 
-    
+
     //#endregion
 
     //#region CREATE / UPDATE
@@ -294,7 +298,7 @@ export class UserUserFormComponent {
         },
       });
     }
-  
+
     updateUser() {
       this.fillUser();
       if (this.user.id) {
@@ -331,6 +335,17 @@ export class UserUserFormComponent {
             },
           });
       }
+    }
+
+    setPlotValue(plotId:number) {
+      const plotFormGroup = this.userForm.get('plotForm') as FormGroup;
+      this.plotService.getPlotById(plotId).subscribe(
+        response => {
+            plotFormGroup.patchValue({
+              plotNumber: response.plotNumber,
+              blockNumber: response.blockNumber,
+            })
+        })
     }
     //#endregion
 

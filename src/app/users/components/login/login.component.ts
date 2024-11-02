@@ -13,6 +13,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../services/user.service';
 import { SessionService } from '../../services/session.service';
 import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -30,18 +31,20 @@ export class LoginComponent implements OnInit {
     private loginService: LoginService,
     private userService: UserService,
     private sessionService: SessionService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
-      username: ['', Validators.required],
+      email: ['', Validators.required],
       password: ['', Validators.required],
     });
   }
 
   onSubmit() {
     if (this.loginForm.valid) {
+      console.log("loginForm: ", this.loginForm.value);
       this.loginService
         .login(this.loginForm.value)
         .pipe(
@@ -70,8 +73,15 @@ export class LoginComponent implements OnInit {
         .subscribe((user) => {
           if (user) {
             this.sessionService.setItem('user', user, 1440); // 1440 = 24 hs.
+            this.router.navigate(['/home']);
           }
         });
     }
   }
+
+  signInWithGoogle() {
+    
+  }
+
+
 }

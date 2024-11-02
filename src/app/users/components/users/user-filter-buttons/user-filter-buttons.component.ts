@@ -40,13 +40,13 @@ export class UserFilterButtonsComponent<T extends Record<string, any>> {
   // Observable that emits filtered owner list
   filter$ = this.filterSubject.asObservable();
 
+  headers : string[] = ['Nombre completo', 'Nombre de usuario', 'Email', 'Activo']
+
   private dataMapper = (item: T) => [
-    item["plotNumber"],
-    item["blockNumber"],
-    item["totalArea"],
-    item['builtArea'],
-    item["plotStatus"],
-    item["plotType"]
+    item["firstName"] + ' ' + item["lastName"],
+    item["userName"],
+    item["email"],  
+    item['isActive']? 'Activo' : 'Inactivo',
   ];
 
   // Se va a usar para los nombres de los archivos.
@@ -65,7 +65,7 @@ export class UserFilterButtonsComponent<T extends Record<string, any>> {
   exportToPdf() {
     this.userService.getAllUsers(0, this.LIMIT_32BITS_MAX).subscribe(
       response => {
-        this.excelService.exportListToPdf(response.content, `${this.getActualDayFormat()}_${this.objectName}`, [], this.dataMapper);
+        this.excelService.exportListToPdf(response.content, `${this.getActualDayFormat()}_${this.objectName}`, this.headers, this.dataMapper);
       },
       error => {
         console.log("Error retrieved all, on export component.")

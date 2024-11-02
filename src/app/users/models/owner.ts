@@ -18,10 +18,10 @@ export interface Contact {
     value?: string;
   }
 
-  
+
 
 export interface Files {
-    
+
 }
 
 export enum StateKYC {
@@ -63,6 +63,7 @@ export interface Owner {
     isActive?: boolean;
     addresses: Address[];
     contacts: Contact[] | Contact;
+    plotId: number | undefined;
 }
 
 export enum OwnerType {

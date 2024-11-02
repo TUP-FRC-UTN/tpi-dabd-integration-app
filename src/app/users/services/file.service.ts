@@ -7,12 +7,12 @@ import { map, Observable } from 'rxjs';
 })
 export class FileService {
 
-  private apiUrl = 'http://localhost:8282/files';
+  private apiUrl = 'http://localhost:8004/files';
 
   constructor(private http: HttpClient) {}
 
   getFileById(fileId: number): Observable<any> {
-    
+
     return this.http.get<any>(this.apiUrl + `/${fileId}`).pipe(
       map((response: any) => {
         return response;
@@ -31,7 +31,7 @@ export class FileService {
       "review_note": note
     }
 
-    
+
     return this.http.patch<any>(this.apiUrl + `/${fileId}`, change, { headers });
   }
 

@@ -1,1 +1,19 @@
-<p>user-home works!</p>
+@if (isAuthenticated$ | async ) {
+    <!-- Navbar -->
+  
+    <app-main-layout [navbarMenu]="navbarMenu"></app-main-layout>
+    <div class="main-container d-flex">
+  
+      <!-- Contenido principal -->
+      <div class="content-container flex-grow-1 pt-5">
+        <router-outlet></router-outlet>
+      </div>
+  
+      <app-toasts aria-live="polite" aria-atomic="true"></app-toasts>
+    </div>
+  
+  } @else {
+    <!-- Template para la pantalla de login -->
+    <app-login></app-login>
+  }
+  

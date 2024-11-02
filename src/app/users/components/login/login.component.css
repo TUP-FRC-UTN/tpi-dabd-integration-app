@@ -1,0 +1,7 @@
+.bg-image {
+    background-image: url('/assets/villa_del_condor_desarrollo_1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 8px;
+  }

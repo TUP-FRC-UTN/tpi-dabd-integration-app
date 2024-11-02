@@ -147,6 +147,10 @@ export class UserUserTenantFormComponent {
             userName: this.user.userName,
           });
 
+          if (this.user.plotId) {
+            this.setPlotValue(this.user.plotId)
+          }
+
           if (this.user.addresses) {
             this.addresses = [...this.user.addresses];
             if (this.addresses.length > 0) {
@@ -319,14 +323,25 @@ export class UserUserTenantFormComponent {
 
   getPlotsOfOwner() {
     // TODO: Ver como obtener el ownerId
-    this.ownerPlotService.giveAllPlotsByOwner(1, 0, 100000).subscribe(
+    // this.ownerPlotService.giveAllPlotsByOwner(1, 0, 100000).subscribe(
+    //   response => {
+    //     this.actualPlotOfOwner = response.content;
+    //   },
+    //   error => {
+    //     this.toastService.sendError("Error recuperando sus lotes. Reinicie la pagina.")
+    //   }
+    // )
+  }
+
+  setPlotValue(plotId:number) {
+    const plotFormGroup = this.userForm.get('plotForm') as FormGroup;
+    this.plotService.getPlotById(plotId).subscribe(
       response => {
-        this.actualPlotOfOwner = response.content;
-      },
-      error => {
-        this.toastService.sendError("Error recuperando sus lotes. Reinicie la pagina.")
-      }
-    )
+        console.log(response);
+        plotFormGroup.patchValue({
+          plotAssign: response.id
+        })
+      })
   }
   //#endregion
 

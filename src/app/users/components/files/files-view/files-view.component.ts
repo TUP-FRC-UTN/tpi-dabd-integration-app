@@ -43,8 +43,11 @@ export class FilesViewComponent {
 
   ngOnInit() {
     this.getAllOwners();
+    console.log(this.owners.length);
+    console.log(this.filteredOwnersList.length);
+    
   }
-  
+
   mapKYCStatus(type: string){
     return mapKycStatus(type);
   }
@@ -100,7 +103,7 @@ export class FilesViewComponent {
   approbeOwnerFiles(id: number | undefined) {
     console.log("aprobar archivos del propietario ", id);
   }
-  
+
   // metodo para rechazar el estado completo del owner
   rejectOwnerFiles(id: number | undefined) {
     console.log("rechazar archivos del propietario ", id);
@@ -121,7 +124,7 @@ export class FilesViewComponent {
     this.currentPage = page;
     this.getAllOwners();
   }
-  
+
   toggleView(type: string){}
   applyFilter(type: string){}
   clearFilters(){}

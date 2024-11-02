@@ -6,7 +6,7 @@ import { OwnerService } from '../../../services/owner.service';
 import { NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MainContainerComponent } from 'ngx-dabd-grupo01';
+import { Filter, FilterConfigBuilder, MainContainerComponent } from 'ngx-dabd-grupo01';
 import { CadastrePlotOwnerFilterButtonsComponent } from '../cadastre-plot-owner-filter-buttons/cadastre-plot-owner-filter-buttons.component';
 
 @Component({
@@ -22,6 +22,28 @@ export class CadastrePlotOwnerListComponent {
   private activatedRoute = inject(ActivatedRoute);
   private location = inject(Location)
   private router = inject(Router)
+
+  filterConfig: Filter[] = new FilterConfigBuilder()
+    .numberFilter('Nro. Manzana', 'plotNumber', 'Seleccione una Manzana')
+    .selectFilter('Tipo', 'plotType', 'Seleccione un tipo', [
+      {value: 'COMMERCIAL', label: 'Comercial'},
+      {value: 'PRIVATE', label: 'Privado'},
+      {value: 'COMMUNAL', label: 'Comunal'},
+    ])
+    .selectFilter('Estado', 'plotStatus', 'Seleccione un estado', [
+      {value: 'CREATED', label: 'Creado'},
+      {value: 'FOR_SALE', label: 'En Venta'},
+      {value: 'SALE', label: 'Venta'},
+      {value: 'SALE_PROCESS', label: 'Proceso de Venta'},
+      {value: 'CONSTRUCTION_PROCESS', label: 'En construcciones'},
+      {value: 'EMPTY', label: 'Vacio'},
+    ])
+    .radioFilter('Activo', 'isActive', [
+      {value: 'true', label: 'Activo'},
+      {value: 'false', label: 'Inactivo'},
+      {value: 'undefined', label: 'Todo'},
+    ])
+    .build()
 
   currentPage: number = 0
   pageSize: number = 10
@@ -39,7 +61,7 @@ export class CadastrePlotOwnerListComponent {
   plotId : number | undefined = undefined
 
   retrievePlotsByActive: boolean | undefined = true;
-  
+
   plotTypeDictionary = PlotTypeDictionary;
   plotStatusDictionary = PlotStatusDictionary;
   plotDictionaries = [this.plotTypeDictionary, this.plotStatusDictionary]
@@ -123,9 +145,9 @@ export class CadastrePlotOwnerListComponent {
     --this.currentPage
     this.getPlotsByOwner();
   }
-    
+
   onPageChange(page: number) {
-    this.currentPage = --page; 
+    this.currentPage = --page;
     this.getPlotsByOwner();
   }
 

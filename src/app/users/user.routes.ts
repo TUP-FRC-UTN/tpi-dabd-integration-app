@@ -26,7 +26,7 @@ import { UserUserTenantFormComponent } from "./components/users/user-user-tenant
 export const USER_ROUTES: Routes = [
     { path: '', component: UserHomeComponent },
     { path: 'home', component: HomeComponent, /* canActivate: [authGuard] */ },
-    { path: '', redirectTo: '/home', pathMatch: 'full' },
+    //{ path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'owner/form', component: OwnerFormComponent, /* canActivate: [authGuard] */ },
     { path: 'owner/form/:id', component: OwnerFormComponent, /* canActivate: [authGuard] */ },
     { path: 'owner/detail/:id', component: OwnerDetailComponent, /* canActivate: [authGuard] */ },
@@ -43,6 +43,7 @@ export const USER_ROUTES: Routes = [
     { path: 'user/detail/:id', component: UserUserDetailComponent, /* canActivate: [authGuard] */ },
     { path: 'roles/list', component: RolesListComponent, /* canActivate: [authGuard] */ },
     { path: 'user/tenant/form', component: UserUserTenantFormComponent, /* canActivate: [authGuard] */ },
+    { path: 'user/tenant/form/:id', component: UserUserTenantFormComponent, /* canActivate: [authGuard] */ },
     { path: 'roles/form', component: RolesFormComponent, /* canActivate: [authGuard] */ },
     { path: 'roles/form/:roleId', component: RolesFormComponent, /* canActivate: [authGuard] */ },
     { path: 'roles/detail/:roleId', component: RolesDetailComponent, /* canActivate: [authGuard] */ },

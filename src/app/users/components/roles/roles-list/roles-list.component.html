@@ -1,120 +1,148 @@
-<app-main-container title="Lista de Roles">    
-    <app-roles-filter-buttons
-    #filterComponent
-    [itemsList]="roles"
-    [tableName]="tableName.nativeElement"
-    [tableName]="tableName.nativeElement"
-    objectName="ROLES"
-    formPath="/roles/form"
-    >        
-    </app-roles-filter-buttons>
+<app-main-container title="Lista de Roles">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">  
-      <div class="btn-group me-5" role="group">
-      </div>   
-      <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-        <input type="radio" class="btn-check" 
-        name="btnradio" id="btnradio1" 
-        autocomplete="off" (change)="changeActiveFilter(true)" checked>
-        <label class="btn btn-outline-primary" for="btnradio1">Roles activos</label>
-    
-        <input type="radio" class="btn-check" 
-        name="btnradio" id="btnradio2" 
-        autocomplete="off" (change)="changeActiveFilter(false)">
-        <label class="btn btn-outline-primary" for="btnradio2">Roles inactivos</label>
-    
-        <input type="radio" class="btn-check" 
-        name="btnradio" id="btnradio3" 
-        autocomplete="off" (change)="changeActiveFilter()">
-        <label class="btn btn-outline-primary" for="btnradio3">Todos</label>
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <!-- Sección de búsqueda y filtros -->
+    <div class="btn-group me-5" role="group">
+      <div class="col-sm-12 col-md-8 col-xl-8">
+        <div class="input-group" >
+              <span class="input-group-text" id="search-icon">
+                <i class="bi bi-search"></i>
+              </span>
+          <input
+            type="text"
+            class="form-control flex-grow-1"
+            id="filter-text-box"
+            (input)="onFilterTextBoxChanged($event)"
+            placeholder="Buscar..."
+          />
+          <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-funnel-fill"></i>
+          </button>
+          <ul class="dropdown-menu p-3">
+            <li><a class="dropdown-item ms-n2" >Manzana</a></li>
+            <li><input type="number" class="form-control"></li>
+            <li><a class="dropdown-item ms-n2" >Estado de Lote</a></li>
+            <li><select name="" id="" class="form-control"></select></li>
+            <li><a class="dropdown-item ms-n2" >Tipo de Lote</a></li>
+            <li><select name="" id="" class="form-control mb-3"></select></li> <!-- Espacio añadido -->
+            <li>
+              <button type="button" class="btn btn-outline-danger me-2" >
+                <i class="bi bi-trash-fill"></i>
+              </button>
+              <button type="button" class="btn btn-outline-primary">
+                <i class="bi bi-search"></i>
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
-    <div class="table-container">
-      <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #rolesTable>
-        @if (filteredRoles.length === 0) {
-          <thead>
-            <td colspan="7"> 
-              <div class="text-center p-2">
-                <div class="alert alert-secondary text-center" role="alert">
-                  No hay elementos para mostrar
-                </div>
-              </div>
-            </td>
-          </thead>
-        } @else {
-          <thead>
+
+    <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
+    <div class="d-flex align-items-center">
+      <!-- Botón "+" -->
+      <button type="button" class="btn btn-outline-primary" (click)="redirectToForm()">+</button>
+
+      <!-- Línea vertical y botones de exportación -->
+      <div class="vertical-line mx-3"></div>
+      <button class="btn btn-success me-2" (click)="exportToExcel()">
+        <i class="bi bi-file-earmark-excel"></i>
+      </button>
+      <button class="btn btn-danger me-2" (click)="exportToPdf()">
+        <i class="bi bi-file-earmark-pdf"></i>
+      </button>
+    </div>
+  </div>
+
+
+
+  <div class="table-container">
+    <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #rolesTable>
+      @if (filteredRoles.length === 0) {
+        <thead>
+        <td colspan="7">
+          <div class="text-center p-2">
+            <div class="alert alert-secondary text-center" role="alert">
+              No hay elementos para mostrar
+            </div>
+          </div>
+        </td>
+        </thead>
+      } @else {
+        <thead>
+        <tr>
+          <th scope="col">Código</th>
+          <th scope="col">Nombre especial</th>
+          <th scope="col">Descripción</th>
+          <th scope="col">Activo</th>
+          <th scope="col">Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (role of (filteredRoles.length > 0 ? filteredRoles : roles); track $index) {
             <tr>
-              <th scope="col">Código</th>
-              <th scope="col">Nombre especial</th>
-              <th scope="col">Descripción</th>
-              <th scope="col">Activo</th>
-              <th scope="col">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (role of (filteredRoles.length > 0 ? filteredRoles : roles); track $index) {  
-              <tr>
-                <td>
-                  {{ role.code }}
-                </td>
-                <td>
-                  {{ role.prettyName }}
-                </td>
-                <td>
-                  {{ role.description }}
-                </td>
-                <td>
-                  @if (role.active) {
-                    <i class="bi bi-check2-circle text-success" style="font-size: 1.5rem;"></i>
-                  } @else {
-                    <i class="bi bi-x-circle text-danger" style="font-size: 1.5rem;"></i>
-                  }              
-                </td>           
-                <td>  
-                  <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="bi bi-three-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu">
-                      @if (role.active == false) {
-                        <li><a class="dropdown-item btn btn-danger" (click)="reactivatePlot(role.id)">Reactivar</a></li>
-                      } @else {                      
+              <td>
+                {{ role.code }}
+              </td>
+              <td>
+                {{ role.prettyName }}
+              </td>
+              <td>
+                {{ role.description }}
+              </td>
+              <td>
+                @if (role.active) {
+                  <i class="bi bi-check2-circle text-success" style="font-size: 1.5rem;"></i>
+                } @else {
+                  <i class="bi bi-x-circle text-danger" style="font-size: 1.5rem;"></i>
+                }
+              </td>
+              <td>
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-three-dots-vertical"></i>
+                  </button>
+                  <ul class="dropdown-menu">
+                    @if (role.active == false) {
+                      <li><a class="dropdown-item btn btn-danger" (click)="reactivatePlot(role.id)">Reactivar</a></li>
+                    } @else {
                       <li><a class="dropdown-item btn btn-info" (click)="updateRole(role.id)">Editar</a></li>
-                      <li><a class="dropdown-item btn btn-danger" (click)="assignPlotToDelete(role)" data-bs-target="#exampleModal" data-bs-toggle="modal">Eliminar</a></li>                      
-                      }
-                      <li><a class="dropdown-item btn btn-info" (click)="detailRole(role.id)" >Detalle</a></li>
-                    </ul>
-                  </div>
-                </td>
-              </tr>            
-            }
-          </tbody>
-        }
-      </table>
-    </div>    
-    <div class="d-flex justify-content-between align-items-center mt-3">
-      <ngb-pagination
-        [(page)]="currentPage"                   
-        [pageSize]="pageSize"                    
-        [collectionSize]="totalItems"            
-        (pageChange)="onPageChange($event)"      
-        [maxSize]="5"                            
-        [boundaryLinks]="false"                   
-      ></ngb-pagination>        
-      <div class="ms-auto"> 
-      </div>
-
-      <div class="form-group mb-3 me-2">
-        <select
-          id="itemsPerPage"
-          class="form-select"
-          [(ngModel)]="pageSize"
-          (change)="onItemsPerPageChange()"
-        >
-          @for(option of sizeOptions; track $index) {
-            <option [value]="option">{{ option }} Elementos</option>
+                      <li><a class="dropdown-item btn btn-danger" (click)="assignPlotToDelete(role)" data-bs-target="#exampleModal" data-bs-toggle="modal">Eliminar</a></li>
+                    }
+                    <li><a class="dropdown-item btn btn-info" (click)="detailRole(role.id)" >Detalle</a></li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
           }
-        </select>
-      </div>     
+        </tbody>
+      }
+    </table>
+  </div>
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <ngb-pagination
+      [(page)]="currentPage"
+      [pageSize]="pageSize"
+      [collectionSize]="totalItems"
+      (pageChange)="onPageChange($event)"
+      [maxSize]="5"
+      [boundaryLinks]="false"
+    ></ngb-pagination>
+    <div class="ms-auto">
     </div>
+
+    <div class="form-group mb-3 me-2">
+      <select
+        id="itemsPerPage"
+        class="form-select"
+        [(ngModel)]="pageSize"
+        (change)="onItemsPerPageChange()"
+      >
+        @for(option of sizeOptions; track $index) {
+          <option [value]="option">{{ option }} Elementos</option>
+        }
+      </select>
+    </div>
+  </div>
 </app-main-container>
