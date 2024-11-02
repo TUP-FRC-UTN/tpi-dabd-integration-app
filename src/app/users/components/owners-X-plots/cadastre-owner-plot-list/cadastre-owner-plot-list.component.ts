@@ -80,20 +80,20 @@ export class CadastreOwnerPlotListComponent {
   }
 
   formatDate(date: Date | undefined): string {
-    if (!date) return ''; 
-  
+    if (!date) return '';
+
     const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-      hour12: false, 
+      hour12: false,
     };
-    
+
     return new Intl.DateTimeFormat('es-AR', options)
       .format(date)
-      .replace(',', ''); 
+      .replace(',', '');
   }
 
   onItemsPerPageChange() {
@@ -102,7 +102,7 @@ export class CadastreOwnerPlotListComponent {
   }
 
   onPageChange(page: number) {
-    this.currentPage = --page; 
+    this.currentPage = --page;
     this.getOwnersByPlot();
   }
 
