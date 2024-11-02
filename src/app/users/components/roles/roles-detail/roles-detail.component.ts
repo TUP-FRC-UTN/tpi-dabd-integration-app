@@ -16,9 +16,9 @@ export class RolesDetailComponent implements OnInit{
   role: any;
   roleForm: FormGroup;
 
-  constructor(private roleService: RoleService, 
-    private activatedRoute: ActivatedRoute, 
-    private location: Location)
+  constructor(private roleService: RoleService,
+              private activatedRoute: ActivatedRoute,
+              private location: Location)
   {
     this.roleForm = new FormGroup({
       codeControl: new FormControl(),
@@ -27,7 +27,7 @@ export class RolesDetailComponent implements OnInit{
       descriptionControl: new FormControl()
     })
   }
- 
+
   ngOnInit(): void {
     let id = this.activatedRoute.snapshot.paramMap.get('roleId');
     if(id != null){
@@ -43,10 +43,10 @@ export class RolesDetailComponent implements OnInit{
           this.roleForm.disable();
         },
         error: (error) => {
-          console.log(error);          
+          console.log(error);
         }
       })
-    }    
+    }
   }
 
   goBack() {
