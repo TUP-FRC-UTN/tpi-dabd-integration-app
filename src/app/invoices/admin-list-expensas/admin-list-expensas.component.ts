@@ -1,10 +1,10 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, Input, OnInit, ViewChild } from '@angular/core';
 import {
   TicketDetail,
   TicketDto,
   TicketStatus,
 } from '../models/TicketDto';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { MercadoPagoServiceService } from '../services/mercado-pago-service.service';
 import { TicketPayDto } from '../models/TicketPayDto';
 import {
@@ -16,13 +16,17 @@ import {
 import { TicketService } from '../services/ticket.service';
 import { HttpClient } from '@angular/common/http';
 import { TicketPaymentFilterButtonsComponent } from '../ticket-payment-filter-buttons/ticket-payment-filter-buttons.component';
-import { MainContainerComponent, TableComponent } from 'ngx-dabd-grupo01';
+import { Filter, FilterConfigBuilder, MainContainerComponent, TableComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
 import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateStatusTicketPipe } from '../pipes/translate-status-ticket.pipe';
 import { PaginatedResponse } from '../models/api-response';
 import { InfoComponent } from '../info/info.component';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
+import { Subject } from 'rxjs';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { PaymentExcelService } from '../services/payment-excel.service';
 registerLocaleData(localeEs, 'es-ES');
 @Component({
   selector: 'app-admin-list-expensas',
@@ -35,11 +39,19 @@ registerLocaleData(localeEs, 'es-ES');
     NgbPagination,
     TranslateStatusTicketPipe,
     MainContainerComponent,
+    TableFiltersComponent,
   ],
   templateUrl: './admin-list-expensas.component.html',
   styleUrls: ['./admin-list-expensas.component.css'],
+  providers: [DatePipe],	
 })
 export class AdminListExpensasComponent implements OnInit {
+redirectToForm() {
+throw new Error('Method not implemented.');
+}
+filterChange($event: Record<string, any>) {
+  console.log($event)
+}
   resetFilters() {
     throw new Error('Method not implemented.');
   }
@@ -286,4 +298,202 @@ export class AdminListExpensasComponent implements OnInit {
 
     modalRef.componentInstance.data = { role: 'admin' };
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  LIMIT_32BITS_MAX = 2147483647;
+  private excelService = inject(PaymentExcelService);
+
+  private ticketService = inject(TicketService);
+  // Input to receive a generic list from the parent component
+  @Input() itemsList!: TicketDto[];
+  // Input to redirect to the form.
+  @Input() formPath: string = '';
+  // Represent the name of the object for the exports.
+  // Se va a usar para los nombres de los archivos.
+  @Input() objectName: string = '';
+  // Represent the dictionaries of ur object.
+  // Se va a usar para las traducciones de enum del back.
+  @Input() dictionaries: Array<{ [key: string]: any }> = [];
+
+  // Subject to emit filtered results
+  private filterSubject = new Subject<TicketDto[]>();
+  // Observable that emits filtered owner list
+  filter$ = this.filterSubject.asObservable();
+
+
+  getActualDayFormat() {
+    const today = new Date();
+
+    const formattedDate = today.toISOString().split('T')[0];
+
+    return formattedDate;
+  }
+  /**
+   * Export the HTML table to a PDF file.
+   * Calls the `exportTableToPdf` method from the `CadastreExcelService`.
+   */
+  exportToPdf() {
+
+    const doc = new jsPDF();
+   
+    // Título del PDF
+    doc.setFontSize(18);
+    doc.text('Tickets Report', 14, 20);
+
+    this.ticketService.getAllTicketsPage(0, this.LIMIT_32BITS_MAX).subscribe(
+      (response: any) => {
+        autoTable(doc, {
+          startY: 30,
+          head: [['Periodo', 'Vencimiento', 'Total', 'Estado']],
+          body: response.map((expense: any) => [
+            expense.ownerId.first_name,
+            expense.issueDate instanceof Date ? expense.issueDate.toLocaleDateString() : expense.issueDate, // convertir fecha a string
+            expense.id,
+            expense.status
+          ]),
+        });
+      },
+      () => {
+        console.log('Error retrieved all, on export component.');
+      }
+    );
+    
+
+       // Guardar el PDF después de agregar la tabla
+       doc.save('expenses_report.pdf');
+  }
+
+  /**
+   * Export the HTML table to an Excel file (.xlsx).
+   * Calls the `exportTableToExcel` method from the `CadastreExcelService`.
+   */
+  //#region TIENEN QUE MODIFICAR EL SERIVCIO CON SU GETALL
+  exportToExcel() {
+    debugger;
+    this.ticketService.getAllTicketsPage(0, this.LIMIT_32BITS_MAX).subscribe(
+      (response) => {
+        const modifiedContent = response.content.map(({ id, ...rest }) => rest);
+        this.excelService.exportListToExcel(
+          modifiedContent,
+          `${this.getActualDayFormat()}_${this.objectName}`
+        );
+      },
+      (error) => {
+        console.log('Error retrieved all, on export component.');
+      }
+    );
+  }
+
+  /**
+   * Filters the list of items based on the input value in the text box.
+   * The filter checks if any property of the item contains the search string (case-insensitive).
+   * The filtered list is then emitted through the `filterSubject`.
+   *
+   * @param event - The input event from the text box.
+   */
+  onFilterTextBoxChanged(event: Event) {
+    debugger
+    const target = event.target as HTMLInputElement;
+    console.log(target);
+  
+    if (target.value?.length <= 2) {
+      this.filterSubject.next(this.itemsList);
+    } else {
+      const filterValue = target.value.toLowerCase();
+  
+      const filteredList = this.itemsList.filter((item) => {
+        return Object.values(item).some((prop) => {
+          const propString = prop ? prop.toString().toLowerCase() : '';
+  
+          const translations =
+            this.dictionaries && this.dictionaries.length
+              ? this.dictionaries
+                  .map((dict) => this.translateDictionary(propString, dict))
+                  .filter(Boolean)
+              : [];
+  
+          return (
+            propString.includes(filterValue) ||
+            translations.some((trans) =>
+              trans?.toLowerCase().includes(filterValue)
+            )
+          );
+        });
+      });
+  
+      this.filterSubject.next(filteredList.length > 0 ? filteredList : []);
+    }
+  }
+
+  /**
+   * Translates a value using the provided dictionary.
+   *
+   * @param value - The value to translate.
+   * @param dictionary - The dictionary used for translation.
+   * @returns The key that matches the value in the dictionary, or undefined if no match is found.
+   */
+  translateDictionary(value: any, dictionary?: { [key: string]: any }) {
+    if (value !== undefined && value !== null && dictionary) {
+      for (const key in dictionary) {
+        if (dictionary[key].toString().toLowerCase() === value.toLowerCase()) {
+          return key;
+        }
+      }
+    }
+    return;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  filterConfig: Filter[] = new FilterConfigBuilder()
+
+    .numberFilter('Nro. Manzana', 'plotNumber', 'Seleccione una Manzana')
+    .selectFilter('Tipo', 'plotType', 'Seleccione un tipo', [
+      {value: 'COMMERCIAL', label: 'Comercial'},
+      {value: 'PRIVATE', label: 'Privado'},
+      {value: 'COMMUNAL', label: 'Comunal'},
+    ])
+    .selectFilter('Estado', 'plotStatus', 'Seleccione un estado', [
+      {value: 'CREATED', label: 'Creado'},
+      {value: 'FOR_SALE', label: 'En Venta'},
+      {value: 'SALE', label: 'Venta'},
+      {value: 'SALE_PROCESS', label: 'Proceso de Venta'},
+      {value: 'CONSTRUCTION_PROCESS', label: 'En construcciones'},
+      {value: 'EMPTY', label: 'Vacio'},
+    ])
+    .radioFilter('Activo', 'isActive', [
+      {value: 'true', label: 'Activo'},
+      {value: 'false', label: 'Inactivo'},
+      {value: 'undefined', label: 'Todo'},
+    ])
+    .build()
 }

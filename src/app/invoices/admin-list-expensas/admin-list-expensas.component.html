@@ -1,7 +1,4 @@
 <app-main-container title="hola administrador">
-  <app-ticket-payment-filter-buttons #filterComponent [itemsList]="filteredTicketList" [tableName]="tableName.nativeElement"
-  formPath="/ticket/form"  objectName="TICKET">
-</app-ticket-payment-filter-buttons>
 <div class="d-flex justify-content-between align-items-center mb-3">
   <div class="btn-group me-5" role="group">
     <div class="d-flex align-items-center">
@@ -54,7 +51,6 @@
 </div>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <!-- Sección de búsqueda y filtros -->
   <div class="btn-group me-5" role="group">
     <div class="col-sm-12 col-md-8 col-xl-8">
       <div class="input-group">
@@ -76,12 +72,11 @@
 
   </div>
 
-  <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
   <div class="d-flex align-items-center">
-    <!-- Botón "+" -->
-    <button type="button" class="btn btn-outline-primary" (click)="redirectToForm()">+</button>
 
-    <!-- Línea vertical y botones de exportación -->
+    <!-- <button type="button" class="btn btn-outline-primary" (click)="redirectToForm()">+</button> -->
+
+
     <div class="vertical-line mx-3"></div>
     <button class="btn btn-success me-2" (click)="exportToExcel()">
       <i class="bi bi-file-earmark-excel"></i>
@@ -366,10 +361,6 @@
     </div>
   </div>
 </div>
-
-
-
-
 
 
 
