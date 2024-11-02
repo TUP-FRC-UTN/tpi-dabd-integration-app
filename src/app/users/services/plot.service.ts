@@ -11,24 +11,24 @@ import { TransformPlotPipe } from '../pipes/plot-mapper.pipe';
 export class PlotService {
   private http = inject(HttpClient)
 
-  host: string = "http://localhost:8282/plots"
+  host: string = "http://localhost:8004/plots"
 
   getAllPlots(page : number, size : number, isActive? : boolean): Observable<PaginatedResponse<Plot>> {
     let params = new HttpParams()
     .set('page', page.toString())
     .set('size', size.toString());
-  
+
     if (isActive !== undefined) {
       params = params.append('isActive', isActive.toString());
     }
-    
+
     return this.http.get<PaginatedResponse<Plot>>(this.host, { params }).pipe(
       map((response: PaginatedResponse<any>) => {
         const transformPipe = new TransformPlotPipe();
         const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
         return {
           ...response,
-          content: transformedPlots 
+          content: transformedPlots
         };
       })
     );
@@ -46,7 +46,7 @@ export class PlotService {
     const headers = new HttpHeaders({
       'x-user-id': userId
     });
-    
+
     return this.http.put<Plot>(`${this.host}/${id}`, plotData, { headers });
   }
 
@@ -61,8 +61,8 @@ export class PlotService {
   getPlotById(id: number): Observable<Plot> {
     return this.http.get<any>(`${this.host}/${id}`).pipe(
       map((data: any) => {
-        const transformPipe = new TransformPlotPipe(); 
-        return transformPipe.transform(data); 
+        const transformPipe = new TransformPlotPipe();
+        return transformPipe.transform(data);
       })
     );
   }
@@ -79,18 +79,18 @@ export class PlotService {
     let params = new HttpParams()
     .set('page', page.toString())
     .set('size', size.toString());
-  
+
     if (isActive !== undefined) {
       params = params.append('isActive', isActive.toString());
     }
-    
+
     return this.http.get<PaginatedResponse<Plot>>(`${this.host}/blockNumber/${blockNumber}`, { params }).pipe(
       map((response: PaginatedResponse<any>) => {
         const transformPipe = new TransformPlotPipe();
         const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
         return {
           ...response,
-          content: transformedPlots 
+          content: transformedPlots
         };
       })
     );
@@ -100,18 +100,18 @@ export class PlotService {
     let params = new HttpParams()
     .set('page', page.toString())
     .set('size', size.toString());
-  
+
     if (isActive !== undefined) {
       params = params.append('isActive', isActive.toString());
     }
-    
+
     return this.http.get<PaginatedResponse<Plot>>(`${this.host}/plotStatus/${plotStatus}`, { params }).pipe(
       map((response: PaginatedResponse<any>) => {
         const transformPipe = new TransformPlotPipe();
         const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
         return {
           ...response,
-          content: transformedPlots 
+          content: transformedPlots
         };
       })
     );
@@ -121,18 +121,18 @@ export class PlotService {
     let params = new HttpParams()
     .set('page', page.toString())
     .set('size', size.toString());
-  
+
     if (isActive !== undefined) {
       params = params.append('isActive', isActive.toString());
     }
-    
+
     return this.http.get<PaginatedResponse<Plot>>(`${this.host}/plotType/${plotType}`, { params }).pipe(
       map((response: PaginatedResponse<any>) => {
         const transformPipe = new TransformPlotPipe();
         const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
         return {
           ...response,
-          content: transformedPlots 
+          content: transformedPlots
         };
       })
     );

@@ -8,25 +8,25 @@ import { Account, AccountingConcept } from '../models/account';
 export class AccountService {
   private http = inject(HttpClient)
 
-  host: string = "http://localhost:8282/plots"
+  host: string = "http://localhost:8002/"
 
   //page : number, size : number, isActive? : boolean
   getAllPlots() {
     // let params = new HttpParams()
     // .set('page', page.toString())
     // .set('size', size.toString());
-  
+
     // if (isActive !== undefined) {
     //   params = params.append('isActive', isActive.toString());
     // }
-    
+
     // return this.http.get<PaginatedResponse<Plot>>(this.host, { params }).pipe(
     //   map((response: PaginatedResponse<any>) => {
     //     const transformPipe = new TransformPlotPipe();
     //     const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
     //     return {
     //       ...response,
-    //       content: transformedPlots 
+    //       content: transformedPlots
     //     };
     //   })
     // );\
@@ -91,7 +91,7 @@ export class AccountService {
         amount: 1200.00
       }
     ];
-    
+
     return accountingConcepts;
   }
 }

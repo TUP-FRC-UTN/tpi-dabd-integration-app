@@ -11,7 +11,7 @@ import { Document } from '../models/file';
   providedIn: 'root',
 })
 export class OwnerService {
-  private apiUrl = 'http://localhost:8282/owners';
+  private apiUrl = 'http://localhost:8004/owners';
 
   constructor(private http: HttpClient) {}
 
@@ -65,7 +65,7 @@ export class OwnerService {
     const headers = new HttpHeaders({
       'x-user-id': userId,
     });
-    
+
     return this.http.post<Owner>(`http://localhost:8282/owner/${ownerId}/plot/${plotId}`, undefined, { headers });
   }
 
@@ -80,7 +80,7 @@ export class OwnerService {
 
     const owner = toSnakeCase(ownerData);
     console.log("Service", owner);
-    
+
     return this.http.put<Owner>(`${this.apiUrl}/${ownerId}`, owner, {
       headers,
     });
@@ -114,7 +114,7 @@ export class OwnerService {
     if (typeof isActive === 'boolean' && !isActive) {
       params = params.append('is_active', isActive.toString());
     }
-    
+
     return this.http
       .get<PaginatedResponse<Owner>>(this.apiUrl + '/doctype', { params })
       .pipe(
@@ -139,7 +139,7 @@ export class OwnerService {
 
     return this.http.get<any>(this.apiUrl + `/${ownerId}/files`).pipe(
       map((response: any) => {
-        
+
         const transformPipe = new OwnerMapperPipe();
         return response.map((file: any) =>
           transformPipe.transformFile(file)
