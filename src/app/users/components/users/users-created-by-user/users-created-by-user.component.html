@@ -1,0 +1,126 @@
+<app-main-container title="Usuarios Creados por {{userName}}">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <!-- Sección de búsqueda y filtros -->
+    <div class="btn-group me-5" role="group">
+      <div class="col-sm-12 col-md-8 col-xl-8">
+        <div class="input-group" >
+          <span class="input-group-text" id="search-icon">
+                  <i class="bi bi-search"></i>
+                </span>
+          <input
+            type="text"
+            class="form-control flex-grow-1"
+            id="filter-text-box"
+            (input)="onFilterTextBoxChanged($event)"
+            placeholder="Buscar..."
+          />
+          <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
+    <div class="d-flex align-items-center">
+      <!-- Botón "+" -->
+      <button type="button" class="btn btn-outline-primary" (click)="redirectToForm()">+</button>
+
+      <!-- Línea vertical y botones de exportación -->
+      <div class="vertical-line mx-3"></div>
+      <button class="btn btn-success me-2" (click)="exportToExcel()">
+        <i class="bi bi-file-earmark-excel"></i>
+      </button>
+      <button class="btn btn-danger me-2" (click)="exportToPdf()">
+        <i class="bi bi-file-earmark-pdf"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #usersTable>
+      @if (filteredUsersList.length === 0) {
+        <thead>
+        <td colspan="7">
+          <div class="text-center p-2">
+            <div class="alert alert-secondary text-center" role="alert">
+              No hay elementos para mostrar
+            </div>
+          </div>
+        </td>
+        </thead>
+      } @else {
+        <thead>
+        <tr>
+          <th scope="col">Nombre completo</th>
+          <th scope="col">Nombre de usuario</th>
+          <th scope="col">Email</th>
+          <th scope="col">Estado</th>
+
+          <th scope="col">Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (user of (filteredUsersList.length ? filteredUsersList : userList); track user) {
+
+            <tr>
+              <td>
+                {{ user.firstName + " " + user.lastName }}
+              </td>
+              <td>
+                {{ user.userName }}
+              </td>
+              <td>
+                {{ user.email }}
+              </td>
+              <td>
+                @if (user.isActive) {
+                  <p class="mb-0">
+                    <i class="bi bi-check2-circle text-success" style="font-size: 1.5rem;"></i>
+                  </p>
+                } @else {
+                  <p class="mb-0">
+                    <i class="bi bi-x-circle text-danger" style="font-size: 1.5rem;"></i>
+                  </p>
+                }
+              </td>
+
+              <td>
+                <button type="button" class="btn btn-outline-primary" (click)="userDetail(user.id)"><i class="bi bi-eye"></i></button>
+              </td>
+            </tr>
+
+          }
+        </tbody>
+      }
+    </table>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mt-3">
+
+    <div class="form-group mb-3 me-2">
+      <select
+        id="itemsPerPage"
+        class="form-select"
+        [(ngModel)]="pageSize"
+        (change)="onItemsPerPageChange()"
+      >
+        @for(option of sizeOptions; track $index) {
+          <option [value]="option">{{ option }} Elementos</option>
+        }
+      </select>
+    </div>
+
+    <div class="ms-auto"></div>
+
+    <ngb-pagination
+      [(page)]="currentPage"
+      [pageSize]="pageSize"
+      [collectionSize]="totalItems"
+      (pageChange)="onPageChange($event)"
+      [maxSize]="5"
+      [boundaryLinks]="false"
+    ></ngb-pagination>
+
+  </div>
+</app-main-container>
+

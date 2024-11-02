@@ -139,7 +139,7 @@
                         class="list-group-item list-group-item-action btn btn-primary btn-sm me-2" disabled>
                   {{ rol.prettyName }}
                 </button>
-                @if (id !== undefined) {
+                @if (!id) {
                   <button type="button" class="btn btn-danger btn-sm" (click)="removeRol($index)">
                     <i class="bi bi-trash-fill"></i>
                   </button>
@@ -396,7 +396,7 @@
                       (click)="setAddressValue($index)">
                 {{address.streetAddress}} {{address.number}}
               </button>
-              @if (id !== undefined) {
+              @if (!id) {
                 <button type="button" class="btn btn-danger btn-sm" (click)="removeAddress($index)">
                   <i class="bi bi-trash-fill"></i>
                 </button>
@@ -488,7 +488,7 @@
                         (click)="setContactValue($index)">
                   {{ contact.contactType }} - {{ contact.contactValue }}
                 </button>
-                @if (id !== undefined) {
+                @if (!id) {
                   <button type="button" class="btn btn-danger btn-sm" (click)="removeContact($index)">
                     <i class="bi bi-trash-fill"></i>
                   </button>
