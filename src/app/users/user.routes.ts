@@ -25,6 +25,8 @@ import { UserUserTenantFormComponent } from "./components/users/user-user-tenant
 import { LoginComponent } from "./components/login/login.component";
 
 export const USER_ROUTES: Routes = [
+    /* { path: 'login', component: LoginComponent },
+    { path: '', redirectTo: '/login', pathMatch: 'full' }, */
     { path: '', component: UserHomeComponent },
     { path: 'home', component: HomeComponent, /* canActivate: [authGuard] */ },
     //{ path: '', redirectTo: '/home', pathMatch: 'full' },
