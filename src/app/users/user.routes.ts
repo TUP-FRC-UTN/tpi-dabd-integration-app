@@ -22,8 +22,11 @@ import { UserUserDetailComponent } from "./components/users/user-user-detail/use
 import { UserUserFormComponent } from "./components/users/user-user-form/user-user-form.component";
 import { UserUserListComponent } from "./components/users/user-user-list/user-user-list.component";
 import { UserUserTenantFormComponent } from "./components/users/user-user-tenant-form/user-user-tenant-form.component";
+import { LoginComponent } from "./components/login/login.component";
 
 export const USER_ROUTES: Routes = [
+    /* { path: 'login', component: LoginComponent },
+    { path: '', redirectTo: '/login', pathMatch: 'full' }, */
     { path: '', component: UserHomeComponent },
     { path: 'home', component: HomeComponent, /* canActivate: [authGuard] */ },
     //{ path: '', redirectTo: '/home', pathMatch: 'full' },
