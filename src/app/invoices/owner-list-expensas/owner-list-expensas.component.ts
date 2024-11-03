@@ -218,6 +218,7 @@ export class OwnerListExpensasComponent {
   onPageChange(page: number) {
     this.currentPage = --page;
     this.getTickets();
+    this.currentPage++;
   }
 
 // Método para obtener todos los tickets usando el servicio
