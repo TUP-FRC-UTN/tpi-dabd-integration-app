@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, LOCALE_ID, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, LOCALE_ID, OnInit, ViewChild, NgModule } from '@angular/core';
 import {
   TicketDetail,
   TicketDto,
@@ -22,6 +22,9 @@ import { CapitalizePipe } from '../pipes/capitalize.pipe';
 import { InfoComponent } from '../info/info.component';
 import { DatePipe } from '@angular/common';
 
+import localeEs from '@angular/common/locales/es';
+
+registerLocaleData(localeEs, 'es');
 @Component({
   selector: 'app-owner-list-expensas',
   standalone: true,
@@ -39,7 +42,9 @@ import { DatePipe } from '@angular/common';
   ],
   templateUrl: './owner-list-expensas.component.html',
   styleUrl: './owner-list-expensas.component.css',
-  providers: [DatePipe],
+  providers: [DatePipe,
+    { provide: LOCALE_ID, useValue: 'es' },
+  ],
 })
 export class OwnerListExpensasComponent {
 
