@@ -6,7 +6,8 @@ export interface Plot {
     builtArea: string,
     plotStatus: string,
     plotType: string,
-    isActive: boolean
+    isActive: boolean,
+    balance: number
 }
 
 export const PlotTypeDictionary: { [key: string]: string } = {

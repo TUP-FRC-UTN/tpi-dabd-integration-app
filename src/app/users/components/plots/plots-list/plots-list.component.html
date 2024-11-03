@@ -69,6 +69,7 @@
         @if (retrievePlotsByActive === undefined) {
           <th scope="col">Estado</th>
         }
+        <th scope="col">Balance</th>
         <th scope="col">Acciones</th>
       </tr>
       </thead>
@@ -107,6 +108,9 @@
                 }
               </td>
             }
+            <td [ngClass]="{'text-danger': plot.balance > 0, 'text-success': !(plot.balance > 0)}">
+              {{ plot.balance | currency:'ARS':"symbol-narrow" }}
+            </td>
             <td>
               <div class="btn-group" role="group">
                 <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">

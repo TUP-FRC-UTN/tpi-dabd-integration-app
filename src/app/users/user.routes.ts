@@ -50,7 +50,7 @@ export const USER_ROUTES: Routes = [
     { path: 'owners/plot/:plotId', component: CadastreOwnerPlotListComponent, /* canActivate: [authGuard] */ },
     { path: 'plots/owner/:ownerId', component: CadastrePlotOwnerListComponent, /* canActivate: [authGuard] */ },
     { path: 'plot/detail/:id', component: CadastrePlotDetailComponent, /* canActivate: [authGuard] */ },
-    { path: 'account/concept/:accountId', component: AccountAccountConceptComponent, /* canActivate: [authGuard] */ },
+    { path: 'account/concept/:plotId', component: AccountAccountConceptComponent, /* canActivate: [authGuard] */ },
     { path: 'account/list', component: AccountAccountListComponent, /* canActivate: [authGuard] */ },
     { path: '**', component: NotFoundComponent, /* canActivate: [authGuard] */ },
 ];

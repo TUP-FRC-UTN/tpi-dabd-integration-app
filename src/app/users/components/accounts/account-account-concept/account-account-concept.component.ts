@@ -30,7 +30,7 @@ export class AccountAccountConceptComponent {
   }
 
   getAllAcounts() {
-    this.conceptList = this.accountService.getConceptByAccountId(1);
+    this.conceptList = this.accountService.getConceptsByPlotId(1);
   }
 
   changePage(forward: boolean) {

@@ -10,6 +10,7 @@ export interface AccountingConcept {
     concept: string;
     comments: string;
     amount: number;
+    documentId: number;
 }
 
 export const ConceptTypes: { [key: string]: string } = {
