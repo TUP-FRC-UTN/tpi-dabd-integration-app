@@ -10,6 +10,7 @@ import { Owner } from '../../../models/owner';
 import { FileService } from '../../../services/file.service';
 import { combineLatest } from 'rxjs';
 import { PlotService } from '../../../services/plot.service';
+import { OwnerPlotService } from '../../../services/owner-plot.service';
 
 
 @Component({
@@ -30,6 +31,8 @@ export class OwnerFilesViewComponent {
   private router = inject(Router)
   private activatedRoute = inject(ActivatedRoute);
 
+  private ownerPlotService = inject(OwnerPlotService);
+
 
   currentPage: number = 0
   pageSize: number = 10
@@ -38,6 +41,8 @@ export class OwnerFilesViewComponent {
   // filteredFilesList: ValidateOwner[] = [];
   applyFilterWithInput!: boolean;
   filterInput!: any;
+
+  //
 
   // lista de archivos del owner
   files: any[] = [];
@@ -49,6 +54,10 @@ export class OwnerFilesViewComponent {
   id: string | null = null;
 
   owner!: Owner;
+
+  // lista de plots del owner
+  plots: any[] = [];
+
 
   fileTypeDictionary = FileTypeDictionary;
   fileStatusDictionary = FileStatusDictionary;
@@ -69,11 +78,6 @@ export class OwnerFilesViewComponent {
     if(this.id) {
       this.getOwnerById(this.id);
     }
-    if(this.owner) {
-      this.getAllFiles(this.owner);
-    }
-
-    this.files.push(this.plotFiles);
   }
 
   getOwnerById(ownerId: string ) {
@@ -81,6 +85,7 @@ export class OwnerFilesViewComponent {
     this.ownerService.getOwnerById(id).subscribe({
       next: (response) => {
         this.owner = response;
+        this.getOwnerPlots();
       },
       error: (error) => {
         console.error('Error al obtener propietario: ', error);
@@ -88,28 +93,58 @@ export class OwnerFilesViewComponent {
     });
   }
 
-  getAllFiles(owner: Owner) {
-    if(owner.plotId) {
-      this.plotService.getPlotFilesById(owner.plotId).subscribe({
+  getOwnerPlots() {
+    if(this.owner.id) {
+      this.ownerPlotService.giveAllPlotsByOwner(this.owner.id, 0, 1000).subscribe({
         next: (response) => {
-          this.plotFiles = response;
+          console.log("AAAAAAAAAAA", response.content)
+          this.plots = response.content;
+          this.getAllFiles(this.owner)
         },
         error: (error) => {
           console.error('Error al obtener archivos del lote:', error);
         },
-      });
+      })
     }
+  }
+
+  getAllFiles(owner: Owner) {
+    // archivos del lote
+    if(this.plots.length > 0) {
+      this.plots.forEach(plot => {
+        
+        this.plotService.getPlotFilesById(plot.id).subscribe({
+          next: (response) => {
+            console.log("Plot files: ", response)
+            this.plotFiles.push(response);
+          },
+          error: (error) => {
+            console.error('Error al obtener archivos del lote:', error);
+          },
+        });
+
+      })
+    }
+    // archivos del owner
     if(owner.id) {
       this.ownerService.getOwnerFilesById(owner.id).subscribe({
         next: (response) => {
+          console.log("RESP DE GETOWNERFILES", response)
           this.files = response;
+          console.log("FILES DE ", this.files)
+          this.plotFiles.forEach(file => {
+            this.files.push(file);
+          })
         },
         error: (error) => {
           console.error('Error al obtener archivos del lote:', error);
         },
       });
     }
-    this.files.push(this.plotFiles);
+    
+
+    console.log("plots: ", this.plots);
+    console.log("files: ", this.files);
   }
 
   // metodo para abrir el archivo en otra ventana
