@@ -27,6 +27,8 @@ import { PaymentExcelService } from '../services/payment-excel.service';
 
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
+import { PeriodToMonthYearPipe } from "../pipes/period-to-month-year.pipe";
+import { CapitalizePipe } from "../pipes/capitalize.pipe";
 registerLocaleData(localeEs, 'es-ES');
 @Component({
   selector: 'app-admin-list-expensas',
@@ -40,8 +42,10 @@ registerLocaleData(localeEs, 'es-ES');
     MainContainerComponent,
     TableFiltersComponent,
     NgbDropdownModule,
-    NgbModule
-  ],
+    NgbModule,
+    PeriodToMonthYearPipe,
+    CapitalizePipe
+],
   templateUrl: './admin-list-expensas.component.html',
   styleUrls: ['./admin-list-expensas.component.css'],
   providers: [DatePipe],
@@ -106,6 +110,8 @@ export class AdminListExpensasComponent implements OnInit {
     status: TicketStatus.PENDING,
     ticketDetails: [],
     lotId: 0,
+    urlTicket:"",
+    period:""
   };
 
   listallticket: TicketDto[] = [];

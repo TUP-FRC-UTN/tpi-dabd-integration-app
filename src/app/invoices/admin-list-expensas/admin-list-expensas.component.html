@@ -67,7 +67,7 @@
 
         <td class="text-center">{{ item.lotId}}</td>
 
-        <td class="text-center">{{ item.issueDate | date : "MM/YYYY" }}</td>
+        <td class="text-center"> {{ (item.period | periodToMonthYear | capitalize) }}</td>
         <td class="text-center">
           {{
           calculateTotal(item)
