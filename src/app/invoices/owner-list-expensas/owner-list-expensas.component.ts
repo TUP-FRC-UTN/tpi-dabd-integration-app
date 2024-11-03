@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, LOCALE_ID, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, LOCALE_ID, OnInit, ViewChild, NgModule } from '@angular/core';
 import {
   TicketDetail,
   TicketDto,
@@ -22,6 +22,13 @@ import { CapitalizePipe } from '../pipes/capitalize.pipe';
 import { InfoComponent } from '../info/info.component';
 import { DatePipe } from '@angular/common';
 
+import localeEs from '@angular/common/locales/es';
+import jsPDF from 'jspdf';
+import { PaginatedResponse } from '../models/api-response';
+import autoTable from 'jspdf-autotable';
+import { PaymentExcelService } from '../services/payment-excel.service';
+
+registerLocaleData(localeEs, 'es');
 @Component({
   selector: 'app-owner-list-expensas',
   standalone: true,
@@ -39,7 +46,9 @@ import { DatePipe } from '@angular/common';
   ],
   templateUrl: './owner-list-expensas.component.html',
   styleUrl: './owner-list-expensas.component.css',
-  providers: [DatePipe],
+  providers: [DatePipe,
+    { provide: LOCALE_ID, useValue: 'es' },
+  ],
 })
 export class OwnerListExpensasComponent {
 
@@ -104,7 +113,8 @@ export class OwnerListExpensasComponent {
     private ticketservice: TicketService,
     private http: HttpClient,
     private modalService: NgbModal,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private excelService:PaymentExcelService
   ) {
 
 
@@ -234,4 +244,77 @@ export class OwnerListExpensasComponent {
 
     modalRef.componentInstance.data = { role: 'owner' };
   }
+
+
+
+
+
+  LIMIT_32BITS_MAX = 2147483647;
+  
+  @Input() objectName: string = '';
+   /**
+   * Export the HTML table to a PDF file.
+   * Calls the `exportTableToPdf` method from the `CadastreExcelService`.
+   */
+   exportToPdf() {
+    const doc = new jsPDF();
+  
+    // Título del PDF
+    doc.setFontSize(18);
+    doc.text('Tickets Report', 14, 20);
+  
+    this.ticketservice.getAllTicketsPageForExports(0, this.LIMIT_32BITS_MAX).subscribe(
+      (response: PaginatedResponse<TicketDto>) => {
+        // Accede a la propiedad `content` que contiene los tickets
+        const expenses = response.content;
+  
+        autoTable(doc, {
+          startY: 30,
+          head: [['Propietario', 'Periodo', 'ID', 'Estado']],
+          body: expenses.map((expense: TicketDto) => [
+            `${expense.ownerId.first_name} ${expense.ownerId.last_name}`,
+            expense.issueDate instanceof Date ? expense.issueDate.toLocaleDateString() : new Date(expense.issueDate).toLocaleDateString(),
+            expense.id,
+            expense.status
+          ]),
+        });
+  
+        // Guarda el PDF después de agregar la tabla
+        doc.save('expenses_report.pdf');
+      },
+      (error) => {
+        console.error('Error retrieved all, on export component.', error);
+      }
+    );
+  }
+  
+  /**
+   * Export the HTML table to an Excel file (.xlsx).
+   * Calls the `exportTableToExcel` method from the `CadastreExcelService`.
+   */
+  //#region TIENEN QUE MODIFICAR EL SERIVCIO CON SU GETALL
+  exportToExcel() {
+    this.ticketservice.getAllTicketsPageForExports(0, this.LIMIT_32BITS_MAX).subscribe(
+      (response) => {
+        const modifiedContent = response.content.map(({ id, ownerId,...rest }) => rest);
+        this.excelService.exportListToExcel(
+          modifiedContent,
+          `${this.getActualDayFormat()}_${this.objectName}`
+        );
+      },
+      (error) => {
+        console.log('Error retrieved all, on export component.');
+      }
+    );
+  }
+
+  
+  getActualDayFormat() {
+    const today = new Date();
+
+    const formattedDate = today.toISOString().split('T')[0];
+
+    return formattedDate;
+  }
+
 }

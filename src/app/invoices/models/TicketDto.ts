@@ -5,7 +5,7 @@ export interface TicketDetail {
 }
 
 export enum TicketStatus {
-  PENDING = 'PENDIENTE',
+  PENDING = 'PENDING',
   PAID = 'PAID',
   CANCELED = 'CANCELED'
 }

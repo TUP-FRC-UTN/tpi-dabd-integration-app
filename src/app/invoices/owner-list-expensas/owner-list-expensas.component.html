@@ -23,15 +23,15 @@
     </div>
   
     <div class="d-flex align-items-center">
-  
+
       <!-- <button type="button" class="btn btn-outline-primary" (click)="redirectToForm()">+</button> -->
   
   
       <div class="vertical-line mx-3"></div>
-      <button class="btn btn-success me-2">
+      <button class="btn btn-success me-2" (click)="exportToExcel()">
         <i class="bi bi-file-earmark-excel"></i>
       </button>
-      <button class="btn btn-danger me-2">
+      <button class="btn btn-danger me-2" (click)="exportToPdf()">
         <i class="bi bi-file-earmark-pdf"></i>
       </button>
     </div>
@@ -61,10 +61,10 @@
         @for (item of ticketOwnerList; track $index) {
         <tr>
           <th scope="row" class="text-center">
-            {{ (item.issueDate | date : "MMMM-Y")!.toString() | capitalize }}
+            {{ (item.issueDate | date : "MMMM-yy" : 'es-ES')!.toString() | capitalize }}
           </th>
           <td class="text-center">
-            {{ item.expirationDate | date : "MM/YYYY" }}
+            {{ item.expirationDate | date : "dd/MM/YYYY" }}
           </td>
           <td class="text-center">
             {{
@@ -78,7 +78,7 @@
               [ngClass]="{
                 'text-success border-success': item.status === 'PAID',
                 'text-danger border-danger': item.status === 'CANCELED',
-                'text-warning border-warning': item.status === 'PENDIENTE'
+                'text-warning border-warning': item.status === 'PENDING'
               }"
             >
               {{ item.status | translateStatusTicket }}
@@ -128,7 +128,15 @@
             </div>
           </td>
         </tr>
-        }
+        }@empty {
+          <td colspan="7" class="text-center">
+            <div class="text-center p-3">
+              <div class="alert alert-secondary">
+                No hay registros para mostrar
+              </div>
+            </div>
+          </td>
+          }
       </tbody>
     </table>
   </div>
@@ -260,16 +268,17 @@
 
         <div class="row">
           <div class="col-md-6">
-            <strong>Estado:</strong>
-            <span
-              [ngClass]="{
-                'badge bg-success': ticketSelectedModal.status === 'PAID',
-                'badge bg-danger': ticketSelectedModal.status === 'CANCELED',
-                'badge bg-warning': ticketSelectedModal.status === 'PENDIENTE'
-              }"
-            >
-              {{ ticketSelectedModal.status | translateStatusTicket }}
-            </span>
+            <strong >Estado:  </strong>
+            <span 
+          class="badge bg-transparent p-2 border" 
+          [ngClass]="{
+            'border-success text-success': ticketSelectedModal.status === 'PAID',
+            'border-danger text-danger': ticketSelectedModal.status === 'CANCELED',
+            'border-warning text-warning': ticketSelectedModal.status === 'PENDING'
+          }"
+          >
+          {{ ticketSelectedModal.status | translateStatusTicket }}
+          </span>
           </div>
           <div class="col-md-6 text-end">
             <strong>Total:</strong>

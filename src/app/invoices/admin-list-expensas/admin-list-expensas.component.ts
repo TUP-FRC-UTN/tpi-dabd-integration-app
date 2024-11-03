@@ -20,12 +20,13 @@ import { NgbDropdownModule, NgbModal, NgbModalRef, NgbModule, NgbPagination } fr
 import { TranslateStatusTicketPipe } from '../pipes/translate-status-ticket.pipe';
 import { PaginatedResponse } from '../models/api-response';
 import { InfoComponent } from '../info/info.component';
-import { registerLocaleData } from '@angular/common';
-import localeEs from '@angular/common/locales/es';
 import { Subject } from 'rxjs';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { PaymentExcelService } from '../services/payment-excel.service';
+
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
 registerLocaleData(localeEs, 'es-ES');
 @Component({
   selector: 'app-admin-list-expensas',
@@ -48,11 +49,6 @@ registerLocaleData(localeEs, 'es-ES');
 export class AdminListExpensasComponent implements OnInit {
 
   selectedState: string = ''; // Variable para almacenar el valor seleccionado
-
-  // Método para verificar si el botón debería estar habilitado
-  isStateSelected(): boolean {
-    return this.selectedState === '1' || this.selectedState === '2' || this.selectedState === '3';
-  }
 
 
   //#region MODALES
@@ -138,6 +134,18 @@ export class AdminListExpensasComponent implements OnInit {
       fechaFin: [''],
     });
   }
+
+    // Metodo para verificar si el boton debería estar habilitado
+    isStateSelected(): boolean {
+      return this.selectedState === '1' || this.selectedState === '2' || this.selectedState === '3';
+    }
+
+    selectedStateChange() {
+      if(this.selectedState == '1') return "PENDIENTE";
+      if(this.selectedState == '2') return "PAGADO";
+      if(this.selectedState == '3') return "ANULADO";
+      return '';
+    }
 
   setFilterType(type: string) {
     this.filterType = type;
@@ -290,10 +298,31 @@ export class AdminListExpensasComponent implements OnInit {
     this.confirmModalRef = this.modalService.open(this.confirmModal, { size: 'lg' });
   }
 
+  selectedStateEnum() {
+    if(this.selectedState == '1') return "PENDING";
+    if(this.selectedState == '2') return "PAID";
+    if(this.selectedState == '3') return "CANCELED";
+    return '';
+  }
   confirmChange() {
+
+    // aca va el cambio de estado.
+    this.ticketService.updateTicketStatus(this.ticketSelectedModal.id, this.selectedStateEnum()).subscribe(
+      (response) => {
+        console.log('Estado actualizado:', response);
+        this.getTickets();
+        this.closeAllModals();
+      },
+      (error) => {
+        console.error('Error al actualizar el estado:', error);
+      }
+    );
+
     if (this.confirmModalRef) {
       this.confirmModalRef.close();
     }
+
+    this.selectedState = '';
   }
 
   closeAllModals() {
@@ -303,6 +332,7 @@ export class AdminListExpensasComponent implements OnInit {
     if (this.statusModalRef) {
       this.statusModalRef.close();
     }
+    this.selectedState = '';
   }
 
 
@@ -399,7 +429,7 @@ export class AdminListExpensasComponent implements OnInit {
     doc.setFontSize(18);
     doc.text('Tickets Report', 14, 20);
   
-    this.ticketService.getAllTicketsPage(0, this.LIMIT_32BITS_MAX).subscribe(
+    this.ticketService.getAllTicketsPageForExports(0, this.LIMIT_32BITS_MAX).subscribe(
       (response: PaginatedResponse<TicketDto>) => {
         // Accede a la propiedad `content` que contiene los tickets
         const expenses = response.content;
@@ -430,7 +460,7 @@ export class AdminListExpensasComponent implements OnInit {
    */
   //#region TIENEN QUE MODIFICAR EL SERIVCIO CON SU GETALL
   exportToExcel() {
-    this.ticketService.getAllTicketsPage(0, this.LIMIT_32BITS_MAX).subscribe(
+    this.ticketService.getAllTicketsPageForExports(0, this.LIMIT_32BITS_MAX).subscribe(
       (response) => {
         const modifiedContent = response.content.map(({ id, ownerId,...rest }) => rest);
         this.excelService.exportListToExcel(
@@ -446,10 +476,11 @@ export class AdminListExpensasComponent implements OnInit {
 
 
 
-  filteroptions: FilterOption[] = ["PAGADO", "ANULADO", "PENDIENTE"].map((status) => ({
-    value: status,
-    label: status,
-  }));
+  filteroptions: FilterOption[] = [
+    { value: 'PENDING', label: 'Pendiente' },
+    { value: 'PAID', label: 'Pagado' },
+    { value: 'CANCELED', label: 'Anulado' }
+  ]
 
   filterConfig: Filter[] = new FilterConfigBuilder()
     .textFilter("Propietario", "ownerId", "Ingrese un propietario")
@@ -461,11 +492,24 @@ export class AdminListExpensasComponent implements OnInit {
    // Método que detecta cambios en los filtros
    filterChange($event: Record<string, any>) {
     console.log($event); // Muestra los valores actuales de los filtros en la consola
-    
-    // Verifica si el filtro de estado tiene un cambio específico
-    if ($event['status']?.includes("PAGADO")) {
-      this.onPaidStatusSelected();
-    }
+    this.ticketService.getAllWithFilters(0, 10, $event['status'], $event['firstPeriod'], $event['lastPeriod']).subscribe(
+      (response: PaginatedResponse<TicketDto>) => {
+        this.listallticket = response.content;
+        this.filteredTickets = response.content;
+        this.lastPage = response.last
+        this.totalItems = response.totalElements;
+      },
+      (error) => {
+        console.error('Error al obtener los tickets con filtros:', error);
+      },
+      () => {
+        console.log('Obtención de tickets con filtros completada.');
+      }
+    );
+    // // Verifica si el filtro de estado tiene un cambio específico
+    // if ($event['status']?.includes("PAGADO")) {
+    //   this.onPaidStatusSelected();
+    // }
   }
 
   // Método propio que se ejecuta cuando se selecciona "PAGADO" en el checkbox
