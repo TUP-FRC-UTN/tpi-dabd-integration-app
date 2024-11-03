@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import {
   TicketDetail,
   TicketDto,
@@ -16,7 +16,7 @@ import {
 import { TicketService } from '../services/ticket.service';
 import { HttpClient } from '@angular/common/http';
 import { Filter, FilterConfigBuilder, FilterOption, MainContainerComponent, TableComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
-import { NgbDropdownModule, NgbModal, NgbModule, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModal, NgbModalRef, NgbModule, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateStatusTicketPipe } from '../pipes/translate-status-ticket.pipe';
 import { PaginatedResponse } from '../models/api-response';
 import { InfoComponent } from '../info/info.component';
@@ -47,6 +47,24 @@ registerLocaleData(localeEs, 'es-ES');
 })
 export class AdminListExpensasComponent implements OnInit {
 
+  selectedState: string = ''; // Variable para almacenar el valor seleccionado
+
+  // Método para verificar si el botón debería estar habilitado
+  isStateSelected(): boolean {
+    return this.selectedState === '1' || this.selectedState === '2' || this.selectedState === '3';
+  }
+
+
+  //#region MODALES
+  
+  @ViewChild('statusModal') statusModal!: TemplateRef<any>;
+  @ViewChild('confirmModal') confirmModal!: TemplateRef<any>;
+
+  private statusModalRef!: NgbModalRef;
+  private confirmModalRef!: NgbModalRef;
+
+  //--------------------------------------------------------------------------------
+  
   //#region ATT de PAGINADO
   currentPage: number = 0;
   pageSize: number = 10;
@@ -265,15 +283,26 @@ export class AdminListExpensasComponent implements OnInit {
 
 
 
-  confirmChange(): void {
-    // Código para cambiar el estado del ticket
-    this.closeAllModals();
+  openConfirmModal() {
+    if (this.statusModalRef) {
+      this.statusModalRef.close();
+    }
+    this.confirmModalRef = this.modalService.open(this.confirmModal, { size: 'lg' });
   }
 
-  closeAllModals(): void {
-    // Cierra todos los modales abiertos
-    (document.querySelector('#statusModal') as any).modal('hide');
-    (document.querySelector('#confirmModal') as any).modal('hide');
+  confirmChange() {
+    if (this.confirmModalRef) {
+      this.confirmModalRef.close();
+    }
+  }
+
+  closeAllModals() {
+    if (this.confirmModalRef) {
+      this.confirmModalRef.close();
+    }
+    if (this.statusModalRef) {
+      this.statusModalRef.close();
+    }
   }
 
 
