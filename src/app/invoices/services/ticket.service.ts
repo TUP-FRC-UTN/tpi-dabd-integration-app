@@ -11,12 +11,12 @@ import { TransformTicketPipe } from '../pipes/ticket-mapper.pipe';
 })
 export class TicketService {
 
-  private apiUrl = 'http://localhost:8080/tickets';
+  private apiUrl = 'http://localhost:8087/tickets';
 
-  private apiUrlPdf = 'http://localhost:8080/tickets/generateTicket/'; 
+  private apiUrlPdf = 'http://localhost:8087/tickets/generateTicket/'; 
 
-  private api = 'http://localhost:8080/tickets/getAllTicketsByOwner';
-  private apiCounter = 'http://localhost:8080/tickets/getAll';
+  private api = 'http://localhost:8087/tickets/getAllTicketsByOwner';
+  private apiCounter = 'http://localhost:8087/tickets/getAll';
   
 
   constructor(private http: HttpClient) { }

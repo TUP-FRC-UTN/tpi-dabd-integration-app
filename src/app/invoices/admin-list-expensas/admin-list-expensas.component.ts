@@ -403,7 +403,7 @@ export class AdminListExpensasComponent implements OnInit {
   exportToExcel() {
     this.ticketService.getAllTicketsPage(0, this.LIMIT_32BITS_MAX).subscribe(
       (response) => {
-        const modifiedContent = response.content.map(({ id, ...rest }) => rest);
+        const modifiedContent = response.content.map(({ id, ownerId,...rest }) => rest);
         this.excelService.exportListToExcel(
           modifiedContent,
           `${this.getActualDayFormat()}_${this.objectName}`

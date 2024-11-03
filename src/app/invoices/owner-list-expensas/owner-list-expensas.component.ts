@@ -39,6 +39,7 @@ import { DatePipe } from '@angular/common';
   ],
   templateUrl: './owner-list-expensas.component.html',
   styleUrl: './owner-list-expensas.component.css',
+  providers: [DatePipe],
 })
 export class OwnerListExpensasComponent {
 
@@ -116,6 +117,7 @@ export class OwnerListExpensasComponent {
   ngOnInit() {
     this.ticketservice.getAllByOwner(this.currentPage, this.pageSize).subscribe(
       (response) => {
+        console.log('Tickets del propietario:', response);
         this.ticketOwnerList = response.content; // Lista original de tickets
         this.filteredTickets = [...this.ticketOwnerList]; // Inicializa los tickets filtrados con los datos originales
         this.totalItems = response.totalElements; // Total de elementos para paginación

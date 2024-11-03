@@ -58,8 +58,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (item of filteredTicketList; track $index) {
-
+        @for (item of ticketOwnerList; track $index) {
         <tr>
           <th scope="row" class="text-center">
             {{ (item.issueDate | date : "MMMM-Y")!.toString() | capitalize }}
@@ -87,16 +86,17 @@
           </td>
 
           <td class="text-center">
-            <div class="btn-group">
+            <div class="btn-group" ngbDropdown>
               <button
                 type="button"
                 class="btn btn-sm btn-secondary dropdown-toggle"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
+                ngbDropdownToggle
               >
                 <i class="bi bi-three-dots-vertical"></i>
               </button>
-              <ul class="dropdown-menu">
+              <ul ngbDropdownMenu class="dropdown-menu">
                 <li>
                   <a
                     class="dropdown-item"
