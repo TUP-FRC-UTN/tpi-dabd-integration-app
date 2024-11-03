@@ -1,48 +1,53 @@
 import { Component, inject } from '@angular/core';
 import { AccountService } from '../../../services/account.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AccountingConcept, ConceptTypes } from '../../../models/account';
-import { CommonModule, Location } from '@angular/common';
+import { CommonModule, CurrencyPipe, Location } from '@angular/common';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
 
 @Component({
   selector: 'app-account-account-concept',
   standalone: true,
-  imports: [CommonModule, MainContainerComponent],
+  imports: [CommonModule, MainContainerComponent, CurrencyPipe],
   templateUrl: './account-account-concept.component.html',
   styleUrl: './account-account-concept.component.css'
 })
 export class AccountAccountConceptComponent {
   private accountService = inject(AccountService);
-  private router = inject(Router)
+  private activatedRoute = inject(ActivatedRoute)
   private location = inject(Location)
 
+  //#region ATT de PAGINADO
   currentPage: number = 0
   pageSize: number = 10
-  plotId: number | undefined
+  sizeOptions : number[] = [10, 25, 50]
   conceptList: AccountingConcept[] = [];
-  lastPage: boolean = false;
+  lastPage: boolean | undefined
+  totalItems: number = 0;
+  //#endregion
 
+  plotId: number = 1;
   conceptTypesDictionary = ConceptTypes;
 
   ngOnInit() {
-    this.getAllAcounts()
+    
   }
 
-  getAllAcounts() {
-    this.conceptList = this.accountService.getConceptsByPlotId(1);
+  getAllConcepts(plotId: number) {
+    this.accountService.getConceptsByPlotId(plotId, -1, this.pageSize).subscribe(
+      response => {
+        this.conceptList = response.content;
+        this.lastPage = response.last;
+        this.totalItems = response.totalElements;
+      },
+      error => {
+        console.error('Error getting concepts:', error);
+      }
+    )
   }
 
   changePage(forward: boolean) {
     forward ? this.currentPage++ : this.currentPage--
-  }
-
-  viewPlotDetail(plotId : number) {
-    this.router.navigate(["/plot/detail/" + plotId])
-  }
-
-  viewConcept(accountId : number) {
-    this.router.navigate(["/account/concept/" + accountId])
   }
 
   goBack() {

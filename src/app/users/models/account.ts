@@ -5,7 +5,7 @@ export interface Account {
 }
 
 export interface AccountingConcept {
-    id: number;
+    plotId: number;
     accountingDate: Date;
     concept: string;
     comments: string;
