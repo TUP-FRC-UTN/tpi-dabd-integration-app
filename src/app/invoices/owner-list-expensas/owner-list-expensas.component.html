@@ -61,7 +61,7 @@
         @for (item of ticketOwnerList; track $index) {
         <tr>
           <th scope="row" class="text-center">
-            {{ (item.issueDate | date : "MMMM-yy" : 'es-ES')!.toString() | capitalize }}
+            {{ (item.period | periodToMonthYear | capitalize) }}
           </th>
           <td class="text-center">
             {{ item.expirationDate | date : "dd/MM/YYYY" }}
@@ -122,6 +122,13 @@
                     data-bs-target="#ticketModal"
                     (click)="selectTicket(item)"
                     >Pagar con Mercadopago</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    (click)="downloadTicket(item)"
+                    >Descargar Expensa</a
                   >
                 </li>
               </ul>

@@ -26,7 +26,8 @@ export interface TicketDto {
   ticketNumber: string;
   lotId: number;
   ticketDetails: TicketDetail[]; // Cambiado de 'items'
-
+  urlTicket: string;
+  period: string
 }
 
 

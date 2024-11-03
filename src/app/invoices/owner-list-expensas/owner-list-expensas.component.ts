@@ -27,6 +27,8 @@ import jsPDF from 'jspdf';
 import { PaginatedResponse } from '../models/api-response';
 import autoTable from 'jspdf-autotable';
 import { PaymentExcelService } from '../services/payment-excel.service';
+import { FilesServiceService } from '../services/files.service.service';
+import { PeriodToMonthYearPipe } from '../pipes/period-to-month-year.pipe';
 
 registerLocaleData(localeEs, 'es');
 @Component({
@@ -42,7 +44,8 @@ registerLocaleData(localeEs, 'es');
     TranslateStatusTicketPipe,
     CapitalizePipe,
     TableFiltersComponent,
-    NgbModule
+    NgbModule,
+    PeriodToMonthYearPipe
   ],
   templateUrl: './owner-list-expensas.component.html',
   styleUrl: './owner-list-expensas.component.css',
@@ -99,9 +102,11 @@ export class OwnerListExpensasComponent {
     ticketDetails: [
       { id: 1, amount: 20, description: 'Description of Item A' },
     ],
+    urlTicket:"",
+    period:""
   };
   isButtonInitialized: boolean = false;
-  listallticket: TicketDto[] = [];
+  // listallticket: TicketDto[] = [];
   filteredTickets: TicketDto[] = [];
   fechasForm: FormGroup;
 
@@ -110,11 +115,12 @@ export class OwnerListExpensasComponent {
   constructor(
     private mercadopagoservice: MercadoPagoServiceService,
     private formBuilder: FormBuilder,
-    private ticketservice: TicketService,
+    private ticketService: TicketService,
     private http: HttpClient,
     private modalService: NgbModal,
     private datePipe: DatePipe,
-    private excelService:PaymentExcelService
+    private excelService:PaymentExcelService,
+    private fileService : FilesServiceService
   ) {
 
 
@@ -125,7 +131,7 @@ export class OwnerListExpensasComponent {
     });
   }
   ngOnInit() {
-    this.ticketservice.getAllByOwner(this.currentPage, this.pageSize).subscribe(
+    this.ticketService.getAllByOwner(this.currentPage, this.pageSize).subscribe(
       (response) => {
         console.log('Tickets del propietario:', response);
         this.ticketOwnerList = response.content; // Lista original de tickets
@@ -144,6 +150,19 @@ export class OwnerListExpensasComponent {
     this.selectedFile = event.target.files[0];
   }
 
+  downloadTicket(ticket: TicketDto){
+
+    this.fileService.downloadFile(ticket.urlTicket).subscribe(response => {
+      const blob = new Blob([response], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = ticket.urlTicket.split('/').pop() || 'download.pdf'; 
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+  });
+}
 
 
   onUpload(): void {
@@ -168,7 +187,7 @@ export class OwnerListExpensasComponent {
   enviarFechas() {
     const fechas = this.fechasForm.value;
     console.log('Fechas Enviadas:', fechas);
-    this.ticketservice.filtrarfechas(fechas).subscribe(
+    this.ticketService.filtrarfechas(fechas).subscribe(
       (filteredTickets: TicketDto[]) => {
         this.filteredTickets = filteredTickets;
       },
@@ -198,9 +217,27 @@ export class OwnerListExpensasComponent {
 
   onPageChange(page: number) {
     this.currentPage = --page;
+    this.getTickets();
   }
 
-
+// Método para obtener todos los tickets usando el servicio
+getTickets(): void {
+  this.ticketService.getAllByOwner(this.currentPage, this.pageSize).subscribe({
+    next: (response: PaginatedResponse<TicketDto>) => {
+      console.log('Tickets received:', response.content);
+      this.ticketOwnerList = response.content;
+      this.filteredTickets = response.content;
+      this.lastPage = response.last
+      this.totalItems = response.totalElements;
+    },
+    error: (error) => {
+      console.error('Error al obtener los tickets:', error);
+    },
+    complete: () => {
+      console.log('Obtención de tickets completada.');
+    },
+  });
+}
 
   pagar() {
     this.requestData.idTicket = this.ticketSelectedModal.id;
@@ -263,7 +300,7 @@ export class OwnerListExpensasComponent {
     doc.setFontSize(18);
     doc.text('Tickets Report', 14, 20);
   
-    this.ticketservice.getAllTicketsPageForExports(0, this.LIMIT_32BITS_MAX).subscribe(
+    this.ticketService.getAllTicketsPageForExports(0, this.LIMIT_32BITS_MAX).subscribe(
       (response: PaginatedResponse<TicketDto>) => {
         // Accede a la propiedad `content` que contiene los tickets
         const expenses = response.content;
@@ -294,7 +331,7 @@ export class OwnerListExpensasComponent {
    */
   //#region TIENEN QUE MODIFICAR EL SERIVCIO CON SU GETALL
   exportToExcel() {
-    this.ticketservice.getAllTicketsPageForExports(0, this.LIMIT_32BITS_MAX).subscribe(
+    this.ticketService.getAllTicketsPageForExports(0, this.LIMIT_32BITS_MAX).subscribe(
       (response) => {
         const modifiedContent = response.content.map(({ id, ownerId,...rest }) => rest);
         this.excelService.exportListToExcel(
