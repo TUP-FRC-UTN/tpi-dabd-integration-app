@@ -92,10 +92,12 @@ export class TicketService {
     }
 
     getAllTicketsPageForExports(page : number, size : number): Observable<PaginatedResponse<TicketDto>> {
+      const ownerId = 1;
       let params = new HttpParams()
+      .set('ownerId', ownerId.toString())
       .set('page', page.toString())
       .set('size', size.toString());
-      return this.http.get<PaginatedResponse<TicketDto>>(this.apiGetAllByOwner, { params }).pipe(
+      return this.http.get<PaginatedResponse<TicketDto>>(this.apiGetAll, { params }).pipe(
         map((response: PaginatedResponse<any>) => {
           const transformPipe = new TransformTicketPipe();
           const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
