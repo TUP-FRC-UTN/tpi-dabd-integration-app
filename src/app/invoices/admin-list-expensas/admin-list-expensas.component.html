@@ -176,7 +176,7 @@
           <div class="col-md-6 text-end">
             <strong>Fecha de emisión:</strong>
             {{ ticketSelectedModal.issueDate | date : "dd/MM/yyyy" }}<br />
-            <strong>Fecha de expiración:</strong>
+            <strong>Fecha de vencimiento:</strong>
             {{ ticketSelectedModal.expirationDate | date : "dd/MM/yyyy" }}
           </div>
         </div>
@@ -213,14 +213,17 @@
 
         <div class="row">
           <div class="col-md-6">
-            <strong>Estado:</strong>
-            <span [ngClass]="{
-                'badge bg-success': ticketSelectedModal.status === 'PAID',
-                'badge bg-danger': ticketSelectedModal.status === 'CANCELED',
-                'badge bg-warning': ticketSelectedModal.status === 'PENDIENTE'
-              }">
-              {{ ticketSelectedModal.status | translateStatusTicket }}
-            </span>
+            <strong class="me-2">Estado:  </strong>
+            <span 
+              class="badge bg-transparent p-2 border" 
+              [ngClass]="{
+                'border-success text-success': ticketSelectedModal.status === 'PAID',
+                'border-danger text-danger': ticketSelectedModal.status === 'CANCELED',
+                'border-warning text-warning': ticketSelectedModal.status === 'PENDIENTE'
+              }"
+              >
+              {{ ticketSelectedModal.status | translateStatusTicket }}
+              </span>
           </div>
           <div class="col-md-6 text-end">
             <strong>Total:</strong>
@@ -278,7 +281,7 @@
                 <strong>{{ ticketSelectedModal.issueDate | date: "dd/MM/yyyy" }}</strong>
               </h6>
               <h6 class="mb-0">
-                Fecha de Expiración:
+                Fecha de Vencimiento:
                 <strong>{{ ticketSelectedModal.expirationDate | date: "dd/MM/yyyy" }}</strong>
               </h6>
             </div>
@@ -304,8 +307,8 @@
 
         <hr />
         <div class="d-flex justify-content-center">
-          <select class="form-select form-select-lg mb-3" aria-label="Seleccione nuevo estado">
-            <option selected>Seleccione nuevo estado</option>
+          <select class="form-select form-select-lg mb-3" [(ngModel)]="selectedState" aria-label="Seleccione nuevo estado">
+            <option selected value="">Seleccione nuevo estado</option>
             <option value="1">PENDIENTE</option>
             <option value="2">PAGADO</option>
             <option value="3">CANCELADO</option>
@@ -316,7 +319,7 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Cerrar
         </button>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal">
+        <button type="button" class="btn btn-primary" (click)="openConfirmModal()" [disabled]="!isStateSelected()">
           Cambiar Estado
         </button>
       </div>
@@ -329,25 +332,31 @@
 
 
 <!-- Modal de Confirmación -->
-<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="confirmModalLabel">Confirmar Cambio de Estado</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="container text-center">
-          <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 2rem;"></i>
-          <p class="mt-3">Está a punto de cambiar el estado del ticket <strong>#{{ ticketSelectedModal.id }}</strong> con un valor de <strong>${{ totalTicketSelected | number }}</strong>.</p>
-          <p>¿Confirma que desea proceder?</p>
-        </div>
-      </div>
-      <div class="modal-footer justify-content-between">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-success" (click)="confirmChange()">Confirmar Cambio</button>
-      </div>
+<ng-template #confirmModal>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Confirmar Cambio de Estado</h5>
+      <button type="button" class="btn-close" (click)="closeAllModals()"></button>
+    </div>
+    <div class="modal-body">
+      <p>
+        <strong>
+          Propietario:
+          {{
+          ticketSelectedModal.ownerId.first_name +
+          " " +
+          ticketSelectedModal.ownerId.second_name +
+          " " +
+          ticketSelectedModal.ownerId.last_name
+          }}
+        </strong>
+      </p>
+      <p class="mt-3">Está a punto de cambiar el estado del ticket <strong>#{{ ticketSelectedModal.id }}</strong> con un valor de <strong>${{ totalTicketSelected | number }}</strong>.</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-secondary" (click)="closeAllModals()">Cancelar</button>
+      <button type="button" class="btn btn-success" (click)="confirmChange()">Confirmar Cambio</button>
     </div>
   </div>
-</div>
+</ng-template>
 </app-main-container>
