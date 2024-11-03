@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, LOCALE_ID,Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import {
   TicketDetail,
   TicketDto,
@@ -29,7 +29,7 @@ import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import { PeriodToMonthYearPipe } from "../pipes/period-to-month-year.pipe";
 import { CapitalizePipe } from "../pipes/capitalize.pipe";
-registerLocaleData(localeEs, 'es-ES');
+registerLocaleData(localeEs, 'es');
 @Component({
   selector: 'app-admin-list-expensas',
   standalone: true,
@@ -48,7 +48,9 @@ registerLocaleData(localeEs, 'es-ES');
 ],
   templateUrl: './admin-list-expensas.component.html',
   styleUrls: ['./admin-list-expensas.component.css'],
-  providers: [DatePipe],
+  providers: [DatePipe,
+    { provide: LOCALE_ID, useValue: 'es' },
+  ],
 })
 export class AdminListExpensasComponent implements OnInit {
 
@@ -204,6 +206,7 @@ export class AdminListExpensasComponent implements OnInit {
   onPageChange(page: number) {
     this.currentPage = --page;
     this.getTickets();
+    this.currentPage++;
   }
   onItemsPerPageChange() {
     --this.currentPage;
