@@ -4,6 +4,7 @@ import { Plot } from '../models/plot';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import { PaginatedResponse } from '../models/api-response';
 import { TransformPlotPipe } from '../pipes/plot-mapper.pipe';
+import { OwnerMapperPipe } from '../pipes/owner-mapper.pipe';
 
 @Injectable({
   providedIn: 'root'
@@ -145,4 +146,21 @@ export class PlotService {
 
     return this.http.patch<Plot>(`${this.host}/reactivate/${id}`, {}, {headers});
   }
+
+
+  // metodo para traer los archivos del plot por id de plot
+  getPlotFilesById(plotId: number): Observable<Document[]> {
+
+    return this.http.get<any>(this.host + `/${plotId}/files`).pipe(
+      map((response: any) => {
+
+        const transformPipe = new OwnerMapperPipe();
+        return response.map((file: any) =>
+          transformPipe.transformFile(file)
+        );
+      })
+    );
+  }
+
+  
 }
