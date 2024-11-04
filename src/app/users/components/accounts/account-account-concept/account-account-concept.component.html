@@ -1,9 +1,54 @@
-<app-main-container title="Lista de Movimientos Lote:{{plot.plotNumber}} Manzana:{{plot.blockNumber}}">
+<app-main-container title="Lista de Movimientos Lote:{{plot.plotNumber}} Manzana:{{plot.blockNumber}}" (infoButtonClick)="openInfo()">
 
-  <div class="d-flex justify-content-end">
-    <h3 class="me-1">Balance: </h3>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <!-- Sección de búsqueda y filtros -->
+    <!-- <div class="btn-group me-5" role="group">
+      <div class="col-sm-12 col-md-8 col-xl-8">
+        <div class="input-group">
+          <span class="input-group-text" id="search-icon">
+            <i class="bi bi-search"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control"
+            id="filter-text-box"
+            (input)="onFilterTextBoxChanged($event)"
+            placeholder="Buscar..."
+          />
+          <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
 
-    <h3 [ngClass]="[plot.balance < 0 ? 'text-success' : 'text-danger']">{{plot.balance | currency:'ARS':"symbol-narrow"}}</h3>
+        </div>
+      </div>
+
+
+    </div> -->
+
+    <div class="d-flex align-items-center">
+      <h3 class="me-1">Balance: </h3>
+  
+      <h3 [ngClass]="[plot.balance < 0 ? 'text-success' : 'text-danger']">
+        <!-- {{plot.balance | currency:'ARS':"symbol-narrow"}} -->
+        {{plot.balance.toLocaleString('es-AR', {
+          style: 'currency',
+          currency: 'ARS',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+            })}}
+      </h3>
+    </div>
+    
+    <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
+    <div class="d-flex align-items-center">
+
+      <!-- Línea vertical y botones de exportación -->
+      <div class="vertical-line mx-3"></div>
+      <button class="btn btn-success me-2" (click)="exportToExcel()">
+        <i class="bi bi-file-earmark-excel"></i>
+      </button>
+      <button class="btn btn-danger me-2" (click)="exportToPdf()">
+        <i class="bi bi-file-earmark-pdf"></i>
+      </button>
+    </div>
   </div>
 
   <!--- TABLE --->
@@ -40,8 +85,13 @@
               <td>
                 {{ concept.comments }}
               </td>
-              <td [ngClass]="[concept.concept === 'PAYMENT' ? 'text-success' : 'text-danger']">
-                {{ concept.amount | currency:'ARS':"symbol-narrow" }}
+              <td [ngClass]="[concept.concept === 'PAYMENT' ? 'text-success' : 'text-danger']" class="text-end">
+                <!-- {{ concept.amount | currency:'ARS':"symbol-narrow" }} -->
+                {{concept.amount.toLocaleString('es-AR', {
+                  style: 'currency',
+                  currency: 'ARS',
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,})}}
               </td>
             </tr>
           }
@@ -78,7 +128,7 @@
 
   <div class="col-12 d-flex justify-content-start">
     <div class="mx-2">
-      <button type="button" class="btn btn-info" (click)="goBack()">
+      <button type="button" class="btn btn-secondary" (click)="goBack()">
         Volver
       </button>
     </div>

@@ -1,19 +1,20 @@
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { AccountService } from '../../../services/account.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountingConcept, ConceptTypes } from '../../../models/account';
 import { CommonModule, CurrencyPipe, Location } from '@angular/common';
-import { MainContainerComponent } from 'ngx-dabd-grupo01';
+import { Filter, FilterConfigBuilder, MainContainerComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
 import { PlotService } from '../../../services/plot.service';
 import { Plot } from '../../../models/plot';
 import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
+import { CadastreExcelService } from '../../../services/cadastre-excel.service';
 import { InfoComponent } from '../../commons/info/info.component';
 
 @Component({
   selector: 'app-account-account-concept',
   standalone: true,
-  imports: [CommonModule, MainContainerComponent, CurrencyPipe, NgbPagination, FormsModule],
+  imports: [CommonModule, MainContainerComponent, CurrencyPipe, NgbPagination, FormsModule, TableFiltersComponent],
   templateUrl: './account-account-concept.component.html',
   styleUrl: './account-account-concept.component.css'
 })
@@ -22,6 +23,9 @@ export class AccountAccountConceptComponent {
   private plotService = inject(PlotService)
   private activatedRoute = inject(ActivatedRoute)
   private router = inject(Router)
+  private excelService = inject(CadastreExcelService);
+
+  @ViewChild('conceptsTable') conceptsTable!: ElementRef;
   private modalService = inject(NgbModal)
 
   //#region ATT de PAGINADO
@@ -31,11 +35,22 @@ export class AccountAccountConceptComponent {
   conceptList: AccountingConcept[] = [];
   lastPage: boolean | undefined
   totalItems: number = 0;
+  objectName : string = ""
   //#endregion
+
+  headers : string[] = ['Fecha', 'Concepto', 'Detalle', 'Monto']
+  LIMIT_32BITS_MAX = 2147483647;
+  dataMapper = (item: AccountingConcept) => [
+    item["accountingDate"],
+    this.translateDictionary(item["concept"], this.dictionaries[0]),
+    item["comments"],
+    item['amount'],
+  ];
 
   plotId!: number;
   plot!: Plot;
   conceptTypesDictionary = ConceptTypes;
+  dictionaries: Array<{ [key: string]: any }> = [this.conceptTypesDictionary];
 
   ngOnInit() {
     this.plotId = Number(this.activatedRoute.snapshot.paramMap.get('plotId'));
@@ -98,6 +113,17 @@ export class AccountAccountConceptComponent {
     return;
   }
 
+  translateDictionary(value: any, dictionary?: { [key: string]: any }) {
+    if (value !== undefined && value !== null && dictionary) {
+      for (const key in dictionary) {
+        if (dictionary[key].toString().toLowerCase() === value.toLowerCase()) {
+          return key;
+        }
+      }
+    }
+    return;
+  }
+
   //#region FUNCIONES PARA PAGINADO
   onItemsPerPageChange() {
     this.currentPage = 1;
@@ -109,6 +135,22 @@ export class AccountAccountConceptComponent {
     this.getAllConcepts(this.plotId);
   }
   //#endregion
+  
+  exportToPdf() {
+    const table: HTMLTableElement = this.conceptsTable.nativeElement;
+    this.accountService.exportTableToPdf(table, `${this.getActualDayFormat()}_${this.objectName}`);
+  }
+
+  exportToExcel() {
+    const table: HTMLTableElement = this.conceptsTable.nativeElement;
+    this.accountService.exportTableToExcel(table, `${this.getActualDayFormat()}_${this.objectName}`);
+  }
+
+  getActualDayFormat() {
+    const today = new Date();
+
+    return today.toISOString().split('T')[0];
+  }
 
   openInfo(){
     const modalRef = this.modalService.open(InfoComponent, {
@@ -117,14 +159,14 @@ export class AccountAccountConceptComponent {
       keyboard: false,
       centered: true,
       scrollable: true
-    }); 
-    
-    
+    });
+
+
     modalRef.componentInstance.title = 'Lista de Gastos';
     modalRef.componentInstance.description = 'Esta pantalla permite la visualización de todos los gastos asociados al lote.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos', 
+      {
+        title: 'Datos',
         content: [
           {
             strong: 'Fecha:',
@@ -160,6 +202,6 @@ export class AccountAccountConceptComponent {
     ];
     modalRef.componentInstance.notes = [
       'La interfaz está diseñada para ofrecer una administración eficiente de los gastos, manteniendo la integridad y precisión de los datos financieros.'
-    ];    
+    ];
   }
 }
