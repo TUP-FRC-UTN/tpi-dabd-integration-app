@@ -8,6 +8,7 @@ import { UserFilterButtonsComponent } from '../user-filter-buttons/user-filter-b
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
+import { InfoComponent } from '../../commons/info/info.component';
 
 @Component({
   selector: 'app-user-user-list',
@@ -233,4 +234,86 @@ export class UserUserListComponent {
   }
 
   //#endregion
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });   
+    
+    modalRef.componentInstance.title = 'Lista de Usuarios';
+    modalRef.componentInstance.description = 'En esta pantalla se permite visualizar todos los usuarios que están registrados en el sistema.';
+    modalRef.componentInstance.body = [
+      { 
+        title: 'Datos', 
+        content: [
+          {
+            strong: 'Nombre completo:',
+            detail: 'Nombre completo del usuario.'
+          },
+          {
+            strong: 'Nombre de usuario:',
+            detail: 'Nombre de usuario.'
+          },
+          {
+            strong: 'Email: ',
+            detail: 'Email con el que está registrado el usuario.'
+          }
+        ]
+      },
+      {
+        title: 'Acciones',
+        content: [        
+          {
+            strong: 'Editar: ',
+            detail: 'Redirige hacia la pantalla para poder editar los datos del usuario.'
+          },
+          {
+            strong: 'Eliminar: ',
+            detail: 'Inactiva el usuario.'
+          },
+          {
+            strong: 'Detalles: ',
+            detail: 'Redirige hacia la pantalla para poder visualizar detalladamente todos los datos del usuario.'
+          }
+        ]
+      },
+      { 
+        title: 'Filtros',
+        content: [
+        ]
+      },
+      { 
+        title: 'Funcionalidades de los botones', 
+        content: [
+          {
+            strong: 'Filtros: ',
+            detail: 'Botón con forma de tolva que despliega los filtros avanzados.'
+          },
+          {
+            strong: 'Añadir nuevo usuario: ',
+            detail: 'Botón "+" que redirige hacia la pantalla para dar de alta un nuevo usuario.'
+          },
+          {
+            strong: 'Exportar a Excel: ',
+            detail: 'Botón verde que exporta la grilla a un archivo de Excel.'
+          },
+          {
+            strong: 'Exportar a PDF: ',
+            detail: 'Botón rojo que exporta la grilla a un archivo de PDF.'
+          },
+          {
+            strong: 'Paginación: ',
+            detail: 'Botones para pasar de página en la grilla.'
+          }
+        ]
+      }
+    ];
+    modalRef.componentInstance.notes = [
+      'La interfaz está diseñada para ofrecer una administración eficiente de los usuarios, manteniendo la integridad y precisión de los datos.'
+    ];
+  }
 }

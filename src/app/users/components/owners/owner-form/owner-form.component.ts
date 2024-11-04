@@ -22,6 +22,8 @@ import { ToastService, MainContainerComponent } from 'ngx-dabd-grupo01';
 import { NgClass } from '@angular/common';
 import { cadastrePlotAssociation } from '../../../validators/cadastre-plot-association';
 import { OwnerPlotService } from '../../../services/owner-plot.service';
+import { InfoComponent } from '../../commons/info/info.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-owner-form',
@@ -34,6 +36,7 @@ export class OwnerFormComponent implements OnInit {
   constructor(private activatedRoute: ActivatedRoute, private router: Router) {}
 
   private ownerPlotService = inject(OwnerPlotService)
+  private modalService = inject(NgbModal)
 
   title: string = '';
   id: string | null = null;
@@ -480,4 +483,128 @@ export class OwnerFormComponent implements OnInit {
     this.ownerForm.get('addressForm')?.reset();
   }
   //#endregion
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });  
+    
+    modalRef.componentInstance.title = 'Registrar Propietario';
+    modalRef.componentInstance.description = 'Pantalla para la gestión integral de propietarios, permitiendo la visualización, edición y administración de datos personales, información de contacto y detalles de dirección.';
+    modalRef.componentInstance.body = [
+      { 
+        title: 'Datos del Propietario', 
+        content: [
+          {
+            strong: 'Nombre:',
+            detail: 'Campo para ingresar el nombre del propietario.'
+          },
+          {
+            strong: 'Segundo nombre:',
+            detail: 'Campo para ingresar el segundo nombre del propietario.'
+          },
+          {
+            strong: 'Apellido:',
+            detail: 'Campo para ingresar el apellido del propietario.'
+          },
+          {
+            strong: 'Tipo Propietario:',
+            detail: 'Menú desplegable para seleccionar el tipo de propietario.'
+          },
+          {
+            strong: 'Tipo Documento:',
+            detail: 'Menú desplegable para seleccionar el tipo de documento.'
+          },
+          {
+            strong: 'Número:',
+            detail: 'Campo para ingresar el número del documento.'
+          },
+          {
+            strong: 'CUIT:',
+            detail: 'Campo para ingresar el CUIT del propietario.'
+          },
+          {
+            strong: 'Cuenta Bancaria:',
+            detail: 'Campo para ingresar la cuenta bancaria del propietario.'
+          },
+          {
+            strong: 'Fecha de Nacimiento:',
+            detail: 'Campo para ingresar la fecha de nacimiento en formato dd/mm/aaaa.'
+          }
+        ]
+      },
+      { 
+        title: 'Asociar un lote', 
+        content: [
+          {
+            strong: 'Número de Manzana:',
+            detail: 'Campo de texto para ingresar el número de manzana.'
+          },
+          {
+            strong: 'Número de Lote:',
+            detail: 'Campo de texto para ingresar el número de lote.'
+          }
+        ]
+      },
+      { 
+        title: 'Añadir Dirección', 
+        content: [
+          {
+            strong: 'Calle:',
+            detail: 'Campo para ingresar el nombre de la calle.'
+          },
+          {
+            strong: 'Número:',
+            detail: 'Campo para ingresar el número, con valor predeterminado 0.'
+          },
+          {
+            strong: 'Piso:',
+            detail: 'Campo para ingresar el piso, con valor predeterminado 0.'
+          },
+          {
+            strong: 'Depto:',
+            detail: 'Campo para ingresar el número de departamento.'
+          },
+          {
+            strong: 'País:',
+            detail: 'Menú desplegable para seleccionar el país.'
+          },
+          {
+            strong: 'Provincia:',
+            detail: 'Menú desplegable para seleccionar la provincia.'
+          },
+          {
+            strong: 'Ciudad:',
+            detail: 'Campo para ingresar la ciudad.'
+          },
+          {
+            strong: 'Código Postal:',
+            detail: 'Campo para ingresar el código postal.'
+          }
+        ]
+      },
+      { 
+        title: 'Añadir Contactos', 
+        content: [
+          {
+            strong: 'Tipo Contacto:',
+            detail: 'Menú desplegable para seleccionar el tipo de contacto.'
+          },
+          {
+            strong: 'Contacto:',
+            detail: 'Campo para ingresar el contacto.'
+          },
+          {
+            strong: 'Agregar Contacto:',
+            detail: 'Botón con símbolo de "+" para agregar el contacto ingresado.'
+          }
+        ]
+      }
+    ];
+    modalRef.componentInstance.notes = ['Campos obligatorios: Nombre, Apellido, Tipo Propietario, Tipo Documento, Número.'];    
+  }
 }

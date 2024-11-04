@@ -11,10 +11,11 @@ import { User } from '../../../models/user';
 import {DatePipe, NgClass} from "@angular/common";
 import {ActivatedRoute, Router} from "@angular/router";
 import { routes } from '../../../../app.routes';
-import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal, NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
 import {Subject} from "rxjs";
+import { InfoComponent } from '../../commons/info/info.component';
 
 @Component({
   selector: 'app-users-created-by-user',
@@ -38,6 +39,7 @@ export class UsersCreatedByUserComponent {
   private userService = inject(UserService)
   private activatedRoute = inject(ActivatedRoute);
   private toastService = inject(ToastService)
+  private modalService = inject(NgbModal)
 
   //TODO: Cambiar filtro porfavor
   filterConfig: Filter[] = new FilterConfigBuilder()
@@ -226,5 +228,81 @@ export class UsersCreatedByUserComponent {
   //#endregion
   filterChange($event: Record<string, any>) {
     console.log($event)
+  }
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });   
+
+    modalRef.componentInstance.title = 'Listado de usuarios creados por un usuario';
+    modalRef.componentInstance.description = 'En esta pantalla se permite ver que usuarios han sido creados por otro usuario.';
+    modalRef.componentInstance.body = [
+      { 
+        title: 'Datos', 
+        content: [
+          {
+            strong: 'Nombre completo:',
+            detail: 'Nombre completo del usuario.'
+          },
+          {
+            strong: 'Nombre de usuario:',
+            detail: 'Nombre de usuario.'
+          },
+          {
+            strong: 'Email: ',
+            detail: 'Email con el que está registrado el usuario.'
+          }
+        ]
+      },
+      {
+        title: 'Acciones',
+        content: [        
+          {
+            strong: 'Detalles: ',
+            detail: 'Redirige hacia la pantalla para poder visualizar detalladamente todos los datos del usuario.'
+          }
+        ]
+      },
+      { 
+        title: 'Filtros',
+        content: [
+        ]
+      },
+      { 
+        title: 'Funcionalidades de los botones', 
+        content: [
+          {
+            strong: 'Filtros: ',
+            detail: 'Botón con forma de tolva que despliega los filtros avanzados.'
+          },
+          {
+            strong: 'Añadir nuevo usuario: ',
+            detail: 'Botón "+" que redirige hacia la pantalla para dar de alta un nuevo usuario.'
+          },
+          {
+            strong: 'Exportar a Excel: ',
+            detail: 'Botón verde que exporta la grilla a un archivo de Excel.'
+          },
+          {
+            strong: 'Exportar a PDF: ',
+            detail: 'Botón rojo que exporta la grilla a un archivo de PDF.'
+          },
+          {
+            strong: 'Paginación: ',
+            detail: 'Botones para pasar de página en la grilla.'
+          }
+        ]
+      }
+    ];
+    modalRef.componentInstance.notes = [
+      'La interfaz está diseñada para ofrecer una administración eficiente de los usuarios creados por un usuario, manteniendo la integridad y precisión de los datos.'
+    ];
+
+    
   }
 }

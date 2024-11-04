@@ -13,6 +13,8 @@ import { Plot } from '../../../models/plot';
 import { Country, Provinces } from '../../../models/generics';
 import { User } from '../../../models/user';
 import { toSnakeCase } from '../../../utils/owner-helper';
+import { InfoComponent } from '../../commons/info/info.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-user-user-detail',
@@ -31,6 +33,7 @@ export class UserUserDetailComponent {
   private router = inject(Router)
   private toastService = inject(ToastService)
   private location = inject(Location)
+  private modalService = inject(NgbModal)
   //#endregion
 
   //#region ATT
@@ -361,5 +364,114 @@ export class UserUserDetailComponent {
   //#endregion
   goBack() {
     this.location.back()
+  }
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });   
+    
+    modalRef.componentInstance.title = 'Detalle de Usuario';
+    modalRef.componentInstance.description = 'Pantalla para la gestión integral de usuarios, permitiendo la visualización, edición y administración de datos personales, roles, lotes asociados, direcciones y contactos.';
+    modalRef.componentInstance.body = [
+      { 
+        title: 'Datos del Usuario', 
+        content: [
+          {
+            strong: 'Email:',
+            detail: 'Correo electrónico del usuario.'
+          },
+          {
+            strong: 'Nombre:',
+            detail: 'Nombre del usuario.'
+          },
+          {
+            strong: 'Nombre de usuario:',
+            detail: 'Nombre de usuario.'
+          },
+          {
+            strong: 'Apellido:',
+            detail: 'Apellido del usuario.'
+          }
+        ]
+      },
+      { 
+        title: 'Lista de Roles', 
+        content: [
+          {
+            strong: 'Roles:',
+            detail: 'Lista de roles del usuario.'
+          }
+        ]
+      },
+      { 
+        title: 'Asociar un lote', 
+        content: [
+          {
+            strong: 'Lotes en tenencia:',
+            detail: 'Lotes en tenencia.'
+          },
+          {
+            strong: 'Fecha:',
+            detail: 'Fecha en formato dd/mm/aaaa.'
+          }
+        ]
+      },
+      { 
+        title: 'Añadir Dirección', 
+        content: [
+          {
+            strong: 'Calle:',
+            detail: 'Nombre de la calle.'
+          },
+          {
+            strong: 'Número:',
+            detail: 'Número de la propiedad'
+          },
+          {
+            strong: 'Piso:',
+            detail: 'Piso de la propiedad'
+          },
+          {
+            strong: 'Depto:',
+            detail: 'Departamento.'
+          },
+          {
+            strong: 'País:',
+            detail: 'País.'
+          },
+          {
+            strong: 'Provincia:',
+            detail: 'Provincia.'
+          },
+          {
+            strong: 'Ciudad:',
+            detail: 'Ciudad.'
+          },
+          {
+            strong: 'Código Postal:',
+            detail: 'Código postal.'
+          }
+        ]
+      },
+      { 
+        title: 'Añadir Contactos', 
+        content: [
+          {
+            strong: 'Tipo Contacto:',
+            detail: 'Tipo del contacto.'
+          },
+          {
+            strong: 'Contacto:',
+            detail: 'Información del contacto'
+          }
+        ]
+      }
+    ];
+
   }
 }

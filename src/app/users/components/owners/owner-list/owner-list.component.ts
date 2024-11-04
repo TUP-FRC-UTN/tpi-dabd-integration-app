@@ -28,6 +28,7 @@ import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { OwnerDetailComponent } from '../owner-detail/owner-detail.component';
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
 import { Subject } from 'rxjs';
+import { InfoComponent } from '../../commons/info/info.component';
 
 @Component({
   selector: 'app-owner-list',
@@ -425,5 +426,96 @@ export class OwnerListComponent implements OnInit {
 
   filterChange($event: Record<string, any>) {
 
+  }
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
+
+    modalRef.componentInstance.title = 'Lista de Propietarios';
+    modalRef.componentInstance.description = 'En esta pantalla se visualizan todos los propietarios que han sido validados en el consorcio.';
+    modalRef.componentInstance.body = [
+      { 
+        title: 'Datos', 
+        content: [
+          {
+            strong: 'Nombre:',
+            detail: 'Nombre completo del propietario.'
+          },
+          {
+            strong: 'Apellido:',
+            detail: 'Apellido del propietario.'
+          },
+          {
+            strong: 'Tipo documento: ',
+            detail: 'Tipo de documento del propietario.'
+          },
+          {
+            strong: 'N° documento: ',
+            detail: 'Número del documento del propietario.'
+          },
+          {
+            strong: 'Tipo propietario: ',
+            detail: 'Clasificación del propietario.'
+          }
+        ]
+      },
+      {
+        title: 'Acciones',
+        content: [
+          {
+            strong: 'Detalles: ',
+            detail: 'Redirige hacia la pantalla para poder visualizar detalladamente todos los datos del propietario.'
+          },
+          {
+            strong: 'Ver lotes: ',
+            detail: 'Redirige hacia la pantalla para poder visualizar que lotes tiene asignado el propietario.'
+          },
+          {
+            strong: 'Editar: ',
+            detail: 'Redirige hacia la pantalla para poder editar los datos del propietario'
+          },
+          {
+            strong: 'Eliminar: ',
+            detail: 'Inactiva el propietario.'
+          }
+        ]
+      },
+      { 
+        title: 'Filtros',
+        content: []
+      },
+      { 
+        title: 'Funcionalidades de los botones', 
+        content: [
+          {
+            strong: 'Filtros: ',
+            detail: 'Botón con forma de tolva que despliega los filtros avanzados.'
+          },
+          {
+            strong: 'Añadir nuevo propietario: ',
+            detail: 'Botón "+" que redirige hacia la pantalla para dar de alta un nuevo propietario.'
+          },
+          {
+            strong: 'Exportar a Excel: ',
+            detail: 'Botón verde que exporta la grilla a un archivo de Excel.'
+          },
+          {
+            strong: 'Exportar a PDF: ',
+            detail: 'Botón rojo que exporta la grilla a un archivo de PDF.'
+          },
+          {
+            strong: 'Paginación: ',
+            detail: 'Botones para pasar de página en la grilla.'
+          }
+        ]
+      }
+    ];
+    modalRef.componentInstance.notes = ['La interfaz está diseñada para ofrecer una administración eficiente, manteniendo la integridad y seguridad de los datos de los propietarios.'];
   }
 }
