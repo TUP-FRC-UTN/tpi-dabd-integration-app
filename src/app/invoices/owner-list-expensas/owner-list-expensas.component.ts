@@ -155,16 +155,21 @@ export class OwnerListExpensasComponent {
     const target = event.target as HTMLInputElement;
     const filterText = target.value.toLowerCase();
   
-    if (filterText.length <= 2) {
-      // Restaura la lista completa si el texto del filtro tiene menos de 3 caracteres
-      this.filteredTickets = [...this.ticketOwnerList];
-    } else {
-      // Filtra los tickets visibles en la tabla
-      this.filteredTickets = this.ticketOwnerList.filter(ticket => 
-        this.matchVisibleFields(ticket, filterText)
-      );
-    }
+    this.filteredTickets = this.ticketOwnerList.filter(ticket => {
+      const period = ticket.period?.toLowerCase().includes(filterText);
+      const expirationDate = new Date(ticket.expirationDate)
+        .toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
+        .toLowerCase()
+        .includes(filterText);
+      const total = this.calculateTotal(ticket)
+        .toString()
+        .includes(filterText);
+      const status = ticket.status.toLowerCase().includes(filterText);
+  
+      return period || expirationDate || total || status;
+    });
   }
+  
   
   // Función de coincidencia solo en los campos visibles
   matchVisibleFields(ticket: TicketDto, filterText: string): boolean {

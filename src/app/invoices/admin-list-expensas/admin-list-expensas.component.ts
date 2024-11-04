@@ -94,6 +94,9 @@ export class AdminListExpensasComponent implements OnInit {
   fechaInicio: Date | null = null;
   fechaFin: Date | null = null;
 
+  eventSaved!: Record<string, any>;
+
+
 
   @ViewChild('ticketsTable', { static: true })
   tableName!: ElementRef<HTMLTableElement>;
@@ -210,8 +213,9 @@ export class AdminListExpensasComponent implements OnInit {
     this.currentPage = --page;
     if(!this.isFilter){
       this.getTickets();
+
     }else{
-      // this.filterChange()
+       this.filterChange(this.eventSaved)
     }
     this.currentPage++;
   }
@@ -510,6 +514,7 @@ export class AdminListExpensasComponent implements OnInit {
    // Método que detecta cambios en los filtros
    filterChange($event: Record<string, any>) {
     console.log($event); // Muestra los valores actuales de los filtros en la consola
+    this.eventSaved = $event;
     this.isFilter = true;
     this.ticketService.getAllWithFilters(this.currentPage--, this.pageSize, $event['status'], $event['lotId'], $event['firstPeriod'], $event['lastPeriod']).subscribe(
       (response: PaginatedResponse<TicketDto>) => {
