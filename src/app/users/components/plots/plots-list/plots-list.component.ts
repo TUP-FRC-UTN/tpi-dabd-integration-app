@@ -273,15 +273,19 @@ export class PlotsListComponent {
 
   //#region RUTEO
   plotOwners(plotId: number) {
-    this.router.navigate(["/owners/plot/" + plotId])
+    this.router.navigate(["/users/owners/plot/" + plotId])
   }
 
   updatePlot(plotId: number) {
-    this.router.navigate(["/plot/form/", plotId])
+    this.router.navigate(["/users/plot/form/", plotId])
   }
 
   plotDetail(plotId : number) {
-    this.router.navigate([`/plot/detail/${plotId}`])
+    this.router.navigate([`/users/plot/detail/${plotId}`])
+  }
+
+  currentAccount(plotId: number){
+    this.router.navigate([`/users/account/concept/${plotId}`])
   }
 
   redirectToForm() {

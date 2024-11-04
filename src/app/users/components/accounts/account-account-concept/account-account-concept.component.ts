@@ -73,16 +73,15 @@ export class AccountAccountConceptComponent {
     this.router.navigate(['/users/plot/list']);
   }
 
-  formatDate(date: Date): string {
-    const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    };
-    return new Intl.DateTimeFormat('es-AR', options).format(date);
+  formatDate(arr: number[]) {
+    let date = new Date();
+    date.setFullYear(arr[0]);
+    date.setMonth(arr[1]);
+    date.setDate(arr[2]);
+    date.setHours(arr[3]);
+    date.setMinutes(arr[4]);
+
+    return date;
   }
 
   translateTable(value: any, dictionary: { [key: string]: any }) {
