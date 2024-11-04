@@ -9,6 +9,8 @@ import { Document, FileStatusDictionary, FileTypeDictionary } from '../../../mod
 import { Owner } from '../../../models/owner';
 import { FileService } from '../../../services/file.service';
 import { combineLatest } from 'rxjs';
+import { PlotService } from '../../../services/plot.service';
+import { OwnerPlotService } from '../../../services/owner-plot.service';
 
 
 @Component({
@@ -23,6 +25,13 @@ export class OwnerFilesViewComponent {
   private fileService = inject(FileService);
   private modalService = inject(NgbModal);
   private location = inject(Location);
+  protected ownerService = inject(OwnerService);
+  private plotService = inject(PlotService);
+  // protected fileService = inject(FileService);
+  private router = inject(Router)
+  private activatedRoute = inject(ActivatedRoute);
+
+  private ownerPlotService = inject(OwnerPlotService);
 
 
   currentPage: number = 0
@@ -33,23 +42,27 @@ export class OwnerFilesViewComponent {
   applyFilterWithInput!: boolean;
   filterInput!: any;
 
+  //
+
   // lista de archivos del owner
   files: any[] = [];
 
+  // lista de archivos del plot
+  plotFiles: any[] = [];
+
   // owner id de los params
   id: string | null = null;
-  owner: Owner | null = null;
+
+  owner!: Owner;
+
+  // lista de plots del owner
+  plots: any[] = [];
+
 
   fileTypeDictionary = FileTypeDictionary;
   fileStatusDictionary = FileStatusDictionary;
 
 
-
-
-  protected ownerService = inject(OwnerService);
-  // protected fileService = inject(FileService);
-  private router = inject(Router)
-  private activatedRoute = inject(ActivatedRoute);
 
 
   @ViewChild('confirmAlertContentTemplate')
@@ -63,42 +76,76 @@ export class OwnerFilesViewComponent {
   ngOnInit() {
     this.id = this.activatedRoute.snapshot.paramMap.get('ownerId');
     if(this.id) {
-      this.getOwnerAndFilesById(this.id);
+      this.getOwnerById(this.id);
     }
   }
 
-  getOwnerAndFilesById(ownerId: string ) {
+  getOwnerById(ownerId: string ) {
     const id = parseInt(ownerId, 10);
-    combineLatest([
-      this.ownerService.getOwnerById(id),
-      this.ownerService.getOwnerFilesById(id),
-    ]).subscribe({
-      next: ([owner, files]) => {
-        this.owner = owner;
-        this.files = files;
-      },
-      error: (error) => {
-        console.error('Error al obtener propietario y archivos:', error);
-      },
-    });
-    /* this.ownerService.getOwnerById(parseInt(id, 10)).subscribe({
+    this.ownerService.getOwnerById(id).subscribe({
       next: (response) => {
         this.owner = response;
+        this.getOwnerPlots();
       },
       error: (error) => {
-        console.error("Error al obtener propietarios:", error);
-      }
+        console.error('Error al obtener propietario: ', error);
+      },
     });
-    this.ownerService.getOwnerFilesById(parseInt(id)).subscribe({
-      next: (response) => {
-        this.files = response;
-      },
-      error: (error) => {
-        console.error('Error al obtener owners files:', error);
-      },
-    }); */
   }
 
+  getOwnerPlots() {
+    if(this.owner.id) {
+      this.ownerPlotService.giveAllPlotsByOwner(this.owner.id, 0, 1000).subscribe({
+        next: (response) => {
+          console.log("AAAAAAAAAAA", response.content)
+          this.plots = response.content;
+          this.getAllFiles(this.owner)
+        },
+        error: (error) => {
+          console.error('Error al obtener archivos del lote:', error);
+        },
+      })
+    }
+  }
+
+  getAllFiles(owner: Owner) {
+    // archivos del lote
+    if(this.plots.length > 0) {
+      this.plots.forEach(plot => {
+        
+        this.plotService.getPlotFilesById(plot.id).subscribe({
+          next: (response) => {
+            console.log("Plot files: ", response)
+            this.plotFiles.push(response);
+          },
+          error: (error) => {
+            console.error('Error al obtener archivos del lote:', error);
+          },
+        });
+
+      })
+    }
+    // archivos del owner
+    if(owner.id) {
+      this.ownerService.getOwnerFilesById(owner.id).subscribe({
+        next: (response) => {
+          console.log("RESP DE GETOWNERFILES", response)
+          this.files = response;
+          console.log("FILES DE ", this.files)
+          this.plotFiles.forEach(file => {
+            this.files.push(file);
+          })
+        },
+        error: (error) => {
+          console.error('Error al obtener archivos del lote:', error);
+        },
+      });
+    }
+    
+
+    console.log("plots: ", this.plots);
+    console.log("files: ", this.files);
+  }
 
   // metodo para abrir el archivo en otra ventana
   openFile(url: string): void {
@@ -120,7 +167,8 @@ export class OwnerFilesViewComponent {
         console.log(this.noteForm.value.note)
         this.fileService.updateFileStatus(file.id, status, this.noteForm.value.note, '1').subscribe({
           next: (response) => {
-            console
+            console.log(response);
+            this.getAllFiles(this.owner);
           },
           error: (error) => {
             console.error('Error al aprobar el file:', error);
@@ -167,15 +215,15 @@ export class OwnerFilesViewComponent {
 
   onItemsPerPageChange() {
     this.currentPage = 1;
-    if (this.id) {
-      this.getOwnerAndFilesById(this.id);
+    if (this.owner) {
+      this.getAllFiles(this.owner);
     }
   }
 
   onPageChange(page: number) {
     this.currentPage = page;
-    if (this.id) {
-      this.getOwnerAndFilesById(this.id);
+    if (this.owner) {
+      this.getAllFiles(this.owner);
     }
   }
 
