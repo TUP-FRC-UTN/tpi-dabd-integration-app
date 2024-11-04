@@ -29,6 +29,7 @@ import autoTable from 'jspdf-autotable';
 import { PaymentExcelService } from '../services/payment-excel.service';
 import { FilesServiceService } from '../services/files.service.service';
 import { PeriodToMonthYearPipe } from '../pipes/period-to-month-year.pipe';
+import { CurrencyFormatPipe } from "../pipes/currency-format.pipe";
 
 registerLocaleData(localeEs, 'es');
 @Component({
@@ -45,8 +46,9 @@ registerLocaleData(localeEs, 'es');
     CapitalizePipe,
     TableFiltersComponent,
     NgbModule,
-    PeriodToMonthYearPipe
-  ],
+    PeriodToMonthYearPipe,
+    CurrencyFormatPipe
+],
   templateUrl: './owner-list-expensas.component.html',
   styleUrl: './owner-list-expensas.component.css',
   providers: [DatePipe,
@@ -155,19 +157,16 @@ export class OwnerListExpensasComponent {
     const target = event.target as HTMLInputElement;
     const filterText = target.value.toLowerCase();
   
-    this.filteredTickets = this.ticketOwnerList.filter(ticket => {
-      const period = ticket.period?.toLowerCase().includes(filterText);
-      const expirationDate = new Date(ticket.expirationDate)
-        .toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
-        .toLowerCase()
-        .includes(filterText);
-      const total = this.calculateTotal(ticket)
-        .toString()
-        .includes(filterText);
-      const status = ticket.status.toLowerCase().includes(filterText);
-  
-      return period || expirationDate || total || status;
-    });
+    if (filterText.length <= 2) {
+      // Restaura la lista completa si el texto del filtro tiene menos de 3 caracteres
+      this.filteredTickets = [...this.ticketOwnerList];
+    } else {
+      debugger
+      // Filtra los tickets visibles en la tabla
+      this.filteredTickets = this.ticketOwnerList.filter(ticket => 
+        this.matchVisibleFields(ticket, filterText)
+      );
+    }
   }
   
   
@@ -196,8 +195,8 @@ export class OwnerListExpensasComponent {
     return `${month.toString().padStart(2, '0')}/${year}`;
   }
   
-  // Traduce el estado del ticket a español
-  translateStatus(status: TicketStatus): string {
+   // Traduce el estado del ticket a español
+   translateStatus(status: TicketStatus): string {
     switch (status) {
       case TicketStatus.PAID:
         return 'Pagado';

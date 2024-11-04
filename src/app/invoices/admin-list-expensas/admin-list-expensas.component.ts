@@ -29,6 +29,7 @@ import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import { PeriodToMonthYearPipe } from "../pipes/period-to-month-year.pipe";
 import { CapitalizePipe } from "../pipes/capitalize.pipe";
+import { CurrencyFormatPipe } from "../pipes/currency-format.pipe";
 registerLocaleData(localeEs, 'es');
 @Component({
   selector: 'app-admin-list-expensas',
@@ -44,7 +45,8 @@ registerLocaleData(localeEs, 'es');
     NgbDropdownModule,
     NgbModule,
     PeriodToMonthYearPipe,
-    CapitalizePipe
+    CapitalizePipe,
+    CurrencyFormatPipe
 ],
   templateUrl: './admin-list-expensas.component.html',
   styleUrls: ['./admin-list-expensas.component.css'],
@@ -222,28 +224,28 @@ export class AdminListExpensasComponent implements OnInit {
   onItemsPerPageChange() {
     --this.currentPage;
   }
-  searchTable() {
-    const searchTextLower = this.searchText.toLowerCase();
-    const searchNumber = parseFloat(this.searchText);
+    // searchTable() {
+    //   const searchTextLower = this.searchText.toLowerCase();
+    //   const searchNumber = parseFloat(this.searchText);
 
-    this.filteredTickets = this.listallticket.filter(
-      (ticket) =>
-        ticket.ownerId.toString().includes(this.searchText) ||
-        ticket.ticketDetails.some((item) =>
-          item.description.toLowerCase().includes(searchTextLower)
-        ) ||
-        ticket.status
-          .toString()
-          .includes(searchTextLower.toLocaleUpperCase()) ||
-        this.formatDate2(ticket.issueDate, 'MM/YYYY').includes(
-          searchTextLower
-        ) ||
-        this.formatDate2(ticket.expirationDate, 'MM/YYYY').includes(
-          searchTextLower
-        ) ||
-        (!isNaN(searchNumber) && this.calculateTotal(ticket) === searchNumber)
-    );
-  }
+    //   this.filteredTickets = this.listallticket.filter(
+    //     (ticket) =>
+    //       ticket.ownerId.toString().includes(this.searchText) ||
+    //       ticket.ticketDetails.some((item) =>
+    //         item.description.toLowerCase().includes(searchTextLower)
+    //       ) ||
+    //       ticket.status
+    //         .toString()
+    //         .includes(searchTextLower.toLocaleUpperCase()) ||
+    //       this.formatDate2(ticket.issueDate, 'MM/YYYY').includes(
+    //         searchTextLower
+    //       ) ||
+    //       this.formatDate2(ticket.expirationDate, 'MM/YYYY').includes(
+    //         searchTextLower
+    //       ) ||
+    //       (!isNaN(searchNumber) && this.calculateTotal(ticket) === searchNumber)
+    //   );
+    // }
 
   formatDate2(date: Date, format: string): string {
     const pad = (num: number) => (num < 10 ? '0' + num : num.toString());
