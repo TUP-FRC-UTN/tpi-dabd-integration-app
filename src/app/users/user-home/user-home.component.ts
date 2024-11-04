@@ -19,6 +19,12 @@ export class UserHomeComponent {
       label: 'Usuarios',
       sidebarMenu: [
         {
+          label: 'Dashboards',
+          subMenu: [
+            { label: 'Reportes', routerLink: '/users/home' },
+          ]
+        },
+        {
           label: 'Propietarios',
           subMenu: [
             { label: 'Lista de Propietarios', routerLink: '/users/owner/list' },

@@ -1,51 +1,94 @@
-<div class="container mt-4">
-  <!-- Título Principal -->
-  <h1 class="text-color">Bienvenido al Consorcio del Barrio Privado</h1>
+<app-main-container title="Dashboard de propietarios y usuarios">
 
-  <!-- Descripción -->
-  <p>
-    En nuestro consorcio, trabajamos para garantizar la mejor experiencia de
-    vida para nuestros residentes. Gestionamos de manera eficiente los
-    servicios, la seguridad y el mantenimiento de las instalaciones para
-    brindarles un entorno seguro y cómodo.
-  </p>
-
-  <hr />
-
-  <!-- Servicios Ofrecidos -->
-  <h2 class="mt-4 mb-3">Servicios que ofrecemos</h2>
-
-  <div class="card mb-4 shadow">
-    <div class="card-body">
-      <!-- Servicio 1: Gestión de Expensas -->
-      <div class="mb-4">
-        <h3 class="card-title">Gestión de expensas</h3>
-        <p class="card-text">
-          Administra fácilmente tus pagos y consulta tu cuenta corriente desde
-          cualquier lugar.
-        </p>
-        <button class="btn btn-outline-primary btn-sm">Ver más</button>
+  <!-- Owner Charts Section -->
+  <div class="chart-section mb-4 p-3 border rounded">
+    <h3 class="section-title">Estadísticas de Propietarios</h3>
+    <div class="charts d-flex justify-content-between mt-4">
+      <div class="chart">
+        <h6>Distribución de KYC Status</h6>
+        <canvas
+          baseChart
+          height="220px"
+          [type]="'pie'"
+          [datasets]="pieChartKycStatusDatasets"
+          [labels]="pieChartKycStatusLabels"
+          [options]="pieChartOptions"
+        ></canvas>
       </div>
 
-      <!-- Servicio 2: Seguridad 24/7 -->
-      <div class="mb-4">
-        <h3 class="card-title">Seguridad 24/7</h3>
-        <p class="card-text">
-          Nuestro personal de seguridad está disponible las 24 horas para
-          garantizar tu tranquilidad.
-        </p>
-        <button class="btn btn-outline-primary btn-sm">Ver más</button>
+      <div class="chart">
+        <h6>Distribución de Tipo de Propietario</h6>
+        <canvas
+          baseChart
+          height="220px"
+          [type]="'bar'"
+          [datasets]="barChartOwnerTypeDatasets"
+          [labels]="barChartOwnerTypeLabels"
+          [options]="barChartOptions"
+        ></canvas>
       </div>
 
-      <!-- Servicio 3: Espacios Comunes -->
-      <div class="mb-4">
-        <h3 class="card-title">Espacios comunes</h3>
-        <p class="card-text">
-          Disfruta de áreas recreativas, piscinas y zonas verdes mantenidas al
-          más alto nivel.
-        </p>
-        <button class="btn btn-outline-primary btn-sm">Ver más</button>
+      <div class="chart">
+        <h6>Propietarios Activos e Inactivos</h6>
+        <canvas
+          baseChart
+          height="220px"
+          [type]="'pie'"
+          [datasets]="pieChartActiveStatusDatasets"
+          [labels]="pieChartActiveStatusLabels"
+          [options]="pieChartOptions"
+        ></canvas>
       </div>
     </div>
   </div>
-</div>
+
+  <!-- User Charts Section -->
+  <div class="chart-section mb-4 p-3 border rounded">
+    <h3 class="section-title">Estadísticas de Usuarios</h3>
+    <div class="charts d-flex justify-content-between mt-4">
+      <div class="chart">
+        <h6>Usuarios Activos e Inactivos</h6>
+        <canvas
+          baseChart
+          height="220px"
+          [type]="'pie'"
+          [datasets]="pieChartUserActiveStatusDatasets"
+          [labels]="pieChartUserActiveStatusLabels"
+          [options]="pieChartOptions"
+        ></canvas>
+      </div>
+
+      <div class="chart">
+        <h6>Distribución de Roles de Usuario</h6>
+        <canvas
+          baseChart
+          height="220px"
+          [type]="'bar'"
+          [datasets]="barChartUserRoleDatasets"
+          [labels]="barChartUserRoleLabels"
+          [options]="barChartOptions"
+        ></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Role Charts Section -->
+  <div class="chart-section mb-4 p-3 border rounded">
+    <h3 class="section-title">Estadísticas de Roles</h3>
+    <div class="charts d-flex justify-content-between mt-4">
+      <div class="chart">
+        <h6>Roles Activos e Inactivos</h6>
+        <canvas
+          baseChart
+          height="220px"
+          [type]="'pie'"
+          [datasets]="pieChartRoleActiveStatusDatasets"
+          [labels]="pieChartRoleActiveStatusLabels"
+          [options]="pieChartOptions"
+        ></canvas>
+      </div>
+    </div>
+  </div>
+  
+</app-main-container>
+
