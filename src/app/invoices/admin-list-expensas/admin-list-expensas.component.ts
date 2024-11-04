@@ -471,14 +471,13 @@ export class AdminListExpensasComponent implements OnInit {
 
           autoTable(doc, {
             startY: 30,
-            head: [['Propietario', 'Periodo', 'ID', 'Estado']],
+            head: [['Propietario', 'Periodo', 'Estado']],
             body: expenses.map((expense: TicketDto) => [
               `${expense.ownerId.first_name} ${expense.ownerId.last_name}`,
               expense.issueDate instanceof Date
                 ? expense.issueDate.toLocaleDateString()
                 : new Date(expense.issueDate).toLocaleDateString(),
-              expense.id,
-              expense.status,
+              this.translateStatus(expense.status),
             ]),
           });
 
