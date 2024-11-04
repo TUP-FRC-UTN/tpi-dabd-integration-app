@@ -14,6 +14,8 @@ import { Plot } from '../../../models/plot';
 import { Country, Provinces } from '../../../models/generics';
 import { User } from '../../../models/user';
 import { NgClass } from '@angular/common';
+import { InfoComponent } from '../../commons/info/info.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-user-user-form',
@@ -30,6 +32,7 @@ export class UserUserFormComponent {
     private activatedRoute = inject(ActivatedRoute)
     private router = inject(Router)
     private toastService = inject(ToastService)
+    private modalService = inject(NgbModal)
     //#endregion
 
     //#region ATT
@@ -414,4 +417,129 @@ export class UserUserFormComponent {
     this.userForm.get('addressForm')?.reset();
   }
   //#endregion
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });  
+    
+    modalRef.componentInstance.title = 'Registrar Usuario';
+    modalRef.componentInstance.description = 'Pantalla para la gestión integral de usuarios, permitiendo la visualización, edición y administración de datos personales, información de contacto y detalles de dirección.';
+    modalRef.componentInstance.body = [
+      { 
+        title: 'Datos del Usuario', 
+        content: [
+          {
+            strong: 'Email:',
+            detail: 'Campo para ingresar el correo electrónico del usuario.'
+          },
+          {
+            strong: 'Nombre:',
+            detail: 'Campo para ingresar el nombre del usuario.'
+          },
+          {
+            strong: 'Nombre de usuario:',
+            detail: 'Campo para ingresar el nombre de usuario.'
+          },
+          {
+            strong: 'Apellido:',
+            detail: 'Campo para ingresar el apellido del usuario.'
+          }
+        ]
+      },
+      { 
+        title: 'Añadir Roles', 
+        content: [
+          {
+            strong: 'Roles:',
+            detail: 'Menú desplegable para seleccionar el rol del usuario.'
+          },
+          {
+            strong: 'Agregar Rol:',
+            detail: 'Botón con símbolo de "+" para agregar el rol seleccionado.'
+          }
+        ]
+      },
+      { 
+        title: 'Asociar un lote', 
+        content: [
+          {
+            strong: 'Número de Manzana:',
+            detail: 'Campo de texto para ingresar el número de manzana.'
+          },
+          {
+            strong: 'Número de Lote:',
+            detail: 'Campo de texto para ingresar el número de lote.'
+          }
+        ]
+      },
+      { 
+        title: 'Añadir Dirección', 
+        content: [
+          {
+            strong: 'Calle:',
+            detail: 'Campo para ingresar el nombre de la calle.'
+          },
+          {
+            strong: 'Número:',
+            detail: 'Campo para ingresar el número, con valor predeterminado 0.'
+          },
+          {
+            strong: 'Piso:',
+            detail: 'Campo para ingresar el piso, con valor predeterminado 0.'
+          },
+          {
+            strong: 'Depto:',
+            detail: 'Campo para ingresar el número de departamento.'
+          },
+          {
+            strong: 'País:',
+            detail: 'Menú desplegable para seleccionar el país.'
+          },
+          {
+            strong: 'Provincia:',
+            detail: 'Menú desplegable para seleccionar la provincia.'
+          },
+          {
+            strong: 'Ciudad:',
+            detail: 'Campo para ingresar la ciudad.'
+          },
+          {
+            strong: 'Código Postal:',
+            detail: 'Campo para ingresar el código postal.'
+          },
+          {
+            strong: 'Añadir Dirección:',
+            detail: 'Botón para agregar la dirección ingresada.'
+          }
+        ]
+      },
+      { 
+        title: 'Añadir Contactos', 
+        content: [
+          {
+            strong: 'Tipo Contacto:',
+            detail: 'Menú desplegable para seleccionar el tipo de contacto.'
+          },
+          {
+            strong: 'Contacto:',
+            detail: 'Campo para ingresar el contacto.'
+          },
+          {
+            strong: 'Agregar Contacto:',
+            detail: 'Botón con símbolo de "+" para agregar el contacto ingresado.'
+          }
+        ]
+      }
+    ];
+    modalRef.componentInstance.notes = [
+      'Campos obligatorios: Email, Nombre, Nombre de usuario, Apellido.'
+    ];
+
+    
+  }
 }

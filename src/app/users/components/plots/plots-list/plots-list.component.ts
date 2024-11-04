@@ -10,6 +10,7 @@ import { ConfirmAlertComponent, ToastService, MainContainerComponent, Filter, Fi
 import { Subject } from 'rxjs';
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { InfoComponent } from '../../commons/info/info.component';
 
 @Component({
   selector: 'app-plots-list',
@@ -435,5 +436,119 @@ export class PlotsListComponent {
       },
       error: err => console.log(err)
     })
+  }
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });   
+    
+    modalRef.componentInstance.title = 'Lista de Lotes';
+    modalRef.componentInstance.description = 'En esta pantalla se podrán visualizar todos los lotes que tiene el consorcio.';
+    modalRef.componentInstance.body = [
+      { 
+        title: 'Datos', 
+        content: [
+          {
+            strong: 'N° de manzana:',
+            detail: 'Número de manzana del lote.'
+          },
+          {
+            strong: 'N° de lote:',
+            detail: 'Número del lote.'
+          },
+          {
+            strong: 'Área total: ',
+            detail: 'Área que ocupa el lote (en metros cuadrados).'
+          },
+          {
+            strong: 'Área construida: ',
+            detail: 'Área construida dentro del lote (en metros cuadrados).'
+          },
+          {
+            strong: 'Tipo de lote: ',
+            detail: 'Clasificación del lote.'
+          },
+          {
+            strong: 'Estado del lote: ',
+            detail: 'Estado del lote.'
+          }
+        ]
+      },
+      {
+        title: 'Acciones',
+        content: [ 
+          {
+            strong: 'Detalle dueños: ',
+            detail: 'Redirige hacia la pantalla para poder ver los dueños del lote.'
+          },         
+          {
+            strong: 'Editar: ',
+            detail: 'Redirige hacia la pantalla para poder editar los datos del lote'
+          },
+          {
+            strong: 'Eliminar: ',
+            detail: 'Inactiva el lote.'
+          },
+          {
+            strong: 'Detalles: ',
+            detail: 'Redirige hacia la pantalla para poder visualizar detalladamente todos los datos del lote.'
+          }
+        ]
+      },
+      { 
+        title: 'Filtros',
+        content: [
+          {
+            strong: 'Nro. manzana: ',
+            detail: 'Busca los lotes que coincida con el número de manzana ingresado.'
+          },
+          {
+            strong: 'Tipo: ',
+            detail: 'Busca los lotes que tengan el tipo de lote seleccionado.'
+          },
+          {
+            strong: 'Estado: ',
+            detail: 'Busca los lotes que tengan el estado del lote seleccionado.'
+          },
+          {
+            strong: 'Activo: ',
+            detail: 'Busca los lotes según la clasificación de activo seleccionado.'
+          }
+        ]
+      },
+      { 
+        title: 'Funcionalidades de los botones', 
+        content: [
+          {
+            strong: 'Filtros: ',
+            detail: 'Botón con forma de tolva que despliega los filtros avanzados.'
+          },
+          {
+            strong: 'Añadir nuevo lote: ',
+            detail: 'Botón "+" que redirige hacia la pantalla para dar de alta un nuevo lote.'
+          },
+          {
+            strong: 'Exportar a Excel: ',
+            detail: 'Botón verde que exporta la grilla a un archivo de Excel.'
+          },
+          {
+            strong: 'Exportar a PDF: ',
+            detail: 'Botón rojo que exporta la grilla a un archivo de PDF.'
+          },
+          {
+            strong: 'Paginación: ',
+            detail: 'Botones para pasar de página en la grilla.'
+          }
+        ]
+      }
+    ];
+    modalRef.componentInstance.notes = [
+      'La interfaz está diseñada para ofrecer una administración eficiente de los lotes, manteniendo la integridad y precisión de los datos.'
+    ];
   }
 }

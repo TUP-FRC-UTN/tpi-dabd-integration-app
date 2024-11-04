@@ -6,6 +6,8 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { mapOwnerType } from '../../../utils/owner-helper';
 import { Country, Provinces } from '../../../models/generics';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
+import { InfoComponent } from '../../commons/info/info.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-owner-detail',
@@ -30,6 +32,7 @@ export class OwnerDetailComponent implements OnInit {
   constructor(private activatedRoute: ActivatedRoute, private router: Router) {}
 
   protected ownerService = inject(OwnerService);
+  private modalService = inject(NgbModal)
 
   ownerForm = new FormGroup({
     firstName: new FormControl({value:'', disabled: true}, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
@@ -131,5 +134,103 @@ export class OwnerDetailComponent implements OnInit {
       value: key,
       display: value
     }));
+  }
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
+    
+    modalRef.componentInstance.title = 'Información del Propietario';
+    modalRef.componentInstance.description = 'Pantalla para consultar la información del propietario detallando datos personales, dirección y contactos.';
+    modalRef.componentInstance.body = [
+      { 
+        title: 'Datos del Propietario', 
+        content: [
+          {
+            strong: 'Nombre:',
+            detail: 'Nombre del propietario.'
+          },
+          {
+            strong: 'Segundo nombre:',
+            detail: 'Segundo nombre del propietario.'
+          },
+          {
+            strong: 'Apellido:',
+            detail: 'Apellido del propietario.'
+          },
+          {
+            strong: 'Tipo propietario:',
+            detail: 'Tipo de propietario.'
+          },
+          {
+            strong: 'Tipo documento:',
+            detail: 'Tipo de documento.'
+          },
+          {
+            strong: 'Número:',
+            detail: 'Número de documento.'
+          },
+          {
+            strong: 'CUIT:',
+            detail: 'CUIT del propietario.'
+          },
+          {
+            strong: 'Cuenta bancaria:',
+            detail: 'Cuenta bancaria del propietario.'
+          },
+          {
+            strong: 'Fecha de nacimiento:',
+            detail: 'Fecha de nacimiento en formato dd/mm/aaaa.'
+          }
+        ]
+      },
+      { 
+        title: 'Dirección del propietario', 
+        content: [
+          {
+            strong: 'Calle:',
+            detail: 'Nombre de la calle.'
+          },
+          {
+            strong: 'Número:',
+            detail: 'Número de la propiedad'
+          },
+          {
+            strong: 'Piso:',
+            detail: 'Piso de la propiedad'
+          },
+          {
+            strong: 'Depto:',
+            detail: 'Departamento.'
+          },
+          {
+            strong: 'País:',
+            detail: 'País.'
+          },
+          {
+            strong: 'Ciudad:',
+            detail: 'Ciudad.'
+          },
+          {
+            strong: 'Código postal:',
+            detail: 'Código postal de la propiedad'
+          }
+        ]
+      },
+      { 
+        title: 'Contactos', 
+        content: [
+          {
+            strong: 'Contactos:',
+            detail: 'Aquí se podrían listar los campos relacionados con los contactos.'
+          }
+        ]
+      }
+    ];
   }
 }
