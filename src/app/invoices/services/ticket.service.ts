@@ -92,10 +92,10 @@ export class TicketService {
     }
 
     getAllByOwnerWithFilters(page : number, size : number, status?:string): Observable<PaginatedResponse<TicketDto>> {
-      let params = new HttpParams()
-      .set('ownerId', 1)
-      .set('page', page.toString())
-      .set('size', size.toString());
+      let params = new HttpParams().set('ownerId', 1);
+      // .set('owner;
+      // .set('page', page.toString())
+      // .set('size', size.toString());
         
 
       if (status) {
