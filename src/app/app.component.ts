@@ -208,12 +208,6 @@ export class AppComponent {
             { label: 'Cargar Roles', routerLink: '/users/roles/form' },
             { label: 'Usuarios Creados', routerLink: '/users/user/created/1' },
           ]
-        },
-        {
-          label: 'Cuentas',
-          subMenu: [
-            { label: 'Lista de Cuentas', routerLink: '/users/account/list' },
-          ]
         }
       ]
     },
