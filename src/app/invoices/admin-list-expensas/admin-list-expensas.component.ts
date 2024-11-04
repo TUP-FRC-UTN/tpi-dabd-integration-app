@@ -522,7 +522,6 @@ export class AdminListExpensasComponent implements OnInit {
   ];
 
   filterConfig: Filter[] = new FilterConfigBuilder()
-    .textFilter('Propietario', 'ownerId', 'Ingrese un propietario')
     .numberFilter('Numero de lote', 'lotId', 'Ingrese un numero de lote')
     // .checkboxFilter("Estado", "status", this.filteroptions)
     .selectFilter('Estado', 'status', 'Estado', this.filteroptions)

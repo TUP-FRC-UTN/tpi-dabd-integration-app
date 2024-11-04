@@ -22,6 +22,7 @@ import { HttpClient } from '@angular/common/http';
 import {
   Filter,
   FilterConfigBuilder,
+  FilterOption,
   MainContainerComponent,
   TableComponent,
   TableFiltersComponent,
@@ -73,9 +74,14 @@ export class OwnerListExpensasComponent {
   lastPage: boolean | undefined;
   totalItems: number = 0;
 
+  filteroptions: FilterOption[] = [
+    { value: 'PENDING', label: 'Pendiente' },
+    { value: 'PAID', label: 'Pagado' },
+    { value: 'CANCELED', label: 'Anulado' },
+  ];
+
   filterConfig: Filter[] = new FilterConfigBuilder()
-    .textFilter('Propietario', 'ownerId', 'Ingrese un propietario')
-    .numberFilter('Numero de lote', 'lotId', 'Ingrese un numero de lote')
+    .selectFilter('Estado', 'status', 'Estado', this.filteroptions)
     .build();
 
   @ViewChild('ticketsTable', { static: true })
@@ -87,9 +93,33 @@ export class OwnerListExpensasComponent {
     description: '',
     totalPrice: 0,
   };
+  isFilter: boolean = false; // to keep the status to avoid load all values from backend
 
   filterChange($event: Record<string, any>) {
-    throw new Error('Method not implemented.');
+    console.log($event); // Muestra los valores actuales de los filtros en la consola
+    // this.eventSaved = $event;
+    this.isFilter = true;
+    this.ticketService
+      .getAllByOwnerWithFilters(
+        this.currentPage--,
+        this.pageSize,
+        $event['status'],
+      )
+      .subscribe(
+        (response: PaginatedResponse<TicketDto>) => {
+          console.log(response.content);
+          this.ticketOwnerList = response.content;
+          this.filteredTickets = response.content;
+          this.lastPage = response.last;
+          this.totalItems = response.totalElements;
+        },
+        (error) => {
+          console.error('Error al obtener los tickets con filtros:', error);
+        },
+        () => {
+          console.log('Obtención de tickets con filtros completada.');
+        }
+      );
   }
 
   ticketSelectedModal: TicketDto = {
@@ -183,7 +213,7 @@ export class OwnerListExpensasComponent {
       estado.includes(filterText)
     );
   }
-  
+
   //Funcion formate el periodo 01/24 a Enero 2024
   formatPeriodo(period: string): string {
     const [month, year] = period.split('/');
