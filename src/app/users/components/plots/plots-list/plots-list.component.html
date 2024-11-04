@@ -108,8 +108,14 @@
                 }
               </td>
             }
-            <td [ngClass]="{'text-danger': plot.balance > 0, 'text-success': !(plot.balance > 0)}">
-              {{ plot.balance | currency:'ARS':"symbol-narrow" }}
+            <td [ngClass]="{'text-danger': plot.balance > 0, 'text-success': !(plot.balance > 0)}" class="text-end">
+              <!-- {{ plot.balance | currency:'ARS':"symbol-narrow" }} -->
+                {{plot.balance.toLocaleString('es-AR', {
+                  style: 'currency',
+                  currency: 'ARS',
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}}
             </td>
             <td>
               <div class="btn-group" role="group">
