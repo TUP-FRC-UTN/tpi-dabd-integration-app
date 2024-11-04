@@ -1,4 +1,4 @@
-<ng-template #confirmAlertContentTemplate>
+<ng-template #confirmAlertContentTemplate (infoButtonClick)="openInfo()">
   <form [formGroup]="noteForm">
     <label for="note" class="form-label">Ingrese una nota</label>
     <input

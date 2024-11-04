@@ -5,11 +5,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PlotService } from '../../../services/plot.service';
 import { OwnerPlotHistoryDTO } from '../../../models/ownerXplot';
 import { Location } from '@angular/common';
-import { NgbPagination } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
 import { CadastreOwnerPlotFilterButtonsComponent } from '../cadastre-owner-plot-filter-buttons/cadastre-owner-plot-filter-buttons.component'
 import { DocumentTypeDictionary, OwnerTypeDictionary} from '../../../models/owner';
+import { InfoComponent } from '../../commons/info/info.component';
 
 @Component({
   selector: 'app-cadastre-owner-plot-list',
@@ -24,6 +25,7 @@ export class CadastreOwnerPlotListComponent {
   private activatedRoute = inject(ActivatedRoute);
   private router = inject(Router);
   private location = inject(Location)
+  private modalService = inject(NgbModal)
 
   currentPage: number = 0
   pageSize: number = 10
@@ -108,5 +110,82 @@ export class CadastreOwnerPlotListComponent {
 
   goBack() {
     this.location.back()
+  }
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });   
+    
+    modalRef.componentInstance.title = 'Lista de dueños históricos del lote';
+    modalRef.componentInstance.description = 'Esta vista lista todos los dueños históricos del lote junto con sus respectivas características.';
+    modalRef.componentInstance.body = [
+      { 
+        title: 'Datos', 
+        content: [
+          {
+            strong: 'Nombre: ',
+            detail: 'Nombre completo del propietario.'
+          },
+          {
+            strong: 'Apellido: ',
+            detail: 'Apellido del propietario.'
+          },
+          {
+            strong: 'Tipo documento: ',
+            detail: 'Tipo del documento del propietario.'
+          },
+          {
+            strong: 'N° documento: ',
+            detail: 'Número del documento del propietario.'
+          },
+          {
+            strong: 'Tipo Propietario: ',
+            detail: 'Clasificación del propietario'
+          },
+          {
+            strong: 'Fecha de Inicio: ',
+            detail: 'Fecha de inicio de propiedad.'
+          },
+          {
+            strong: 'Fecha de Fin: ',
+            detail: 'Fecha de finalización de propiedad. (Cuando el propietario vende la propiedad)'
+          }
+        ]
+      },
+      {
+        title: 'Acciones',
+        content: [
+        ]
+      },
+      { 
+        title: 'Funcionalidades de los botones', 
+        content: [
+          {
+            strong: 'Exportar a Excel: ',
+            detail: 'Botón verde que exporta la grilla a un archivo de Excel.'
+          },
+          {
+            strong: 'Exportar a PDF: ',
+            detail: 'Botón rojo que exporta la grilla a un archivo de PDF.'
+          },
+          {
+            strong: 'Paginación: ',
+            detail: 'Botones para pasar de página en la grilla.'
+          },
+          {
+            strong: 'Volver: ',
+            detail: 'Vuelve a la vista anterior.'
+          }
+        ]
+      }
+    ];
+    modalRef.componentInstance.notes = [
+      'La interfaz está diseñada para ofrecer una administración eficiente de los dueños históricos del lote, manteniendo la integridad y precisión de los datos.'
+    ];
   }
 }

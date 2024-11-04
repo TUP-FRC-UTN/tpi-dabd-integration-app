@@ -11,6 +11,7 @@ import { FileService } from '../../../services/file.service';
 import { combineLatest } from 'rxjs';
 import { PlotService } from '../../../services/plot.service';
 import { OwnerPlotService } from '../../../services/owner-plot.service';
+import { InfoComponent } from '../../commons/info/info.component';
 
 
 @Component({
@@ -238,4 +239,14 @@ export class OwnerFilesViewComponent {
   clearFilters(){}
   confirmFilter(){}
 
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });   
+    
+  }
 }

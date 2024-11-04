@@ -3,11 +3,12 @@ import { Plot, PlotStatusDictionary, PlotTypeDictionary } from '../../../models/
 import { OwnerPlotService } from '../../../services/owner-plot.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OwnerService } from '../../../services/owner.service';
-import { NgbPagination } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Filter, FilterConfigBuilder, MainContainerComponent } from 'ngx-dabd-grupo01';
 import { CadastrePlotOwnerFilterButtonsComponent } from '../cadastre-plot-owner-filter-buttons/cadastre-plot-owner-filter-buttons.component';
+import { InfoComponent } from '../../commons/info/info.component';
 
 @Component({
   selector: 'app-cadastre-plot-owner-list',
@@ -22,6 +23,7 @@ export class CadastrePlotOwnerListComponent {
   private activatedRoute = inject(ActivatedRoute);
   private location = inject(Location)
   private router = inject(Router)
+  private modalService = inject(NgbModal)
 
   filterConfig: Filter[] = new FilterConfigBuilder()
     .numberFilter('Nro. Manzana', 'plotNumber', 'Seleccione una Manzana')
@@ -153,5 +155,76 @@ export class CadastrePlotOwnerListComponent {
 
   goBack() {
     this.location.back()
+  }
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });   
+    
+    modalRef.componentInstance.title = 'Lista de lotes actuales del propietario';
+    modalRef.componentInstance.description = 'Esta pantalla permite visualizar cuáles son los lotes que tiene asociado el propietario';
+    modalRef.componentInstance.body = [
+      { 
+        title: 'Datos', 
+        content: [
+          {
+            strong: 'N° de manzana:',
+            detail: 'Número de manzana del lote.'
+          },
+          {
+            strong: 'N° de lote:',
+            detail: 'Número del lote.'
+          },
+          {
+            strong: 'Área total: ',
+            detail: 'Área que ocupa el lote (en metros cuadrados).'
+          },
+          {
+            strong: 'Área construida: ',
+            detail: 'Área construida dentro del lote (en metros cuadrados).'
+          },
+          {
+            strong: 'Tipo de lote: ',
+            detail: 'Clasificación del lote.'
+          },
+          {
+            strong: 'Estado del lote: ',
+            detail: 'Estado del lote.'
+          }
+        ]
+      },
+      {
+        title: 'Acciones',
+        content: [
+        ]
+      },
+      { 
+        title: 'Funcionalidades de los botones', 
+        content: [
+          {
+            strong: 'Exportar a Excel: ',
+            detail: 'Botón verde que exporta la grilla a un archivo de Excel.'
+          },
+          {
+            strong: 'Exportar a PDF: ',
+            detail: 'Botón rojo que exporta la grilla a un archivo de PDF.'
+          },
+          {
+            strong: 'Paginación: ',
+            detail: 'Botones para pasar de página en la grilla.'
+          },
+          {
+            strong: 'Volver: ',
+            detail: 'Vuelve a la vista anterior.'
+          }
+        ]
+      }
+    ];
+    modalRef.componentInstance.notes = ['La interfaz está diseñada para ofrecer una administración eficiente, manteniendo la integridad y seguridad de los datos de los lotes.'];
   }
 }

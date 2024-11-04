@@ -1,4 +1,4 @@
-<app-main-container title="{{title}}">
+<app-main-container title="{{title}}" (infoButtonClick)="openInfo()">
   <form [formGroup]="ownerForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
 
     <div class="col-md-6">

@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { ConfirmAlertComponent, MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 import { Subject } from 'rxjs';
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
+import { InfoComponent } from '../../commons/info/info.component';
 
 @Component({
   selector: 'app-roles-list',
@@ -211,4 +212,81 @@ export class RolesListComponent implements OnInit{
   }
 
   //#endregion
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });   
+
+    modalRef.componentInstance.title = 'Lista de Roles';
+    modalRef.componentInstance.description = 'En esta pantalla se podrán visualizar todos los roles que se pueden asignar a un usuario.';
+    modalRef.componentInstance.body = [
+      { 
+        title: 'Datos', 
+        content: [
+          {
+            strong: 'Código:',
+            detail: 'Código del rol.'
+          },
+          {
+            strong: 'Nombre especial:',
+            detail: 'Nombre detallado del rol.'
+          },
+          {
+            strong: 'Descripción: ',
+            detail: 'Descripción breve de lo que define el rol.'
+          },
+          {
+            strong: 'Activo: ',
+            detail: 'Estado de activo del rol.'
+          }
+        ]
+      },
+      {
+        title: 'Acciones',
+        content: [
+          {
+            strong: 'Detalles: ',
+            detail: 'Redirige hacia la pantalla para poder visualizar detalladamente todos los datos del rol.'
+          },
+          {
+            strong: 'Eliminar: ',
+            detail: 'Inactiva el rol.'
+          }
+        ]
+      },
+      { 
+        title: 'Filtros',
+        content: []
+      },
+      { 
+        title: 'Funcionalidades de los botones', 
+        content: [
+          {
+            strong: 'Filtros: ',
+            detail: 'Botón con forma de tolva que despliega los filtros avanzados.'
+          },
+          {
+            strong: 'Exportar a Excel: ',
+            detail: 'Botón verde que exporta la grilla a un archivo de Excel.'
+          },
+          {
+            strong: 'Exportar a PDF: ',
+            detail: 'Botón rojo que exporta la grilla a un archivo de PDF.'
+          },
+          {
+            strong: 'Paginación: ',
+            detail: 'Botones para pasar de página en la grilla.'
+          }
+        ]
+      }
+    ];
+    modalRef.componentInstance.notes = [
+      'La interfaz está diseñada para ofrecer una administración eficiente de los roles, manteniendo la integridad y precisión de los datos.'
+    ];
+  }
 }
