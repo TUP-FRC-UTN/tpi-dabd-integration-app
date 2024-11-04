@@ -13,8 +13,6 @@ export class AccountService {
 
   host: string = "http://localhost:8002/accounting-concepts/"
 
-  //page : number, size : number, isActive? : boolean
-
   getConceptsByPlotId(plotId : number, page: number, pageSizeize: number): Observable<PaginatedResponse<AccountingConcept>> {
     let params = new HttpParams()
     .set('page', page.toString())

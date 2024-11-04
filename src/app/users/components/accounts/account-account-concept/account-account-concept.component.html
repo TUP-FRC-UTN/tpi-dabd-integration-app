@@ -1,5 +1,4 @@
-<app-main-container title="Lista de Movimientos">
-  
+<app-main-container title="Lista de Movimientos Lote:{{plot.plotNumber}} Manzana:{{plot.blockNumber}}">
   <!--- TABLE --->
   <div class="table-container">
     <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #conceptsTable>
@@ -29,7 +28,7 @@
                 {{ concept.accountingDate }}
               </td>
               <td>
-                {{ concept.concept }}
+                {{ translateTable(concept.concept, conceptTypesDictionary) }}
               </td>
               <td>
                 {{ concept.comments }}
@@ -44,5 +43,39 @@
     </table>
   </div>
   <!--- TABLE --->
+
+  <!-- BOTONERA -->
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <div class="form-group mb-3 me-2">
+      <select
+        id="itemsPerPage"
+        class="form-select"
+        [(ngModel)]="pageSize"
+        (change)="onItemsPerPageChange()"
+      >
+        @for(option of sizeOptions; track $index) {
+          <option [value]="option">{{ option }} Elementos</option>
+        }
+      </select>
+    </div>
+
+    <ngb-pagination
+      [(page)]="currentPage"
+      [pageSize]="pageSize"
+      [collectionSize]="totalItems"
+      (pageChange)="onPageChange($event)"
+      [maxSize]="5"
+      [boundaryLinks]="false"
+    ></ngb-pagination>
+  </div>
+
+  <div class="col-12 d-flex justify-content-start">
+    <div class="mx-2">
+      <button type="button" class="btn btn-info" (click)="goBack()">
+        Volver
+      </button>
+    </div>
+  </div>
+  <!-- BOTONERA -->
 
 </app-main-container>

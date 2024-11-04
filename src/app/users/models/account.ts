@@ -15,6 +15,6 @@ export interface AccountingConcept {
 
 export const ConceptTypes: { [key: string]: string } = {
     "Pago": "PAYMENT",
-    "Expensa Comun": "COMMON_EXPENSE",
+    "Expensa Común": "COMMON_EXPENSE",
     "Expensa Extraordinaria": "EXTRAORDINARY_EXPENSE"
 };
