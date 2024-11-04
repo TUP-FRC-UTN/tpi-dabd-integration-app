@@ -115,11 +115,10 @@ export class TicketService {
       });
     }
 
-  getAllWithFilters(page: number, size: number, status?: string, firstPeriod?: string, lastPeriod?: string): Observable<PaginatedResponse<TicketDto>> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString());
-
+  getAllWithFilters(page: number, size: number, status?: string, lotId?:string, firstPeriod?: string, lastPeriod?: string): Observable<PaginatedResponse<TicketDto>> {
+    let params = new HttpParams();
+      // .set('page', page.toString()) //comentamos para el filtro del controlador getAll
+      // .set('size', size.toString());
     if (status) {
       params = params.set('status', status);
     }

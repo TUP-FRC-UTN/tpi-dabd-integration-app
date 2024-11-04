@@ -74,6 +74,7 @@ export class AdminListExpensasComponent implements OnInit {
   ticketList: TicketDto[] = [];
   filteredTicketList: TicketDto[] = [];
 
+  isFilter: boolean = false; // to keep the status to avoid load all values from backend
 
   lastPage: boolean | undefined;
   totalItems: number = 0;
@@ -204,8 +205,14 @@ export class AdminListExpensasComponent implements OnInit {
     );
   }
   onPageChange(page: number) {
+
+    
     this.currentPage = --page;
-    this.getTickets();
+    if(!this.isFilter){
+      this.getTickets();
+    }else{
+      // this.filterChange()
+    }
     this.currentPage++;
   }
   onItemsPerPageChange() {
@@ -485,6 +492,7 @@ export class AdminListExpensasComponent implements OnInit {
 
 
 
+
   filteroptions: FilterOption[] = [
     { value: 'PENDING', label: 'Pendiente' },
     { value: 'PAID', label: 'Pagado' },
@@ -494,15 +502,18 @@ export class AdminListExpensasComponent implements OnInit {
   filterConfig: Filter[] = new FilterConfigBuilder()
     .textFilter("Propietario", "ownerId", "Ingrese un propietario")
     .numberFilter("Numero de lote", "lotId", "Ingrese un numero de lote")
-    .checkboxFilter("Estado", "status", this.filteroptions)
+    // .checkboxFilter("Estado", "status", this.filteroptions)
+    .selectFilter("Estado", "status", "Estado", this.filteroptions)
     .build()
 
 
    // Método que detecta cambios en los filtros
    filterChange($event: Record<string, any>) {
     console.log($event); // Muestra los valores actuales de los filtros en la consola
-    this.ticketService.getAllWithFilters(0, 10, $event['status'], $event['firstPeriod'], $event['lastPeriod']).subscribe(
+    this.isFilter = true;
+    this.ticketService.getAllWithFilters(this.currentPage--, this.pageSize, $event['status'], $event['lotId'], $event['firstPeriod'], $event['lastPeriod']).subscribe(
       (response: PaginatedResponse<TicketDto>) => {
+        console.log(response.content)
         this.listallticket = response.content;
         this.filteredTickets = response.content;
         this.lastPage = response.last
@@ -528,9 +539,11 @@ export class AdminListExpensasComponent implements OnInit {
   }
 
   resetFilters() {
+    this.isFilter = false;
     this.filterConfig = new FilterConfigBuilder()
       .textFilter("Propietario", "ownerId", "Ingrese un propietario")
       .numberFilter("Numero de lote", "lotId", "Ingrese un numero de lote")
+      .selectFilter("Estado", "lotId", "Seleccione un estado", this.filteroptions)
       .build();
   }
 }

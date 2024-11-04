@@ -11,7 +11,7 @@
             type="text"
             class="form-control me-2"
             id="filter-text-box"
-           
+            (input)="onFilterTextBoxChanged($event)"
             placeholder="Buscar..."
           />
           <app-table-filters class="me-2" [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>

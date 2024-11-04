@@ -150,6 +150,61 @@ export class OwnerListExpensasComponent {
     this.selectedFile = event.target.files[0];
   }
 
+
+  onFilterTextBoxChanged(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const filterText = target.value.toLowerCase();
+  
+    if (filterText.length <= 2) {
+      // Restaura la lista completa si el texto del filtro tiene menos de 3 caracteres
+      this.filteredTickets = [...this.ticketOwnerList];
+    } else {
+      // Filtra los tickets visibles en la tabla
+      this.filteredTickets = this.ticketOwnerList.filter(ticket => 
+        this.matchVisibleFields(ticket, filterText)
+      );
+    }
+  }
+  
+  // Función de coincidencia solo en los campos visibles
+  matchVisibleFields(ticket: TicketDto, filterText: string): boolean {
+    // Combina las propiedades visibles en un solo texto y verifica si contiene el filtro
+    // const propietario = `${ticket.ownerId.first_name} ${ticket.ownerId.second_name} ${ticket.ownerId.last_name}`.toLowerCase();
+    // const lote = ticket.lotId.toString();
+    const periodo = this.formatPeriodo(ticket.issueDate);
+    const total = this.calculateTotal(ticket).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
+    const estado = this.translateStatus(ticket.status).toLowerCase();
+  
+    return (
+      // propietario.includes(filterText) ||
+      // lote.includes(filterText) ||
+      periodo.includes(filterText) ||
+      total.includes(filterText) ||
+      estado.includes(filterText)
+    );
+  }
+
+  // Función para formatear la fecha de periodo como "MM/YYYY"
+  formatPeriodo(date: Date): string {
+    const month = new Date(date).getMonth() + 2;
+    const year = new Date(date).getFullYear();
+    return `${month.toString().padStart(2, '0')}/${year}`;
+  }
+  
+  // Traduce el estado del ticket a español
+  translateStatus(status: TicketStatus): string {
+    switch (status) {
+      case TicketStatus.PAID:
+        return 'Pagado';
+      case TicketStatus.CANCELED:
+        return 'Anulado';
+      case TicketStatus.PENDING:
+        return 'Pendiente';
+      default:
+        return '';
+    }
+  }
+
   downloadTicket(ticket: TicketDto){
 
     this.fileService.downloadFile(ticket.urlTicket).subscribe(response => {
