@@ -1,9 +1,13 @@
-import { Component, ElementRef, Input, LOCALE_ID, OnInit, ViewChild, NgModule } from '@angular/core';
 import {
-  TicketDetail,
-  TicketDto,
-  TicketStatus,
-} from '../models/TicketDto';
+  Component,
+  ElementRef,
+  Input,
+  LOCALE_ID,
+  OnInit,
+  ViewChild,
+  NgModule,
+} from '@angular/core';
+import { TicketDetail, TicketDto, TicketStatus } from '../models/TicketDto';
 import { CommonModule, registerLocaleData } from '@angular/common';
 import { MercadoPagoServiceService } from '../services/mercado-pago-service.service';
 import { TicketPayDto } from '../models/TicketPayDto';
@@ -15,7 +19,13 @@ import {
 } from '@angular/forms';
 import { TicketService } from '../services/ticket.service';
 import { HttpClient } from '@angular/common/http';
-import { Filter, FilterConfigBuilder, MainContainerComponent, TableComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
+import {
+  Filter,
+  FilterConfigBuilder,
+  MainContainerComponent,
+  TableComponent,
+  TableFiltersComponent,
+} from 'ngx-dabd-grupo01';
 import { NgbModal, NgbModule, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateStatusTicketPipe } from '../pipes/translate-status-ticket.pipe';
 import { CapitalizePipe } from '../pipes/capitalize.pipe';
@@ -29,7 +39,7 @@ import autoTable from 'jspdf-autotable';
 import { PaymentExcelService } from '../services/payment-excel.service';
 import { FilesServiceService } from '../services/files.service.service';
 import { PeriodToMonthYearPipe } from '../pipes/period-to-month-year.pipe';
-import { CurrencyFormatPipe } from "../pipes/currency-format.pipe";
+import { CurrencyFormatPipe } from '../pipes/currency-format.pipe';
 
 registerLocaleData(localeEs, 'es');
 @Component({
@@ -47,16 +57,13 @@ registerLocaleData(localeEs, 'es');
     TableFiltersComponent,
     NgbModule,
     PeriodToMonthYearPipe,
-    CurrencyFormatPipe
-],
+    CurrencyFormatPipe,
+  ],
   templateUrl: './owner-list-expensas.component.html',
   styleUrl: './owner-list-expensas.component.css',
-  providers: [DatePipe,
-    { provide: LOCALE_ID, useValue: 'es' },
-  ],
+  providers: [DatePipe, { provide: LOCALE_ID, useValue: 'es' }],
 })
 export class OwnerListExpensasComponent {
-
   //#region ATT de PAGINADO
   currentPage: number = 0;
   pageSize: number = 10;
@@ -66,16 +73,10 @@ export class OwnerListExpensasComponent {
   lastPage: boolean | undefined;
   totalItems: number = 0;
 
-
-
   filterConfig: Filter[] = new FilterConfigBuilder()
-    .textFilter("Propietario", "ownerId", "Ingrese un propietario")
-    .numberFilter("Numero de lote", "lotId", "Ingrese un numero de lote")
-    .build()
-
-
-
-
+    .textFilter('Propietario', 'ownerId', 'Ingrese un propietario')
+    .numberFilter('Numero de lote', 'lotId', 'Ingrese un numero de lote')
+    .build();
 
   @ViewChild('ticketsTable', { static: true })
   tableName!: ElementRef<HTMLTableElement>;
@@ -87,11 +88,9 @@ export class OwnerListExpensasComponent {
     totalPrice: 0,
   };
 
-
   filterChange($event: Record<string, any>) {
     throw new Error('Method not implemented.');
   }
-
 
   ticketSelectedModal: TicketDto = {
     id: 0,
@@ -104,8 +103,8 @@ export class OwnerListExpensasComponent {
     ticketDetails: [
       { id: 1, amount: 20, description: 'Description of Item A' },
     ],
-    urlTicket:"",
-    period:""
+    urlTicket: '',
+    period: '',
   };
   isButtonInitialized: boolean = false;
   // listallticket: TicketDto[] = [];
@@ -121,12 +120,9 @@ export class OwnerListExpensasComponent {
     private http: HttpClient,
     private modalService: NgbModal,
     private datePipe: DatePipe,
-    private excelService:PaymentExcelService,
-    private fileService : FilesServiceService
+    private excelService: PaymentExcelService,
+    private fileService: FilesServiceService
   ) {
-
-
-   
     this.fechasForm = this.formBuilder.group({
       fechaInicio: [''],
       fechaFin: [''],
@@ -146,39 +142,39 @@ export class OwnerListExpensasComponent {
       }
     );
   }
-  
 
   onFileSelected(event: any): void {
     this.selectedFile = event.target.files[0];
   }
 
-
   onFilterTextBoxChanged(event: Event) {
     const target = event.target as HTMLInputElement;
     const filterText = target.value.toLowerCase();
-  
+
     if (filterText.length <= 2) {
       // Restaura la lista completa si el texto del filtro tiene menos de 3 caracteres
       this.filteredTickets = [...this.ticketOwnerList];
     } else {
-      debugger
+      debugger;
       // Filtra los tickets visibles en la tabla
-      this.filteredTickets = this.ticketOwnerList.filter(ticket => 
+      this.filteredTickets = this.ticketOwnerList.filter((ticket) =>
         this.matchVisibleFields(ticket, filterText)
       );
     }
   }
-  
-  
+
   // Función de coincidencia solo en los campos visibles
   matchVisibleFields(ticket: TicketDto, filterText: string): boolean {
     // Combina las propiedades visibles en un solo texto y verifica si contiene el filtro
     // const propietario = `${ticket.ownerId.first_name} ${ticket.ownerId.second_name} ${ticket.ownerId.last_name}`.toLowerCase();
     // const lote = ticket.lotId.toString();
-    const periodo = this.formatPeriodo(ticket.issueDate);
-    const total = this.calculateTotal(ticket).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
+    const periodo = this.formatPeriodo(ticket.period);
+    const total = this.calculateTotal(ticket).toLocaleString('es-ES', {
+      style: 'currency',
+      currency: 'EUR',
+    });
     const estado = this.translateStatus(ticket.status).toLowerCase();
-  
+
     return (
       // propietario.includes(filterText) ||
       // lote.includes(filterText) ||
@@ -187,16 +183,16 @@ export class OwnerListExpensasComponent {
       estado.includes(filterText)
     );
   }
-
-  // Función para formatear la fecha de periodo como "MM/YYYY"
-  formatPeriodo(date: Date): string {
-    const month = new Date(date).getMonth() + 2;
-    const year = new Date(date).getFullYear();
-    return `${month.toString().padStart(2, '0')}/${year}`;
-  }
   
-   // Traduce el estado del ticket a español
-   translateStatus(status: TicketStatus): string {
+  //Funcion formate el periodo 01/24 a Enero 2024
+  formatPeriodo(period: string): string {
+    const [month, year] = period.split('/');
+    const date = new Date(+year, +month - 1, 1);
+    return this.datePipe.transform(date, 'MMMM yyyy', 'es-ES')!;
+  }
+
+  // Traduce el estado del ticket a español
+  translateStatus(status: TicketStatus): string {
     switch (status) {
       case TicketStatus.PAID:
         return 'Pagado';
@@ -209,20 +205,18 @@ export class OwnerListExpensasComponent {
     }
   }
 
-  downloadTicket(ticket: TicketDto){
-
-    this.fileService.downloadFile(ticket.urlTicket).subscribe(response => {
+  downloadTicket(ticket: TicketDto) {
+    this.fileService.downloadFile(ticket.urlTicket).subscribe((response) => {
       const blob = new Blob([response], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = ticket.urlTicket.split('/').pop() || 'download.pdf'; 
+      a.download = ticket.urlTicket.split('/').pop() || 'download.pdf';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-  });
-}
-
+    });
+  }
 
   onUpload(): void {
     if (this.selectedFile) {
@@ -256,9 +250,6 @@ export class OwnerListExpensasComponent {
     );
   }
 
-
-
-
   calculateTotal(ticket: TicketDto): number {
     let total = 0;
     if (ticket && ticket.ticketDetails) {
@@ -280,29 +271,31 @@ export class OwnerListExpensasComponent {
     this.currentPage++;
   }
 
-// Método para obtener todos los tickets usando el servicio
-getTickets(): void {
-  this.ticketService.getAllByOwner(this.currentPage, this.pageSize).subscribe({
-    next: (response: PaginatedResponse<TicketDto>) => {
-      console.log('Tickets received:', response.content);
-      this.ticketOwnerList = response.content;
-      this.filteredTickets = response.content;
-      this.lastPage = response.last
-      this.totalItems = response.totalElements;
-    },
-    error: (error) => {
-      console.error('Error al obtener los tickets:', error);
-    },
-    complete: () => {
-      console.log('Obtención de tickets completada.');
-    },
-  });
-}
+  // Método para obtener todos los tickets usando el servicio
+  getTickets(): void {
+    this.ticketService
+      .getAllByOwner(this.currentPage, this.pageSize)
+      .subscribe({
+        next: (response: PaginatedResponse<TicketDto>) => {
+          console.log('Tickets received:', response.content);
+          this.ticketOwnerList = response.content;
+          this.filteredTickets = response.content;
+          this.lastPage = response.last;
+          this.totalItems = response.totalElements;
+        },
+        error: (error) => {
+          console.error('Error al obtener los tickets:', error);
+        },
+        complete: () => {
+          console.log('Obtención de tickets completada.');
+        },
+      });
+  }
 
   pagar() {
     this.requestData.idTicket = this.ticketSelectedModal.id;
-    this.requestData.description = 'ads';// `Expensas de ${this.formatDate(this.ticketSelectedModal.issueDate)}`;
-    this.requestData.title = 'ads';//`Expensas de ${this.formatDate(this.ticketSelectedModal.issueDate )} con vencimiento: ${this.formatDate(
+    this.requestData.description = 'ads'; // `Expensas de ${this.formatDate(this.ticketSelectedModal.issueDate)}`;
+    this.requestData.title = 'ads'; //`Expensas de ${this.formatDate(this.ticketSelectedModal.issueDate )} con vencimiento: ${this.formatDate(
     // this.ticketSelectedModal.expirationDate
     // )}`;
     this.requestData.totalPrice = this.calculateTotal(this.ticketSelectedModal);
@@ -324,11 +317,6 @@ getTickets(): void {
     );
   }
 
-
-
-
-
-
   // ACA SE ABRE EL MODAL DE INFO
   showInfo(): void {
     const modalRef = this.modalService.open(InfoComponent, {
@@ -336,76 +324,79 @@ getTickets(): void {
       backdrop: 'static',
       keyboard: false,
       centered: true,
-      scrollable: true
+      scrollable: true,
     });
 
     modalRef.componentInstance.data = { role: 'owner' };
   }
 
-
-
-
-
   LIMIT_32BITS_MAX = 2147483647;
-  
+
   @Input() objectName: string = '';
-   /**
+  /**
    * Export the HTML table to a PDF file.
    * Calls the `exportTableToPdf` method from the `CadastreExcelService`.
    */
-   exportToPdf() {
+  exportToPdf() {
     const doc = new jsPDF();
-  
+
     // Título del PDF
     doc.setFontSize(18);
     doc.text('Tickets Report', 14, 20);
-  
-    this.ticketService.getAllTicketsPageForExports(0, this.LIMIT_32BITS_MAX).subscribe(
-      (response: PaginatedResponse<TicketDto>) => {
-        // Accede a la propiedad `content` que contiene los tickets
-        const expenses = response.content;
-  
-        autoTable(doc, {
-          startY: 30,
-          head: [['Propietario', 'Periodo', 'ID', 'Estado']],
-          body: expenses.map((expense: TicketDto) => [
-            `${expense.ownerId.first_name} ${expense.ownerId.last_name}`,
-            expense.issueDate instanceof Date ? expense.issueDate.toLocaleDateString() : new Date(expense.issueDate).toLocaleDateString(),
-            expense.id,
-            expense.status
-          ]),
-        });
-  
-        // Guarda el PDF después de agregar la tabla
-        doc.save('expenses_report.pdf');
-      },
-      (error) => {
-        console.error('Error retrieved all, on export component.', error);
-      }
-    );
+
+    this.ticketService
+      .getAllTicketsPageForExports(0, this.LIMIT_32BITS_MAX)
+      .subscribe(
+        (response: PaginatedResponse<TicketDto>) => {
+          // Accede a la propiedad `content` que contiene los tickets
+          const expenses = response.content;
+
+          autoTable(doc, {
+            startY: 30,
+            head: [['Propietario', 'Periodo', 'ID', 'Estado']],
+            body: expenses.map((expense: TicketDto) => [
+              `${expense.ownerId.first_name} ${expense.ownerId.last_name}`,
+              expense.issueDate instanceof Date
+                ? expense.issueDate.toLocaleDateString()
+                : new Date(expense.issueDate).toLocaleDateString(),
+              expense.id,
+              expense.status,
+            ]),
+          });
+
+          // Guarda el PDF después de agregar la tabla
+          doc.save('expenses_report.pdf');
+        },
+        (error) => {
+          console.error('Error retrieved all, on export component.', error);
+        }
+      );
   }
-  
+
   /**
    * Export the HTML table to an Excel file (.xlsx).
    * Calls the `exportTableToExcel` method from the `CadastreExcelService`.
    */
   //#region TIENEN QUE MODIFICAR EL SERIVCIO CON SU GETALL
   exportToExcel() {
-    this.ticketService.getAllTicketsPageForExports(0, this.LIMIT_32BITS_MAX).subscribe(
-      (response) => {
-        const modifiedContent = response.content.map(({ id, ownerId,...rest }) => rest);
-        this.excelService.exportListToExcel(
-          modifiedContent,
-          `${this.getActualDayFormat()}_${this.objectName}`
-        );
-      },
-      (error) => {
-        console.log('Error retrieved all, on export component.');
-      }
-    );
+    this.ticketService
+      .getAllTicketsPageForExports(0, this.LIMIT_32BITS_MAX)
+      .subscribe(
+        (response) => {
+          const modifiedContent = response.content.map(
+            ({ id, ownerId, ...rest }) => rest
+          );
+          this.excelService.exportListToExcel(
+            modifiedContent,
+            `${this.getActualDayFormat()}_${this.objectName}`
+          );
+        },
+        (error) => {
+          console.log('Error retrieved all, on export component.');
+        }
+      );
   }
 
-  
   getActualDayFormat() {
     const today = new Date();
 
@@ -413,5 +404,4 @@ getTickets(): void {
 
     return formattedDate;
   }
-
 }
