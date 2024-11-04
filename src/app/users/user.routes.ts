@@ -1,7 +1,6 @@
 import { Routes } from "@angular/router";
 import { UserHomeComponent } from "./user-home/user-home.component";
 import { AccountAccountConceptComponent } from "./components/accounts/account-account-concept/account-account-concept.component";
-import { AccountAccountListComponent } from "./components/accounts/account-account-list/account-account-list.component";
 import { HomeComponent } from "./components/commons/home/home.component";
 import { NotFoundComponent } from "./components/commons/not-found/not-found.component";
 import { FilesFormComponent } from "./components/files/files-form/files-form.component";
@@ -54,7 +53,6 @@ export const USER_ROUTES: Routes = [
     { path: 'owners/plot/:plotId', component: CadastreOwnerPlotListComponent, /* canActivate: [authGuard] */ },
     { path: 'plots/owner/:ownerId', component: CadastrePlotOwnerListComponent, /* canActivate: [authGuard] */ },
     { path: 'plot/detail/:id', component: CadastrePlotDetailComponent, /* canActivate: [authGuard] */ },
-    { path: 'account/concept/:accountId', component: AccountAccountConceptComponent, /* canActivate: [authGuard] */ },
-    { path: 'account/list', component: AccountAccountListComponent, /* canActivate: [authGuard] */ },
+    { path: 'account/concept/:plotId', component: AccountAccountConceptComponent, /* canActivate: [authGuard] */ },
     { path: '**', component: NotFoundComponent, /* canActivate: [authGuard] */ },
 ];

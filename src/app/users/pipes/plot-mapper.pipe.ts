@@ -16,7 +16,8 @@ export class TransformPlotPipe implements PipeTransform {
       builtArea: plot.built_area.toString(),
       plotStatus: plot.plot_status,
       plotType: plot.plot_type,
-      isActive: plot.is_active
+      isActive: plot.is_active,
+      balance: plot.balance
     };
   }
 

@@ -18,6 +18,8 @@ export interface Plot {
   plotType: string;
   /** Indicates if the plot is active */
   isActive: boolean;
+  /** Balance of a Plot Account */
+  balance: number;
 }
 
 /**

@@ -1,64 +1,87 @@
 import { Component, inject } from '@angular/core';
 import { AccountService } from '../../../services/account.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AccountingConcept, ConceptTypes } from '../../../models/account';
-import { CommonModule, Location } from '@angular/common';
+import { CommonModule, CurrencyPipe, Location } from '@angular/common';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
+import { PlotService } from '../../../services/plot.service';
+import { Plot } from '../../../models/plot';
+import { NgbPagination } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-account-account-concept',
   standalone: true,
-  imports: [CommonModule, MainContainerComponent],
+  imports: [CommonModule, MainContainerComponent, CurrencyPipe, NgbPagination, FormsModule],
   templateUrl: './account-account-concept.component.html',
   styleUrl: './account-account-concept.component.css'
 })
 export class AccountAccountConceptComponent {
   private accountService = inject(AccountService);
+  private plotService = inject(PlotService)
+  private activatedRoute = inject(ActivatedRoute)
   private router = inject(Router)
-  private location = inject(Location)
 
+  //#region ATT de PAGINADO
   currentPage: number = 0
   pageSize: number = 10
-  plotId: number | undefined
+  sizeOptions : number[] = [10, 25, 50]
   conceptList: AccountingConcept[] = [];
-  lastPage: boolean = false;
+  lastPage: boolean | undefined
+  totalItems: number = 0;
+  //#endregion
 
+  plotId!: number;
+  plot!: Plot;
   conceptTypesDictionary = ConceptTypes;
 
   ngOnInit() {
-    this.getAllAcounts()
+    this.plotId = Number(this.activatedRoute.snapshot.paramMap.get('plotId'));
+    this.getPlot(this.plotId);
+    this.getAllConcepts(this.plotId);
   }
 
-  getAllAcounts() {
-    this.conceptList = this.accountService.getConceptByAccountId(1);
+  getPlot(plotId: number){
+    this.plotService.getPlotById(plotId).subscribe(
+      response => {
+        this.plot = response as Plot
+      },
+      error => {
+        console.error('Error getting plot:', error);
+      }
+    )
+  }
+
+  getAllConcepts(plotId: number) {
+    this.accountService.getConceptsByPlotId(plotId, this.currentPage-1, this.pageSize).subscribe(
+      response => {
+        this.conceptList = response.content;
+        this.lastPage = response.last;
+        this.totalItems = response.totalElements;
+      },
+      error => {
+        console.error('Error getting concepts:', error);
+      }
+    )
   }
 
   changePage(forward: boolean) {
     forward ? this.currentPage++ : this.currentPage--
   }
 
-  viewPlotDetail(plotId : number) {
-    this.router.navigate(["/plot/detail/" + plotId])
-  }
-
-  viewConcept(accountId : number) {
-    this.router.navigate(["/account/concept/" + accountId])
-  }
-
   goBack() {
-    this.location.back();
+    this.router.navigate(['/users/plot/list']);
   }
 
-  formatDate(date: Date): string {
-    const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    };
-    return new Intl.DateTimeFormat('es-AR', options).format(date);
+  formatDate(arr: number[]) {
+    let date = new Date();
+    date.setFullYear(arr[0]);
+    date.setMonth(arr[1]);
+    date.setDate(arr[2]);
+    date.setHours(arr[3]);
+    date.setMinutes(arr[4]);
+
+    return date;
   }
 
   translateTable(value: any, dictionary: { [key: string]: any }) {
@@ -72,4 +95,16 @@ export class AccountAccountConceptComponent {
     console.log("Algo salio mal.");
     return;
   }
+
+  //#region FUNCIONES PARA PAGINADO
+  onItemsPerPageChange() {
+    this.currentPage = 1;
+    this.getAllConcepts(this.plotId);
+  }
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.getAllConcepts(this.plotId);
+  }
+  //#endregion
 }
