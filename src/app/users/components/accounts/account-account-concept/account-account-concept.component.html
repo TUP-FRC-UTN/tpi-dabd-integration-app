@@ -1,4 +1,11 @@
 <app-main-container title="Lista de Movimientos Lote:{{plot.plotNumber}} Manzana:{{plot.blockNumber}}">
+
+  <div class="d-flex justify-content-end">
+    <h3 class="me-1">Balance: </h3>
+
+    <h3 [ngClass]="[plot.balance < 0 ? 'text-success' : 'text-danger']">{{plot.balance | currency:'ARS':"symbol-narrow"}}</h3>
+  </div>
+
   <!--- TABLE --->
   <div class="table-container">
     <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #conceptsTable>
