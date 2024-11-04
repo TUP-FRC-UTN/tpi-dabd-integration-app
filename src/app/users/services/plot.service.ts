@@ -145,4 +145,28 @@ export class PlotService {
 
     return this.http.patch<Plot>(`${this.host}/reactivate/${id}`, {}, {headers});
   }
+
+  dinamicFilters(page: number, size: number, params: any) {
+    let httpParams = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    // Itera sobre las propiedades de `params` y agrega solo las que tienen valor
+    for (const key in params) {
+      if (params.hasOwnProperty(key) && params[key] !== undefined && params[key] !== '') {
+        httpParams = httpParams.set(key, params[key].toString());
+      }
+    }
+
+    return this.http.get<PaginatedResponse<Plot>>(`${this.host}/filters`, { params: httpParams }).pipe(
+      map((response: PaginatedResponse<any>) => {
+        const transformPipe = new TransformPlotPipe();
+        const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
+        return {
+          ...response,
+          content: transformedPlots
+        };
+      })
+    );
+  }
 }

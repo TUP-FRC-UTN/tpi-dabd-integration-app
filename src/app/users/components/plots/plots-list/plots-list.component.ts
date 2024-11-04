@@ -6,17 +6,19 @@ import { CadastrePlotFilterButtonsComponent } from '../cadastre-plot-filter-butt
 import { FormsModule } from '@angular/forms';
 import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ConfirmAlertComponent, ToastService, MainContainerComponent, Filter, FilterConfigBuilder } from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, ToastService, MainContainerComponent, Filter, FilterConfigBuilder, TableFiltersComponent } from 'ngx-dabd-grupo01';
 import { Subject } from 'rxjs';
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
+import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-plots-list',
   standalone: true,
-  imports: [CadastrePlotFilterButtonsComponent, FormsModule, NgbPagination, MainContainerComponent],
+  imports: [CadastrePlotFilterButtonsComponent, FormsModule, NgbPagination, MainContainerComponent, CurrencyPipe, CommonModule, TableFiltersComponent],
   templateUrl: './plots-list.component.html',
   styleUrl: './plots-list.component.css',
-  schemas: [NO_ERRORS_SCHEMA]
+  schemas: [],
+  providers: [DatePipe]
 })
 export class PlotsListComponent {
   //#region SERVICIOS
@@ -107,13 +109,13 @@ export class PlotsListComponent {
   }
 
   ngAfterViewInit(): void {
-    this.filterComponent.filter$.subscribe((filteredList: Plot[]) => {
-      this.filteredPlotsList = filteredList;
-      this.currentPage = 0;
-    });
+    // this.filterComponent.filter$.subscribe((filteredList: Plot[]) => {
+    //   this.filteredPlotsList = filteredList;
+    //   this.currentPage = 0;
+    // });
   }
 
-  @ViewChild('filterComponent') filterComponent!: CadastrePlotFilterButtonsComponent<Plot>;
+  //@ViewChild('filterComponent') filterComponent!: CadastrePlotFilterButtonsComponent<Plot>;
   @ViewChild('plotsTable', { static: true }) tableName!: ElementRef<HTMLTableElement>;
   //#endregion
 
@@ -271,15 +273,19 @@ export class PlotsListComponent {
 
   //#region RUTEO
   plotOwners(plotId: number) {
-    this.router.navigate(["/owners/plot/" + plotId])
+    this.router.navigate(["/users/owners/plot/" + plotId])
   }
 
   updatePlot(plotId: number) {
-    this.router.navigate(["/plot/form/", plotId])
+    this.router.navigate(["/users/plot/form/", plotId])
   }
 
   plotDetail(plotId : number) {
-    this.router.navigate([`/plot/detail/${plotId}`])
+    this.router.navigate([`/users/plot/detail/${plotId}`])
+  }
+
+  currentAccount(plotId: number){
+    this.router.navigate([`/users/account/concept/${plotId}`])
   }
 
   redirectToForm() {
@@ -418,5 +424,16 @@ export class PlotsListComponent {
   //#endregion
   filterChange($event: Record<string, any>) {
     console.log($event)
+    this.plotService.dinamicFilters(0, this.pageSize, $event).subscribe({
+      next: result => {
+        console.log(result.content);
+        this.plotsList = result.content
+        this.plotsList = result.content;
+        this.filteredPlotsList = [...this.plotsList]
+        this.lastPage = result.last
+        this.totalItems = result.totalElements;
+      },
+      error: err => console.log(err)
+    })
   }
 }
