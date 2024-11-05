@@ -79,6 +79,7 @@ export class OwnerFilesViewComponent {
     if(this.id) {
       this.getOwnerById(this.id);
     }
+    console.log("files length ", this.files.length)
   }
 
   getOwnerById(ownerId: string ) {

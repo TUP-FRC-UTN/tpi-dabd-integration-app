@@ -9,6 +9,7 @@ import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
 import { Router } from '@angular/router';
 import { InfoComponent } from '../../commons/info/info.component';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-files-view',
@@ -39,14 +40,16 @@ export class FilesViewComponent {
   ownerDicitionaries = [this.documentTypeDictionary, this.ownerTypeDictionary, this.ownerStatusDictionary];
 
   protected ownerService = inject(OwnerService);
-  private router = inject(Router)
-  private modalService = inject(NgbModal)
+  private router = inject(Router);
+  private modalService = inject(NgbModal);
+  private location = inject(Location);
 
 
   ngOnInit() {
     this.getAllOwners();
-    console.log(this.owners.length);
-    console.log(this.filteredOwnersList.length);
+
+    console.log("owners length", this.owners.length);
+    console.log("filtered owners length", this.filteredOwnersList.length);
     
   }
 
@@ -131,6 +134,11 @@ export class FilesViewComponent {
   applyFilter(type: string){}
   clearFilters(){}
   confirmFilter(){}
+
+  
+  goBack() {
+    this.location.back()
+  }
 
   openInfo(){
     const modalRef = this.modalService.open(InfoComponent, {
