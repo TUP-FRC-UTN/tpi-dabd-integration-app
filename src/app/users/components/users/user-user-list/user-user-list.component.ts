@@ -2,20 +2,28 @@ import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { UserService } from '../../../services/user.service';
 import { User } from '../../../models/user';
 import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
-import { ConfirmAlertComponent, ToastService, MainContainerComponent } from 'ngx-dabd-grupo01';
+import {
+  ConfirmAlertComponent,
+  ToastService,
+  MainContainerComponent,
+  TableFiltersComponent,
+  Filter, FilterConfigBuilder
+} from 'ngx-dabd-grupo01';
 import { Router } from '@angular/router';
 import { UserFilterButtonsComponent } from '../user-filter-buttons/user-filter-buttons.component';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
 import { InfoComponent } from '../../commons/info/info.component';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-user-user-list',
   standalone: true,
-  imports: [MainContainerComponent, NgbPagination, FormsModule],
+  imports: [MainContainerComponent, NgbPagination, FormsModule, TableFiltersComponent],
   templateUrl: './user-user-list.component.html',
-  styleUrl: './user-user-list.component.css'
+  styleUrl: './user-user-list.component.css',
+  providers: [DatePipe]
 })
 export class UserUserListComponent {
     //#region SERVICIOS
@@ -39,7 +47,20 @@ export class UserUserListComponent {
     retrieveUsersByActive: boolean | undefined = true;
     //#endregion
 
-    //#region NgOnInit | BUSCAR
+  filterConfig: Filter[] = new FilterConfigBuilder()
+    .textFilter("Nombre", "firstName", "Nombre")
+    .textFilter("Apellido", "lastName", "Apellido")
+    .textFilter("Nombre de Usuario", "userName", "Nombre de Usuario")
+    .textFilter("Correo Electrónico", "email", "Correo Electrónico")
+    .selectFilter("Activo", "isActive", "", [
+      { value: 'true', label: 'Activo' },
+      { value: 'false', label: 'Inactivo' },
+      { value: '', label: 'Todo' }
+    ])
+    .build()
+
+
+  //#region NgOnInit | BUSCAR
     ngOnInit() {
       this.getAllUsers();
     }
@@ -233,6 +254,17 @@ export class UserUserListComponent {
     this.router.navigate([this.formPath]);
   }
 
+  filterChange($event: Record<string, any>) {
+    this.userService.dinamicFilters(0, this.pageSize, $event).subscribe({
+      next : (result) => {
+        this.usersList = result.content;
+        this.filteredUsersList = [...result.content]
+        this.lastPage = result.last
+        this.totalItems = result.totalElements;
+      }
+    })
+  }
+
   //#endregion
 
   openInfo(){
@@ -242,13 +274,13 @@ export class UserUserListComponent {
       keyboard: false,
       centered: true,
       scrollable: true
-    });   
-    
+    });
+
     modalRef.componentInstance.title = 'Lista de Usuarios';
     modalRef.componentInstance.description = 'En esta pantalla se permite visualizar todos los usuarios que están registrados en el sistema.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos', 
+      {
+        title: 'Datos',
         content: [
           {
             strong: 'Nombre completo:',
@@ -266,7 +298,7 @@ export class UserUserListComponent {
       },
       {
         title: 'Acciones',
-        content: [        
+        content: [
           {
             strong: 'Editar: ',
             detail: 'Redirige hacia la pantalla para poder editar los datos del usuario.'
@@ -281,13 +313,13 @@ export class UserUserListComponent {
           }
         ]
       },
-      { 
+      {
         title: 'Filtros',
         content: [
         ]
       },
-      { 
-        title: 'Funcionalidades de los botones', 
+      {
+        title: 'Funcionalidades de los botones',
         content: [
           {
             strong: 'Filtros: ',

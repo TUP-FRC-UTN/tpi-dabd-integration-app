@@ -54,7 +54,7 @@ export class PlotsListComponent {
 
   filterConfig: Filter[] = new FilterConfigBuilder()
 
-    .numberFilter('Nro. Manzana', 'plotNumber', 'Seleccione una Manzana')
+    .numberFilter('Nro. Manzana', 'blockNumber', 'Seleccione una Manzana')
     .selectFilter('Tipo', 'plotType', 'Seleccione un tipo', [
       {value: 'COMMERCIAL', label: 'Comercial'},
       {value: 'PRIVATE', label: 'Privado'},
@@ -68,10 +68,10 @@ export class PlotsListComponent {
       {value: 'CONSTRUCTION_PROCESS', label: 'En construcciones'},
       {value: 'EMPTY', label: 'Vacio'},
     ])
-    .radioFilter('Activo', 'isActive', [
+    .selectFilter('Activo', 'isActive', '', [
       {value: 'true', label: 'Activo'},
       {value: 'false', label: 'Inactivo'},
-      {value: 'undefined', label: 'Todo'},
+      {value: '', label: 'Todo'},
     ])
     .build()
 
@@ -424,12 +424,9 @@ export class PlotsListComponent {
   }
   //#endregion
   filterChange($event: Record<string, any>) {
-    console.log($event)
     this.plotService.dinamicFilters(0, this.pageSize, $event).subscribe({
       next: result => {
-        console.log(result.content);
         this.plotsList = result.content
-        this.plotsList = result.content;
         this.filteredPlotsList = [...this.plotsList]
         this.lastPage = result.last
         this.totalItems = result.totalElements;
@@ -445,13 +442,13 @@ export class PlotsListComponent {
       keyboard: false,
       centered: true,
       scrollable: true
-    });   
-    
+    });
+
     modalRef.componentInstance.title = 'Lista de Lotes';
     modalRef.componentInstance.description = 'En esta pantalla se podrán visualizar todos los lotes que tiene el consorcio.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos', 
+      {
+        title: 'Datos',
         content: [
           {
             strong: 'N° de manzana:',
@@ -481,11 +478,11 @@ export class PlotsListComponent {
       },
       {
         title: 'Acciones',
-        content: [ 
+        content: [
           {
             strong: 'Detalle dueños: ',
             detail: 'Redirige hacia la pantalla para poder ver los dueños del lote.'
-          },         
+          },
           {
             strong: 'Editar: ',
             detail: 'Redirige hacia la pantalla para poder editar los datos del lote'
@@ -500,7 +497,7 @@ export class PlotsListComponent {
           }
         ]
       },
-      { 
+      {
         title: 'Filtros',
         content: [
           {
@@ -521,8 +518,8 @@ export class PlotsListComponent {
           }
         ]
       },
-      { 
-        title: 'Funcionalidades de los botones', 
+      {
+        title: 'Funcionalidades de los botones',
         content: [
           {
             strong: 'Filtros: ',

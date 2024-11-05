@@ -10,13 +10,15 @@ import { ConfirmAlertComponent, MainContainerComponent, ToastService } from 'ngx
 import { Subject } from 'rxjs';
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
 import { InfoComponent } from '../../commons/info/info.component';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-roles-list',
   standalone: true,
   imports: [RolesFilterButtonsComponent, FormsModule, NgbPagination, MainContainerComponent],
   templateUrl: './roles-list.component.html',
-  styleUrl: './roles-list.component.css'
+  styleUrl: './roles-list.component.css',
+  providers: [DatePipe]
 })
 export class RolesListComponent implements OnInit{
   @ViewChild('filterComponent') filterComponent!: RolesFilterButtonsComponent<Role>;
@@ -115,7 +117,7 @@ export class RolesListComponent implements OnInit{
 
   detailRole(roleId: number | undefined) {
     if(roleId != undefined){
-      this.router.navigate(['roles/detail/' + roleId]);
+      this.router.navigate(['users/roles/detail/' + roleId]);
     }
   }
 
@@ -220,13 +222,13 @@ export class RolesListComponent implements OnInit{
       keyboard: false,
       centered: true,
       scrollable: true
-    });   
+    });
 
     modalRef.componentInstance.title = 'Lista de Roles';
     modalRef.componentInstance.description = 'En esta pantalla se podrán visualizar todos los roles que se pueden asignar a un usuario.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos', 
+      {
+        title: 'Datos',
         content: [
           {
             strong: 'Código:',
@@ -259,12 +261,12 @@ export class RolesListComponent implements OnInit{
           }
         ]
       },
-      { 
+      {
         title: 'Filtros',
         content: []
       },
-      { 
-        title: 'Funcionalidades de los botones', 
+      {
+        title: 'Funcionalidades de los botones',
         content: [
           {
             strong: 'Filtros: ',

@@ -72,24 +72,25 @@ export class OwnerListComponent implements OnInit {
   ownerId: number | undefined;
   selectedDocType: string = '';
   filterConfig: Filter[] = new FilterConfigBuilder()
-    .numberFilter('Nro. Manzana', 'plotNumber', 'Seleccione una Manzana')
-    .selectFilter('Tipo', 'plotType', 'Seleccione un tipo', [
-      {value: 'COMMERCIAL', label: 'Comercial'},
-      {value: 'PRIVATE', label: 'Privado'},
-      {value: 'COMMUNAL', label: 'Comunal'},
+    .selectFilter('Tipo de Documento', 'doc_type', 'Seleccione un tipo de documento', [
+      { value: 'P', label: 'DNI' },
+      { value: 'I', label: 'Cédula' },
+      { value: 'T', label: 'Pasaporte' }
     ])
-    .selectFilter('Estado', 'plotStatus', 'Seleccione un estado', [
-      {value: 'CREATED', label: 'Creado'},
-      {value: 'FOR_SALE', label: 'En Venta'},
-      {value: 'SALE', label: 'Venta'},
-      {value: 'SALE_PROCESS', label: 'Proceso de Venta'},
-      {value: 'CONSTRUCTION_PROCESS', label: 'En construcciones'},
-      {value: 'EMPTY', label: 'Vacio'},
+    .selectFilter('Tipo de Propietario', 'owner_type', 'Seleccione un tipo de propietario', [
+      { value: 'PERSON', label: 'Persona' },
+      { value: 'COMPANY', label: 'Compañía' },
+      { value: 'OTHER', label: 'Otro' }
     ])
-    .radioFilter('Activo', 'isActive', [
+    .selectFilter('Estado del Propietario', 'owner_kyc', 'Seleccione un estado del propietario', [
+      { value: 'INITIATED', label: 'Iniciado' },
+      { value: 'TO_VALIDATE', label: 'Para Validar' },
+      { value: 'VALIDATED', label: 'Validado' },
+      { value: 'CANCELED', label: 'Cancelado' }
+    ])
+    .selectFilter('Activo', 'is_active', '', [
       {value: 'true', label: 'Activo'},
-      {value: 'false', label: 'Inactivo'},
-      {value: 'undefined', label: 'Todo'},
+      {value: 'false', label: 'Inactivo'}
     ])
     .build()
 
@@ -425,7 +426,14 @@ export class OwnerListComponent implements OnInit {
   protected readonly OwnerFilters = OwnerFilters;
 
   filterChange($event: Record<string, any>) {
-
+    this.ownerService.dinamicFilters(0, this.pageSize, $event).subscribe({
+      next : (result) => {
+        this.ownersList = result.content;
+        this.filteredOwnersList = [...result.content]
+        this.lastPage = result.last
+        this.totalItems = result.totalElements;
+      }
+    })
   }
 
   openInfo(){
@@ -440,8 +448,8 @@ export class OwnerListComponent implements OnInit {
     modalRef.componentInstance.title = 'Lista de Propietarios';
     modalRef.componentInstance.description = 'En esta pantalla se visualizan todos los propietarios que han sido validados en el consorcio.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos', 
+      {
+        title: 'Datos',
         content: [
           {
             strong: 'Nombre:',
@@ -486,12 +494,12 @@ export class OwnerListComponent implements OnInit {
           }
         ]
       },
-      { 
+      {
         title: 'Filtros',
         content: []
       },
-      { 
-        title: 'Funcionalidades de los botones', 
+      {
+        title: 'Funcionalidades de los botones',
         content: [
           {
             strong: 'Filtros: ',

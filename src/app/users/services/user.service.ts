@@ -6,6 +6,8 @@ import { catchError, map } from 'rxjs/operators';
 import { PaginatedResponse } from '../models/api-response';
 import { UserMapperPipe } from '../pipes/user-mapper.pipe';
 import { toCamelCase } from '../utils/owner-helper';
+import {Owner} from '../models/owner';
+import {OwnerMapperPipe} from '../pipes/owner-mapper.pipe';
 
 @Injectable({
   providedIn: 'root'
@@ -93,6 +95,24 @@ export class UserService {
 
   getUsersCreatedBy(id: string) {
     return this.http.get<User[]>(`${this.host}/${id}`).pipe(
+      map((data: any) => {
+        return toCamelCase(data)
+      })
+    )
+  }
+
+  dinamicFilters(page: number, size: number, params: any) {
+    let httpParams = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    for (const key in params) {
+      if (params.hasOwnProperty(key) && params[key] !== undefined && params[key] !== '') {
+        httpParams = httpParams.set(key, params[key].toString());
+      }
+    }
+
+    return this.http.get<PaginatedResponse<User>>(`${this.host}/filters`, { params: httpParams }).pipe(
       map((data: any) => {
         return toCamelCase(data)
       })
