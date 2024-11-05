@@ -6,7 +6,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { CommonModule, Location } from '@angular/common';
 import { ConfirmAlertComponent, ToastService, MainContainerComponent, FormFieldsComponent, FormConfig } from 'ngx-dabd-grupo01';
 import { Document, FileStatusDictionary, FileTypeDictionary } from '../../../models/file';
-import { Owner } from '../../../models/owner';
+import { DocumentTypeDictionary, Owner, StateKYC } from '../../../models/owner';
 import { FileService } from '../../../services/file.service';
 import { combineLatest } from 'rxjs';
 import { PlotService } from '../../../services/plot.service';
@@ -31,6 +31,8 @@ export class OwnerFilesViewComponent {
   // protected fileService = inject(FileService);
   private router = inject(Router)
   private activatedRoute = inject(ActivatedRoute);
+  
+  private toastService = inject(ToastService)
 
   private ownerPlotService = inject(OwnerPlotService);
 
@@ -43,7 +45,8 @@ export class OwnerFilesViewComponent {
   applyFilterWithInput!: boolean;
   filterInput!: any;
 
-  //
+  // boolean para saber si puede aprobar el KYC del owner
+  canApproveOwner: boolean = false;
 
   // lista de archivos del owner
   files: any[] = [];
@@ -62,6 +65,7 @@ export class OwnerFilesViewComponent {
 
   fileTypeDictionary = FileTypeDictionary;
   fileStatusDictionary = FileStatusDictionary;
+  documentTypeDictionary = DocumentTypeDictionary;
 
 
 
@@ -80,6 +84,14 @@ export class OwnerFilesViewComponent {
       this.getOwnerById(this.id);
     }
     console.log("files length ", this.files.length)
+
+    this.canApproveOwner = this.areAllApproved();
+    // mock
+    this.callMock();
+    
+    this.canApproveOwner = this.areAllApproved();
+    console.log(this.canApproveOwner)
+
   }
 
   getOwnerById(ownerId: string ) {
@@ -170,10 +182,12 @@ export class OwnerFilesViewComponent {
         this.fileService.updateFileStatus(file.id, status, this.noteForm.value.note, '1').subscribe({
           next: (response) => {
             console.log(response);
+            this.toastService.sendSuccess('Estado cambiado correctamente.')
             this.getAllFiles(this.owner);
           },
           error: (error) => {
             console.error('Error al aprobar el file:', error);
+            this.toastService.sendError('Error al cambiar el estado.')
           },
         })
         modalRef.close();
@@ -184,6 +198,33 @@ export class OwnerFilesViewComponent {
       }
 
     };
+  }
+
+  // metodo para verificar el estado de todos los archivos
+  areAllApproved(): boolean {
+    let result = true;
+    this.files.forEach((file) => {
+      if(file.approvalStatus !== 'APPROVED') {
+        result = false;
+      }
+    })
+    return result;
+  }
+
+  // metodo para aprobar el KYC completo de un owner
+  approveOwner() {
+    if(this.areAllApproved()) {
+      console.log("aprobar KYC del owner ", this.owner);
+
+      const modalRef = this.modalService.open(ConfirmAlertComponent)
+      modalRef.componentInstance.alertTitle = 'Confirmación';
+      modalRef.componentInstance.alertMessage = `¿Está seguro de que desea Aprobar al propietario ${this.owner?.firstName} ${this.owner?.lastName}
+                                                con ${this.translateTable(this.owner?.documentType, this.documentTypeDictionary)} ${this.owner?.documentNumber}`;
+      modalRef.componentInstance.alertType = 'warning';
+      modalRef.componentInstance.onConfirm = () => {
+        console.log("Aca le pego al back para actualizar el estado del owner");
+      }
+    }
   }
 
   getFormConfig(): FormConfig {
@@ -250,4 +291,59 @@ export class OwnerFilesViewComponent {
     });   
     
   }
+
+
+  callMock() {
+    this.files = [
+      {
+          id: 1,
+          fileType: "ID_DOCUMENT_BACK",
+          name: "Contract Document",
+          contentType: "application/pdf",
+          url: "https://example.com/documents/contract.pdf",
+          approvalStatus: "APPROVED",
+          reviewNote: "Reviewed and approved.",
+          isActive: true
+      },
+      {
+          id: 2,
+          fileType: "ID_DOCUMENT_FRONT",
+          name: "Passport ",
+          contentType: "image/jpeg",
+          url: "https://example.com/documents/passport.jpg",
+          approvalStatus: "APPROVED",
+          reviewNote: "Awaiting review.",
+          isActive: true
+      },
+      {
+          id: 3,
+          fileType: "PURCHASE_SALE",
+          name: "Resume",
+          contentType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          url: "https://example.com/documents/resume.docx",
+          approvalStatus: "UPLOADED",
+          reviewNote: "Please update with recent experience.",
+          isActive: false
+      }
+    ];
+
+    this.owner = {
+      id: 1,
+      firstName: "John",
+      secondName: "Michael",
+      lastName: "Doe",
+      ownerType: "person",
+      documentNumber: "12345678",
+      documentType: "P",
+      cuit: "20-12345678-9",
+      bankAccount: "123-456-789",
+      birthdate: "1985-04-23",
+      kycStatus: StateKYC.INITIATED,  // assuming StateKYC is a string or appropriate enum
+      isActive: true,
+      contacts: [],  // Assuming contacts are optional or can be empty
+      plotId: 101,
+      addresses: []  // Empty array since no addresses are provided
+  };
+  }
+
 }
