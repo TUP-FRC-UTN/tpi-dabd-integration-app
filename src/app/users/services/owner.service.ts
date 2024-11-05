@@ -6,6 +6,8 @@ import { PaginatedResponse } from '../models/api-response';
 import { toSnakeCase } from '../utils/owner-helper';
 import { OwnerMapperPipe } from '../pipes/owner-mapper.pipe';
 import { Document } from '../models/file';
+import {Plot} from '../models/plot';
+import {TransformPlotPipe} from '../pipes/plot-mapper.pipe';
 
 @Injectable({
   providedIn: 'root',
@@ -181,5 +183,30 @@ export class OwnerService {
           };
         })
       );
+  }
+
+  dinamicFilters(page: number, size: number, params: any) {
+    let httpParams = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    for (const key in params) {
+      if (params.hasOwnProperty(key) && params[key] !== undefined && params[key] !== '') {
+        httpParams = httpParams.set(key, params[key].toString());
+      }
+    }
+
+    return this.http.get<PaginatedResponse<Owner>>(`${this.apiUrl}/filters`, { params: httpParams }).pipe(
+      map((response) => {
+        const transformPipe = new OwnerMapperPipe();
+        const transformedOwners = response.content.map((plot: any) =>
+          transformPipe.transform(plot)
+        );
+        return {
+          ...response,
+          content: transformedOwners,
+        };
+      })
+    );
   }
 }
