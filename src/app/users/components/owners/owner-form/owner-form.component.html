@@ -366,14 +366,23 @@
       <div class="col-md-6">
         <div class="d-flex flex-row align-items-center">
           <label for="province" class="col-form-label col-md-2">Provincia<label class="text-danger">*</label></label>
-          <select id="province" class="form-select" formControlName="province"
+          @if(isArgentinaSelected) {
+            <select id="province" class="form-select" formControlName="province"
                   [ngClass]="{'is-invalid': ownerForm.get('addressForm')?.get('province')?.invalid && ownerForm.get('addressForm')?.get('province')?.touched,
                   'is-valid': ownerForm.get('addressForm')?.get('province')?.valid && ownerForm.get('addressForm')?.get('province')?.touched}"
-          >
-            @for(province of provinceOptions; track $index) {
-              <option [value]="province.value">{{ province.display }}</option>
-            }
-          </select>
+            >
+              @for(province of provinceOptions; track $index) {
+                <option [value]="province.value">{{ province.display }}</option>
+              }
+            </select>
+          } @else {
+            <select id="province" class="form-select" formControlName="province"
+                  [ngClass]="{'is-invalid': ownerForm.get('addressForm')?.get('province')?.invalid && ownerForm.get('addressForm')?.get('province')?.touched,
+                  'is-valid': ownerForm.get('addressForm')?.get('province')?.valid && ownerForm.get('addressForm')?.get('province')?.touched}"
+            >
+            <option [value]="provinceOptions.OTHER" selected >Otra</option>
+            </select>
+          }
         </div>
         <div>
           @if(ownerForm.get('addressForm.province')?.invalid && ownerForm.get('addressForm.province')?.touched) {
