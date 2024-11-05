@@ -83,30 +83,6 @@ El workflow de GitHub Actions automatiza el proceso de build y publicación de l
    - Build de la imagen Docker
    - Push de la imagen al registro
 
-### Archivo de Configuración
-```yaml
-name: UTN Angular Docker Build
-
-on:
-  push:
-    branches: [ "main", "develop" ]
-  pull_request:
-    branches: [ "main" ]
-  workflow_dispatch:
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ format('tup-frc-utn/{0}', github.event.repository.name) }}
-
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      # ... [resto de la configuración]
-```
 
 ## 🔑 Configuración del Token para Pull Local
 
@@ -128,12 +104,12 @@ docker login ghcr.io -u TU-USUARIO-DE-GITHUB -p TU-TOKEN
 
 3. Pull de la imagen:
 ```bash
-docker pull ghcr.io/tup-frc-utn/tpi-dabd-integration-app:latest
+docker pull ghcr.io/tup-frc-utn/tpi-dabd-integration-app:main
 ```
 
 4. Ejecutar la imagen:
 ```bash
-docker run -d -p 4200:4200 ghcr.io/tup-frc-utn/tpi-dabd-integration-app:latest
+docker run -d -p 4200:4200 ghcr.io/tup-frc-utn/tpi-dabd-integration-app:main
 ```
 
 ## 📝 Notas Importantes
