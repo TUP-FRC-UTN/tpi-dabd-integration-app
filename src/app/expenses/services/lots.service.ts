@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import Lot from '../models/lot';
+import Lot, { Lots } from '../models/lot';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -12,8 +12,9 @@ export class LotsService {
   private readonly http = inject(HttpClient)
 
   private apiUrl = "https://my-json-server.typicode.com/RamiroRomera/fake_api_plots/plots";
-  get(): Observable<Lot[]>{
+  get(): Observable<Lots[]>{
     console.log('cargando todas')
-    return this.http.get<Lot[]>(`${this.apiUrl}`)
+    return this.http.get<Lots[]>(`${this.apiUrl}`)
+    
   }
 }

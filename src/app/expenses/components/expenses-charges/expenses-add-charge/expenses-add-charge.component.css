@@ -1,0 +1,21 @@
+::ng-deep ng-dropdown-panel .ng-dropdown-panel-items {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 4px;
+  }
+  
+  ::ng-deep .ng-dropdown-panel .ng-option {
+    padding: 8px 12px;
+    margin: 2px 0;
+    transition: background-color 0.2s ease;
+  }
+  
+  ::ng-deep .ng-dropdown-panel .ng-option:hover {
+    background-color: #f5f5f5;
+    cursor: pointer;
+  }
+  
+  ::ng-deep .ng-dropdown-panel .ng-option.ng-option-selected {
+    background-color: #f0f0f0;
+  }

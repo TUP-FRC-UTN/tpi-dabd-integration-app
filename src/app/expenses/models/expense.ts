@@ -7,7 +7,7 @@ export default class Expense{
     liquidationDate: Date = new Date();
     state: string = "";
     plotNumber: number | null = null;
-    typePlot: string = "";  
+    typePlot: string = "";
     percentage: number = 0;
     billType: string = "";
     month: string = "";

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
-  selector: 'app-category-bill-info',
+  selector: 'app-expenses-category-bill-info',
   standalone: true,
   imports: [],
   templateUrl: './category-bill-info.component.html',

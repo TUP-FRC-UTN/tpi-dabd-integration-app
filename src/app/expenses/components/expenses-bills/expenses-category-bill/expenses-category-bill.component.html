@@ -1,0 +1,70 @@
+<ng-template #statusTemplate let-item>
+  <div class="d-flex">
+    <i class="bi" [ngClass]="{
+      'bi-check2-circle text-success fs-3': !item.is_delete,
+      'bi-x-circle text-danger fs-4': item.is_delete
+    }"></i>
+  </div>
+</ng-template>
+
+<ng-template #actionsTemplate let-item>
+  @if (item.is_updatable) {
+    <button
+      type="button"
+      class="btn btn-warning btn-sm m-1"
+      (click)="editCategory(item)"
+      title="Editar">
+      <i class="bi bi-pencil"></i>
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger btn-sm"
+      (click)="deleteCategory(item)"
+      title="Eliminar">
+      <i class="bi bi-trash"></i>
+    </button>
+  } @else {
+    <button
+      type="button"
+      class="btn btn-warning btn-sm m-1"
+      (click)="editCategory(item)"
+      title="Editar"
+      disabled
+    >
+      <i class="bi bi-pencil"></i>
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger btn-sm"
+      (click)="deleteCategory(item)"
+      title="Eliminar"
+      disabled
+    >
+      <i class="bi bi-trash"></i>
+    </button>
+  }
+</ng-template>
+
+<app-main-container title="Lista de categorías" (infoButtonClick)="showInfo()">
+  <app-table
+    [isLoading]="isLoading"
+    [items]="categories"
+    [columns]="columns"
+    [pagination]="{
+      totalItems: totalItems,
+      page: page,
+      size: size,
+      onPageChange: onPageChange,
+      onPageSizeChange: onPageSizeChange
+    }"
+    [showSearchBar]="true"
+    searchPlaceHolder="Buscar..."
+    (searchValueChange)="onSearchValueChange($event)"
+    (headerButtonClick)="openFormModal()"
+    [showHeaderButton]="true"
+    [tableFilters]="filterConfig"
+    (filterValueChange)="onFilterValueChange($event)"
+    (excelButtonClick)="downloadTable()"
+    (pdfButtonClick)="imprimirPDF()"
+  ></app-table>
+</app-main-container>

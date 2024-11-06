@@ -38,22 +38,25 @@ export class AppComponent {
       routerLink:'expenses',
       sidebarMenu: [
         {
-          label: 'Período',
-          routerLink: 'expenses/periodo'
-        },
-        {
-          label: 'Expensas',
-          routerLink: 'expenses/expenses'
+          label: 'Gastos',
+          subMenu: [
+            { label: 'Lista', routerLink: 'expenses/gastos' },
+            { label: 'Categorias', routerLink: 'expenses/gastos/categorias' }
+          ],
         },
         {
           label: 'Cargos',
           routerLink: 'expenses/cargos'
         },
         {
-          label: 'Gastos',
-          routerLink: 'expenses/gastos'
+          label: 'Periodo',
+          subMenu: [
+            { label: 'Lista', routerLink: 'expenses/periodo' },
+            { label: 'Historico de expensas', routerLink: 'expenses/expenses' },
+            { label: 'Reporte de expensas', routerLink: 'expenses/expenses/report' },
+          ]
         },
-      ]
+      ],
     },
     {
       label: 'Notificaciones',
