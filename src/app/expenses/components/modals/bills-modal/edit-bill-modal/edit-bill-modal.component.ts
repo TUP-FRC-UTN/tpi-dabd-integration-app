@@ -183,7 +183,7 @@ export class EditBillModalComponent implements OnInit {
         description: this.updateBill.value.description,
         amount: this.updateBill.value.amount,
         date: new Date(this.updateBill.value.date).toISOString(),
-        status: 'Nuevo',
+        status: this.bill?.status,
         category_id: this.updateBill.value.category,
         supplier_id: this.updateBill.value.supplier,
         supplier_employee_type: 'SUPPLIER',
