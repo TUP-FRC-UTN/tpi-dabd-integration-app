@@ -223,6 +223,10 @@ export class OwnerFilesViewComponent {
       modalRef.componentInstance.alertType = 'warning';
       modalRef.componentInstance.onConfirm = () => {
         console.log("Aca le pego al back para actualizar el estado del owner");
+        if(this.owner.id) {
+          console.log(this.plots)
+          // this.ownerService.validateOwner(this.owner.id, this.plots[0].id, "VALIDATED", '1')
+        }
       }
     }
   }

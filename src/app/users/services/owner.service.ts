@@ -151,6 +151,21 @@ export class OwnerService {
   }
 
 
+  // agregar el metodo para actualizar el KYC status del owner
+  validateOwner(ownerId: number, plotId: number, status: any, userId: string): Observable<any> {
+    const headers = new HttpHeaders({
+      'x-user-id': userId,
+    });
+
+    const change = {
+      "owner_id": ownerId,
+      "plot_id": plotId,
+      "kyc_status": status,
+      "roles": []
+    }
+
+    return this.http.post<any>(this.apiUrl + `/validate`, change, { headers });
+  }
 
 
 
