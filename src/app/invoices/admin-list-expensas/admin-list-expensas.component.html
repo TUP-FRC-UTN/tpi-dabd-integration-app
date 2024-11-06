@@ -69,10 +69,7 @@
 
         <td class="text-center"> {{ (item.period | periodToMonthYear | capitalize) }}</td>
         <td class="text-center">
-          {{
-          calculateTotal(item)
-          | currency : "" : "symbol-narrow" : "1.2-2" : "es-ES"
-          }}
+          {{ calculateTotal(item) | currencyFormat }}
         </td>
         <td class="text-center">
           <span class="badge border border-secondary text-success p-2" [ngClass]="{
