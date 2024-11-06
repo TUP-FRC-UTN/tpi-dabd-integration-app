@@ -225,7 +225,18 @@ export class OwnerFilesViewComponent {
         console.log("Aca le pego al back para actualizar el estado del owner");
         if(this.owner.id) {
           console.log(this.plots)
-          // this.ownerService.validateOwner(this.owner.id, this.plots[0].id, "VALIDATED", '1')
+          this.ownerService.validateOwner(this.owner.id, this.plots[0].id, "VALIDATED", '1').subscribe({
+            next: (response) => {
+              console.log(response);
+              this.toastService.sendSuccess('Propietario validado correctamente');
+              this.getAllFiles(this.owner);
+            },
+            error: (error) => {
+              console.error('Error al aprobar el KYC del owner:', error);
+              this.toastService.sendError('No se pudo validar el propietario');
+            },
+          })
+          modalRef.close();
         }
       }
     }
