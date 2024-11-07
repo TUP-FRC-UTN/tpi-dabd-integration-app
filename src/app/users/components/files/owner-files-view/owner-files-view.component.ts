@@ -86,11 +86,16 @@ export class OwnerFilesViewComponent {
     console.log("files length ", this.files.length)
 
     this.canApproveOwner = this.areAllApproved();
+    
+    
+    // ---------------------------------
+    // descomentar estas lineas si se necesita algo mockeado
     // mock
-    this.callMock();
+    /* this.callMock();
     
     this.canApproveOwner = this.areAllApproved();
-    console.log(this.canApproveOwner)
+    console.log(this.canApproveOwner) */
+    // ------------------------------------
 
   }
 
@@ -329,18 +334,25 @@ export class OwnerFilesViewComponent {
           approvalStatus: "APPROVED",
           reviewNote: "Awaiting review.",
           isActive: true
-      },
-      {
-          id: 3,
-          fileType: "PURCHASE_SALE",
-          name: "Resume",
-          contentType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          url: "https://example.com/documents/resume.docx",
-          approvalStatus: "UPLOADED",
-          reviewNote: "Please update with recent experience.",
-          isActive: false
       }
     ];
+
+    this.plotFiles = [
+      {
+        id: 3,
+        fileType: "PURCHASE_SALE",
+        name: "Resume",
+        contentType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        url: "https://example.com/documents/resume.docx",
+        approvalStatus: "UPLOADED",
+        reviewNote: "Please update with recent experience.",
+        isActive: false
+      }
+    ];
+
+    this.plotFiles.forEach(file => {
+      this.files.push(file);
+    });
 
     this.owner = {
       id: 1,
