@@ -47,7 +47,7 @@ export class ExpenseServiceService {
     if (sortField) {
       params = params.set('sort', `${sortField},${sortOrder}`);
     }
-    return this.http.get<Page<Expense>>('http://localhost:8088/expense/all/pageable', { params });
+    return this.http.get<Page<Expense>>('http://localhost:8080/expense/all/pageable', { params });
 
   }
   getByPeriod(periodId:number):Observable<Expense[]>{
