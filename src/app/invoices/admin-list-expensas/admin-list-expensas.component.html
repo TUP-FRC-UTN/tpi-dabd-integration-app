@@ -1,4 +1,4 @@
-<app-main-container title="Hola Administrador" subTitle="Aca podras modificar el estado de pagos" (infoButtonClick)="showInfo()">
+<app-main-container title="Hola Administrador" subTitle="Aquí podrás modificar el estado de los pagos" (infoButtonClick)="showInfo()">
 
 <div class="d-flex justify-content-between align-items-center mb-3">
   <div class="btn-group me-5" role="group">
@@ -197,10 +197,7 @@
               <td>{{ i + 1 }}</td>
               <td>{{ item.description }}</td>
               <td>
-                {{
-                item.amount
-                | currency : "" : "symbol-narrow" : "1.2-2" : "es-ES"
-                }}
+                {{ item.amount | currency : "$" : "symbol-narrow" : "1.2-2" : "en-US" }}
               </td>
               <!-- <td>{{ item.price | currency }}</td> -->
               <!-- <td>{{ (item.quantity * item.price) | currency }}</td> -->
