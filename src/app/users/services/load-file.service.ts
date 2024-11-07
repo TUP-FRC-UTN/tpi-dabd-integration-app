@@ -8,8 +8,8 @@ import { FileUploadData, Document, FileTypeMap } from '../models/file';
 })
 export class LoadFileService {
 
-  private ownerUploadUrl = 'http://localhost:8282/owners';
-  private fileUploadUrl = 'http://localhost:8282/files';
+  private ownerUploadUrl = 'http://localhost:8004/owners';
+  private fileUploadUrl = 'http://localhost:8004/files';
 
   constructor(private http: HttpClient) { }
 

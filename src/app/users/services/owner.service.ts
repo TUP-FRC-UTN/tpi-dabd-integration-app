@@ -68,7 +68,7 @@ export class OwnerService {
       'x-user-id': userId,
     });
 
-    return this.http.post<Owner>(`http://localhost:8282/owner/${ownerId}/plot/${plotId}`, undefined, { headers });
+    return this.http.post<Owner>(`http://localhost:8004/owner/${ownerId}/plot/${plotId}`, undefined, { headers });
   }
 
   updateOwner(
