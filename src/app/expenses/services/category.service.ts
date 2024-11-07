@@ -1,32 +1,61 @@
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {inject, Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {map, Observable} from 'rxjs';
 import Category from '../models/category';
 import { PORT } from '../const';
+import {PaginatedResponse} from "../models/paginatedResponse";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CategoryService {
-
   private http = inject(HttpClient);
   private url = `${PORT}categories`
-  constructor() { }
 
-  getAllCategories():Observable<Category[]>{
+  getPaginatedCategories(
+    page: number,
+    size: number,
+    sortField: string,
+    direction: string,
+    searchParams: any = {}
+  ): Observable<PaginatedResponse<Category>> {
     try {
-      const response = this.http.get<Category[]>(this.url)
-      return response
+
+      let params = new HttpParams()
+        .set('page', page.toString())
+        .set('size', size.toString())
+        .set('sort', [`${sortField},${direction}`].toString())
+
+      Object.keys(searchParams).forEach((key) => {
+        if (searchParams[key]) {
+          params = params.set(key, searchParams[key]);
+        }
+      });
+
+      // console.log('Request URL:', `${this.url}/page`);
+      // console.log('Request params:', params.toString());
+
+      return this.http.get<PaginatedResponse<Category>>(`${this.url}/page`, { params });
     } catch (error) {
-      throw error
+      console.error('Error en getPaginatedCategories:', error);
+      throw error;
+    }
+  }
+
+  getAllCategories(): Observable<Category[]> {
+    try {
+      const response = this.http.get<Category[]>(this.url);
+      return response;
+    } catch (error) {
+      throw error;
     }
   }
 
   addCategory(newCategory: Category) {
     try {
-      return this.http.post<Category>(this.url, newCategory)
+      return this.http.post<Category>(this.url, newCategory);
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 
@@ -41,5 +70,11 @@ export class CategoryService {
     } catch (error) {
       throw error;
     }
+  }
+
+  validateCategoryName(name: string): Observable<boolean> {
+    return this.getAllCategories().pipe(
+      map(categories => categories.some(category => category.name.toLowerCase() === name.toLowerCase()))
+    );
   }
 }

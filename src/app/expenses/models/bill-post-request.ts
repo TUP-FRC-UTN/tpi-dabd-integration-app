@@ -2,7 +2,7 @@ export class BillPostRequest {
   description: string = '';
   amount: number = 0;
   date: string = '';
-  status: string = 'ACTIVE';
+  status: string = 'Nuevo';
   categoryId: number = 0;
   supplierId: number = 0;
   supplierEmployeeType: string = 'SUPPLIER';

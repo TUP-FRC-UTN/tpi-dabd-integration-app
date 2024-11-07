@@ -1,0 +1,96 @@
+<app-main-container title="Expensas" (infoButtonClick)="showModal()">
+
+  <div class="row col-12" role="group">
+    <div class="col-3">
+      <div class="input-group">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="filter-text-box"
+            placeholder="Buscar..."
+          />
+          <span class="input-group-text" id="search-icon">
+            <i class="bi bi-search"></i>
+          </span>
+          <app-table-filters
+            [filters]="filterConfig"
+          ></app-table-filters>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
+    <div class="d-flex col-9 justify-content-end">
+
+      <!-- Línea vertical y botones de exportación -->
+      <div class="vertical-line mx-3"></div>
+      <button class="btn btn-success me-2" >
+        <i class="bi bi-file-earmark-excel"></i>
+      </button>
+      <button class="btn btn-danger me-2">
+        <i class="bi bi-file-earmark-pdf"></i>
+      </button>
+    </div>
+  </div>
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Lote</th>
+          <th scope="col">Tipo de Lote</th>
+          <th scope="col" style="text-align: end">Porcentaje</th>
+          <th scope="col">Expensa</th>
+          <th scope="col" style="text-align: end">Monto</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (expense of listExpenses; track $index) {
+        <tr>
+          <th scope="row">{{ expense.lotId }}</th>
+          <td>{{ expense.typePlot }}</td>
+          <td style="text-align: end">{{ expense.percentage * 100 }}%</td>
+          <td>{{ expense.billType }}</td>
+          <td style="text-align: end">
+            {{
+              expense.totalAmount.toLocaleString("es-AR", {
+                style: "currency",
+                currency: "ARS",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })
+            }}
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    <div class="row d-flex align-items-between">
+      <div class="col-1">
+        <select
+          name="tipoExpensa"
+          id="tipoExpensa"
+          class="form-select"
+          aria-label="Default select example"
+          (change)="onSelectChange($event)"
+        >
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+        </select>
+      </div>
+      <div
+        class="col-11"
+        style="justify-content: end; display: flex; flex-direction: row"
+      >
+        <ngb-pagination
+          [(page)]="currentPage"
+          [pageSize]="size"
+          [collectionSize]="cantPages"
+          (pageChange)="changeIndex($event)"
+          [maxSize]="5"
+          [boundaryLinks]="false"
+        ></ngb-pagination>
+      </div>
+    </div>
+</app-main-container>
