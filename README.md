@@ -1,5 +1,53 @@
 # TPI UTN
 
+# ⚠️ IMPORTANTE: Ruteo y Configuración de API
+
+## 🛣️ Estructura de Rutas
+Este proyecto implementa un sistema de rutas jerárquico donde cada módulo funcional tiene su propio conjunto de rutas que DEBE seguir el prefijo asignado en el ruteo principal (`app.routes.ts`).
+
+### Prefijos de Rutas por Módulo
+- Entradas: `/entries/...`
+- Facturas: `/invoices/...`
+- Gastos: `/expenses/...`
+- Inventarios: `/inventories/...`
+- Penalizaciones: `/penalties/...`
+- Notificaciones: `/notifications/...`
+- Usuarios: `/users/...`
+
+### ⚡ Ejemplo de Implementación
+Si estás trabajando en el módulo de usuarios y quieres crear una ruta para "perfil", tu ruta completa debería ser:
+```typescript
+// En user.routes.ts
+export const USER_ROUTES: Routes = [
+    { path: 'profile', component: UserProfileComponent }, // Esto resultará en /users/profile
+    { path: 'settings', component: UserSettingsComponent } // Esto resultará en /users/settings
+];
+```
+
+## 🌐 Configuración de API
+Encontrarás los archivos de configuración de la API en la carpeta `environments/`. Esta contiene la URL base de la API a la cual deberás conectarte con sus respectivos prefijos
+
+### Ejemplo de Uso en Servicios
+```typescript
+// En tu servicio
+import { environment } from '../environments/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TuServicio {
+  private readonly API_URL = environment.apiUrl + enviroment.users; 
+
+  constructor(private http: HttpClient) {}
+
+  getData() {
+    return this.http.get(`${this.API_URL}endpoint`);
+  }
+}
+```
+
+---
+
 ## 🚀 Configuración del Proyecto
 
 Este proyecto utiliza GitHub Actions para la integración continua y Docker para la contenerización de la aplicación Angular.
@@ -20,6 +68,9 @@ tpi-dabd-integration-app/
 │       └── docker-build.yml    # Configuración de GitHub Actions
 ├── Dockerfile                  # Configuración de Docker
 ├── .dockerignore              # Archivos ignorados por Docker
+├── environments/              # Configuración de entornos
+│   ├── environment.ts         # Configuración de desarrollo
+│   └── environment.prod.ts    # Configuración de producción
 └── README.md                  # Este archivo
 ```
 
@@ -83,7 +134,6 @@ El workflow de GitHub Actions automatiza el proceso de build y publicación de l
    - Build de la imagen Docker
    - Push de la imagen al registro
 
-
 ## 🔑 Configuración del Token para Pull Local
 
 Para poder descargar la imagen localmente, necesitas configurar un Personal Access Token (PAT):
@@ -104,17 +154,17 @@ docker login ghcr.io -u TU-USUARIO-DE-GITHUB -p TU-TOKEN
 
 3. Pull de la imagen:
 ```bash
-docker pull ghcr.io/tup-frc-utn/tpi-dabd-integration-app:main
+docker pull ghcr.io/tup-frc-utn/tpi-dabd-integration-app-2w1:main
 ```
 
 4. Ejecutar la imagen:
 ```bash
-docker run -d -p 4200:4200 ghcr.io/tup-frc-utn/tpi-dabd-integration-app:main
+docker run -d -p 4200:4200 ghcr.io/tup-frc-utn/tpi-dabd-integration-app-2w1:main
 ```
 
 ## 📝 Notas Importantes
 
-- La imagen se publica en: `ghcr.io/tup-frc-utn/tpi-dabd-integration-app`
+- La imagen se publica en: `ghcr.io/tup-frc-utn/tpi-dabd-integration-app-2w1:main`
 - Se generan tags basados en:
   - Nombre de la rama (`main`, `develop`)
   - SHA del commit
@@ -129,7 +179,7 @@ docker run -d -p 4200:4200 ghcr.io/tup-frc-utn/tpi-dabd-integration-app:main
 
 2. Verifica la imagen publicada:
    - Ve a la pestaña "Packages"
-   - Busca la imagen `tpi-dabd-integration-app`
+   - Busca la imagen `tpi-dabd-integration-app-2w1`
 
 ## 🛠️ Troubleshooting
 
