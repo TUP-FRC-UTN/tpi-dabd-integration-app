@@ -179,7 +179,9 @@ export class AppComponent {
         {
           label: 'Dashboards',
           subMenu: [
-            { label: 'Reportes', routerLink: '/users/home' },
+            { label: 'Reporte Propietarios', routerLink: '/users/owner/reports' },
+            { label: 'Reporte Usuarios', routerLink: '/users/user/reports' },
+
           ]
         },
         {
@@ -187,6 +189,7 @@ export class AppComponent {
           subMenu: [
             { label: 'Lista de Propietarios', routerLink: '/users/owner/list' },
             { label: 'Cargar Propietario', routerLink: '/users/owner/form' },
+            { label: 'Asignar Lote', routerLink: '/users/owner/assign' },
             { label: 'Cargar Archivo', routerLink: '/users/files/form' },
             { label: 'Validar Archivos', routerLink: '/users/files/view' },
           ]

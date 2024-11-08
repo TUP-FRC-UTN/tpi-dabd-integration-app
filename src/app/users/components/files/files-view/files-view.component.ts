@@ -3,17 +3,17 @@ import { ValidateOwner } from '../../../models/ownerXplot';
 import { DocumentTypeDictionary, Owner, OwnerStatusDictionary, OwnerTypeDictionary, StateKYC } from '../../../models/owner';
 import { OwnerService } from '../../../services/owner.service';
 import { mapKycStatus } from '../../../utils/owner-helper';
-import { CadastrePlotFilterButtonsComponent } from '../../plots/cadastre-plot-filter-buttons/cadastre-plot-filter-buttons.component';
 import { FormsModule } from '@angular/forms';
 import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
 import { Router } from '@angular/router';
 import { InfoComponent } from '../../commons/info/info.component';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-files-view',
   standalone: true,
-  imports: [CadastrePlotFilterButtonsComponent, FormsModule, NgbPagination, MainContainerComponent],
+  imports: [ FormsModule, NgbPagination, MainContainerComponent],
   templateUrl: './files-view.component.html',
   styleUrl: './files-view.component.css'
 })
@@ -39,14 +39,16 @@ export class FilesViewComponent {
   ownerDicitionaries = [this.documentTypeDictionary, this.ownerTypeDictionary, this.ownerStatusDictionary];
 
   protected ownerService = inject(OwnerService);
-  private router = inject(Router)
-  private modalService = inject(NgbModal)
+  private router = inject(Router);
+  private modalService = inject(NgbModal);
+  private location = inject(Location);
 
 
   ngOnInit() {
     this.getAllOwners();
-    console.log(this.owners.length);
-    console.log(this.filteredOwnersList.length);
+
+    console.log("owners length", this.owners.length);
+    console.log("filtered owners length", this.filteredOwnersList.length);
     
   }
 
@@ -132,6 +134,11 @@ export class FilesViewComponent {
   clearFilters(){}
   confirmFilter(){}
 
+  
+  goBack() {
+    this.location.back()
+  }
+
   openInfo(){
     const modalRef = this.modalService.open(InfoComponent, {
       size: 'lg',
@@ -139,13 +146,13 @@ export class FilesViewComponent {
       keyboard: false,
       centered: true,
       scrollable: true
-    });  
-    
+    });
+
     modalRef.componentInstance.title = 'Propietarios en proceso de Validación';
     modalRef.componentInstance.description = 'Esta pantalla proporciona información a cera de los propietarios que están en proceso de validación.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos', 
+      {
+        title: 'Datos',
         content: [
           {
             strong: 'Nombre y apellido:',
@@ -178,8 +185,8 @@ export class FilesViewComponent {
           }
         ]
       },
-      { 
-        title: 'Funcionalidades de los botones', 
+      {
+        title: 'Funcionalidades de los botones',
         content: [
           {
             strong: 'Limpieza de Filtros:',
@@ -202,6 +209,6 @@ export class FilesViewComponent {
     ];
     modalRef.componentInstance.notes = [
       'La interfaz está diseñada para ofrecer una administración eficiente de los procesos de validación de propietarios.'
-    ];    
+    ];
   }
 }

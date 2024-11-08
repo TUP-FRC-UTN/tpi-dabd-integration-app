@@ -312,14 +312,23 @@
       <div class="col-md-6">
         <div class="d-flex flex-row align-items-center">
           <label for="province" class="col-form-label col-md-2">Provincia<label class="text-danger">*</label></label>
-          <select id="province" class="form-select" formControlName="province"
-                  [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('province')?.invalid && userForm.get('addressForm')?.get('province')?.touched,
-                    'is-valid': userForm.get('addressForm')?.get('province')?.valid && userForm.get('addressForm')?.get('province')?.touched}"
-          >
-            @for(province of provinceOptions; track $index) {
-              <option [value]="province.value">{{ province.display }}</option>
-            }
+          @if(isArgentinaSelected) {
+            <select id="province" class="form-select" formControlName="province"
+              [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('province')?.invalid && userForm.get('addressForm')?.get('province')?.touched,
+              'is-valid': userForm.get('addressForm')?.get('province')?.valid && userForm.get('addressForm')?.get('province')?.touched}"
+            >
+              @for(province of provinceOptions; track $index) {
+                  <option [value]="province.value">{{ province.display }}</option>
+              }
           </select>
+          } @else {
+            <select id="province" class="form-select" formControlName="province"
+              [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('province')?.invalid && userForm.get('addressForm')?.get('province')?.touched,
+              'is-valid': userForm.get('addressForm')?.get('province')?.valid && userForm.get('addressForm')?.get('province')?.touched}"
+            >
+            <option [value]="provinceOptions.OTHER" selected >Otra</option>
+            </select>
+          }
         </div>
         <div>
           @if(userForm.get('addressForm.province')?.invalid && userForm.get('addressForm.province')?.touched) {

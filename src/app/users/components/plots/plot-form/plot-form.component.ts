@@ -169,13 +169,13 @@ export class PlotFormComponent {
       keyboard: false,
       centered: true,
       scrollable: true
-    });   
+    });
 
     modalRef.componentInstance.title = 'Registrar un lote';
     modalRef.componentInstance.description = 'En esta pantalla se permite cargar los datos correspondientes para registrar un lote.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos', 
+      {
+        title: 'Datos',
         content: [
           {
             strong: 'Número de Manzana:',
@@ -208,6 +208,6 @@ export class PlotFormComponent {
       'La interfaz está diseñada para ofrecer una gestión eficiente y segura de la información de los lotes, manteniendo la integridad y precisión de los datos.',
       'Campos obligatorios: Número de Manzana, Número de Lote, Área Total, Área Construida, Tipo de Lote, Estado del Lote.'
     ];
-    
+
   }
 }

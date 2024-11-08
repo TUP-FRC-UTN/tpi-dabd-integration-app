@@ -60,7 +60,7 @@ export class FilesFormComponent implements OnInit {
 
   ownerFiles: FileWithTypes[] = [];
   plotFiles: FileWithTypes[] = [];
-  
+
   fileTypes: Map<string, string> = new Map();
 
   filesForm = new FormGroup({
@@ -120,14 +120,14 @@ export class FilesFormComponent implements OnInit {
       });
     } */
   }
-  
+
 
   onSubmit() {
     console.log("Archivos para subir. onUpload() ", this.files);
     console.log("Archivos para subir del Owner. onUpload() ", this.ownerFiles);
     console.log("Archivos para subir del Plot. onUpload() ", this.plotFiles);
 
-    
+
 
     // this.onUploadNacho();
   }
@@ -218,10 +218,10 @@ export class FilesFormComponent implements OnInit {
       const fileUploadData = this.buildFileUploadData(formData, this.selectedFiles);
 
       console.log("DATA PARA SUBIR: fileUploadData = ", fileUploadData);
-      
+
       //  ---------------------------------- que hace este if(true) -----------------------------------
-      
-      if (true) { 
+
+      if (true) {
         this.fileService
           .uploadFiles(1, 1, fileUploadData) // mock owner and user ids
           .subscribe({
@@ -249,7 +249,7 @@ export class FilesFormComponent implements OnInit {
   }
  */
   onUploadNacho(): void {
-    
+
     // valido que haya al menos tres archivos (2 dni y 1 lote)
     console.log("fileTypes.size: ", this.fileTypes.size);
 

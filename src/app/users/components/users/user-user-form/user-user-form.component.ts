@@ -16,6 +16,8 @@ import { User } from '../../../models/user';
 import { NgClass } from '@angular/common';
 import { InfoComponent } from '../../commons/info/info.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {OwnerPlotService} from '../../../services/owner-plot.service';
+import {plotForUserValidator} from '../../../validators/cadastre-plot-for-users';
 
 @Component({
   selector: 'app-user-user-form',
@@ -29,6 +31,7 @@ export class UserUserFormComponent {
     private userService = inject(UserService);
     private roleService = inject(RoleService)
     private plotService = inject(PlotService)
+    private ownerPlotService = inject(OwnerPlotService)
     private activatedRoute = inject(ActivatedRoute)
     private router = inject(Router)
     private toastService = inject(ToastService)
@@ -84,7 +87,7 @@ export class UserUserFormComponent {
         plotNumber: new FormControl(
           '',
           [Validators.min(1)],
-          [plotForOwnerValidator(this.plotService)]
+          [plotForUserValidator(this.plotService)]
         ),
         blockNumber: new FormControl('', [
           Validators.min(1),
@@ -96,7 +99,7 @@ export class UserUserFormComponent {
     //#region ON SUBMIT
     onSubmit(): void {
       // TODO: Cambiar a valid :)
-      if (true) {
+      if (this.userForm.valid) {
         if (this.id === null) {
           this.createUser()
         }
@@ -137,7 +140,6 @@ export class UserUserFormComponent {
       if (this.id) {
         this.userService.getUserById(Number(this.id)).subscribe(
           response => {
-            console.log(response)
             this.user = response;
 
             this.userForm.patchValue({
@@ -180,14 +182,13 @@ export class UserUserFormComponent {
 
     //#region RUTEO | CANCELAR
     cancel() {
-      this.router.navigate(["users/user/list"])
+      this.router.navigate(["/users/user/list"])
     }
     //#endregion
 
     //#region FUNCION CONTACTO
     setContactValue(index: number) {
       const contact = this.contacts[index];
-      console.log(contact)
       if (contact) {
           const contactFormGroup = this.userForm.get('contactsForm') as FormGroup;
 
@@ -242,7 +243,6 @@ export class UserUserFormComponent {
     }
 
     addRol(): void {
-      console.log(this.userForm.get('plotForm'))
       if (this.userForm.get('rolesForm')?.valid) {
         const rolValue = this.getRolValue()
 
@@ -264,12 +264,11 @@ export class UserUserFormComponent {
     }
 
     transformRoles(user: User): number[] | undefined {
-      return user.roles?.map(role => role.id);
+      return user.roles?.map(role => role.code);
     }
 
      // Acceder directamente al valor del país en el FormControl
     get isArgentinaSelected(): boolean {
-      console.log(this.userForm.get('addressForm')?.get('country')?.value === 'ARGENTINA');
       return this.userForm.get('addressForm')?.get('country')?.value === 'ARGENTINA';
     }
 
@@ -293,13 +292,15 @@ export class UserUserFormComponent {
       this.fillUser();
       this.getPlotValues();
       this.user.isActive = true;
+      this.user.roleCodeList = this.transformRoles(this.user)
       this.user = toSnakeCase(this.user);
-      this.user.roles = this.transformRoles(this.user)
+      delete this.user.roles;
       this.userService.addUser(this.user, 1).subscribe({
         // '1' is x-user-id
         next: (response) => {
           this.toastService.sendSuccess("Usuario creado con exito.")
-          this.router.navigate(['users/user/list']);
+
+          this.router.navigate(['/users/user/list']);
         },
         error: (error) => {
           console.error('Error creating owner:', error);
@@ -310,7 +311,9 @@ export class UserUserFormComponent {
     updateUser() {
       this.fillUser();
       if (this.user.id) {
-        this.userService.updateUser(this.user.id, this.user, 1).subscribe({
+        this.user.roles = this.transformRoles(this.user)
+        delete this.user.createdDate
+        this.userService.updateUser(this.user.id, toSnakeCase(this.user), 1).subscribe({
           next: (response) => {
             this.toastService.sendSuccess("Usuario actualizado con exito.")
             this.router.navigate(['users/owner/list']);
@@ -430,13 +433,13 @@ export class UserUserFormComponent {
       keyboard: false,
       centered: true,
       scrollable: true
-    });  
-    
+    });
+
     modalRef.componentInstance.title = 'Registrar Usuario';
     modalRef.componentInstance.description = 'Pantalla para la gestión integral de usuarios, permitiendo la visualización, edición y administración de datos personales, información de contacto y detalles de dirección.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos del Usuario', 
+      {
+        title: 'Datos del Usuario',
         content: [
           {
             strong: 'Email:',
@@ -456,8 +459,8 @@ export class UserUserFormComponent {
           }
         ]
       },
-      { 
-        title: 'Añadir Roles', 
+      {
+        title: 'Añadir Roles',
         content: [
           {
             strong: 'Roles:',
@@ -469,8 +472,8 @@ export class UserUserFormComponent {
           }
         ]
       },
-      { 
-        title: 'Asociar un lote', 
+      {
+        title: 'Asociar un lote',
         content: [
           {
             strong: 'Número de Manzana:',
@@ -482,8 +485,8 @@ export class UserUserFormComponent {
           }
         ]
       },
-      { 
-        title: 'Añadir Dirección', 
+      {
+        title: 'Añadir Dirección',
         content: [
           {
             strong: 'Calle:',
@@ -523,8 +526,8 @@ export class UserUserFormComponent {
           }
         ]
       },
-      { 
-        title: 'Añadir Contactos', 
+      {
+        title: 'Añadir Contactos',
         content: [
           {
             strong: 'Tipo Contacto:',
@@ -545,6 +548,6 @@ export class UserUserFormComponent {
       'Campos obligatorios: Email, Nombre, Nombre de usuario, Apellido.'
     ];
 
-    
+
   }
 }

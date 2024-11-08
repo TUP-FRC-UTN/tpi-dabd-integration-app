@@ -1,0 +1,49 @@
+<app-main-container title="Dashboard de propietarios">
+
+  <!-- Owner Charts Section -->
+  <h3>KPIs</h3>
+
+  <h3 class="mb-3">Graficos</h3>
+  <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
+
+  <div class="chart-section mb-4 p-3 border rounded">
+    <h3 class="section-title">Estadísticas de Propietarios</h3>
+    <div class="charts d-flex justify-content-between mt-4">
+      <div class="chart">
+        <h6>Distribución de KYC Status</h6>
+        <canvas
+          baseChart
+          height="220px"
+          [type]="'pie'"
+          [datasets]="pieChartKycStatusDatasets"
+          [labels]="pieChartKycStatusLabels"
+          [options]="pieChartOptions"
+        ></canvas>
+      </div>
+
+      <div class="chart">
+        <h6>Distribución de Tipo de Propietario</h6>
+        <canvas
+          baseChart
+          height="220px"
+          [type]="'bar'"
+          [datasets]="barChartOwnerTypeDatasets"
+          [labels]="barChartOwnerTypeLabels"
+          [options]="barChartOptions"
+        ></canvas>
+      </div>
+
+      <div class="chart">
+        <h6>Propietarios Activos e Inactivos</h6>
+        <canvas
+          baseChart
+          height="220px"
+          [type]="'pie'"
+          [datasets]="pieChartActiveStatusDatasets"
+          [labels]="pieChartActiveStatusLabels"
+          [options]="pieChartOptions"
+        ></canvas>
+      </div>
+    </div>
+  </div>
+</app-main-container>

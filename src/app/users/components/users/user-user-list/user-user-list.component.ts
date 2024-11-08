@@ -10,7 +10,6 @@ import {
   Filter, FilterConfigBuilder
 } from 'ngx-dabd-grupo01';
 import { Router } from '@angular/router';
-import { UserFilterButtonsComponent } from '../user-filter-buttons/user-filter-buttons.component';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
@@ -118,11 +117,11 @@ export class UserUserListComponent {
 
     //#region RUTEO
     updateUser(userId?: number) {
-      this.router.navigate([`users/user/form/${userId}`])
+      this.router.navigate([`/users/user/form/${userId}`])
     }
 
     userDetail(userId? : number) {
-      this.router.navigate([`users/user/detail/${userId}`])
+      this.router.navigate([`/users/user/detail/${userId}`])
     }
     //#endregion
 

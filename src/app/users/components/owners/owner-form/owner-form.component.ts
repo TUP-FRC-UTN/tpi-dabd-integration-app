@@ -20,10 +20,10 @@ import { Provinces, Country } from '../../../models/generics';
 import { catchError, Observable, of, switchMap, tap } from 'rxjs';
 import { ToastService, MainContainerComponent } from 'ngx-dabd-grupo01';
 import { NgClass } from '@angular/common';
-import { cadastrePlotAssociation } from '../../../validators/cadastre-plot-association';
 import { OwnerPlotService } from '../../../services/owner-plot.service';
 import { InfoComponent } from '../../commons/info/info.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {plotForOwnerValidatorNoAssociation} from '../../../validators/cadastre-plot-for-owner-no-association';
 
 @Component({
   selector: 'app-owner-form',
@@ -145,7 +145,7 @@ export class OwnerFormComponent implements OnInit {
       plotNumber: new FormControl(
         '',
         [Validators.required, Validators.min(1)],
-        [plotForOwnerValidator(this.plotService), cadastrePlotAssociation(this.ownerPlotService, this.plot?.id)]
+        [plotForOwnerValidatorNoAssociation(this.plotService, this.ownerPlotService)]
       ),
       blockNumber: new FormControl('', [
         Validators.required,
@@ -498,13 +498,13 @@ export class OwnerFormComponent implements OnInit {
       keyboard: false,
       centered: true,
       scrollable: true
-    });  
-    
+    });
+
     modalRef.componentInstance.title = 'Registrar Propietario';
     modalRef.componentInstance.description = 'Pantalla para la gestión integral de propietarios, permitiendo la visualización, edición y administración de datos personales, información de contacto y detalles de dirección.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos del Propietario', 
+      {
+        title: 'Datos del Propietario',
         content: [
           {
             strong: 'Nombre:',
@@ -544,8 +544,8 @@ export class OwnerFormComponent implements OnInit {
           }
         ]
       },
-      { 
-        title: 'Asociar un lote', 
+      {
+        title: 'Asociar un lote',
         content: [
           {
             strong: 'Número de Manzana:',
@@ -557,8 +557,8 @@ export class OwnerFormComponent implements OnInit {
           }
         ]
       },
-      { 
-        title: 'Añadir Dirección', 
+      {
+        title: 'Añadir Dirección',
         content: [
           {
             strong: 'Calle:',
@@ -594,8 +594,8 @@ export class OwnerFormComponent implements OnInit {
           }
         ]
       },
-      { 
-        title: 'Añadir Contactos', 
+      {
+        title: 'Añadir Contactos',
         content: [
           {
             strong: 'Tipo Contacto:',
@@ -612,6 +612,6 @@ export class OwnerFormComponent implements OnInit {
         ]
       }
     ];
-    modalRef.componentInstance.notes = ['Campos obligatorios: Nombre, Apellido, Tipo Propietario, Tipo Documento, Número.'];    
+    modalRef.componentInstance.notes = ['Campos obligatorios: Nombre, Apellido, Tipo Propietario, Tipo Documento, Número.'];
   }
 }

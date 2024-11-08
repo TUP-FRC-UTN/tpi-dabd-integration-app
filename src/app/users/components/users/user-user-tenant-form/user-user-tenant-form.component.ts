@@ -17,6 +17,7 @@ import { NgClass } from '@angular/common';
 import {OwnerPlotService} from "../../../services/owner-plot.service";
 import { InfoComponent } from '../../commons/info/info.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {SessionService} from '../../../services/session.service';
 
 
 @Component({
@@ -32,6 +33,7 @@ export class UserUserTenantFormComponent {
   private roleService = inject(RoleService)
   private plotService = inject(PlotService)
   private ownerPlotService = inject(OwnerPlotService)
+  private sessionService = inject(SessionService)
   private activatedRoute = inject(ActivatedRoute)
   private router = inject(Router)
   private toastService = inject(ToastService)
@@ -54,6 +56,8 @@ export class UserUserTenantFormComponent {
   provinceOptions!: any;
   countryOptions!: any;
   actualPlotOfOwner!: Plot[]
+  actualUserId!: any
+  actualOwnerId!: any
   minDate :any
   //#endregion
 
@@ -79,9 +83,9 @@ export class UserUserTenantFormComponent {
       number: new FormControl(0, [Validators.required, Validators.min(0)]),
       floor: new FormControl(0),
       apartment: new FormControl(''),
-      city: new FormControl('', [Validators.required]),
-      province: new FormControl('', [Validators.required]),
-      country: new FormControl('', [Validators.required]),
+      city: new FormControl('Córdoba', [Validators.required]),
+      province: new FormControl('CORDOBA', [Validators.required]),
+      country: new FormControl('ARGENTINA', [Validators.required]),
       postalCode: new FormControl('', [Validators.required]),
     }),
 
@@ -93,8 +97,7 @@ export class UserUserTenantFormComponent {
 
   //#region ON SUBMIT
   onSubmit(): void {
-    // TODO: Cambiar a valid :)
-    if (true) {
+    if (this.userForm.valid) {
       if (this.id === null) {
         this.createUser()
       }
@@ -107,6 +110,13 @@ export class UserUserTenantFormComponent {
 
   //#region ngOnInit
   ngOnInit(): void {
+    this.actualUserId = sessionStorage.getItem("user");
+    this.userService.getUserById(this.actualUserId).subscribe({
+      next : response => {
+        this.actualOwnerId = response.ownerId
+        this.getPlotsOfOwner();
+      }
+    })
     this.id = this.activatedRoute.snapshot.paramMap.get('id');
     if (this.id !== null) {
       this.setEditValues();
@@ -115,7 +125,6 @@ export class UserUserTenantFormComponent {
     }
     this.setEnums()
     this.getAllRoles()
-    this.getPlotsOfOwner();
 
     const tomorrow = new Date();
     tomorrow.setDate(new Date().getDate() + 7);
@@ -183,7 +192,7 @@ export class UserUserTenantFormComponent {
 
   //#region RUTEO | CANCELAR
   cancel() {
-    this.router.navigate(["users/user/list"])
+    this.router.navigate(["/users/user/list"])
   }
   //#endregion
 
@@ -267,9 +276,13 @@ export class UserUserTenantFormComponent {
   }
 
   transformRoles(user: User): number[] | undefined {
-    return user.roles?.map(role => role.id);
+    return user.roles?.map(role => role.code);
   }
 
+  // Acceder directamente al valor del país en el FormControl
+  get isArgentinaSelected(): boolean {
+    return this.userForm.get('addressForm')?.get('country')?.value === 'ARGENTINA';
+  }
 
   //#endregion
 
@@ -290,9 +303,9 @@ export class UserUserTenantFormComponent {
   createUser() {
     this.fillUser();
     this.user.isActive = true;
-    this.user = toSnakeCase(this.user);
-    this.user.roles = this.transformRoles(this.user)
-    this.userService.addUser(this.user, 1).subscribe({
+    this.user.roleCodeList = this.transformRoles(this.user)
+    delete this.user.roles
+    this.userService.addUser(toSnakeCase(this.user), 1).subscribe({
       // '1' is x-user-id
       next: (response) => {
         this.toastService.sendSuccess("Usuario creado con exito.")
@@ -306,7 +319,9 @@ export class UserUserTenantFormComponent {
 
   updateUser() {
     this.fillUser();
+    this.user.roleCodeList = this.transformRoles(this.user)
     if (this.user.id) {
+      delete this.user.roles
       this.userService.updateUser(this.user.id, this.user, 1).subscribe({
         next: (response) => {
           this.toastService.sendSuccess("Usuario actualizado con exito.")
@@ -325,15 +340,14 @@ export class UserUserTenantFormComponent {
   //#region FUNCION PLOTS
 
   getPlotsOfOwner() {
-    // TODO: Ver como obtener el ownerId
-    // this.ownerPlotService.giveAllPlotsByOwner(1, 0, 100000).subscribe(
-    //   response => {
-    //     this.actualPlotOfOwner = response.content;
-    //   },
-    //   error => {
-    //     this.toastService.sendError("Error recuperando sus lotes. Reinicie la pagina.")
-    //   }
-    // )
+    this.ownerPlotService.giveAllPlotsByOwner(this.actualOwnerId, 0, 100000).subscribe(
+      response => {
+        this.actualPlotOfOwner = response.content;
+      },
+      error => {
+        this.toastService.sendError("Error recuperando sus lotes. Reinicie la pagina.")
+      }
+    )
   }
 
   setPlotValue(plotId:number) {
@@ -421,13 +435,13 @@ export class UserUserTenantFormComponent {
       keyboard: false,
       centered: true,
       scrollable: true
-    });   
+    });
 
     modalRef.componentInstance.title = 'Registrar usuario inquilino';
     modalRef.componentInstance.description = 'En esta pantalla permite crear un usuario para un inquilino.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos del Usuario', 
+      {
+        title: 'Datos del Usuario',
         content: [
           {
             strong: 'Email:',
@@ -447,8 +461,8 @@ export class UserUserTenantFormComponent {
           }
         ]
       },
-      { 
-        title: 'Añadir Roles', 
+      {
+        title: 'Añadir Roles',
         content: [
           {
             strong: 'Roles:',
@@ -460,8 +474,8 @@ export class UserUserTenantFormComponent {
           }
         ]
       },
-      { 
-        title: 'Asociar un lote', 
+      {
+        title: 'Asociar un lote',
         content: [
           {
             strong: 'Número de Manzana:',
@@ -473,8 +487,8 @@ export class UserUserTenantFormComponent {
           }
         ]
       },
-      { 
-        title: 'Añadir Dirección', 
+      {
+        title: 'Añadir Dirección',
         content: [
           {
             strong: 'Calle:',
@@ -514,8 +528,8 @@ export class UserUserTenantFormComponent {
           }
         ]
       },
-      { 
-        title: 'Añadir Contactos', 
+      {
+        title: 'Añadir Contactos',
         content: [
           {
             strong: 'Tipo Contacto:',
@@ -535,6 +549,6 @@ export class UserUserTenantFormComponent {
     modalRef.componentInstance.notes = [
       'Campos obligatorios: Email, Nombre, Nombre de usuario, Apellido.'
     ];
-    
+
   }
 }

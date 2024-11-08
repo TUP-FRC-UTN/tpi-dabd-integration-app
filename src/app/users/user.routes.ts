@@ -22,6 +22,11 @@ import { UserUserFormComponent } from "./components/users/user-user-form/user-us
 import { UserUserListComponent } from "./components/users/user-user-list/user-user-list.component";
 import { UserUserTenantFormComponent } from "./components/users/user-user-tenant-form/user-user-tenant-form.component";
 import { LoginComponent } from "./components/login/login.component";
+import {CadastreOwnerReportComponent} from './components/reports/cadastre-owner-report/cadastre-owner-report.component';
+import {UsersUserReportComponent} from './components/reports/users-user-report/users-user-report.component';
+import {
+  CadastreOwnerAssignPlotComponent
+} from './components/owners/cadastre-owner-assign-plot/cadastre-owner-assign-plot.component';
 
 export const USER_ROUTES: Routes = [
     /* { path: 'login', component: LoginComponent },
@@ -51,8 +56,11 @@ export const USER_ROUTES: Routes = [
     { path: 'roles/form/:roleId', component: RolesFormComponent, /* canActivate: [authGuard] */ },
     { path: 'roles/detail/:roleId', component: RolesDetailComponent, /* canActivate: [authGuard] */ },
     { path: 'owners/plot/:plotId', component: CadastreOwnerPlotListComponent, /* canActivate: [authGuard] */ },
+    { path: 'owner/reports', component: CadastreOwnerReportComponent, /* canActivate: [authGuard] */ },
+    { path: 'user/reports', component: UsersUserReportComponent, /* canActivate: [authGuard] */ },
     { path: 'plots/owner/:ownerId', component: CadastrePlotOwnerListComponent, /* canActivate: [authGuard] */ },
     { path: 'plot/detail/:id', component: CadastrePlotDetailComponent, /* canActivate: [authGuard] */ },
     { path: 'account/concept/:plotId', component: AccountAccountConceptComponent, /* canActivate: [authGuard] */ },
+    { path: 'owner/assign', component: CadastreOwnerAssignPlotComponent, /* canActivate: [authGuard] */ },
     { path: '**', component: NotFoundComponent, /* canActivate: [authGuard] */ },
 ];

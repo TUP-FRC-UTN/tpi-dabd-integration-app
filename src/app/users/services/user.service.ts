@@ -28,6 +28,7 @@ export class UserService {
     const headers = new HttpHeaders({
       'x-user-id': userId
     });
+    delete user.id
 
     return this.http.put<User>(`${this.host}/${id}`, user, { headers });
   }

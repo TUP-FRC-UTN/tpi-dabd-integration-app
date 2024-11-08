@@ -2,7 +2,6 @@ import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { Plot, PlotFilters, PlotStatusDictionary, PlotTypeDictionary } from '../../../models/plot';
 import { PlotService } from '../../../services/plot.service';
 import { Router } from '@angular/router';
-import { CadastrePlotFilterButtonsComponent } from '../cadastre-plot-filter-buttons/cadastre-plot-filter-buttons.component';
 import { FormsModule } from '@angular/forms';
 import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -15,7 +14,7 @@ import { InfoComponent } from '../../commons/info/info.component';
 @Component({
   selector: 'app-plots-list',
   standalone: true,
-  imports: [CadastrePlotFilterButtonsComponent, FormsModule, NgbPagination, MainContainerComponent, CurrencyPipe, CommonModule, TableFiltersComponent],
+  imports: [ FormsModule, NgbPagination, MainContainerComponent, CurrencyPipe, CommonModule, TableFiltersComponent],
   templateUrl: './plots-list.component.html',
   styleUrl: './plots-list.component.css',
   schemas: [],
