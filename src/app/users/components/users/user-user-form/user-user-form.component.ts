@@ -16,6 +16,8 @@ import { User } from '../../../models/user';
 import { NgClass } from '@angular/common';
 import { InfoComponent } from '../../commons/info/info.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {OwnerPlotService} from '../../../services/owner-plot.service';
+import {plotForUserValidator} from '../../../validators/cadastre-plot-for-users';
 
 @Component({
   selector: 'app-user-user-form',
@@ -29,6 +31,7 @@ export class UserUserFormComponent {
     private userService = inject(UserService);
     private roleService = inject(RoleService)
     private plotService = inject(PlotService)
+    private ownerPlotService = inject(OwnerPlotService)
     private activatedRoute = inject(ActivatedRoute)
     private router = inject(Router)
     private toastService = inject(ToastService)
@@ -84,7 +87,7 @@ export class UserUserFormComponent {
         plotNumber: new FormControl(
           '',
           [Validators.min(1)],
-          [plotForOwnerValidator(this.plotService)]
+          [plotForUserValidator(this.plotService)]
         ),
         blockNumber: new FormControl('', [
           Validators.min(1),
@@ -96,7 +99,7 @@ export class UserUserFormComponent {
     //#region ON SUBMIT
     onSubmit(): void {
       // TODO: Cambiar a valid :)
-      if (true) {
+      if (this.userForm.valid) {
         if (this.id === null) {
           this.createUser()
         }
