@@ -9,6 +9,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -32,12 +38,11 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/tup-frc-utn/tpi-dabd-integration-app/
+          images: ghcr.io/tup-frc-utn/tpi-dabd-integration-app
           tags: |
+            type=raw,value=latest
             type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=sha
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,format=short
           
       - name: Build and push Docker images
         uses: docker/build-push-action@v5
@@ -46,10 +51,11 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64,linux/arm64
           build-args: |
             ENVIRONMENT=production
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=ghcr.io/tup-frc-utn/tpi-dabd-integration-app:buildcache
+          cache-to: type=registry,ref=ghcr.io/tup-frc-utn/tpi-dabd-integration-app:buildcache,mode=max
 
       - name: Verify Docker image
         run: |
