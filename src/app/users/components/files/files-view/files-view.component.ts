@@ -3,7 +3,6 @@ import { ValidateOwner } from '../../../models/ownerXplot';
 import { DocumentTypeDictionary, Owner, OwnerStatusDictionary, OwnerTypeDictionary, StateKYC } from '../../../models/owner';
 import { OwnerService } from '../../../services/owner.service';
 import { mapKycStatus } from '../../../utils/owner-helper';
-import { CadastrePlotFilterButtonsComponent } from '../../plots/cadastre-plot-filter-buttons/cadastre-plot-filter-buttons.component';
 import { FormsModule } from '@angular/forms';
 import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
@@ -13,7 +12,7 @@ import { InfoComponent } from '../../commons/info/info.component';
 @Component({
   selector: 'app-files-view',
   standalone: true,
-  imports: [CadastrePlotFilterButtonsComponent, FormsModule, NgbPagination, MainContainerComponent],
+  imports: [ FormsModule, NgbPagination, MainContainerComponent],
   templateUrl: './files-view.component.html',
   styleUrl: './files-view.component.css'
 })
