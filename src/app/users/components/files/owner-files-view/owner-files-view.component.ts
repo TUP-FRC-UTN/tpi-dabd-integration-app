@@ -211,7 +211,7 @@ export class OwnerFilesViewComponent {
 
 
   plotDetail(plotId : number) {
-    this.router.navigate([`/plot/detail/${plotId}`])
+    this.router.navigate([`/users/plot/detail/${plotId}`])
   }
 
   onItemsPerPageChange() {

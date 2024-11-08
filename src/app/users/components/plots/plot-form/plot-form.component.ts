@@ -89,7 +89,7 @@ export class PlotFormComponent {
         this.plotService.createPlot(plotFormData, 1).subscribe(
           response => {
             console.log('Plot created successfully:', response);
-            this.router.navigate(["/plot/list"])
+            this.router.navigate(["/users/plot/list"])
             this.toastService.sendSuccess("Lote creado con exito.")
           },
           error => {
@@ -110,7 +110,7 @@ export class PlotFormComponent {
           response => {
             console.log('Plot updated successfully:', response);
             this.toastService.sendSuccess("Lote actualizado con exito.")
-            this.router.navigate(["/plot/list"])
+            this.router.navigate(["/users/plot/list"])
           },
           error => {
             console.error('Error creating plot:', error);
@@ -158,7 +158,7 @@ export class PlotFormComponent {
 
   //#region RUTEO | CANCELAR
   cancel() {
-    this.router.navigate(["/plot/list"])
+    this.router.navigate(["/users/plot/list"])
   }
   //#endregion
 

@@ -62,7 +62,7 @@ export class RolesFormComponent implements OnInit {
   }
 
   navigateToList() {
-    this.router.navigate(['roles/list']);
+    this.router.navigate(['/users/roles/list']);
   }
 
   createRole(){

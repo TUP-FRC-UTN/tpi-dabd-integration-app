@@ -106,11 +106,11 @@ export class CadastrePlotOwnerListComponent {
   }
 
   viewOwnerDetail() {
-    this.router.navigate(["/owner/detail/" + this.ownerId])
+    this.router.navigate(["/users/owner/detail/" + this.ownerId])
   }
 
   viewPlotDetail(plotId : number) {
-    this.router.navigate(["/plot/detail/" + plotId])
+    this.router.navigate(["/users/plot/detail/" + plotId])
   }
 
   translateTable(value: any, dictionary: { [key: string]: any }) {

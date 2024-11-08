@@ -27,7 +27,7 @@ export class CadastreOwnerPlotFilterButtonsComponent<T extends Record<string, an
   // Input to receive a generic list from the parent component
   @Input() itemsList!: T[];
   // Input to redirect to the form.
-  @Input() formPath: string = "";
+  @Input() formPath: string = "/users/plots/owner";
   // Represent the name of the object for the exports.
   // Se va a usar para los nombres de los archivos.
   @Input() objectName : string = ""

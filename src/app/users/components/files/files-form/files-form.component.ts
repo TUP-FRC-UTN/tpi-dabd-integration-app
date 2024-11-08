@@ -284,7 +284,7 @@ export class FilesFormComponent implements OnInit {
           console.log('File upload process completed');
           this.toastService.sendSuccess('Archivos cargados exitosamente.');
           this.isUploading = false;
-          this.router.navigate(['/owner/list']);
+          this.router.navigate(['/users/owner/list']);
         },
       });
   }

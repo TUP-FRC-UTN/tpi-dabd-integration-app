@@ -111,7 +111,7 @@ export class RolesListComponent implements OnInit{
 
   updateRole(roleId: number | undefined) {
     if(roleId != undefined){
-      this.router.navigate(['roles/form/' + roleId]);
+      this.router.navigate(['/users/roles/form/' + roleId]);
     }
   }
 
@@ -124,7 +124,7 @@ export class RolesListComponent implements OnInit{
   //#region POR ACOMODAR
 
   itemsList!: Role[];
-  formPath: string = "";
+  formPath: string = "users/plots/list";
   objectName : string = ""
 
   headers : string[] = ['Código', 'Nombre', 'Nombre especial', 'Descripción', 'Activo']

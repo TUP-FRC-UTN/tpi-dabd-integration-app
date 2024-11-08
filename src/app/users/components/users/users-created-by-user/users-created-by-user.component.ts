@@ -107,7 +107,7 @@ export class UsersCreatedByUserComponent {
 
   redirectToDetail(id?: number) {
     if (id) {
-      this.router.navigate([`/user/detail/${id}`])
+      this.router.navigate([`users/user/detail/${id}`])
     }
   }
 
@@ -122,7 +122,7 @@ export class UsersCreatedByUserComponent {
   }
 
   userDetail(userId? : number) {
-    this.router.navigate([`/user/detail/${userId}`])
+    this.router.navigate([`users/user/detail/${userId}`])
   }
 
   //#region POR ACOMODAR

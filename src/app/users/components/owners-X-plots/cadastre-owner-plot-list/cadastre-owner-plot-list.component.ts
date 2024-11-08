@@ -74,11 +74,11 @@ export class CadastreOwnerPlotListComponent {
   }
 
   viewOwnerDetail(ownerId : number) {
-    this.router.navigate(["/owner/detail/" + ownerId])
+    this.router.navigate(["/users/owner/detail/" + ownerId])
   }
 
   viewPlotDetail() {
-    this.router.navigate(["/plot/detail/" + this.plotId])
+    this.router.navigate(["/users/plot/detail/" + this.plotId])
   }
 
   formatDate(date: Date | undefined): string {

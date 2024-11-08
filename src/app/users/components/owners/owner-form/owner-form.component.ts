@@ -180,7 +180,7 @@ export class OwnerFormComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/owner/list']);
+    this.router.navigate(['/users/owner/list']);
   }
 
   createOwner() {
@@ -211,7 +211,7 @@ export class OwnerFormComponent implements OnInit {
         })
       )
       .subscribe({
-        next: () => this.router.navigate(['/owner/list']),
+        next: () => this.router.navigate(['/users/owner/list']),
         error: (error) => {
           this.toastService.sendError(
             'Error al vincular el propietario al lote.'
@@ -233,7 +233,7 @@ export class OwnerFormComponent implements OnInit {
               .linkOwnerWithPlot(response.id, this.plot.id, '1')
               .subscribe();
           }
-          this.router.navigate(['/owner/list']);
+          this.router.navigate(['/users/owner/list']);
         },
         error: (error) => {
           this.toastService.sendError('Error al actualizar el propietario.');

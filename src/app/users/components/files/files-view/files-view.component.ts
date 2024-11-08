@@ -97,7 +97,7 @@ export class FilesViewComponent {
 
   ownerFilesDetail(id: number | undefined) {
     console.log("ver archivos del propietario");
-    this.router.navigate([`/files/${id}/view`]);
+    this.router.navigate([`/users/files/${id}/view`]);
   }
 
 
@@ -114,7 +114,7 @@ export class FilesViewComponent {
 
 
   plotDetail(plotId : number) {
-    this.router.navigate([`/plot/detail/${plotId}`])
+    this.router.navigate([`/users/plot/detail/${plotId}`])
   }
 
   onItemsPerPageChange() {
