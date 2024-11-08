@@ -10,7 +10,11 @@ import {DocumentTypeDictionary, Owner, OwnerTypeDictionary} from '../../../model
 import {OwnerService} from '../../../services/owner.service';
 import {NgbPagination} from '@ng-bootstrap/ng-bootstrap';
 import {CommonModule, DatePipe} from '@angular/common';
-import {FormsModule} from '@angular/forms';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {plotForOwnerValidatorNoAssociation} from '../../../validators/cadastre-plot-for-owner-no-association';
+import {PlotService} from '../../../services/plot.service';
+import {OwnerPlotService} from '../../../services/owner-plot.service';
+import {plotValidator} from '../../../validators/cadastre-plot-validators';
 
 @Component({
   selector: 'app-cadastre-owner-assign-plot',
@@ -21,6 +25,7 @@ import {FormsModule} from '@angular/forms';
     NgbPagination,
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
   ],
   templateUrl: './cadastre-owner-assign-plot.component.html',
   styleUrl: './cadastre-owner-assign-plot.component.scss',
@@ -29,7 +34,14 @@ import {FormsModule} from '@angular/forms';
 export class CadastreOwnerAssignPlotComponent {
 
   protected ownerService = inject(OwnerService);
+  private plotService = inject(PlotService)
+  private ownerPlotService = inject(OwnerPlotService)
   private toastService = inject(ToastService);
+
+  plotForm: FormGroup = new FormGroup({
+    plotNumber:  new FormControl('', [Validators.required, Validators.min(1)], [plotValidator(this.plotService)]),
+    blockNumber: new FormControl('', [Validators.required, Validators.min(1)])
+  })
 
   currentPage: number = 0;
   pageSize: number = 10;
@@ -56,16 +68,14 @@ export class CadastreOwnerAssignPlotComponent {
       { value: 'TO_VALIDATE', label: 'Para Validar' },
       { value: 'VALIDATED', label: 'Validado' },
     ])
-    .selectFilter('Activo', 'is_active', '', [
-      {value: 'true', label: 'Activo'},
-      {value: 'false', label: 'Inactivo'}
-    ])
     .build()
+
+
 
   documentTypeDictionary = DocumentTypeDictionary;
   ownerTypeDictionary = OwnerTypeDictionary;
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.getAllOwners()
   }
 
@@ -75,6 +85,7 @@ export class CadastreOwnerAssignPlotComponent {
         this.owners = response.content;
         this.lastPage = response.last;
         this.totalItems = response.totalElements;
+        console.log(this.owners)
       },
       error: (error) => console.error('Error al obtener owners: ', error),
     });
@@ -93,12 +104,12 @@ export class CadastreOwnerAssignPlotComponent {
 
   onItemsPerPageChange() {
     this.currentPage = 1;
-    // this.confirmFilterOwner();
+    this.getAllOwners()
   }
 
   onPageChange(page: number) {
     this.currentPage = page;
-    // this.confirmFilterOwner();
+    this.getAllOwners()
   }
 
   filterChange($event: Record<string, any>) {
@@ -111,8 +122,14 @@ export class CadastreOwnerAssignPlotComponent {
     })
   }
 
-  selectOwner(ownerId: number): void {
-    this.selectedOwnerId = this.selectedOwnerId === ownerId ? null : ownerId;
+  selectOwner(owner: Owner): void {
+    if (owner.id) {
+      if (this.selectedOwnerId === owner.id) {
+        return;
+      }
+      this.selectedOwnerId = owner.id;
+      this.toastService.sendSuccess(`Dueño ${owner.firstName} ${owner.lastName} seleccionado`)
+    }
   }
 
   isSelected(ownerId: number): boolean {

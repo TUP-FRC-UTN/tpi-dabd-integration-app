@@ -1,43 +1,43 @@
 <app-main-container title="Asignar Lote a un Propietario">
 
+
+  <h2>Seleccione un propietario</h2>
   <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
 
 
   <!-- Lista de dueños -->
   <div class="table-container">
-    <table class="table table-hover table-bordered table-striped shadow-sm rounded-3" style="border-collapse: collapse;" #ownersTable>
+
+    <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;">
       @if (owners.length === 0) {
-      <ng-container>
         <thead>
-        <tr>
-          <td colspan="6" class="text-center">
-            <div class="alert alert-secondary mb-0" role="alert">
+        <td colspan="7">
+          <div class="text-center p-2">
+            <div class="alert alert-secondary text-center" role="alert">
               No hay elementos para mostrar
             </div>
-          </td>
-        </tr>
+          </div>
+        </td>
         </thead>
-      </ng-container>
-    }
-
+      } @else {
       <!-- Si hay elementos -->
-      <ng-template>
-        <thead class="table-dark">
+        <thead>
         <tr>
           <th scope="col">Nombre</th>
           <th scope="col">Apellido</th>
           <th scope="col">Tipo Doc</th>
           <th scope="col">Doc N°</th>
           <th scope="col">Tipo Propietario</th>
-          <th scope="col">Acciones</th>
         </tr>
         </thead>
         <tbody>
           @for(owner of owners; track owner)
           {
-            @if (owner.id !== undefined) {
+
+            @if (owner.id) {
               <tr [class.table-active]="isSelected(owner.id)"
-                  (click)="selectOwner(owner.id)">
+                  (click)="selectOwner(owner)"
+                  [ngClass]="{'table-success': isSelected(owner.id)}">
                 <td>
                   {{ owner.firstName + " " + owner.secondName }}
                 </td>
@@ -57,19 +57,16 @@
             }
           }
         </tbody>
-      </ng-template>
+      }
     </table>
   </div>
 
   <!-- Filtro y Paginación -->
+
   <div class="d-flex justify-content-between align-items-center mt-3">
     <!-- Selector de items por página -->
     <div class="form-group mb-3 me-2">
-      <select id="itemsPerPage" class="form-select" [(ngModel)]="pageSize" (change)="onItemsPerPageChange()">
-        @for(option of sizeOptions; track $index) {
-          <option [value]="option">{{ option }} Elementos</option>
-        }
-      </select>
+
     </div>
 
     <!-- Paginación -->
@@ -84,4 +81,77 @@
     ></ngb-pagination>
   </div>
 
+  <!-- Asignar un lote -->
+  <form [formGroup]="plotForm" class="row g-3">
+    <h5 class="mt-2 p-2">Asociar un lote</h5>
+
+    <div class="col-md-6">
+      <div class="row g-0 align-items-center">
+        <div class="col-auto me-2">
+          <label for="block-number" class="col-form-label">
+            Numero de Manzana <label class="text-danger">*</label>
+          </label>
+        </div>
+        <div class="col">
+          <input
+            type="number"
+            class="form-control"
+            id="block-number"
+            formControlName="blockNumber"
+            [ngClass]="{'is-invalid': plotForm?.get('blockNumber')?.invalid && plotForm?.get('blockNumber')?.touched, 'is-valid': plotForm?.get('blockNumber')?.valid && plotForm?.get('blockNumber')?.touched}"
+          />
+        </div>
+        <!-- Mostrar errores de validación -->
+        <div class="col-12">
+          @if (plotForm?.get('blockNumber')?.touched && plotForm?.get('blockNumber')?.invalid) {
+            @if (plotForm?.get('blockNumber')?.hasError('required')) {
+              <small class="text-danger">Campo requerido.</small>
+            }
+            @if (plotForm?.get('blockNumber')?.hasError('min')) {
+              <small class="text-danger">El numero minimo es 1.</small>
+            }
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="row g-0 align-items-center">
+        <div class="col-auto me-2">
+          <label for="plot-number" class="col-form-label">
+            Número de Lote <label class="text-danger">*</label>
+          </label>
+        </div>
+        <div class="col">
+          <input
+            type="number"
+            class="form-control"
+            id="plot-number"
+            formControlName="plotNumber"
+            [ngClass]="{'is-invalid': plotForm?.get('plotNumber')?.invalid && plotForm?.get('plotNumber')?.touched, 'is-valid': plotForm?.get('plotNumber')?.valid && plotForm?.get('plotNumber')?.touched}"
+          />
+        </div>
+        <!-- Mostrar errores de validación -->
+        <div class="col-12">
+          @if (plotForm?.get('plotNumber')?.touched && plotForm?.get('plotNumber')?.invalid) {
+            @if (plotForm?.get('plotNumber')?.hasError('required')) {
+              <small class="text-danger">Campo requerido.</small>
+            }
+            @if (plotForm?.get('plotNumber')?.hasError('min')) {
+              <small class="text-danger">El número mínimo es 1.</small>
+            }
+            @if (plotForm?.get('plotNumber')?.hasError('serverError')) {
+              <small class="text-danger">Error en el servidor, por favor intenta nuevamente.</small>
+            }
+            @if (plotForm?.get('plotNumber')?.hasError('plotExists')) {
+              <small class="text-danger ms-2">No existe un lote con ese numero en esa manzana.</small>
+            }
+            @if (plotForm?.get('plotNumber')?.hasError('plotWithNoOwner')) {
+              <small class="text-danger ms-2">Ese lote tiene un dueño asociado.</small>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  </form>
 </app-main-container>
