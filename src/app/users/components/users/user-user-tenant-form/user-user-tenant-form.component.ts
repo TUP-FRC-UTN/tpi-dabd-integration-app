@@ -183,7 +183,7 @@ export class UserUserTenantFormComponent {
 
   //#region RUTEO | CANCELAR
   cancel() {
-    this.router.navigate(["/user/list"])
+    this.router.navigate(["/users/user/list"])
   }
   //#endregion
 
@@ -267,7 +267,7 @@ export class UserUserTenantFormComponent {
   }
 
   transformRoles(user: User): number[] | undefined {
-    return user.roles?.map(role => role.id);
+    return user.roles?.map(role => role.code);
   }
 
 
@@ -290,9 +290,9 @@ export class UserUserTenantFormComponent {
   createUser() {
     this.fillUser();
     this.user.isActive = true;
-    this.user = toSnakeCase(this.user);
-    this.user.roles = this.transformRoles(this.user)
-    this.userService.addUser(this.user, 1).subscribe({
+    this.user.roleCodeList = this.transformRoles(this.user)
+    delete this.user.roles
+    this.userService.addUser(toSnakeCase(this.user), 1).subscribe({
       // '1' is x-user-id
       next: (response) => {
         this.toastService.sendSuccess("Usuario creado con exito.")
@@ -306,7 +306,9 @@ export class UserUserTenantFormComponent {
 
   updateUser() {
     this.fillUser();
+    this.user.roleCodeList = this.transformRoles(this.user)
     if (this.user.id) {
+      delete this.user.roles
       this.userService.updateUser(this.user.id, this.user, 1).subscribe({
         next: (response) => {
           this.toastService.sendSuccess("Usuario actualizado con exito.")
@@ -326,14 +328,14 @@ export class UserUserTenantFormComponent {
 
   getPlotsOfOwner() {
     // TODO: Ver como obtener el ownerId
-    // this.ownerPlotService.giveAllPlotsByOwner(1, 0, 100000).subscribe(
-    //   response => {
-    //     this.actualPlotOfOwner = response.content;
-    //   },
-    //   error => {
-    //     this.toastService.sendError("Error recuperando sus lotes. Reinicie la pagina.")
-    //   }
-    // )
+    this.ownerPlotService.giveAllPlotsByOwner(1, 0, 100000).subscribe(
+      response => {
+        this.actualPlotOfOwner = response.content;
+      },
+      error => {
+        this.toastService.sendError("Error recuperando sus lotes. Reinicie la pagina.")
+      }
+    )
   }
 
   setPlotValue(plotId:number) {
@@ -421,13 +423,13 @@ export class UserUserTenantFormComponent {
       keyboard: false,
       centered: true,
       scrollable: true
-    });   
+    });
 
     modalRef.componentInstance.title = 'Registrar usuario inquilino';
     modalRef.componentInstance.description = 'En esta pantalla permite crear un usuario para un inquilino.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos del Usuario', 
+      {
+        title: 'Datos del Usuario',
         content: [
           {
             strong: 'Email:',
@@ -447,8 +449,8 @@ export class UserUserTenantFormComponent {
           }
         ]
       },
-      { 
-        title: 'Añadir Roles', 
+      {
+        title: 'Añadir Roles',
         content: [
           {
             strong: 'Roles:',
@@ -460,8 +462,8 @@ export class UserUserTenantFormComponent {
           }
         ]
       },
-      { 
-        title: 'Asociar un lote', 
+      {
+        title: 'Asociar un lote',
         content: [
           {
             strong: 'Número de Manzana:',
@@ -473,8 +475,8 @@ export class UserUserTenantFormComponent {
           }
         ]
       },
-      { 
-        title: 'Añadir Dirección', 
+      {
+        title: 'Añadir Dirección',
         content: [
           {
             strong: 'Calle:',
@@ -514,8 +516,8 @@ export class UserUserTenantFormComponent {
           }
         ]
       },
-      { 
-        title: 'Añadir Contactos', 
+      {
+        title: 'Añadir Contactos',
         content: [
           {
             strong: 'Tipo Contacto:',
@@ -535,6 +537,6 @@ export class UserUserTenantFormComponent {
     modalRef.componentInstance.notes = [
       'Campos obligatorios: Email, Nombre, Nombre de usuario, Apellido.'
     ];
-    
+
   }
 }

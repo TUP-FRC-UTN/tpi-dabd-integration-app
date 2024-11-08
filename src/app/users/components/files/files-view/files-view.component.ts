@@ -100,7 +100,7 @@ export class FilesViewComponent {
 
   ownerFilesDetail(id: number | undefined) {
     console.log("ver archivos del propietario");
-    this.router.navigate([`/files/${id}/view`]);
+    this.router.navigate([`/users/files/${id}/view`]);
   }
 
 
@@ -117,7 +117,7 @@ export class FilesViewComponent {
 
 
   plotDetail(plotId : number) {
-    this.router.navigate([`/plot/detail/${plotId}`])
+    this.router.navigate([`/users/plot/detail/${plotId}`])
   }
 
   onItemsPerPageChange() {
@@ -147,13 +147,13 @@ export class FilesViewComponent {
       keyboard: false,
       centered: true,
       scrollable: true
-    });  
-    
+    });
+
     modalRef.componentInstance.title = 'Propietarios en proceso de Validación';
     modalRef.componentInstance.description = 'Esta pantalla proporciona información a cera de los propietarios que están en proceso de validación.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos', 
+      {
+        title: 'Datos',
         content: [
           {
             strong: 'Nombre y apellido:',
@@ -186,8 +186,8 @@ export class FilesViewComponent {
           }
         ]
       },
-      { 
-        title: 'Funcionalidades de los botones', 
+      {
+        title: 'Funcionalidades de los botones',
         content: [
           {
             strong: 'Limpieza de Filtros:',
@@ -210,6 +210,6 @@ export class FilesViewComponent {
     ];
     modalRef.componentInstance.notes = [
       'La interfaz está diseñada para ofrecer una administración eficiente de los procesos de validación de propietarios.'
-    ];    
+    ];
   }
 }

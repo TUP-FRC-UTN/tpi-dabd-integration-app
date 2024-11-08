@@ -118,11 +118,11 @@ export class UserUserListComponent {
 
     //#region RUTEO
     updateUser(userId?: number) {
-      this.router.navigate([`/user/form/${userId}`])
+      this.router.navigate([`/users/user/form/${userId}`])
     }
 
     userDetail(userId? : number) {
-      this.router.navigate([`/user/detail/${userId}`])
+      this.router.navigate([`/users/user/detail/${userId}`])
     }
     //#endregion
 
