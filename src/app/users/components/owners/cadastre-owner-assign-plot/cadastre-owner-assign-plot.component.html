@@ -1,0 +1,87 @@
+<app-main-container title="Asignar Lote a un Propietario">
+
+  <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
+
+
+  <!-- Lista de dueños -->
+  <div class="table-container">
+    <table class="table table-hover table-bordered table-striped shadow-sm rounded-3" style="border-collapse: collapse;" #ownersTable>
+      @if (owners.length === 0) {
+      <ng-container>
+        <thead>
+        <tr>
+          <td colspan="6" class="text-center">
+            <div class="alert alert-secondary mb-0" role="alert">
+              No hay elementos para mostrar
+            </div>
+          </td>
+        </tr>
+        </thead>
+      </ng-container>
+    }
+
+      <!-- Si hay elementos -->
+      <ng-template>
+        <thead class="table-dark">
+        <tr>
+          <th scope="col">Nombre</th>
+          <th scope="col">Apellido</th>
+          <th scope="col">Tipo Doc</th>
+          <th scope="col">Doc N°</th>
+          <th scope="col">Tipo Propietario</th>
+          <th scope="col">Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for(owner of owners; track owner)
+          {
+            @if (owner.id !== undefined) {
+              <tr [class.table-active]="isSelected(owner.id)"
+                  (click)="selectOwner(owner.id)">
+                <td>
+                  {{ owner.firstName + " " + owner.secondName }}
+                </td>
+                <td>
+                  {{ owner.lastName }}
+                </td>
+                <td>
+                  {{ translateTable(owner.documentType, documentTypeDictionary) }}
+                </td>
+                <td>
+                  {{ owner.documentNumber }}
+                </td>
+                <td>
+                  {{ translateTable(owner.ownerType, ownerTypeDictionary) }}
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </ng-template>
+    </table>
+  </div>
+
+  <!-- Filtro y Paginación -->
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <!-- Selector de items por página -->
+    <div class="form-group mb-3 me-2">
+      <select id="itemsPerPage" class="form-select" [(ngModel)]="pageSize" (change)="onItemsPerPageChange()">
+        @for(option of sizeOptions; track $index) {
+          <option [value]="option">{{ option }} Elementos</option>
+        }
+      </select>
+    </div>
+
+    <!-- Paginación -->
+    <div class="ms-auto"></div>
+    <ngb-pagination
+      [(page)]="currentPage"
+      [pageSize]="pageSize"
+      [collectionSize]="totalItems"
+      (pageChange)="onPageChange($event)"
+      [maxSize]="5"
+      [boundaryLinks]="false"
+    ></ngb-pagination>
+  </div>
+
+</app-main-container>

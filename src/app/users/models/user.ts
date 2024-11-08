@@ -25,4 +25,5 @@ export interface User {
   roles?: Role[];
   /** Optional plot identifier associated with the user */
   plotId?: number;
+  ownerId?:number;
 }

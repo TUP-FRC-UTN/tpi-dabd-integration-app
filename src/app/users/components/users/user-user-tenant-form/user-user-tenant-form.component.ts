@@ -17,6 +17,7 @@ import { NgClass } from '@angular/common';
 import {OwnerPlotService} from "../../../services/owner-plot.service";
 import { InfoComponent } from '../../commons/info/info.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {SessionService} from '../../../services/session.service';
 
 
 @Component({
@@ -32,6 +33,7 @@ export class UserUserTenantFormComponent {
   private roleService = inject(RoleService)
   private plotService = inject(PlotService)
   private ownerPlotService = inject(OwnerPlotService)
+  private sessionService = inject(SessionService)
   private activatedRoute = inject(ActivatedRoute)
   private router = inject(Router)
   private toastService = inject(ToastService)
@@ -54,6 +56,8 @@ export class UserUserTenantFormComponent {
   provinceOptions!: any;
   countryOptions!: any;
   actualPlotOfOwner!: Plot[]
+  actualUserId!: any
+  actualOwnerId!: any
   minDate :any
   //#endregion
 
@@ -93,8 +97,7 @@ export class UserUserTenantFormComponent {
 
   //#region ON SUBMIT
   onSubmit(): void {
-    // TODO: Cambiar a valid :)
-    if (true) {
+    if (this.userForm.valid) {
       if (this.id === null) {
         this.createUser()
       }
@@ -107,6 +110,13 @@ export class UserUserTenantFormComponent {
 
   //#region ngOnInit
   ngOnInit(): void {
+    this.actualUserId = sessionStorage.getItem("user");
+    this.userService.getUserById(this.actualUserId).subscribe({
+      next : response => {
+        this.actualOwnerId = response.ownerId
+        this.getPlotsOfOwner();
+      }
+    })
     this.id = this.activatedRoute.snapshot.paramMap.get('id');
     if (this.id !== null) {
       this.setEditValues();
@@ -115,7 +125,6 @@ export class UserUserTenantFormComponent {
     }
     this.setEnums()
     this.getAllRoles()
-    this.getPlotsOfOwner();
 
     const tomorrow = new Date();
     tomorrow.setDate(new Date().getDate() + 7);
@@ -327,8 +336,7 @@ export class UserUserTenantFormComponent {
   //#region FUNCION PLOTS
 
   getPlotsOfOwner() {
-    // TODO: Ver como obtener el ownerId
-    this.ownerPlotService.giveAllPlotsByOwner(1, 0, 100000).subscribe(
+    this.ownerPlotService.giveAllPlotsByOwner(this.actualOwnerId, 0, 100000).subscribe(
       response => {
         this.actualPlotOfOwner = response.content;
       },

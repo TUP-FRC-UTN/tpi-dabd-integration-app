@@ -99,7 +99,7 @@ export class UserUserFormComponent {
     //#region ON SUBMIT
     onSubmit(): void {
       // TODO: Cambiar a valid :)
-      if (true) {
+      if (this.userForm.valid) {
         if (this.id === null) {
           this.createUser()
         }

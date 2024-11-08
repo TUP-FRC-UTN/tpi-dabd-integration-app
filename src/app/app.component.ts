@@ -189,6 +189,7 @@ export class AppComponent {
           subMenu: [
             { label: 'Lista de Propietarios', routerLink: '/users/owner/list' },
             { label: 'Cargar Propietario', routerLink: '/users/owner/form' },
+            { label: 'Asignar Lote', routerLink: '/users/owner/assign' },
             { label: 'Cargar Archivo', routerLink: '/users/files/form' },
             { label: 'Validar Archivos', routerLink: '/users/files/view' },
           ]
