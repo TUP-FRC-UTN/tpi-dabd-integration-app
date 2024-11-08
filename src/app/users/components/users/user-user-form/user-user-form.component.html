@@ -293,8 +293,8 @@
               <div class="d-flex flex-row align-items-center">
                   <label for="country" class="col-form-label col-md-2">País<label class="text-danger">*</label></label>
                   <select id="country" class="form-select" formControlName="country"
-                  [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('country')?.invalid && userForm.get('addressForm')?.get('country')?.touched,
-                   'is-valid': userForm.get('addressForm')?.get('country')?.valid && userForm.get('addressForm')?.get('country')?.touched}"
+                      [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('country')?.invalid && userForm.get('addressForm')?.get('country')?.touched,
+                      'is-valid': userForm.get('addressForm')?.get('country')?.valid && userForm.get('addressForm')?.get('country')?.touched}"
                   >
                       @for(country of countryOptions; track $index) {
                           <option [value]="country.value">{{ country.display }}</option>

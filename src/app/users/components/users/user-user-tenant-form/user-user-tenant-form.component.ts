@@ -83,9 +83,9 @@ export class UserUserTenantFormComponent {
       number: new FormControl(0, [Validators.required, Validators.min(0)]),
       floor: new FormControl(0),
       apartment: new FormControl(''),
-      city: new FormControl('', [Validators.required]),
-      province: new FormControl('', [Validators.required]),
-      country: new FormControl('', [Validators.required]),
+      city: new FormControl('Córdoba', [Validators.required]),
+      province: new FormControl('CORDOBA', [Validators.required]),
+      country: new FormControl('ARGENTINA', [Validators.required]),
       postalCode: new FormControl('', [Validators.required]),
     }),
 
@@ -279,6 +279,10 @@ export class UserUserTenantFormComponent {
     return user.roles?.map(role => role.code);
   }
 
+  // Acceder directamente al valor del país en el FormControl
+  get isArgentinaSelected(): boolean {
+    return this.userForm.get('addressForm')?.get('country')?.value === 'ARGENTINA';
+  }
 
   //#endregion
 

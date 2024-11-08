@@ -44,7 +44,7 @@
     <div class="table-container">
       <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;">
         
-        @if (filteredOwnersList.length === 0 || owners.length === 0) {
+        @if (filteredOwnersList.length === 0 && owners.length === 0) {
           <thead>
             <td colspan="7"> 
               <div class="text-center p-2">
@@ -77,8 +77,8 @@
                     </button>
                     <ul class="dropdown-menu">
                       <li><a class="dropdown-item btn btn-info" (click)="ownerFilesDetail(owner.id)">Ver Detalle</a></li>
-                      <li><a class="dropdown-item btn btn-success" (click)="approbeOwnerFiles(owner.id)">Aprobar</a></li>
-                      <li><a class="dropdown-item btn btn-danger" (click)="rejectOwnerFiles(owner.id)">Rechazar</a></li>
+                      <!-- <li><a class="dropdown-item btn btn-success" (click)="approbeOwnerFiles(owner.id)">Aprobar</a></li>
+                      <li><a class="dropdown-item btn btn-danger" (click)="rejectOwnerFiles(owner.id)">Rechazar</a></li> -->
                     </ul>
                   </div>
                 </td>
@@ -108,6 +108,11 @@
         </select>
       </div>
     </div>
+  </div>
+
+  
+  <div class="col-12 d-flex justify-content-end">
+    <button type="submit" class="btn btn-secondary" (click)="goBack()">Volver</button>
   </div>
 </app-main-container>
 
