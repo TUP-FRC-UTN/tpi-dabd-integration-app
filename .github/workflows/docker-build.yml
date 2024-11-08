@@ -32,7 +32,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/$ghcr.io/tup-frc-utn/tpi-dabd-integration-app/
+          images: ghcr.io/tup-frc-utn/tpi-dabd-integration-app/
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
