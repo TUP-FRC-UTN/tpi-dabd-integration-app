@@ -6,42 +6,80 @@
 Este proyecto implementa un sistema de rutas jerárquico donde cada módulo funcional tiene su propio conjunto de rutas que DEBE seguir el prefijo asignado en el ruteo principal (`app.routes.ts`).
 
 ### Prefijos de Rutas por Módulo
-- Entradas: `/entries/...`
-- Facturas: `/invoices/...`
+Los prefijos coinciden con la estructura del backend:
+- Accesos: `/accesses/...`
+- Cuentas: `/accounts/...`
+- Direcciones: `/addresses/...`
+- Catastro: `/cadastre/...`
+- Construcciones: `/constructions/...`
+- Contactos: `/contacts/...`
+- Empleados: `/employees/...`
 - Gastos: `/expenses/...`
-- Inventarios: `/inventories/...`
-- Penalizaciones: `/penalties/...`
+- Inventario: `/inventory/...`
+- Moderaciones: `/moderations/...`
 - Notificaciones: `/notifications/...`
+- Pagos: `/payments/...`
+- Proveedores: `/suppliers/...`
+- Tickets: `/tickets/...`
 - Usuarios: `/users/...`
 
-### ⚡ Ejemplo de Implementación
-Si estás trabajando en el módulo de usuarios y quieres crear una ruta para "perfil", tu ruta completa debería ser:
+## 🌐 Configuración de API
+El proyecto maneja tres ambientes distintos configurados en la carpeta `environments/`:
+
+### Ambientes Disponibles
+1. **Local (Development Individual)**:
 ```typescript
-// En user.routes.ts
-export const USER_ROUTES: Routes = [
-    { path: 'profile', component: UserProfileComponent }, // Esto resultará en /users/profile
-    { path: 'settings', component: UserSettingsComponent } // Esto resultará en /users/settings
-];
+// environment.ts
+export const environment = {
+  production: false,
+  apis: {
+    accesses: 'http://localhost:8001/',
+    accounts: 'http://localhost:8002/',
+    // ... resto de las APIs con sus puertos específicos
+  }
+};
 ```
 
-## 🌐 Configuración de API
-Encontrarás los archivos de configuración de la API en la carpeta `environments/`. Esta contiene la URL base de la API a la cual deberás conectarte con sus respectivos prefijos
+2. **Desarrollo (Docker Compose)**:
+```typescript
+// environment.dev.ts
+export const environment = {
+  production: false,
+  apis: {
+    accesses: 'http://localhost:8080/accesses/',
+    accounts: 'http://localhost:8080/accounts/',
+    // ... resto de las APIs a través del nginx
+  }
+};
+```
+
+3. **Producción**:
+```typescript
+// environment.prod.ts
+export const environment = {
+  production: true,
+  apis: {
+    accesses: 'http://localhost:8080/accesses/',
+    accounts: 'http://localhost:8080/accounts/',
+    // ... resto de las APIs a través del nginx
+  }
+};
+```
 
 ### Ejemplo de Uso en Servicios
 ```typescript
-// En tu servicio
 import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TuServicio {
-  private readonly API_URL = environment.apiUrl + enviroment.users; 
+export class UsersService {
+  private readonly baseUrl = environment.apis.users;
 
   constructor(private http: HttpClient) {}
 
-  getData() {
-    return this.http.get(`${this.API_URL}endpoint`);
+  getUsers() {
+    return this.http.get(`${this.baseUrl}list`);
   }
 }
 ```
