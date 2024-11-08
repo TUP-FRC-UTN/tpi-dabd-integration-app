@@ -53,5 +53,5 @@ jobs:
 
       - name: Verify Docker image
         run: |
-          docker pull ghcr.io/${{ github.repository_owner | lowercase }}/tpi-dabd-integration-app:latest
-          docker image inspect ghcr.io/${{ github.repository_owner | lowercase }}/tpi-dabd-integration-app:latest
+          docker pull ghcr.io/tup-frc-utn/tpi-dabd-integration-app:latest
+          docker image inspect ghcr.io/tup-frc-utn/tpi-dabd-integration-app:latest
