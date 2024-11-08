@@ -113,7 +113,7 @@ export class OwnerFilesViewComponent {
     // archivos del lote
     if(this.plots.length > 0) {
       this.plots.forEach(plot => {
-        
+
         this.plotService.getPlotFilesById(plot.id).subscribe({
           next: (response) => {
             console.log("Plot files: ", response)
@@ -142,7 +142,7 @@ export class OwnerFilesViewComponent {
         },
       });
     }
-    
+
 
     console.log("plots: ", this.plots);
     console.log("files: ", this.files);
@@ -211,7 +211,7 @@ export class OwnerFilesViewComponent {
 
 
   plotDetail(plotId : number) {
-    this.router.navigate([`/plot/detail/${plotId}`])
+    this.router.navigate([`/users/plot/detail/${plotId}`])
   }
 
   onItemsPerPageChange() {
@@ -246,7 +246,7 @@ export class OwnerFilesViewComponent {
       keyboard: false,
       centered: true,
       scrollable: true
-    });   
-    
+    });
+
   }
 }

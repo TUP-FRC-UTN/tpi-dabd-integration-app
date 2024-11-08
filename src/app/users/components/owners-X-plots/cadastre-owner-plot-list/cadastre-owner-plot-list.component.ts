@@ -74,11 +74,11 @@ export class CadastreOwnerPlotListComponent {
   }
 
   viewOwnerDetail(ownerId : number) {
-    this.router.navigate(["/owner/detail/" + ownerId])
+    this.router.navigate(["/users/owner/detail/" + ownerId])
   }
 
   viewPlotDetail() {
-    this.router.navigate(["/plot/detail/" + this.plotId])
+    this.router.navigate(["/users/plot/detail/" + this.plotId])
   }
 
   formatDate(date: Date | undefined): string {
@@ -119,13 +119,13 @@ export class CadastreOwnerPlotListComponent {
       keyboard: false,
       centered: true,
       scrollable: true
-    });   
-    
+    });
+
     modalRef.componentInstance.title = 'Lista de dueños históricos del lote';
     modalRef.componentInstance.description = 'Esta vista lista todos los dueños históricos del lote junto con sus respectivas características.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos', 
+      {
+        title: 'Datos',
         content: [
           {
             strong: 'Nombre: ',
@@ -162,8 +162,8 @@ export class CadastreOwnerPlotListComponent {
         content: [
         ]
       },
-      { 
-        title: 'Funcionalidades de los botones', 
+      {
+        title: 'Funcionalidades de los botones',
         content: [
           {
             strong: 'Exportar a Excel: ',

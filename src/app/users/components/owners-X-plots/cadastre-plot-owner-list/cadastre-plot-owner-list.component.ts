@@ -106,11 +106,11 @@ export class CadastrePlotOwnerListComponent {
   }
 
   viewOwnerDetail() {
-    this.router.navigate(["/owner/detail/" + this.ownerId])
+    this.router.navigate(["/users/owner/detail/" + this.ownerId])
   }
 
   viewPlotDetail(plotId : number) {
-    this.router.navigate(["/plot/detail/" + plotId])
+    this.router.navigate(["/users/plot/detail/" + plotId])
   }
 
   translateTable(value: any, dictionary: { [key: string]: any }) {
@@ -164,13 +164,13 @@ export class CadastrePlotOwnerListComponent {
       keyboard: false,
       centered: true,
       scrollable: true
-    });   
-    
+    });
+
     modalRef.componentInstance.title = 'Lista de lotes actuales del propietario';
     modalRef.componentInstance.description = 'Esta pantalla permite visualizar cuáles son los lotes que tiene asociado el propietario';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos', 
+      {
+        title: 'Datos',
         content: [
           {
             strong: 'N° de manzana:',
@@ -203,8 +203,8 @@ export class CadastrePlotOwnerListComponent {
         content: [
         ]
       },
-      { 
-        title: 'Funcionalidades de los botones', 
+      {
+        title: 'Funcionalidades de los botones',
         content: [
           {
             strong: 'Exportar a Excel: ',

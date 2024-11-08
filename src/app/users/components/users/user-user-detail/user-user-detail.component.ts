@@ -166,7 +166,7 @@ export class UserUserDetailComponent {
 
   //#region RUTEO | CANCELAR
   cancel() {
-    this.router.navigate(["/user/list"])
+    this.router.navigate(["/users/user/list"])
   }
   //#endregion
 
@@ -373,13 +373,13 @@ export class UserUserDetailComponent {
       keyboard: false,
       centered: true,
       scrollable: true
-    });   
-    
+    });
+
     modalRef.componentInstance.title = 'Detalle de Usuario';
     modalRef.componentInstance.description = 'Pantalla para la gestión integral de usuarios, permitiendo la visualización, edición y administración de datos personales, roles, lotes asociados, direcciones y contactos.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos del Usuario', 
+      {
+        title: 'Datos del Usuario',
         content: [
           {
             strong: 'Email:',
@@ -399,8 +399,8 @@ export class UserUserDetailComponent {
           }
         ]
       },
-      { 
-        title: 'Lista de Roles', 
+      {
+        title: 'Lista de Roles',
         content: [
           {
             strong: 'Roles:',
@@ -408,8 +408,8 @@ export class UserUserDetailComponent {
           }
         ]
       },
-      { 
-        title: 'Asociar un lote', 
+      {
+        title: 'Asociar un lote',
         content: [
           {
             strong: 'Lotes en tenencia:',
@@ -421,8 +421,8 @@ export class UserUserDetailComponent {
           }
         ]
       },
-      { 
-        title: 'Añadir Dirección', 
+      {
+        title: 'Añadir Dirección',
         content: [
           {
             strong: 'Calle:',
@@ -458,8 +458,8 @@ export class UserUserDetailComponent {
           }
         ]
       },
-      { 
-        title: 'Añadir Contactos', 
+      {
+        title: 'Añadir Contactos',
         content: [
           {
             strong: 'Tipo Contacto:',

@@ -179,7 +179,9 @@ export class AppComponent {
         {
           label: 'Dashboards',
           subMenu: [
-            { label: 'Reportes', routerLink: '/users/home' },
+            { label: 'Reporte Propietarios', routerLink: '/users/owner/reports' },
+            { label: 'Reporte Usuarios', routerLink: '/users/user/reports' },
+
           ]
         },
         {

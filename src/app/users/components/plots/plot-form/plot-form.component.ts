@@ -89,7 +89,7 @@ export class PlotFormComponent {
         this.plotService.createPlot(plotFormData, 1).subscribe(
           response => {
             console.log('Plot created successfully:', response);
-            this.router.navigate(["/plot/list"])
+            this.router.navigate(["/users/plot/list"])
             this.toastService.sendSuccess("Lote creado con exito.")
           },
           error => {
@@ -110,7 +110,7 @@ export class PlotFormComponent {
           response => {
             console.log('Plot updated successfully:', response);
             this.toastService.sendSuccess("Lote actualizado con exito.")
-            this.router.navigate(["/plot/list"])
+            this.router.navigate(["/users/plot/list"])
           },
           error => {
             console.error('Error creating plot:', error);
@@ -158,7 +158,7 @@ export class PlotFormComponent {
 
   //#region RUTEO | CANCELAR
   cancel() {
-    this.router.navigate(["/plot/list"])
+    this.router.navigate(["/users/plot/list"])
   }
   //#endregion
 
@@ -169,13 +169,13 @@ export class PlotFormComponent {
       keyboard: false,
       centered: true,
       scrollable: true
-    });   
+    });
 
     modalRef.componentInstance.title = 'Registrar un lote';
     modalRef.componentInstance.description = 'En esta pantalla se permite cargar los datos correspondientes para registrar un lote.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos', 
+      {
+        title: 'Datos',
         content: [
           {
             strong: 'Número de Manzana:',
@@ -208,6 +208,6 @@ export class PlotFormComponent {
       'La interfaz está diseñada para ofrecer una gestión eficiente y segura de la información de los lotes, manteniendo la integridad y precisión de los datos.',
       'Campos obligatorios: Número de Manzana, Número de Lote, Área Total, Área Construida, Tipo de Lote, Estado del Lote.'
     ];
-    
+
   }
 }
