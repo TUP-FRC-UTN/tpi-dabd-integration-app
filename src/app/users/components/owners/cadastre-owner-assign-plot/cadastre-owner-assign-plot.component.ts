@@ -1,5 +1,6 @@
 import {Component, inject} from '@angular/core';
 import {
+  ConfirmAlertComponent,
   Filter,
   FilterConfigBuilder,
   MainContainerComponent,
@@ -8,13 +9,13 @@ import {
 } from 'ngx-dabd-grupo01';
 import {DocumentTypeDictionary, Owner, OwnerTypeDictionary} from '../../../models/owner';
 import {OwnerService} from '../../../services/owner.service';
-import {NgbPagination} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal, NgbPagination} from '@ng-bootstrap/ng-bootstrap';
 import {CommonModule, DatePipe} from '@angular/common';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {plotForOwnerValidatorNoAssociation} from '../../../validators/cadastre-plot-for-owner-no-association';
 import {PlotService} from '../../../services/plot.service';
 import {OwnerPlotService} from '../../../services/owner-plot.service';
 import {plotValidator} from '../../../validators/cadastre-plot-validators';
+import {plotForOwnerValidatorNoAssociation} from '../../../validators/cadastre-plot-for-owner-no-association';
 
 @Component({
   selector: 'app-cadastre-owner-assign-plot',
@@ -37,9 +38,10 @@ export class CadastreOwnerAssignPlotComponent {
   private plotService = inject(PlotService)
   private ownerPlotService = inject(OwnerPlotService)
   private toastService = inject(ToastService);
+  private modalService = inject(NgbModal)
 
   plotForm: FormGroup = new FormGroup({
-    plotNumber:  new FormControl('', [Validators.required, Validators.min(1)], [plotValidator(this.plotService)]),
+    plotNumber:  new FormControl('', [Validators.required, Validators.min(1)], [plotForOwnerValidatorNoAssociation(this.plotService, this.ownerPlotService)]),
     blockNumber: new FormControl('', [Validators.required, Validators.min(1)])
   })
 
@@ -49,7 +51,7 @@ export class CadastreOwnerAssignPlotComponent {
   lastPage: boolean | undefined;
   totalItems: number = 0;
   showList = true;
-  selectedOwnerId: number | null = null;
+  selectedOwner: Owner | null = null;
 
   owners: Owner[] = [];
   filterConfig: Filter[] = new FilterConfigBuilder()
@@ -124,15 +126,51 @@ export class CadastreOwnerAssignPlotComponent {
 
   selectOwner(owner: Owner): void {
     if (owner.id) {
-      if (this.selectedOwnerId === owner.id) {
+      this.selectedOwner = owner;
+      if (this.selectedOwner.id === owner.id) {
         return;
       }
-      this.selectedOwnerId = owner.id;
       this.toastService.sendSuccess(`Dueño ${owner.firstName} ${owner.lastName} seleccionado`)
     }
   }
 
   isSelected(ownerId: number): boolean {
-    return this.selectedOwnerId === ownerId;
+    return this.selectedOwner?.id === ownerId;
+  }
+
+  onSubmit() {
+    console.log(this.plotForm.controls)
+    if (this.plotForm.valid && this.selectedOwner?.id) {
+      const blockNumber = this.plotForm.controls['blockNumber'].value;
+      const plotNumber = this.plotForm.controls['plotNumber'].value;
+      const modalRef = this.modalService.open(ConfirmAlertComponent);
+      modalRef.componentInstance.alertType = "info";
+      modalRef.componentInstance.alertTitle = 'Confirmacion';
+      modalRef.componentInstance.alertMessage = `Estas seguro de que desea asociar a ${this.selectedOwner.firstName} ${this.selectedOwner.lastName} al lote nro ${plotNumber} en la manzana ${blockNumber} ?`;
+
+      modalRef.result.then((result) => {
+        if (result && this.selectedOwner?.id) {
+          this.plotService.getPlotByPlotNumberAndBlockNumber(plotNumber, blockNumber).subscribe({
+            next: (plot) => {
+              if (this.selectedOwner?.id !== undefined) {
+                this.ownerService.linkOwnerWithPlot(this.selectedOwner.id, plot.id, "1").subscribe({
+                  next: () => {
+                    this.toastService.sendSuccess("Dueño y lote asociado exitosamente.")
+                    this.plotForm.reset()
+                    this.selectedOwner = null
+                  },
+                  error: (error) => { this.toastService.sendError("Error al asociar al dueño con el lote.") }
+                });
+              }
+            },
+            error: () => { this.toastService.sendError('Error al obtener el lote.'); }
+          });
+        } else {
+          this.toastService.sendSuccess("Asignación cancelada con éxito.");
+        }
+      });
+    } else {
+      this.toastService.sendError("Debe seleccionar un propietario o lote válido.");
+    }
   }
 }
