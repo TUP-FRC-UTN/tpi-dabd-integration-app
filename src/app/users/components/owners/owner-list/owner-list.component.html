@@ -39,7 +39,7 @@
 
     <div class="table-container">
       <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #ownersTable>
-        @if (filteredOwnersList.length === 0) {
+        @if (( filter$ | async)?.length === 0) {
           <thead>
           <td colspan="7">
             <div class="text-center p-2">
@@ -61,7 +61,7 @@
           </tr>
           </thead>
           <tbody>
-            @for(owner of (filteredOwnersList.length ? filteredOwnersList : owners); track owner)
+            @for(owner of (filter$ | async); track owner)
             {
               <tr>
                 <td>

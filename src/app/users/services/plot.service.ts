@@ -17,7 +17,7 @@ export class PlotService {
 
   getAllPlots(page : number, size : number, isActive? : boolean): Observable<PaginatedResponse<Plot>> {
     let params = new HttpParams()
-    .set('page', page.toString())
+    .set('page', page >= 0 ? page.toString() : "0")
     .set('size', size.toString());
 
     if (isActive !== undefined) {
@@ -79,7 +79,7 @@ export class PlotService {
 
   filterPlotByBlock(page : number, size : number, blockNumber : string, isActive? : boolean) {
     let params = new HttpParams()
-    .set('page', page.toString())
+    .set('page', page >= 0 ? page.toString() : "0")
     .set('size', size.toString());
 
     if (isActive !== undefined) {
@@ -100,7 +100,7 @@ export class PlotService {
 
   filterPlotByStatus(page : number, size : number, plotStatus : string, isActive? : boolean) {
     let params = new HttpParams()
-    .set('page', page.toString())
+    .set('page', page >= 0 ? page.toString() : "0")
     .set('size', size.toString());
 
     if (isActive !== undefined) {
@@ -121,7 +121,7 @@ export class PlotService {
 
   filterPlotByType(page : number, size : number, plotType : string, isActive? : boolean) {
     let params = new HttpParams()
-    .set('page', page.toString())
+    .set('page', page >= 0 ? page.toString() : "0")
     .set('size', size.toString());
 
     if (isActive !== undefined) {
@@ -168,7 +168,7 @@ export class PlotService {
 
   dinamicFilters(page: number, size: number, params: any) {
     let httpParams = new HttpParams()
-      .set('page', page.toString())
+      .set('page', page >= 0 ? page.toString() : "0")
       .set('size', size.toString());
 
     for (const key in params) {
