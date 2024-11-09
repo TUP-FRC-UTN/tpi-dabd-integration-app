@@ -1,12 +1,92 @@
 <app-main-container title="Dashboard de propietarios">
+  <!-- Filters Row -->
+  <div class="d-flex align-items-center mb-3">
+    <app-table-filters
+      [filters]="filterConfig"
+      (filterValueChange)="filterChange($event)"
+    ></app-table-filters>
+    <!--  <div class="d-flex ms-3">
+      <input type="date" class="form-control me-2" placeholder="Fecha inicio">
+      <input type="date" class="form-control me-2" placeholder="Fecha fin">
+      <button class="btn btn-outline-danger">
+        <i class="bi bi-trash"></i>
+      </button>
+    </div> -->
+  </div>
 
-  <!-- Owner Charts Section -->
-  <h3>KPIs</h3>
+  <!-- KPIs Row -->
+  <div class="row mb-4">
+    <h2 class="h4 mb-3">KPIs</h2>
+    <!-- New Owners Last Year KPI -->
+    <div class="col-md-3 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <div class="icon-circle bg-success text-white me-3">
+              <i class="bi bi-calendar-plus"></i>
+            </div>
+            <h6 class="card-subtitle text-muted mb-0">Nuevos en Último Año</h6>
+          </div>
+          <h2 class="card-title mb-0">{{ newOwnersLastYear }}</h2>
+          <small class="text-muted">Propietarios registrados</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Owners Count KPI -->
+    <div class="col-md-3 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <div class="icon-circle bg-primary text-white me-3">
+              <i class="bi bi-check-circle"></i>
+            </div>
+            <h6 class="card-subtitle text-muted mb-0">Propietarios Activos</h6>
+          </div>
+          <h2 class="card-title mb-0">{{ activeOwnersCount }}</h2>
+          <small class="text-muted">Actualmente activos</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Most Frequent Owner Type KPI -->
+    <div class="col-md-3 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <div class="icon-circle bg-warning text-white me-3">
+              <i class="bi bi-people"></i>
+            </div>
+            <h6 class="card-subtitle text-muted mb-0">Tipo más Recurrente</h6>
+          </div>
+          <h2 class="card-title mb-0">{{ mostFrequentOwnerType }}</h2>
+          <small class="text-muted">Tipo de propietario</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Unvalidated Owners Count KPI -->
+    <div class="col-md-3 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <div class="icon-circle bg-danger text-white me-3">
+              <i class="bi bi-exclamation-circle"></i>
+            </div>
+            <h6 class="card-subtitle text-muted mb-0">
+              Propietarios sin Validar
+            </h6>
+          </div>
+          <h2 class="card-title mb-0">{{ unvalidatedOwnersCount }}</h2>
+          <small class="text-muted">Pendientes de validación</small>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <h3 class="mb-3">Graficos</h3>
-  <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
 
-  <div class="chart-section mb-4 p-3 border rounded">
+  <div class="chart-section mb-4 mt-3 p-3 border rounded">
     <h3 class="section-title">Estadísticas de Propietarios</h3>
     <div class="charts d-flex justify-content-between mt-4">
       <div class="chart">

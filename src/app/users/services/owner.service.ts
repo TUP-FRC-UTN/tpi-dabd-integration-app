@@ -81,7 +81,6 @@ export class OwnerService {
     });
 
     const owner = toSnakeCase(ownerData);
-    console.log("Service", owner);
 
     return this.http.put<Owner>(`${this.apiUrl}/${ownerId}`, owner, {
       headers,
@@ -109,7 +108,7 @@ export class OwnerService {
     isActive?: boolean
   ) {
     let params = new HttpParams()
-      .set('page', page.toString())
+      .set('page', page >= 0 ? page.toString() : "0")
       .set('size', size.toString())
       .set('doc_type', docType);
 
@@ -177,7 +176,7 @@ export class OwnerService {
     isActive?: boolean
   ) {
     let params = new HttpParams()
-      .set('page', page.toString())
+      .set('page', page >= 0 ? page.toString() : "0")
       .set('size', size.toString())
       .set('owner_type', ownerType);
 
@@ -202,7 +201,7 @@ export class OwnerService {
 
   dinamicFilters(page: number, size: number, params: any) {
     let httpParams = new HttpParams()
-      .set('page', page.toString())
+      .set('page', page >= 0 ? page.toString() : "0")
       .set('size', size.toString());
 
     for (const key in params) {
