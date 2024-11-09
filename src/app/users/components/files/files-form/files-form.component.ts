@@ -13,23 +13,17 @@ import { OwnerPlotService } from '../../../services/owner-plot.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Plot } from '../../../models/plot';
 import { PlotService } from '../../../services/plot.service';
-import { BatchFileType, FileUploadData, FileTypeMap, FileWithTypes } from '../../../models/file';
+import { BatchFileType, FileUploadData, FileTypeMap, FileWithTypes, Document, FileTypeDictionary, FileStatusDictionary } from '../../../models/file';
 import { plotForOwnerValidator } from '../../../validators/cadastre-plot-for-owner';
-import { ToastService } from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, ToastService } from 'ngx-dabd-grupo01';
 import { Owner } from '../../../models/owner';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 interface FileData {
   fileType: BatchFileType;
   name: string | null | undefined;
 }
 
-/* interface FormData {
-  fileTypeFront: string | null | undefined;
-  nameFront: string | null | undefined;
-  fileTypeBack: string | null | undefined;
-  nameBack: string | null | undefined;
-  files: FileData[];
-} */
 
 @Component({
   selector: 'app-files-form',
@@ -46,6 +40,8 @@ export class FilesFormComponent implements OnInit {
   private fileService = inject(LoadFileService);
   private plotService = inject(PlotService);
   private toastService = inject(ToastService);
+  private modalService = inject(NgbModal);
+
 
 
   BatchFileType = BatchFileType;
@@ -53,25 +49,32 @@ export class FilesFormComponent implements OnInit {
   selectedFiles: File[] = [];
   isUploading: boolean = false;
   id: string | null = null;
-  plots: Plot[] = [];
   fileTypeOptions!: any;
   owner!: Owner;
   files: Map<string, File> = new Map();
-
+  
   ownerFiles: FileWithTypes[] = [];
   plotFiles: FileWithTypes[] = [];
+
+  
+  fileTypeDictionary = FileTypeDictionary;
+  fileStatusDictionary = FileStatusDictionary;
+  
+  
+  // ------------------------- COSAS NUEVAS ---------------
+
+  plots: Plot[] = [];
+
+  dniFrontFile: any;
+  dniBackFile: any;
+
+  uploadedFiles: Map<string, Document> = new Map()
 
   fileTypes: Map<string, string> = new Map();
 
   filesForm = new FormGroup({
     dniBack: new FormControl('', [Validators.required]),
     dniFront: new FormControl('', [Validators.required]),
-    /* fileTypeFront: new FormControl('', [Validators.required]),
-    nameFront: new FormControl('', [Validators.required]),
-    contentTypeFront: new FormControl('', [Validators.required]),
-    fileTypeBack: new FormControl('', [Validators.required]),
-    nameBack: new FormControl('', [Validators.required]),
-    contentTypeBack: new FormControl('', [Validators.required]), */
     filesInput: new FormArray<FormGroup>([]),
   });
 
@@ -79,46 +82,128 @@ export class FilesFormComponent implements OnInit {
     return this.filesForm.controls['filesInput'] as FormArray;
   }
 
-
-  addFilesInput() {
-    const fileInput = new FormGroup({
-      blockNumber: new FormControl('', [Validators.required]),
-      plotNumber: new FormControl(
-        '',
-        [Validators.required],
-        [plotForOwnerValidator(this.plotService)]
-      ),
-      plotFile: new FormControl('', [Validators.required]),
-      /* fileType: new FormControl('', [Validators.required]),
-      name: new FormControl('', [
-        Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(50),
-      ]), */
+  // Método para agregar un FormControl al FormArray por cada plot
+  initializeFilesInput() {
+    const filesInputArray = this.filesForm.get('filesInput') as FormArray;
+    
+    // Por cada plot, agregamos un FormControl al FormArray
+    this.plots.forEach(() => {
+      filesInputArray.push(new FormControl('', Validators.required));
     });
-
-    this.filesInput.push(fileInput);
   }
 
-  removeFileInput(index: number) {
-    this.filesInput.removeAt(index);
-    this.files.delete('plotFile' + index);
-    this.fileTypes.delete('fileType' + index);
-  }
+  
 
   ngOnInit() {
     this.setEnums();
-    /* this.id = this.activatedRoute.snapshot.paramMap.get('id');
-    if (this.id) {
-      this.ownerService.getOwnerById(parseInt(this.id, 10)).subscribe({
+
+    this.getUserSession();
+
+    this.initializeFilesInput()
+
+    
+    
+  }
+
+  get getUploadedFiles() {
+    return this.uploadedFiles
+  }
+
+  getUserSession() {
+    const user = sessionStorage.getItem('user');
+    console.log("Usuario logueado: ", user);
+    if(user) {
+      const parsedUser = JSON.parse(user);
+      const ownerId = parsedUser.value.owner_id;
+
+      this.getOwnerById(ownerId);
+    }
+  }
+
+
+
+  // METODOS DE BUSQUEDA DE ARCHIVOS PARA OWNER Y PLOTS
+  getOwnerById(ownerId: number ) {
+    this.ownerService.getOwnerById(ownerId).subscribe({
+      next: (response) => {
+        this.owner = response;
+        this.getOwnerPlots();
+      },
+      error: (error) => {
+        console.error('Error al obtener propietario: ', error);
+      },
+    });
+  }
+
+  getOwnerPlots() {
+    if(this.owner.id) {
+      this.ownerPlotService.giveAllPlotsByOwner(this.owner.id, 0, 1000).subscribe({
         next: (response) => {
-          this.owner = response;
+          console.log("AAAAAAAAAAA", response.content)
+          this.plots = response.content;
+          this.getAllFiles(this.owner)
         },
         error: (error) => {
-          console.error('Error al obtener owners:', error);
+          console.error('Error al obtener archivos del lote:', error);
+        },
+      })
+    }
+  }
+
+  getAllFiles(owner: Owner) {
+    // archivos del lote
+    if(this.plots.length > 0) {
+      this.plots.forEach(plot => {
+
+        this.plotService.getPlotFilesById(plot.id).subscribe({
+          next: (response) => {
+            console.log("Plot files: ", response)
+            this.uploadedFiles.set("plotFile"+plot.id, response[0])
+          },
+          error: (error) => {
+            console.error('Error al obtener archivos del lote:', error);
+          },
+        });
+
+      })
+    }
+    // archivos del owner
+    if(owner.id) {
+      this.ownerService.getOwnerFilesById(owner.id).subscribe({
+        next: (response) => {
+          console.log("RESP DE GETOWNERFILES", response)
+          
+          for(const file of response){
+            if(file.fileType == "ID_DOCUMENT_FRONT") {
+              this.uploadedFiles.set("dniFront", file)
+            } else if(file.fileType == "ID_DOCUMENT_BACK") {
+              this.uploadedFiles.set("dniBack", file)
+            }
+          }
+        },
+        error: (error) => {
+          console.error('Error al obtener archivos del lote:', error);
         },
       });
-    } */
+    }
+  }
+
+  // metodo para abrir el archivo en otra ventana
+  openFile(url?: string): void {
+    window.open(url, '_blank');
+  }
+
+  // metodo para solicitar cambio
+  requestChange(file: any) {
+    console.log("Solicitar cambio ", file)
+  }
+
+  openNotes(file?: any) {
+    console.log(file.reviewNote)
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+      modalRef.componentInstance.alertType = "info";
+      modalRef.componentInstance.alertTitle = 'Nota del Archivo de '+ this.translateTable(file.fileType, this.fileTypeDictionary);
+      modalRef.componentInstance.alertMessage = file.reviewNote;
   }
 
 
@@ -126,6 +211,24 @@ export class FilesFormComponent implements OnInit {
     console.log("Archivos para subir. onUpload() ", this.files);
     console.log("Archivos para subir del Owner. onUpload() ", this.ownerFiles);
     console.log("Archivos para subir del Plot. onUpload() ", this.plotFiles);
+
+
+    if(this.ownerFiles.length == 0 && this.plotFiles.length == 0) {
+      this.toastService.sendError('No hay archivos seleccionados');
+    } else {
+      const modalRef = this.modalService.open(ConfirmAlertComponent);
+      modalRef.componentInstance.alertType = "info";
+      modalRef.componentInstance.alertTitle = 'Confirmacion';
+      modalRef.componentInstance.alertMessage = `Seguro que desea cargar ${this.ownerFiles.length} archivos de DNI y ${this.plotFiles.length} Escrituras?`;
+
+      modalRef.result.then(result => {        
+        if (result) {
+          console.log("llamar a los emtodos del service")
+        } else {
+          this.toastService.sendError('operacion cancelada'); // aca no entra nunca
+        }
+      })
+    }
 
 
 
@@ -387,4 +490,16 @@ export class FilesFormComponent implements OnInit {
       })
     );
   }
+
+  translateTable(value: any, dictionary: { [key: string]: any }) {
+    if (value !== undefined && value !== null) {
+      for (const key in dictionary) {
+        if (dictionary[key] === value) {
+          return key;
+        }
+      }
+    }
+    return;
+  }
+
 }

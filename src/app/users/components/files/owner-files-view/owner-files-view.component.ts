@@ -135,7 +135,7 @@ export class OwnerFilesViewComponent {
         this.plotService.getPlotFilesById(plot.id).subscribe({
           next: (response) => {
             console.log("Plot files: ", response)
-            this.plotFiles.push(response);
+            this.plotFiles.push(response[0]);
           },
           error: (error) => {
             console.error('Error al obtener archivos del lote:', error);
@@ -154,6 +154,7 @@ export class OwnerFilesViewComponent {
           this.plotFiles.forEach(file => {
             this.files.push(file);
           })
+          this.canApproveOwner = this.areAllApproved();
         },
         error: (error) => {
           console.error('Error al obtener archivos del lote:', error);
@@ -161,6 +162,7 @@ export class OwnerFilesViewComponent {
       });
     }
 
+    
 
     console.log("plots: ", this.plots);
     console.log("files: ", this.files);
@@ -208,11 +210,16 @@ export class OwnerFilesViewComponent {
   // metodo para verificar el estado de todos los archivos
   areAllApproved(): boolean {
     let result = true;
-    this.files.forEach((file) => {
-      if(file.approvalStatus !== 'APPROVED') {
-        result = false;
-      }
-    })
+    if(this.files.length > 0) {
+      this.files.forEach((file) => {
+        console.log("status: ", file.approvalStatus)
+        if(file.approvalStatus !== 'APPROVED') {
+          result = false;
+        }
+      })
+    } else {
+      result = false;
+    }
     return result;
   }
 
@@ -244,6 +251,8 @@ export class OwnerFilesViewComponent {
           modalRef.close();
         }
       }
+    } else {
+      this.toastService.sendError('Todos los archivos deben estar aprobados');
     }
   }
 

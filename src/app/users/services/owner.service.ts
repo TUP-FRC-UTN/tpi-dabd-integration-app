@@ -139,7 +139,9 @@ export class OwnerService {
   // metodo para traer los archivos del owner por id de owner
   getOwnerFilesById(ownerId: number): Observable<Document[]> {
 
-    return this.http.get<any>(this.apiUrl + `/${ownerId}/files`).pipe(
+    let params = new HttpParams().set('is-active', true);
+
+    return this.http.get<any>(this.apiUrl + `/${ownerId}/files`, {params} ).pipe(
       map((response: any) => {
 
         const transformPipe = new OwnerMapperPipe();
@@ -161,7 +163,7 @@ export class OwnerService {
       "owner_id": ownerId,
       "plot_id": plotId,
       "kyc_status": status,
-      "roles": []
+      "roles": [ 102 ] 
     }
 
     return this.http.post<any>(this.apiUrl + `/validate`, change, { headers });
