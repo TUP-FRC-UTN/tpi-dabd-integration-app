@@ -31,8 +31,8 @@ Chart.register(...registerables);
   styleUrls: ['./home.component.css'],
   providers: [DatePipe],
 })
-export class HomeComponent implements AfterViewInit {
-  private ownerService = inject(OwnerService);
+export class HomeComponent {
+  /* private ownerService = inject(OwnerService);
   private userService = inject(UserService);
   private roleService = inject(RoleService);
 
@@ -248,5 +248,32 @@ export class HomeComponent implements AfterViewInit {
     this.pieChartRoleActiveStatusDatasets[0].data = Object.values(
       roleActiveStatusCounts
     );
-  }
+  } */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

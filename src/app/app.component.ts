@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { RouterModule, RouterOutlet, Router } from '@angular/router';
 import {
   MainLayoutComponent,
   NavbarItem,
@@ -26,6 +26,7 @@ import { LoginService } from './users/services/login.service';
 })
 export class AppComponent {
   private loginService = inject(LoginService);
+  private router = inject(Router);
 
   navbarMenu: NavbarItem[] = [
     {
@@ -257,6 +258,7 @@ export class AppComponent {
    */
   onLogoutButtonClick() {
     this.loginService.logout();
+    this.router.navigate([""]);
   }
   //#endregion
 }

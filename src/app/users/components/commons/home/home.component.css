@@ -1,4 +1,4 @@
-.chart-section {
+/* .chart-section {
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 16px;
@@ -9,5 +9,12 @@
     font-size: 1.25rem;
     font-weight: bold;
     margin-bottom: 1rem;
-  }
-  
+  } */
+
+.text-color {
+  color: #d98b16;
+}
+
+.bg-orange {
+  background-color: #d98b16;
+}
