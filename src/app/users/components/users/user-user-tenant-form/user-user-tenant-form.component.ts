@@ -303,7 +303,7 @@ export class UserUserTenantFormComponent {
   createUser() {
     this.fillUser();
     this.user.isActive = true;
-    this.user.roleCodeList = this.transformRoles(this.user)
+    this.user.roleCodeList = [103]
     delete this.user.roles
     this.userService.addUser(toSnakeCase(this.user), 1).subscribe({
       // '1' is x-user-id
