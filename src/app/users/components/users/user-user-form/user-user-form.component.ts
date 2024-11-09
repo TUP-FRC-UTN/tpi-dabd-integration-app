@@ -316,7 +316,7 @@ export class UserUserFormComponent {
         this.userService.updateUser(this.user.id, toSnakeCase(this.user), 1).subscribe({
           next: (response) => {
             this.toastService.sendSuccess("Usuario actualizado con exito.")
-            this.router.navigate(['users/owner/list']);
+            this.router.navigate(['users/user/list']);
           },
           error: (error) => {
             this.toastService.sendError("Error actualizado el usuario.")
