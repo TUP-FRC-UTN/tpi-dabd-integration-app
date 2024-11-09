@@ -42,11 +42,14 @@ Chart.register(...registerables);
   providers: [DatePipe],
 })
 export class CadastreOwnerReportComponent implements AfterViewInit {
+  //#region Services
   private ownerService = inject(OwnerService);
   private plotService = inject(PlotService);
   private accountService = inject(AccountService);
   private modalService = inject(NgbModal);
+  //#end region
 
+  //#region Variables
   owners: Owner[] = [];
   plots: Plot[] = [];
   accounts: Account[] = [];
@@ -55,13 +58,12 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
   activeOwnersCount: number = 0;
   mostFrequentOwnerType: string = '';
   unvalidatedOwnersCount: number = 0;
-  // KPIs para Plots
+
   totalBuiltArea: number = 0;
   mostFrequentPlotType: string = '';
   averagePlotArea: number = 0;
   plotsCreatedLastMonth: number = 0;
 
-  // KPIs para Accounts
   debtorAccountsCount: number = 0;
   creditorAccountsCount: number = 0;
 
@@ -135,6 +137,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
       { value: '', label: 'Todo' },
     ])
     .build();
+  //#end region
 
   ngOnInit(): void {
     this.loadOwners();
@@ -146,20 +149,8 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     this.updateOwnerCharts();
   }
 
+  //#region Load Data
   loadOwners(filters: Record<string, any> = {}) {
-    /* this.ownerService
-      .getOwners(0, 1000)
-      .pipe(
-        map((response: PaginatedResponse<Owner>) => {
-          this.owners = response.content;
-          this.updateOwnerCharts();
-        }),
-        catchError((error) => {
-          console.error('Error loading owners', error);
-          return of([]);
-        })
-      )
-      .subscribe(); */
     this.ownerService
       .dinamicFilters(0, 1000, filters)
       .pipe(
@@ -213,10 +204,10 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
       )
       .subscribe();
   }
+  //#end region
   
   
-  
-
+  //# Update Charts
   updateOwnerCharts() {
     const kycStatusCounts = this.owners.reduce((acc, owner) => {
       const status = owner.kycStatus ?? 'DESCONOCIDO';
@@ -269,35 +260,30 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     this.plotActiveChartLabels = Object.keys(activeCounts);
     this.plotActiveChartDatasets[0].data = Object.values(activeCounts);
   }
+  //#end region
 
+  //#region Filters
   filterChange($event: Record<string, any>) {
-    /* this.ownerService.dinamicFilters(0, 1000000, $event).subscribe({
-      next: (result) => {
-        this.owners = result.content;
-        this.updateOwnerCharts();
-      },
-    }); */
     this.loadOwners($event)
   }
 
   plotFilterChange($event: Record<string, any>) {
     this.loadPlots($event);
   }
+  //#end region
 
+  //#region KPIs
   calculateKPIs() {
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
-    // 1. Cantidad de propietarios nuevos en el último año
     this.newOwnersLastYear = this.owners.filter(owner => {
       const birthdate = new Date(owner.birthdate);
       return birthdate >= oneYearAgo;
     }).length;
 
-    // 2. Cantidad de propietarios activos
     this.activeOwnersCount = this.owners.filter(owner => owner.isActive).length;
 
-    // 3. Tipo de propietario más recurrente
     const ownerTypeCounts = this.owners.reduce((acc, owner) => {
       acc[owner.ownerType] = (acc[owner.ownerType] || 0) + 1;
       return acc;
@@ -306,7 +292,6 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
       ownerTypeCounts[a] > ownerTypeCounts[b] ? a : b
     );
 
-    // 4. Cantidad de propietarios sin validar
     this.unvalidatedOwnersCount = this.owners.filter(
       owner => owner.kycStatus === StateKYC.INITIATED || owner.kycStatus === StateKYC.TO_VALIDATE
     ).length;
@@ -329,13 +314,12 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     this.averagePlotArea = this.plots.reduce((sum, plot) => sum + parseFloat(plot.totalArea), 0) / this.plots.length;
 
     this.plotsCreatedLastMonth = this.plots.filter(plot => {
-      const plotDate = new Date()//new Date(plot.createdDate); // Assuming createdDate exists
+      const plotDate = new Date() // new Date(plot.createdDate);
       return plotDate >= oneMonthAgo;
     }).length;
   }
 
   calculateAccountKpis() {
-    
     this.debtorAccountsCount = this.accounts.filter(account => account.balance < 0).length;
     this.creditorAccountsCount = this.accounts.filter(account => account.balance >= 0).length;
 
@@ -349,7 +333,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
       },
     ];
   }
-
+  //#end region
 
 
   //#region Graficos
