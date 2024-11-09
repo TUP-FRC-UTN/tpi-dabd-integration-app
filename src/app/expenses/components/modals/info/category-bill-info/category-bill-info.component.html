@@ -1,5 +1,5 @@
 <div class="modal-header fs-6 py-1">
-  <h4 class="modal-title">Información del Listado de Categorías</h4>
+  <h4 class="modal-title">Información del Lista de Categorías</h4>
   <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
 </div>
 <div class="modal-body fs-6 py-2">
@@ -19,13 +19,19 @@
       <div class="card-body py-2">
         <ul class="list-group list-group-flush">
           <li class="list-group-item py-1">
-            <strong>Nuevo:</strong> Botón para crear una nueva categoría.
-          </li>
-          <li class="list-group-item py-1">
             <strong>Buscar:</strong> Campo de búsqueda para filtrar categorías por nombre o descripción.
           </li>
           <li class="list-group-item py-1">
-            <strong>Volver:</strong> Regresa a la pantalla de registro de gastos.
+            <strong>Filtro:</strong> Filtar entre las categorias inactivas y activas.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Nuevo:</strong> Botón para crear una nueva categoría.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Exportar a Excel:</strong> Botón para exportar el estado actual de la tabla a Excel (xlsx).
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Exportar a PDF:</strong> Botón para exportar el estado actual de la tabla a PDF (pdf).
           </li>
         </ul>
       </div>
@@ -43,6 +49,9 @@
           </li>
           <li class="list-group-item py-1">
             <strong>Descripción:</strong> Detalle o explicación de la categoría.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Estado:</strong> Icono de color que indica si la categoría está activa (verde) o inactiva (rojo).
           </li>
           <li class="list-group-item py-1">
             <strong>Acciones:</strong> Botones para editar o eliminar categorías (solo disponibles para categorías editables).

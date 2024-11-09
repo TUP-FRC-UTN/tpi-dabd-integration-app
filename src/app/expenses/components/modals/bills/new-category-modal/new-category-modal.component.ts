@@ -1,9 +1,17 @@
 import { Component } from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {
+  AbstractControl,
+  AsyncValidatorFn,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {NgClass} from "@angular/common";
 import Category from "../../../../models/category";
 import {CategoryService} from "../../../../services/category.service";
+import {map, Observable} from "rxjs";
 
 @Component({
   selector: 'app-new-category-modal',
@@ -24,9 +32,29 @@ export class NewCategoryModalComponent {
     private categoryService: CategoryService
   ) {
     this.newCategoryForm = this.formBuilder.group({
-      name: ['', Validators.required],
+      name: ['', {
+        validators: [Validators.required],
+        asyncValidators: [this.nameValidator()],
+        updateOn: 'blur'
+      }],
       description: ['', Validators.required]
     });
+  }
+
+  private nameValidator(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<any> => {
+      const name = control.value?.trim();
+      if (!name) {
+        return new Observable(observer => {
+          observer.next(null);
+          observer.complete();
+        });
+      }
+
+      return this.categoryService.validateCategoryName(name).pipe(
+        map(isValid => !isValid ? { nameExists: true } : null)
+      );
+    };
   }
 
   saveNewCategory() {
@@ -38,7 +66,6 @@ export class NewCategoryModalComponent {
 
       this.categoryService.addCategory(newCategory).subscribe({
         next: (response: any) => {
-          console.log('Añadido correctamente', response);
           this.activeModal.close({
             success: true,
             message: 'La categoria se ha añadido correctamente.',
@@ -46,13 +73,7 @@ export class NewCategoryModalComponent {
           });
         },
         error: (error: any) => {
-          console.error('Error en el post', error);
           let errorMessage = 'Ha ocurrido un error al añadir la categoría. Por favor, inténtelo de nuevo.';
-
-          if (error.status === 409) {
-            errorMessage = 'Ya existe una categoría con este nombre. Por favor, elija un nombre diferente.';
-          }
-
           this.activeModal.close({
             success: false,
             message: errorMessage,

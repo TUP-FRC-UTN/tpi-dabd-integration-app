@@ -1,0 +1,65 @@
+<app-main-container title="Reporte de expensas">
+
+  <div class="row" style="align-items:end" >
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <!-- Sección de búsqueda y filtros -->
+      <div class="d-flex align-items-center mb-2" role="group">
+        <div class="col-sm-12 col-md-8 col-xl-12">
+          <div class="input-group">
+            <span class="input-group-text" id="search-icon">
+              <i class="bi bi-search"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              id="filter-text-box"
+              (input)="onFilterTextBoxChanged($event)"
+              placeholder="Buscar..."
+            />
+            <app-table-filters></app-table-filters>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="height: 500px; overflow-y: auto;">
+      <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;max-width: 550px" id="table-data">
+        <thead class="justify-content-end">
+        <tr>
+          <th scope="col" style="width: 10%;">Número de Lote</th>
+          <th scope="col" style="width: 10%;">Tipo de lote</th>
+          <th scope="col" style="width: 15%;">Periodo</th>
+          <th scope="col" style="width: 15%;">Tipo de expensa</th>
+          <th scope="col" style="text-align: right; width: 20%;">Monto Total</th>
+
+        </tr>
+        </thead>
+        <tbody>
+
+          @for (expense of expenses | filterBy: ['lotId', 'month','totalAmount','liquidationDate','state','plotNumber','typePlot','percentage','billType']: searchTerm; track $index) {
+            <tr>
+              <td>{{expense.plotNumber}} </td>
+              <td>{{expense.typePlot}}</td>
+              <td>{{expense.month }}-{{ expense.period.year }} </td>
+              <td>{{expense.billType}}</td>
+              <td style="text-align:  right">{{expense.totalAmount.toLocaleString("es-AR", {
+                style: "currency",
+                currency: "ARS",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              }) }}</td>
+            </tr>
+          }@empty {
+            <td colspan="7" class="text-center">
+              <div class="text-center p-3">
+                <div class="alert alert-secondary">
+                  No hay expensas para mostrar
+                </div>
+              </div>
+            </td>}
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</app-main-container>

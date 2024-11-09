@@ -1,0 +1,85 @@
+<div class="modal-header d-flex justify-content-between">
+  <h5 class="modal-title">Editar Cargo</h5>
+  <button type="button" class="close d-flex justify-content-end" (click)="activeModal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="chargeForm">
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <div class="form-group row">
+          <label for="fechaEmision" class="col-md-5 col-form-label">Fecha de emisión<span style="color: red;">*</span></label>
+          <div class="col-md-7">
+            <input type="date" class="form-control" id="fechaEmision" formControlName="fechaEmision"
+                   [ngClass]="{ 'is-invalid': chargeForm.controls['fechaEmision'].touched && chargeForm.controls['fechaEmision'].hasError('required') }"
+                   [attr.disabled]="!isEditing ? null : null">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group row">
+          <label for="lote" class="col-md-5 col-form-label">Lote<span style="color: red;">*</span></label>
+          <div class="col-md-7">
+            <input type="text" class="form-control" id="lote" formControlName="lote"
+                   [ngClass]="{ 'is-invalid': chargeForm.controls['lote'].touched && chargeForm.controls['lote'].hasError('required') }">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <div class="form-group row">
+          <label for="periodo" class="col-md-5 col-form-label">Periodo<span style="color: red;">*</span></label>
+          <div class="col-md-7">
+            <select name="periodo" id="periodo" class="form-select" formControlName="periodo"
+                    [attr.disabled]="!isEditing ? '' : null">
+              <option *ngFor="let period of periodos" [value]="period.id">{{period.month}} / {{period.year}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group row">
+          <label for="monto" class="col-md-5 col-form-label">Monto<span style="color: red;">*</span></label>
+          <div class="col-md-7">
+            <input type="text" class="form-control" id="monto" formControlName="amount"
+                   [attr.disabled]="!isEditing ? '' : null">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <div class="form-group row">
+          <label for="categoryCargos" class="col-md-5 col-form-label">Categoría<span style="color: red;">*</span></label>
+          <div class="col-md-7">
+            <select name="categoryCargos" id="categoryCargos" class="form-select" formControlName="tipo"
+                    >
+              <option [value]="0">Todas</option>
+              <option *ngFor="let category of categoryCharges" [value]="category.categoryChargeId">{{category.name}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="">
+        <div class="form-group row">
+          <label for="descripcion" class="col-md-2 col-form-label">Descripción</label>
+          <div class="col-md-10" style="padding-left: 45px;" >
+            <textarea id="descripcion" class="form-control"  formControlName="description" rows="3"
+                      [attr.disabled]="!isEditing ? '' : null"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button *ngIf="isEditing" type="button" class="btn btn-danger" (click)="cancelEdit()">Cancelar</button>
+  <button *ngIf="isEditing" type="button" class="btn btn-primary" (click)="saveChanges()">Guardar</button>
+</div>

@@ -24,9 +24,8 @@ export class ExpenseServiceService {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
-
-    // Parámetros adicionales 
-    if (periodId !== undefined && periodId !== 0) {
+    // Parámetros adicionales
+    if (periodId !== undefined && periodId !== 0 && periodId != null ) {
       params = params.set('periodId', periodId.toString());
     }
     if(periodId == 0) {
@@ -44,14 +43,38 @@ export class ExpenseServiceService {
     if(typeId == 0) {
       params = params.delete('typeId')
     }
-   
+
     if (sortField) {
       params = params.set('sort', `${sortField},${sortOrder}`);
     }
-    return this.http.get<Page<Expense>>(this.apiUrl + 'all', { params });
+    return this.http.get<Page<Expense>>('http://localhost:8080/expense/all/pageable', { params });
+
   }
   getByPeriod(periodId:number):Observable<Expense[]>{
     //calcular y recuperar lista de expensas de un periodo
     return this.http.post<Expense[]>(`${this.apiUrl}create/${periodId}`,null)
+  }
+  getWithoutFilters(periodId?: number, plotId?: number, typeId?: number): Observable<Expense[]> {
+    let params = new HttpParams()
+    // Parámetros adicionales
+    if (periodId !== undefined && periodId !== 0 && periodId !== null) {
+      params = params.set('periodId', periodId.toString());
+    }
+    if(periodId == 0) {
+      params = params.delete('periodId')
+    }
+    if (plotId !== null && plotId !== undefined && plotId !== 0) {
+      params = params.set('plotId', plotId.toString());
+    }
+    if(plotId == 0) {
+      params = params.delete('plotId')
+    }
+    if (typeId !== null && typeId !== undefined && typeId !== 0) {
+      params = params.set('typeId', typeId.toString());
+    }
+    if(typeId == 0) {
+      params = params.delete('typeId')
+    }
+    return this.http.get<Expense[]>(this.apiUrl + 'all', { params })
   }
 }

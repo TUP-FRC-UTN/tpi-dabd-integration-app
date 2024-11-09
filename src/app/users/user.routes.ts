@@ -25,23 +25,23 @@ import { UserUserTenantFormComponent } from "./components/users/user-user-tenant
 
 export const USER_ROUTES: Routes = [
     { path: '', component: UserHomeComponent },
-    { path: 'home', component: HomeComponent, /* canActivate: [authGuard] */ },
+    { path: 'home', component: HomeComponent, /* canActivate: [authGuard] */ },//
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'owner/form', component: OwnerFormComponent, /* canActivate: [authGuard] */ },
     { path: 'owner/form/:id', component: OwnerFormComponent, /* canActivate: [authGuard] */ },
     { path: 'owner/detail/:id', component: OwnerDetailComponent, /* canActivate: [authGuard] */ },
-    { path: 'owner/list', component: OwnerListComponent, /* canActivate: [authGuard] */ },
+    { path: 'owner/list', component: OwnerListComponent, /* canActivate: [authGuard] */ },//
     { path: 'plot/form', component: PlotFormComponent, /* canActivate: [authGuard] */ },
     { path: 'plot/form/:id', component: PlotFormComponent, /* canActivate: [authGuard] */ },
-    { path: 'plot/list', component: PlotsListComponent, /* canActivate: [authGuard] */ },
+    { path: 'plot/list', component: PlotsListComponent, /* canActivate: [authGuard] */ },//
     { path: 'files/form', component: FilesFormComponent, /* canActivate: [authGuard] */ },
-    { path: 'files/view', component: FilesViewComponent, /* canActivate: [authGuard] */ },
+    { path: 'files/view', component: FilesViewComponent, /* canActivate: [authGuard] */ },//
     { path: 'files/:ownerId/view', component: OwnerFilesViewComponent, /* canActivate: [authGuard] */ },
-    { path: 'user/list', component: UserUserListComponent, /* canActivate: [authGuard] */ },
+    { path: 'user/list', component: UserUserListComponent, /* canActivate: [authGuard] */ },//
     { path: 'user/form', component: UserUserFormComponent, /* canActivate: [authGuard] */ },
     { path: 'user/form/:id', component: UserUserFormComponent, /* canActivate: [authGuard] */ },
     { path: 'user/detail/:id', component: UserUserDetailComponent, /* canActivate: [authGuard] */ },
-    { path: 'roles/list', component: RolesListComponent, /* canActivate: [authGuard] */ },
+    { path: 'roles/list', component: RolesListComponent, /* canActivate: [authGuard] */ },//
     { path: 'user/tenant/form', component: UserUserTenantFormComponent, /* canActivate: [authGuard] */ },
     { path: 'roles/form', component: RolesFormComponent, /* canActivate: [authGuard] */ },
     { path: 'roles/form/:roleId', component: RolesFormComponent, /* canActivate: [authGuard] */ },
@@ -50,6 +50,6 @@ export const USER_ROUTES: Routes = [
     { path: 'plots/owner/:ownerId', component: CadastrePlotOwnerListComponent, /* canActivate: [authGuard] */ },
     { path: 'plot/detail/:id', component: CadastrePlotDetailComponent, /* canActivate: [authGuard] */ },
     { path: 'account/concept/:accountId', component: AccountAccountConceptComponent, /* canActivate: [authGuard] */ },
-    { path: 'account/list', component: AccountAccountListComponent, /* canActivate: [authGuard] */ },
+    { path: 'account/list', component: AccountAccountListComponent, /* canActivate: [authGuard] */ },//
     { path: '**', component: NotFoundComponent, /* canActivate: [authGuard] */ },
 ];
