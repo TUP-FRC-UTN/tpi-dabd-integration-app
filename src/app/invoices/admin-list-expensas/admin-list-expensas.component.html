@@ -1,4 +1,4 @@
-<app-main-container title="Hola Administrador" subTitle="Aca podras modificar el estado de pagos" (infoButtonClick)="showInfo()">
+<app-main-container title="Hola Administrador" subTitle="Aquí podrás modificar el estado de los pagos" (infoButtonClick)="showInfo()">
 
 <div class="d-flex justify-content-between align-items-center mb-3">
   <div class="btn-group me-5" role="group">
@@ -69,10 +69,7 @@
 
         <td class="text-center"> {{ (item.period | periodToMonthYear | capitalize) }}</td>
         <td class="text-center">
-          {{
-          calculateTotal(item)
-          | currency : "" : "symbol-narrow" : "1.2-2" : "es-ES"
-          }}
+          {{ calculateTotal(item) | currencyFormat }}
         </td>
         <td class="text-center">
           <span class="badge border border-secondary text-success p-2" [ngClass]="{
@@ -200,10 +197,7 @@
               <td>{{ i + 1 }}</td>
               <td>{{ item.description }}</td>
               <td>
-                {{
-                item.amount
-                | currency : "" : "symbol-narrow" : "1.2-2" : "es-ES"
-                }}
+                {{ item.amount | currencyFormat}}
               </td>
               <!-- <td>{{ item.price | currency }}</td> -->
               <!-- <td>{{ (item.quantity * item.price) | currency }}</td> -->
@@ -227,7 +221,7 @@
           </div>
           <div class="col-md-6 text-end">
             <strong>Total:</strong>
-            {{ calculateTotal(ticketSelectedModal) | currency }}
+            {{ calculateTotal(ticketSelectedModal) | currencyFormat }}
           </div>
         </div>
       </div>

@@ -91,6 +91,28 @@ export class TicketService {
       );
     }
 
+    getAllByOwnerWithFilters(page : number, size : number, status?:string): Observable<PaginatedResponse<TicketDto>> {
+      let params = new HttpParams().set('ownerId', 1);
+      // .set('owner;
+      // .set('page', page.toString())
+      // .set('size', size.toString());
+        
+
+      if (status) {
+        params = params.set('status', status);
+      }
+      return this.http.get<PaginatedResponse<TicketDto>>(this.apiGetAllByOwner, { params }).pipe(
+        map((response: PaginatedResponse<any>) => {
+          const transformPipe = new TransformTicketPipe();
+          const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
+          return {
+            ...response,
+            content: transformedPlots 
+          };
+        })
+      );
+    }
+
     getAllTicketsPageForExports(page : number, size : number): Observable<PaginatedResponse<TicketDto>> {
       const ownerId = 1;
       let params = new HttpParams()
@@ -115,11 +137,10 @@ export class TicketService {
       });
     }
 
-  getAllWithFilters(page: number, size: number, status?: string, firstPeriod?: string, lastPeriod?: string): Observable<PaginatedResponse<TicketDto>> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString());
-
+  getAllWithFilters(page: number, size: number, status?: string, lotId?:string, firstPeriod?: string, lastPeriod?: string): Observable<PaginatedResponse<TicketDto>> {
+    let params = new HttpParams();
+      // .set('page', page.toString()) //comentamos para el filtro del controlador
+      // .set('size', size.toString());
     if (status) {
       params = params.set('status', status);
     }

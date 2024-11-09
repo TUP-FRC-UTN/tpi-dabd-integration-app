@@ -1,4 +1,4 @@
-<app-main-container title="Hola Propietario" subTitle="Aca podras modificar el estado de pagos" (infoButtonClick)="showInfo()">
+<app-main-container title="Hola Propietario" subTitle="Aquí puedes ver tu expensas" (infoButtonClick)="showInfo()">
 
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="btn-group me-5" role="group">
@@ -11,7 +11,7 @@
             type="text"
             class="form-control me-2"
             id="filter-text-box"
-           
+            (input)="onFilterTextBoxChanged($event)"
             placeholder="Buscar..."
           />
           <app-table-filters class="me-2" [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
@@ -58,7 +58,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (item of ticketOwnerList; track $index) {
+        @for (item of filteredTickets; track $index) {
         <tr>
           <th scope="row" class="text-center">
             {{ (item.period | periodToMonthYear | capitalize) }}
@@ -67,10 +67,7 @@
             {{ item.expirationDate | date : "dd/MM/YYYY" }}
           </td>
           <td class="text-center">
-            {{
-              calculateTotal(item)
-                | currency : "" : "symbol-narrow" : "1.2-2" : "es-ES"
-            }}
+            {{ calculateTotal(item) | currencyFormat }}
           </td>
           <td class="text-center">
             <span
@@ -107,7 +104,7 @@
                   >
                 </li>
                 <li>
-                  <a
+                  <a *ngIf="item.status !== 'PAID' && item.status !== 'CANCELED'"
                     class="dropdown-item"
                     data-bs-toggle="modal"
                     data-bs-target="#statusModal"
@@ -116,7 +113,7 @@
                   >
                 </li>
                 <li>
-                  <a
+                  <a *ngIf="item.status !== 'PAID' && item.status !== 'CANCELED'"
                     class="dropdown-item"
                     data-bs-toggle="modal"
                     data-bs-target="#ticketModal"
@@ -236,7 +233,7 @@
           <div class="col-md-6 text-end">
             <strong>Fecha de emisión:</strong>
             {{ ticketSelectedModal.issueDate | date : "dd/MM/yyyy" }}<br />
-            <strong>Fecha de expiración:</strong>
+            <strong>Fecha de vencimiento</strong>
             {{ ticketSelectedModal.expirationDate | date : "dd/MM/yyyy" }}
           </div>
         </div>
@@ -262,10 +259,7 @@
               <td>{{ i + 1 }}</td>
               <td>{{ item.description }}</td>
               <td>
-                {{
-                  item.amount
-                    | currency : "" : "symbol-narrow" : "1.2-2" : "es-ES"
-                }}
+                {{ item.amount | currencyFormat }}
               </td>
               <!-- <td>{{ item.price | currency }}</td> -->
               <!-- <td>{{ (item.quantity * item.price) | currency }}</td> -->
@@ -291,7 +285,7 @@
             <strong>Total:</strong>
             {{
               calculateTotal(ticketSelectedModal)
-                | currency : "" : "symbol-narrow" : "1.2-2" : "es-ES"
+                | currencyFormat
             }}
           </div>
         </div>
@@ -301,7 +295,9 @@
           Cerrar
         </button>
         <!-- <button type="button" class="btn btn-primary" (click)="pagar()">Pagar</button> -->
-        <div id="wallet_container"></div>
+        <div *ngIf="ticketSelectedModal.status === 'PENDING'" id="wallet_container">
+        </div>
+        
       </div>
     </div>
   </div>
@@ -332,7 +328,7 @@
         <div class="row mb-4">
           <div class="col-md-6">
             <h6 class="mb-0">
-              ID Factura:
+              Factura - Ticket N°
               <strong>{{ ticketSelectedModal.ticketNumber }}</strong>
             </h6>
           </div>
@@ -358,7 +354,7 @@
           </div>
           <div class="col-md-6">
             <h6 class="mb-0">
-              Fecha de Expiración:
+              Fecha de Vencimiento:
               <strong>{{
                 ticketSelectedModal.expirationDate | date : "dd/MM/yyyy"
               }}</strong>
@@ -392,6 +388,7 @@
         >
           Cargar Comprobante
         </button>
+        
       </div>
     </div>
   </div>

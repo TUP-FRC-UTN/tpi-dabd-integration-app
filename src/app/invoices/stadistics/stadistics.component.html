@@ -1,1 +1,50 @@
-<p>stadistics works!</p>
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+  <div class="row justify-content-center">
+    <!-- Gráfico de barras para "Cantidad de Pagos por Día" -->
+    <div class="col-md-6 mb-4 d-flex justify-content-center">
+      <div class="card shadow-sm w-100" style="max-width: 500px;">
+        <div class="card-body">
+          <h3 class="card-title text-center">Cantidad de Pagos por Día</h3>
+          <div class="chart-container" style="position: relative; height: 40vh; width: 100%;">
+            <canvas baseChart
+                    [data]="barChartData"
+                    [options]="barChartOptions"
+                    chartType="bar">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de torta para "Estado de Pagos" -->
+    <div class="col-md-6 mb-4 d-flex justify-content-center">
+      <div class="card shadow-sm w-100" style="max-width: 500px;">
+        <div class="card-body">
+          <h3 class="card-title text-center">Estado de Pagos</h3>
+          <div class="chart-container" style="position: relative; height: 40vh; width: 100%;">
+            <canvas baseChart
+                    [data]="doughnutChartData"
+                    [type]="pieChartType">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de torta para "Distribucion de pagos" -->
+    <div class="col-md-6 mb-4 d-flex justify-content-center">
+      <div class="card shadow-sm w-100" style="max-width: 500px;">
+        <div class="card-body">
+          <h3 class="card-title text-center">Distribucion de pagos</h3>
+          <div class="chart-container" style="position: relative; height: 40vh; width: 100%;">
+            <canvas baseChart
+                    [data]="doughnutChartPaymentDistribution"
+                    [type]="pieChartType">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
