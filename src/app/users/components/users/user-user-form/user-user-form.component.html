@@ -134,17 +134,19 @@
               <h5 class="mb-3">Lista de Roles</h5>
               <div class="list-group">
                   @for (rol of roles; track $index) {
+                    @if (rol.isActive) {
                       <div class="d-flex justify-content-between align-items-center mb-2">
                           <button type="button"
                           class="list-group-item list-group-item-action btn btn-primary btn-sm me-2" disabled>
                           {{ rol.prettyName }}
                           </button>
-                          @if (!id) {
+<!--                          @if (!id) {-->
                             <button type="button" class="btn btn-danger btn-sm" (click)="removeRol($index)">
                                 <i class="bi bi-trash-fill"></i>
                             </button>
-                          }
+<!--                          }-->
                       </div>
+                    }
                   }
               </div>
           </div>
@@ -313,7 +315,7 @@
           <div class="col-md-6">
               <div class="d-flex flex-row align-items-center">
                   <label for="province" class="col-form-label col-md-2">Provincia<label class="text-danger">*</label></label>
-                  
+
                   @if(isArgentinaSelected) {
                     <select id="province" class="form-select" formControlName="province"
                       [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('province')?.invalid && userForm.get('addressForm')?.get('province')?.touched,
@@ -407,11 +409,11 @@
                       (click)="setAddressValue($index)">
                           {{address.streetAddress}} {{address.number}}
                       </button>
-                      @if (!id) {
+<!--                      @if (!id) {-->
                         <button type="button" class="btn btn-danger btn-sm" (click)="removeAddress($index)">
                             <i class="bi bi-trash-fill"></i>
                         </button>
-                      }
+<!--                      }-->
                   </div>
               }
           </div>

@@ -98,7 +98,7 @@ export class UserUserFormComponent {
 
     //#region ON SUBMIT
     onSubmit(): void {
-      // TODO: Cambiar a valid :)
+      console.log(this.userForm)
       if (this.userForm.valid) {
         if (this.id === null) {
           this.createUser()
@@ -114,6 +114,7 @@ export class UserUserFormComponent {
     ngOnInit(): void {
       this.id = this.activatedRoute.snapshot.paramMap.get('id');
       if (this.id !== null) {
+        this.userForm.controls['email'].disable();
         this.setEditValues();
       } else {
         this.userForm.controls['email'].setAsyncValidators(emailValidator(this.userService))
@@ -166,7 +167,7 @@ export class UserUserFormComponent {
                 this.setContactValue(0);
               }
             }
-
+            console.log(this.user.roles)
             if (this.user.roles) {
               this.roles = [...this.user.roles];
               this.userForm.get('rolesForm.rol')?.setValue(this.roles[0]?.id || null);
@@ -316,7 +317,7 @@ export class UserUserFormComponent {
         this.userService.updateUser(this.user.id, toSnakeCase(this.user), 1).subscribe({
           next: (response) => {
             this.toastService.sendSuccess("Usuario actualizado con exito.")
-            this.router.navigate(['users/owner/list']);
+            this.router.navigate(['users/user/list']);
           },
           error: (error) => {
             this.toastService.sendError("Error actualizado el usuario.")
