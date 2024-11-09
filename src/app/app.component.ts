@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { RouterModule, RouterOutlet, Router } from '@angular/router';
+import { RouterModule, RouterOutlet, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import {
   MainLayoutComponent,
   NavbarItem,
@@ -9,6 +9,8 @@ import {
 import { LoginComponent } from './users/components/login/login.component';
 import { SessionService } from './users/services/session.service';
 import { LoginService } from './users/services/login.service';
+import { ForgotPasswordComponent } from './users/components/forgot-password/forgot-password.component';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +22,7 @@ import { LoginService } from './users/services/login.service';
     ToastsContainer,
     AsyncPipe,
     LoginComponent,
+  ForgotPasswordComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -27,6 +30,15 @@ import { LoginService } from './users/services/login.service';
 export class AppComponent {
   private loginService = inject(LoginService);
   private router = inject(Router);
+  private activatedRouter = inject(ActivatedRoute);
+  currentUrl!: string;
+  
+  ngOnInit(){
+    this.router.events
+    .pipe(filter(event => event instanceof NavigationEnd))
+    .subscribe(event => {
+        this.currentUrl = event.url;
+    });  }
 
   navbarMenu: NavbarItem[] = [
     {
