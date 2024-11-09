@@ -38,6 +38,7 @@ export class OwnerFormComponent implements OnInit {
   private ownerPlotService = inject(OwnerPlotService)
   private modalService = inject(NgbModal)
 
+  submitted = false
   title: string = '';
   id: string | null = null;
   address!: Address;
@@ -166,10 +167,13 @@ export class OwnerFormComponent implements OnInit {
       country: new FormControl('ARGENTINA', [Validators.required]),
       postalCode: new FormControl(0, [Validators.required]),
     }),
+    
   });
 
   onSubmit(): void {
-    this.id ? this.updateOwner() : this.createOwner();
+    this.submitted= true
+    if(this.hasContactEmail())
+      this.id ? this.updateOwner() : this.createOwner();
     /* if (this.ownerForm.valid) {
       this.id
         ? this.updateOwner()
@@ -181,6 +185,11 @@ export class OwnerFormComponent implements OnInit {
 
   onCancel(): void {
     this.router.navigate(['/users/owner/list']);
+  }
+
+  hasContactEmail():boolean{
+      let hasEmail= this.contacts.filter(c => c.contactType === "EMAIL")
+      return hasEmail !== null && hasEmail.length > 0;
   }
 
   createOwner() {
