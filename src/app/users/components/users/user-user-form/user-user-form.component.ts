@@ -54,6 +54,7 @@ export class UserUserFormComponent {
     rolesForCombo : Role[] = []
     provinceOptions!: any;
     countryOptions!: any;
+    editMode: boolean = false;
     //#endregion
 
     //#region FORMULARIO REACTIVO
@@ -113,6 +114,7 @@ export class UserUserFormComponent {
       this.id = this.activatedRoute.snapshot.paramMap.get('id');
       if (this.id !== null) {
         this.userForm.controls['email'].disable();
+        this.editMode = true
         this.setEditValues();
       } else {
         this.userForm.controls['email'].setAsyncValidators(emailValidator(this.userService))
@@ -240,8 +242,9 @@ export class UserUserFormComponent {
     addRol(): void {
       if (this.userForm.get('rolesForm')?.valid) {
         const rolValue = this.getRolValue()
-
+        console.log(rolValue.rol)
         rolValue && this.roles.push(rolValue.rol);
+        console.log(this.roles)
         this.userForm.get('rolesForm')?.reset();
       } else {
         this.toastService.sendError("Rol no valido.")
@@ -292,6 +295,7 @@ export class UserUserFormComponent {
       this.user.isActive = true;
       this.user.roleCodeList = this.transformRoles(this.user)
       this.user = toSnakeCase(this.user);
+      console.log(this.user)
       delete this.user.roles;
       this.userService.addUser(this.user, 1).subscribe({
         // '1' is x-user-id
@@ -363,11 +367,7 @@ export class UserUserFormComponent {
 
     //#region FUNCION ADDRESS
   removeAddress(index: number): void {
-    if (this.id === null) {
-      this.addresses.splice(index, 1);
-    } else {
-
-    }
+    this.addresses.splice(index, 1);
   }
 
   getAddressValue(): Address {
