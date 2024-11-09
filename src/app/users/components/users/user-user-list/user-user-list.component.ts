@@ -51,6 +51,10 @@ export class UserUserListComponent {
     .textFilter("Apellido", "lastName", "Apellido")
     .textFilter("Nombre de Usuario", "userName", "Nombre de Usuario")
     .textFilter("Correo Electrónico", "email", "Correo Electrónico")
+
+    .dateFilter("Fecha Inicio", "startDate", "")
+    .dateFilter("Fecha Inicio", "endDate", "")
+
     .selectFilter("Activo", "isActive", "", [
       { value: 'true', label: 'Activo' },
       { value: 'false', label: 'Inactivo' },

@@ -18,6 +18,7 @@ import { InfoComponent } from '../../commons/info/info.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {OwnerPlotService} from '../../../services/owner-plot.service';
 import {plotForUserValidator} from '../../../validators/cadastre-plot-for-users';
+import {birthdateValidation} from '../../../validators/birthdate.validations';
 
 @Component({
   selector: 'app-user-user-form',
@@ -63,6 +64,9 @@ export class UserUserFormComponent {
       firstName: new FormControl('', [Validators.required, Validators.maxLength(50)]), // Cambiado
       lastName: new FormControl('', [Validators.required, Validators.maxLength(50)]), // Cambiado
       userName: new FormControl('', [Validators.required, Validators.maxLength(50)]), // Cambiado
+      documentType: new FormControl('', [Validators.required]),
+      documentNumber: new FormControl('', [Validators.required, Validators.maxLength(10)]),
+      birthdate: new FormControl('', [Validators.required, birthdateValidation]),
 
       rolesForm: new FormGroup({
         rol: new FormControl('', []),
@@ -73,14 +77,14 @@ export class UserUserFormComponent {
         contactValue: new FormControl('', []),
       }),
       addressForm: new FormGroup({
-        streetAddress: new FormControl('', [Validators.required]),
-        number: new FormControl(0, [Validators.required, Validators.min(0)]),
+        streetAddress: new FormControl('', []),
+        number: new FormControl(0, [ Validators.min(0)]),
         floor: new FormControl(0),
         apartment: new FormControl(''),
-        city: new FormControl('Córdoba', [Validators.required]),
-        province: new FormControl('CORDOBA', [Validators.required]),
-        country: new FormControl('ARGENTINA', [Validators.required]),
-        postalCode: new FormControl('', [Validators.required]),
+        city: new FormControl('Córdoba', []),
+        province: new FormControl('CORDOBA', []),
+        country: new FormControl('ARGENTINA', []),
+        postalCode: new FormControl('', []),
       }),
 
       plotForm: new FormGroup({
@@ -98,14 +102,8 @@ export class UserUserFormComponent {
 
     //#region ON SUBMIT
     onSubmit(): void {
-      console.log(this.userForm)
       if (this.userForm.valid) {
-        if (this.id === null) {
-          this.createUser()
-        }
-        else {
-          this.updateUser()
-        }
+        this.id === null ? this.createUser() : this.updateUser()
       }
     }
     //#endregion
@@ -148,6 +146,9 @@ export class UserUserFormComponent {
               firstName: this.user.firstName,
               lastName: this.user.lastName,
               userName: this.user.userName,
+              documentType: this.user.documentType,
+              documentNumber: this.user.documentNumber,
+              birthdate: this.user.birthdate
             });
 
             if (response.plotId !== undefined) {
@@ -156,21 +157,14 @@ export class UserUserFormComponent {
 
             if (this.user.addresses) {
               this.addresses = [...this.user.addresses];
-              if (this.addresses.length > 0) {
-                this.setAddressValue(0);
-              }
             }
 
             if (this.user.contacts) {
               this.contacts = [...this.user.contacts];
-              if (this.contacts.length > 0) {
-                this.setContactValue(0);
-              }
             }
             console.log(this.user.roles)
             if (this.user.roles) {
               this.roles = [...this.user.roles];
-              this.userForm.get('rolesForm.rol')?.setValue(this.roles[0]?.id || null);
             }
           },
           error => {
@@ -195,7 +189,7 @@ export class UserUserFormComponent {
 
           contactFormGroup.patchValue({
             contactType: contact.contactType,
-            contactValue: contact.contactValue,
+            contactValue: contact.contactValue
           })
 
           this.contactIndex = index;
@@ -282,6 +276,9 @@ export class UserUserFormComponent {
       (this.user.lastName = this.userForm.get('lastName')?.value || ''),
       (this.user.userName = this.userForm.get('userName')?.value || ''),
       (this.user.email = this.userForm.get('email')?.value || ''),
+      (this.user.documentType = this.userForm.get('documentType')?.value || ''),
+      (this.user.documentNumber = this.userForm.get('documentNumber')?.value || ''),
+      (this.user.birthdate = this.userForm.get('birthdate')?.value || ''),
       (this.user.isActive = this.userForm.get('isActive')?.value || undefined),
       (this.user.contacts = [...this.contacts]),
       (this.user.addresses = [...this.addresses]);
@@ -314,6 +311,9 @@ export class UserUserFormComponent {
       if (this.user.id) {
         this.user.roles = this.transformRoles(this.user)
         delete this.user.createdDate
+        console.log(this.user)
+        console.log(this.user.documentType)
+        console.log(this.user.documentNumber)
         this.userService.updateUser(this.user.id, toSnakeCase(this.user), 1).subscribe({
           next: (response) => {
             this.toastService.sendSuccess("Usuario actualizado con exito.")

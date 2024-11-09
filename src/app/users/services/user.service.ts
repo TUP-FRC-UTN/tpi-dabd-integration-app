@@ -46,8 +46,6 @@ export class UserService {
       'x-user-id': userId
     });
 
-    console.log(user)
-
     return this.http.post<User>(`${this.host}`, user, {headers});
   }
 
