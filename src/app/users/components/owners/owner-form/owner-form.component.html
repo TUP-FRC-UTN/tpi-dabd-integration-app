@@ -253,22 +253,22 @@
             />
           </div>
           <div class="col-12">
-            @if (ownerForm.get('plotForm.plotNumber')?.touched &&
-            ownerForm.get('plotForm.plotNumber')?.invalid) { @if
-            (ownerForm.get('plotForm.plotNumber')?.getError('required')) {
-              <small class="text-danger">Campo requerido.</small>
-            } @if (ownerForm.get('plotForm.plotNumber')?.getError('min')) {
-              <small class="text-danger">El número mínimo es 1.</small>
-            } @if (ownerForm.get('plotForm.plotNumber')?.getError('serverError')) {
-              <small class="text-danger"
-              >Error en el servidor, por favor intenta nuevamente.</small
-              >
-            }  @if (ownerForm.get('plotForm.plotNumber')?.getError('plotExists')) { <small class="text-danger ms-2">
-              No existe un lote con ese numero en esa manzana.
-            </small> }
-              @if (ownerForm.get('plotForm.plotNumber')?.getError('plotWithNoOwner')) { <small class="text-danger ms-2">
-                Ese lote tiene un dueño asociado.
-              </small> }
+            @if (ownerForm.get('plotForm.plotNumber')?.touched && ownerForm.get('plotForm.plotNumber')?.invalid) {
+              @if (ownerForm.get('plotForm.plotNumber')?.hasError('required')) {
+                <small class="text-danger">Campo requerido.</small>
+              }
+              @if (ownerForm.get('plotForm.plotNumber')?.hasError('min')) {
+                <small class="text-danger">El número mínimo es 1.</small>
+              }
+              @if (ownerForm.get('plotForm.plotNumber')?.hasError('serverError')) {
+                <small class="text-danger">Error en el servidor, por favor intenta nuevamente.</small>
+              }
+              @if (ownerForm.get('plotForm.plotNumber')?.hasError('plotExists')) {
+                <small class="text-danger ms-2">No existe un lote con ese numero en esa manzana.</small>
+              }
+              @if (ownerForm.get('plotForm.plotNumber')?.hasError('plotWithNoOwner')) {
+                <small class="text-danger ms-2">Ese lote tiene un dueño asociado.</small>
+              }
             }
           </div>
         </div>
@@ -473,37 +473,7 @@
 
     <hr />
 
-    <!-- <div class="row">
-      <h5 class="mt-2 p-2">Añadir Contactos</h5>
 
-      <div class="col-md-6">
-        <div class="d-flex flex-row align-items-center">
-          <label for="first-name" class="form-label me-2">Email</label>
-          <input type="text" class="form-control" id="email" formControlName="email" />
-        </div>
-        <div>
-          @if(ownerForm.get('email')?.invalid && ownerForm.get('email')?.touched )
-          {
-            @if(ownerForm.get('email')?.errors?.['required']){ <small class="text-danger ms-2">requerido</small> }
-            @if(ownerForm.get('email')?.errors?.['email']){ <small class="text-danger ms-2">email no válido</small> }
-          }
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="d-flex flex-row align-items-center">
-          <label for="first-name" class="form-label me-2">Teléfono</label>
-          <input type="text" class="form-control" id="telephone" formControlName="telephone" />
-        </div>
-        <div>
-          @if(ownerForm.get('telephone')?.invalid && ownerForm.get('telephone')?.touched )
-          {
-            @if(ownerForm.get('telephone')?.errors?.['required']){ <small class="text-danger ms-2">requerido</small> }
-            @if(ownerForm.get('telephone')?.errors?.['pattern']){ <small class="text-danger ms-2">solo números</small> }
-          }
-        </div>
-      </div>
-    </div> -->
 
     <!-- Contactos -->
     <!-- Contactos -->
