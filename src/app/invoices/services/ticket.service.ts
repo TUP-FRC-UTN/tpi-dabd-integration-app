@@ -137,10 +137,13 @@ export class TicketService {
       });
     }
 
-  getAllWithFilters(page: number, size: number, status?: string, lotId?:string, firstPeriod?: string, lastPeriod?: string): Observable<PaginatedResponse<TicketDto>> {
+  getAllWithFilters(page: number, size: number, status?: string, lotId?:string, firstPeriod?: string, lastPeriod?: string, ownerId?: number): Observable<PaginatedResponse<TicketDto>> {
     let params = new HttpParams();
       // .set('page', page.toString()) //comentamos para el filtro del controlador
       // .set('size', size.toString());
+    if(ownerId){
+      params = params.set('ownerId', /*ownerId.toString()*/'1');
+    }
     if (status) {
       params = params.set('status', status);
     }
@@ -170,6 +173,73 @@ export class TicketService {
     const url = `${this.baseUrl}/updateTicketStatus/${id}`;
     const params = new HttpParams().set('status', status);
     return this.http.put<TicketDto>(url, null, { params });
+  }
+
+
+
+  
+  cutYearFilter(year : string) {
+    if(year == null) {
+      return '';
+    }
+    const yearStr = year.toString();
+    if(yearStr != '' && yearStr.startsWith('20')) {
+      return yearStr.slice(2);
+    }
+    if(yearStr != '' && Number(yearStr) < 2000){
+      alert('El año ingresado no es valido');
+    }
+    return year;
+  }
+
+  isValidYearFilter(year: string): boolean {
+    if((Number(year) < 1900) && year != "") {
+      alert('El año ingresado no es valido');
+      return false;
+    }
+
+    return true;
+
+  }
+
+  isValidateFullDate(year: string, month:string){
+    if (year == null) {
+      return true;
+    }
+    if(year != '' && month == ''){
+      alert('Completar correctamente los periodos.');
+      return false;
+    }
+    if(year == '' && month != ''){
+      alert('Completar correctamente los periodos.');
+      return false;
+    }
+
+    return true;
+  }
+
+  isValidPeriod(year: string, month: string): boolean {
+    if (!year || !month) {
+      return false;
+    }
+    const numberMonth = Number(month);
+    const numberYear = Number(year);
+    if (isNaN(numberMonth) || numberMonth < 1 || numberMonth > 12 || isNaN(numberYear)) {
+      return false;
+    }
+  
+    const date = new Date(Date.UTC(numberYear, numberMonth - 1, 1));
+    const validYear = date.getUTCFullYear();
+    const validMonth = date.getUTCMonth() + 1;
+  
+    return validYear === numberYear && validMonth === numberMonth;
+  }
+  
+  convertToPeriod(year: string, month: string): string {
+    if (this.isValidPeriod(year, month)) {
+      return `${month.padStart(2, '0')}/${year.slice(-2)}`;
+    }
+    return '';
   }
 
 }
