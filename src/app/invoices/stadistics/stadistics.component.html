@@ -1,35 +1,124 @@
-<div class="container d-flex justify-content-center">
-    <div class="row">
-      <!-- Gráfico de barras para "Cantidad de Pagos por Día" -->
-      <div class="col-md-6 mb-4 d-flex justify-content-center">
-        <div class="card shadow-sm w-100" style="max-width: 500px;">
-          <div class="card-body">
-            <h3 class="card-title text-center">Cantidad de Pagos por Día</h3>
-            <div class="chart-container" style="position: relative; height: 40vh; width: 100%;">
-              <canvas baseChart
-                      [data]="barChartData"
-                      [options]="barChartOptions"
-                      chartType="bar">
-              </canvas>
-            </div>
+<app-main-container title="Graficos estadisticos" subTitle="Varios informes estadisticos de pagos" (infoButtonClick)="showInfo()">
+
+<div class="container">
+  <!-- Filtros de fecha y botón buscar -->
+  <form [formGroup]="dateForm" (ngSubmit)="buscar()">
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <label for="startDate" class="form-label">Periodo Desde</label>
+        <input type="date" id="startDate" class="form-control" formControlName="startDate">
+        @if (dateForm.get('startDate')?.errors?.['required'] && dateForm.get('startDate')?.touched) {
+          <div class="text-danger mt-1">La fecha de inicio es requerida.</div>
+        }
+      </div>
+      <div class="col-md-4">
+        <label for="endDate" class="form-label">Periodo Hasta</label>
+        <input type="date" id="endDate" class="form-control" formControlName="endDate">
+        @if (dateForm.get('endDate')?.errors?.['required'] && dateForm.get('endDate')?.touched) {
+          <div class="text-danger mt-1">La fecha de fin es requerida.</div>
+        }
+        @if (dateForm.get('endDate')?.errors?.['endDateInvalid'] && dateForm.get('endDate')?.touched) {
+          <div class="text-danger mt-1">La fecha de fin no puede ser menor que la fecha de inicio.</div>
+        }
+      </div>
+      <div class="col-md-4 d-flex align-items-end">
+        <button class="btn btn-primary w-100" type="submit" [disabled]="dateForm.invalid">
+          <i class="bi bi-search"></i> Buscar
+        </button>
+      </div>
+    </div>
+  </form>
+  
+
+  <div class="row mb-4">
+    <!-- Columnas de tarjetas de resumen -->
+    <div class="col-md-6 col-lg-3">
+      <div class="card shadow-lg rounded-4 text-dark mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Resumen de Ingresos</h5>
+          <p class="card-text fs-3"><i class="bi bi-cash-coin"></i> {{ resumenIngresos }} $</p>
+          <small>Promedio mensual: {{ promedioMensual }}</small>
+        </div>
+      </div>
+      <div class="card shadow-lg rounded-4 text-dark mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Métodos de Pago</h5>
+          <p class="card-text fs-3"><i class="bi bi-wallet2"></i> {{ metodosPago }}</p>
+          <small>Método principal: {{ metodoPrincipal }} ({{ porcentajeMetodoPrincipal }}%)</small>
+        </div>
+      </div>
+      <div class="card shadow-lg rounded-4 text-dark mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Boleta más alta</h5>
+          <p class="card-text fs-3"><i class="bi bi-receipt"></i> {{ boletaMasAlta }} $</p>
+          <small>Promedio Top 5: {{ promedioTop5 }}$</small>
+        </div>
+      </div>
+      <div class="card shadow-lg rounded-4 text-dark">
+        <div class="card-body">
+          <h5 class="card-title">MercadoPago - Promedio</h5>
+          <p class="card-text fs-3"><i class="bi bi-graph-up-arrow"></i> {{ mercadoPagoPromedio }} $</p>
+          <small>{{ porcentajeTransacciones }}% de las transacciones</small>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Gráfico de comparación de ingresos -->
+    <div class="col-md-6 col-lg-6">
+      <div class="card shadow-lg rounded-4 mb-4">
+        <div class="card-body">
+          <h3 class="card-title text-center">Comparación de Ingresos</h3>
+          <div class="chart-container" style="position: relative; height: 40vh; width: 100%;">
+            <canvas baseChart
+                    [data]="barChartData"
+                    [options]="barChartOptions"
+                    chartType="bar">
+            </canvas>
           </div>
         </div>
       </div>
-  
-      <!-- Gráfico de torta para "Estado de Pagos" -->
-      <div class="col-md-6 mb-4 d-flex justify-content-center">
-        <div class="card shadow-sm w-100" style="max-width: 500px;">
-          <div class="card-body">
-            <h3 class="card-title text-center">Estado de Pagos</h3>
-            <div class="chart-container" style="position: relative; height: 40vh; width: 100%;">
-              <canvas baseChart
-                      [data]="doughnutChartData"
-                      [type]="pieChartType">
-              </canvas>
-            </div>
+      <div class="card shadow-lg rounded-4 mb-4">
+        <div class="card-body">
+          <h3 class="card-title text-center">Comparación de Ingresos</h3>
+          <div class="chart-container" style="position: relative; height: 40vh; width: 100%;">
+            <canvas baseChart
+                    [data]="barChartData"
+                    [options]="barChartOptions"
+                    chartType="bar">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de torta y top 5 de gastos -->
+    <div class="col-md-6 col-lg-3">
+      <div class="card shadow-lg rounded-4 mb-4">
+        <div class="card-body">
+          <h3 class="card-title text-center">Promedios de Pagos</h3>
+          <div class="chart-container" style="position: relative; height: 40vh; width: 100%;">
+            <canvas baseChart
+                    [data]="doughnutChartData"
+                    [type]="pieChartType">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-lg rounded-4">
+        <div class="card-body">
+          <h3 class="card-title text-center">TOP 5</h3>
+          <p class="text-center">Gastos más caros</p>
+          <div class="chart-container" style="position: relative; height: 30vh; width: 100%;">
+            <canvas baseChart
+                    [data]=""
+                    [options]=""
+                    chartType="horizontalBar">
+            </canvas>
           </div>
         </div>
       </div>
     </div>
   </div>
-  
+</div>
+</app-main-container>

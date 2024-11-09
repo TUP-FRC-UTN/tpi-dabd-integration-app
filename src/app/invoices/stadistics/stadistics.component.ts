@@ -1,16 +1,62 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ChartData, ChartOptions, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
+import { MainContainerComponent } from 'ngx-dabd-grupo01';
+import { InfoComponent } from '../info/info.component';
+import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-stadistics',
   standalone: true,
-  imports: [BaseChartDirective, CommonModule],
+  imports: [BaseChartDirective, CommonModule, MainContainerComponent, FormsModule, ReactiveFormsModule],
   templateUrl: './stadistics.component.html',
   styleUrl: './stadistics.component.css'
 })
 export class StadisticsComponent implements OnInit {
+
+  @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
+
+  // Variables cards izquierda
+  resumenIngresos: number = 377;
+  promedioMensual: number = 385;
+
+  metodosPago: number = 22;
+  metodoPrincipal: string = 'MercadoPago';
+  porcentajeMetodoPrincipal: number = 40.9;
+
+  boletaMasAlta: number = 20000;
+  promedioTop5: number = 18860;
+
+  mercadoPagoPromedio: number = 17144;
+  porcentajeTransacciones: number = 40.9;
+
+  // Variables para enviar la request y carguen los datos al service
+  dateForm: FormGroup;
+
+
+  constructor(private fb: FormBuilder, private modalService: NgbModal) {
+    this.dateForm = this.fb.group({
+      startDate: ['', Validators.required],
+      endDate: ['', [Validators.required, this.endDateValidator.bind(this)]]
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadPaymentData();
+    this.loadPaymentStatusData();
+  }
+
+   // Validar que la fecha fin sea mayor a fecha inicio
+  endDateValidator(control: AbstractControl): { [key: string]: any } | null {
+    const startDate = this.dateForm?.get('startDate')?.value;
+    const endDate = control.value;
+    if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+      return { endDateInvalid: true };
+    }
+    return null;
+  }
   // Configuración del gráfico de barras para "Cantidad de Pagos por Día"
   public barChartData: ChartData<'bar'> = {
     labels: [], // Fechas
@@ -24,7 +70,7 @@ export class StadisticsComponent implements OnInit {
       }
     ]
   };
-  public pieChartType: ChartType = 'pie'; 
+  public pieChartType: ChartType = 'pie';
   // Opciones del gráfico de barras
   public barChartOptions: ChartOptions<'bar'> = {
     responsive: true,
@@ -59,12 +105,7 @@ export class StadisticsComponent implements OnInit {
 
 
 
-  constructor() {}
 
-  ngOnInit(): void {
-    this.loadPaymentData();
-    this.loadPaymentStatusData();
-  }
 
   // Simulación de datos para el gráfico de barras
   loadPaymentData() {
@@ -82,5 +123,60 @@ export class StadisticsComponent implements OnInit {
     const anulado = 5;
 
     this.doughnutChartData.datasets[0].data = [pendiente, pagado, anulado];
+  }
+
+
+
+
+
+
+
+
+  // Buscador que carga los filtros de fechas
+
+  buscar() {
+
+    const fechas = this.dateForm.value
+
+    console.log('Fechas seleccionadas:', fechas);
+    const pendiente = 50;
+    const pagado = 25;
+    const anulado = 25;
+
+    // Asignar un nuevo objeto para forzar la detección de cambios
+    this.doughnutChartData = {
+      labels: ['Pendiente', 'Pagado', 'Anulado'],
+      datasets: [
+        {
+          data: [pendiente, pagado, anulado],
+          backgroundColor: [
+            'rgba(255, 206, 86, 0.2)',  // Pendiente - amarillo
+            'rgba(75, 192, 192, 0.2)',  // Pagado - verde
+            'rgba(255, 99, 132, 0.2)'   // Anulado - rojo
+          ],
+          borderColor: [
+            'rgba(255, 206, 86, 1)',    // Pendiente
+            'rgba(75, 192, 192, 1)',    // Pagado
+            'rgba(255, 99, 132, 1)'     // Anulado
+          ],
+          borderWidth: 1
+        }
+      ]
+    };
+    this.chart?.update();
+  }
+
+
+  // ACA SE ABRE EL MODAL DE INFO
+  showInfo(): void {
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true,
+    });
+
+    modalRef.componentInstance.data = { role: 'owner' };
   }
 }
