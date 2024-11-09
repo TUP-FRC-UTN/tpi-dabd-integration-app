@@ -569,6 +569,9 @@
             </button>
           }
         </div>
+        @if (!hasContactEmail() && submitted) {
+          <small class="text-danger ms-2 mt-2">Debe cargarse al menos un contacto de tipo email.</small>
+        }
       </div>
       @if (contacts.length !== 0) {
 
