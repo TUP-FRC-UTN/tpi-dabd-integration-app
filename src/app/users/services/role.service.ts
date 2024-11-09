@@ -23,7 +23,7 @@ export class RoleService {
 
   getAllRoles(page : number, size : number, isActive? : boolean): Observable<PaginatedResponse<Role>>{
     let params = new HttpParams()
-      .set('page', page.toString())
+      .set('page', page >= 0 ? page.toString() : "0")
       .set('size', size.toString());
 
     if (isActive !== undefined) {

@@ -59,7 +59,7 @@
 
   <div class="table-container">
     <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #rolesTable>
-      @if (filteredRoles.length === 0) {
+      @if ((filter$ | async)?.length === 0) {
         <thead>
         <td colspan="7">
           <div class="text-center p-2">
@@ -80,7 +80,7 @@
         </tr>
         </thead>
         <tbody>
-          @for (role of (filteredRoles.length > 0 ? filteredRoles : roles); track $index) {
+          @for (role of ((filter$ | async)); track $index) {
             <tr>
               <td>
                 {{ role.code }}

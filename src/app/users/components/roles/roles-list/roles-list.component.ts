@@ -7,25 +7,28 @@ import { Router } from '@angular/router';
 import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { ConfirmAlertComponent, MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
 import { InfoComponent } from '../../commons/info/info.component';
-import {DatePipe} from '@angular/common';
+import {AsyncPipe, DatePipe} from '@angular/common';
+import { ModalService } from 'ngx-dabd-2w1-core';
 
 @Component({
   selector: 'app-roles-list',
   standalone: true,
-  imports: [RolesFilterButtonsComponent, FormsModule, NgbPagination, MainContainerComponent],
+  imports: [RolesFilterButtonsComponent, FormsModule, NgbPagination, MainContainerComponent, AsyncPipe],
   templateUrl: './roles-list.component.html',
   styleUrl: './roles-list.component.css',
   providers: [DatePipe]
 })
 export class RolesListComponent implements OnInit{
+  
+  
   @ViewChild('filterComponent') filterComponent!: RolesFilterButtonsComponent<Role>;
   @ViewChild('rolesTable', { static: true }) tableName!: ElementRef<HTMLTableElement>;
 
   roles: Role[] = [];
-  filteredRoles: Role[] = []
+  //filteredRoles: Role[] = []
   currentPage: number = 0
   pageSize: number = 10
   totalItems: number = 0;
@@ -33,11 +36,21 @@ export class RolesListComponent implements OnInit{
   roleId: number | undefined;
   lastPage: boolean | undefined;
   retrieveRolesByActive: boolean | undefined = true;
+  //itemsList!: Role[];
+  formPath: string = "users/plots/list";
+  objectName : string = ""
+  headers : string[] = ['Código', 'Nombre', 'Nombre especial', 'Descripción', 'Activo']
+  private LIMIT_32BITS_MAX = 2147483647
+  private filteredRoles = new BehaviorSubject<Role[]>([]);
+  filter$ = this.filteredRoles.asObservable();
 
-  constructor( private roleService: RoleService,
-               private router: Router,
-               private modalService: NgbModal,
-               private toastService: ToastService)
+  private excelService = inject(CadastreExcelService);
+  private roleService = inject(RoleService);
+  private router = inject(Router);
+  private modalService = inject(NgbModal);
+  private toastService = inject(ToastService)
+
+  constructor()
   { }
 
   ngOnInit(): void {
@@ -45,32 +58,18 @@ export class RolesListComponent implements OnInit{
   }
 
   ngAfterViewInit(): void {
-    this.filterComponent.filter$.subscribe((filteredList: Role[]) => {
+    /* this.filterComponent.filter$.subscribe((filteredList: Role[]) => {
       this.filteredRoles = filteredList;
       this.currentPage = 0;
-    });
+    }); */
   }
 
-  onItemsPerPageChange() {
-    this.currentPage = 1;
-    // this.confirmFilterPlot(); funcion para filtrar roles
-  }
-
-  onPageChange(page: number) {
-    this.currentPage = page;
-    // this.confirmFilterPlot(); funcion para filtrar roles
-  }
-
-  changeActiveFilter(isActive? : boolean) {
-    this.retrieveRolesByActive = isActive;
-    this.getAllRoles();
-  }
-
+  //#region Role crud
   getAllRoles(){
     this.roleService.getAllRoles(this.currentPage, this.pageSize, this.retrieveRolesByActive).subscribe({
       next: (response: any) => {
         this.roles = response.content;
-        this.filteredRoles = [...this.roles];
+        this.filteredRoles.next([...this.roles]);
         this.lastPage = response.last;
         this.totalItems = response.totalElements;
       },
@@ -120,39 +119,59 @@ export class RolesListComponent implements OnInit{
       this.router.navigate(['users/roles/detail/' + roleId]);
     }
   }
+  //#end region
 
-  //#region POR ACOMODAR
+  /**
+   * Filters the list of owners based on the input value in the text box.
+   * The filter checks if any property of the owner contains the search string (case-insensitive).
+   * The filtered list is then emitted through the `filterSubject`.
+   *
+   * @param event - The input event from the text box.
+   */
+  onFilterTextBoxChanged(event: Event) {
+    const target = event.target as HTMLInputElement;
+    if (target.value?.length <= 2) {
+      this.filteredRoles.next(this.roles);
+    } else {
+      let filterValue = target.value.toLowerCase();
+      let filteredList = this.roles.filter(item => {
+        return Object.values(item).some(prop => {
+          const propString = prop ? prop.toString().toLowerCase() : '';
 
-  itemsList!: Role[];
-  formPath: string = "users/plots/list";
-  objectName : string = ""
+          // Se puede usar `includes` para verificar si hay coincidencias
+          return propString.includes(filterValue);
+        });
+      });
 
-  headers : string[] = ['Código', 'Nombre', 'Nombre especial', 'Descripción', 'Activo']
-
-  private dataMapper = (item: Role) => [
-    item["code"],
-    item["name"],
-    item["prettyName"],
-    item['description'],
-    item['active']? 'Activo' : 'Inactivo',
-  ];
-
-  private LIMIT_32BITS_MAX = 2147483647
-  // Subject to emit filtered results
-  private filterSubject = new Subject<Role[]>();
-  // Observable that emits filtered owner list
-  filter$ = this.filterSubject.asObservable();
-
-  // Inject the Excel service for export functionality
-  private excelService = inject(CadastreExcelService);
-
-  // Se va a usar para los nombres de los archivos.
-  getActualDayFormat() {
-    const today = new Date();
-    const formattedDate = today.toISOString().split('T')[0];
-    return formattedDate;
+      this.filteredRoles.next(filteredList);
+    }
   }
 
+  //#region Rounting
+  /**
+   * Redirects to the specified form path.
+   */
+  redirectToForm() {
+    console.log(this.formPath);
+    this.router.navigate([this.formPath]);
+  }
+
+  //#endregion
+
+    //#region Pageable
+    onItemsPerPageChange() {
+      this.currentPage = 1;
+      // this.confirmFilterPlot(); funcion para filtrar roles
+    }
+  
+    onPageChange(page: number) {
+      this.currentPage = page;
+      // this.confirmFilterPlot(); funcion para filtrar roles
+    }
+    //#end region
+
+
+  //#regin Export
   /**
    * Export the HTML table to a PDF file.
    * Calls the `exportTableToPdf` method from the `CadastreExcelService`.
@@ -179,42 +198,24 @@ export class RolesListComponent implements OnInit{
     });
   }
 
-  /**
-   * Filters the list of owners based on the input value in the text box.
-   * The filter checks if any property of the owner contains the search string (case-insensitive).
-   * The filtered list is then emitted through the `filterSubject`.
-   *
-   * @param event - The input event from the text box.
-   */
-  onFilterTextBoxChanged(event: Event) {
-    const target = event.target as HTMLInputElement;
-    if (target.value?.length <= 2) {
-      this.filterSubject.next(this.itemsList);
-    } else {
-      let filterValue = target.value.toLowerCase();
-      let filteredList = this.itemsList.filter(item => {
-        return Object.values(item).some(prop => {
-          const propString = prop ? prop.toString().toLowerCase() : '';
-
-          // Se puede usar `includes` para verificar si hay coincidencias
-          return propString.includes(filterValue);
-        });
-      });
-
-      this.filterSubject.next(filteredList);
-    }
+  getActualDayFormat() {
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0];
+    return formattedDate;
   }
 
-  /**
-   * Redirects to the specified form path.
-   */
-  redirectToForm() {
-    console.log(this.formPath);
-    this.router.navigate([this.formPath]);
+  dataMapper(item: Role){
+    return ([
+      item["code"],
+      item["name"],
+      item["prettyName"],
+      item['description'],
+      item['active']? 'Activo' : 'Inactivo',
+    ]);
   }
+  //#end region
 
-  //#endregion
-
+  //#region Info Button
   openInfo(){
     const modalRef = this.modalService.open(InfoComponent, {
       size: 'lg',
@@ -291,4 +292,12 @@ export class RolesListComponent implements OnInit{
       'La interfaz está diseñada para ofrecer una administración eficiente de los roles, manteniendo la integridad y precisión de los datos.'
     ];
   }
+  //#end region
+
+   //#region Old Filters
+   changeActiveFilter(isActive? : boolean) {
+    this.retrieveRolesByActive = isActive;
+    this.getAllRoles();
+  }
+  //#end region
 }
