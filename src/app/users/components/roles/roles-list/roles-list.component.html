@@ -16,25 +16,7 @@
             (input)="onFilterTextBoxChanged($event)"
             placeholder="Buscar..."
           />
-          <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-funnel-fill"></i>
-          </button>
-          <ul class="dropdown-menu p-3">
-            <li><a class="dropdown-item ms-n2" >Manzana</a></li>
-            <li><input type="number" class="form-control"></li>
-            <li><a class="dropdown-item ms-n2" >Estado de Lote</a></li>
-            <li><select name="" id="" class="form-control"></select></li>
-            <li><a class="dropdown-item ms-n2" >Tipo de Lote</a></li>
-            <li><select name="" id="" class="form-control mb-3"></select></li> <!-- Espacio añadido -->
-            <li>
-              <button type="button" class="btn btn-outline-danger me-2" >
-                <i class="bi bi-trash-fill"></i>
-              </button>
-              <button type="button" class="btn btn-outline-primary">
-                <i class="bi bi-search"></i>
-              </button>
-            </li>
-          </ul>
+          <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
         </div>
       </div>
     </div>
@@ -42,7 +24,7 @@
     <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
     <div class="d-flex align-items-center">
       <!-- Botón "+" -->
-      <button type="button" class="btn btn-outline-primary" (click)="redirectToForm()">+</button>
+      <!-- <button type="button" class="btn btn-outline-primary" (click)="redirectToForm()">+</button> -->
 
       <!-- Línea vertical y botones de exportación -->
       <div class="vertical-line mx-3"></div>
