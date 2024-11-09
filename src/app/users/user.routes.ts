@@ -31,8 +31,8 @@ import {
 export const USER_ROUTES: Routes = [
     /* { path: 'login', component: LoginComponent },
     { path: '', redirectTo: '/login', pathMatch: 'full' }, */
-    { path: '', component: UserHomeComponent },
-    { path: 'home', component: HomeComponent, /* canActivate: [authGuard] */ },
+    //{ path: '', component: UserHomeComponent },
+    //{ path: 'home', component: HomeComponent, /* canActivate: [authGuard] */ },
     { path: 'owner/form', component: OwnerFormComponent, /* canActivate: [authGuard] */ },
     { path: 'owner/form/:id', component: OwnerFormComponent, /* canActivate: [authGuard] */ },
     { path: 'owner/detail/:id', component: OwnerDetailComponent, /* canActivate: [authGuard] */ },

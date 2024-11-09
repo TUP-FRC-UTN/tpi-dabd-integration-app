@@ -13,7 +13,7 @@ export class SessionService {
   isAuthenticated$: Observable<boolean> = this.isAuthenticatedSubject.asObservable();
 
   constructor() { 
-    //this.isAuthenticatedSubject.next(true)
+    this.isAuthenticatedSubject.next(true)
   }
 
   /**
