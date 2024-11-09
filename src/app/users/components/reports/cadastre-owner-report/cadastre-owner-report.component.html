@@ -1,4 +1,4 @@
-<app-main-container title="Dashboard de propietarios">
+<app-main-container title="Dashboard de propietarios" (infoButtonClick)="openInfo()">
   <!-- Filters Row -->
   <div class="d-flex align-items-center mb-3">
     <app-table-filters
@@ -126,4 +126,170 @@
       </div>
     </div>
   </div>
+
+
+  <!-- Existing KPI and Chart Sections for Owners... -->
+
+<!-- KPIs for Plots -->
+<h3 class="mb-3">KPIs - Lotes</h3>
+<div class="row mb-4">
+  <!-- Total Built Area KPI -->
+  <div class="col-md-3 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-primary text-white me-3">
+            <i class="bi bi-building"></i>
+          </div>
+          <h6 class="card-subtitle text-muted mb-0">Área Construida Total</h6>
+        </div>
+        <h2 class="card-title mb-0">{{ totalBuiltArea }} m²</h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- Most Frequent Plot Type KPI -->
+  <div class="col-md-3 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-success text-white me-3">
+            <i class="bi bi-house"></i>
+          </div>
+          <h6 class="card-subtitle text-muted mb-0">Tipo de Lote Más Frecuente</h6>
+        </div>
+        <h2 class="card-title mb-0">{{ mostFrequentPlotType }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- Average Plot Area KPI -->
+  <div class="col-md-3 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-warning text-white me-3">
+            <i class="bi bi-rulers"></i>
+          </div>
+          <h6 class="card-subtitle text-muted mb-0">Área Promedio de Lotes</h6>
+        </div>
+        <h2 class="card-title mb-0">{{ averagePlotArea | number:'1.0-2' }} m²</h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- Plots Created Last Month KPI -->
+  <div class="col-md-3 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-info text-white me-3">
+            <i class="bi bi-calendar-plus"></i>
+          </div>
+          <h6 class="card-subtitle text-muted mb-0">Lotes Creados Último Mes</h6>
+        </div>
+        <h2 class="card-title mb-0">{{ plotsCreatedLastMonth }}</h2>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KPIs for Accounts -->
+<h3 class="mb-3">KPIs - Cuentas</h3>
+<div class="row mb-4">
+  <!-- Accounts with Negative Balance KPI -->
+  <div class="col-md-6 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-danger text-white me-3">
+            <i class="bi bi-exclamation-circle"></i>
+          </div>
+          <h6 class="card-subtitle text-muted mb-0">Cuentas con Saldo Deudor</h6>
+        </div>
+        <h2 class="card-title mb-0">{{ debtorAccountsCount }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accounts with Positive Balance KPI -->
+  <div class="col-md-6 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-success text-white me-3">
+            <i class="bi bi-check-circle"></i>
+          </div>
+          <h6 class="card-subtitle text-muted mb-0">Cuentas con Saldo Acreedor</h6>
+        </div>
+        <h2 class="card-title mb-0">{{ creditorAccountsCount }}</h2>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Plot Charts Section -->
+<h3 class="mb-3">Gráficos - Lotes</h3>
+<div class="chart-section mb-4 mt-3 p-3 border rounded">
+  <div class="charts d-flex justify-content-between mt-4">
+    <!-- Distribución de Tipos de Lote -->
+    <div class="chart">
+      <h6>Distribución de Tipos de Lote</h6>
+      <canvas
+        baseChart
+        height="220px"
+        [type]="'pie'"
+        [datasets]="plotTypeChartDatasets"
+        [labels]="plotTypeChartLabels"
+        [options]="pieChartOptions"
+      ></canvas>
+    </div>
+
+    <!-- Distribución de Estados de Lote -->
+    <div class="chart">
+      <h6>Distribución de Estados de Lote</h6>
+      <canvas
+        baseChart
+        height="220px"
+        [type]="'bar'"
+        [datasets]="plotStatusChartDatasets"
+        [labels]="plotStatusChartLabels"
+        [options]="barChartOptions"
+      ></canvas>
+    </div>
+
+    <!-- Activos e Inactivos -->
+    <div class="chart">
+      <h6>Lotes Activos e Inactivos</h6>
+      <canvas
+        baseChart
+        height="220px"
+        [type]="'pie'"
+        [datasets]="plotActiveChartDatasets"
+        [labels]="plotActiveChartLabels"
+        [options]="pieChartOptions"
+      ></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- KPIs - Cuentas -->
+<h3 class="mb-3">Gráficos - Cuentas</h3>
+<div class="chart-section mb-4 mt-3 p-3 border rounded">
+  <div class="charts d-flex justify-content-between mt-4">
+    <!-- Distribución de Saldos (Acreedor/Deudor) -->
+    <div class="chart">
+      <h6>Distribución de Saldos</h6>
+      <canvas
+        baseChart
+        height="220px"
+        [type]="'pie'"
+        [datasets]="accountBalanceChartDatasets"
+        [labels]="accountBalanceChartLabels"
+        [options]="pieChartOptions"
+      ></canvas>
+    </div>
+  </div>
+</div>
+
 </app-main-container>
