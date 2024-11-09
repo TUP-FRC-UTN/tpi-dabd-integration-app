@@ -50,7 +50,6 @@ registerLocaleData(localeEs, 'es');
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    TableComponent,
     MainContainerComponent,
     NgbPagination,
     TranslateStatusTicketPipe,
