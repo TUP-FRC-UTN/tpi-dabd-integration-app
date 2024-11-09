@@ -62,7 +62,7 @@ registerLocaleData(localeEs, 'es');
   ],
   templateUrl: './owner-list-expensas.component.html',
   styleUrl: './owner-list-expensas.component.css',
-  providers: [DatePipe, { provide: LOCALE_ID, useValue: 'es' }],
+  providers: [DatePipe, { provide: LOCALE_ID, useValue: 'es' }, PeriodToMonthYearPipe],
 })
 export class OwnerListExpensasComponent {
   //#region ATT de PAGINADO
@@ -151,7 +151,8 @@ export class OwnerListExpensasComponent {
     private modalService: NgbModal,
     private datePipe: DatePipe,
     private excelService: PaymentExcelService,
-    private fileService: FilesServiceService
+    private fileService: FilesServiceService, 
+    private periodToMonthYearPipe:PeriodToMonthYearPipe
   ) {
     this.fechasForm = this.formBuilder.group({
       fechaInicio: [''],
@@ -246,21 +247,45 @@ export class OwnerListExpensasComponent {
     });
   }
 
-  onUpload(): void {
-    if (this.selectedFile) {
-      const formData = new FormData();
-      formData.append('file', this.selectedFile, this.selectedFile.name);
+  isUploading = false;
+  uploadSuccess: boolean | null = null;
 
-      this.http.post('http://localhost:8080/files/upload', formData).subscribe(
-        (response) => {
-          console.log('File uploaded successfully!', response);
-        },
-        (error) => {
-          console.error('Error uploading file:', error);
-        }
-      );
+
+  onUpload(): void {
+    if (!this.selectedFile) {
+      console.warn('No file selected!');
+      return;
     }
-  }
+
+    const formData = new FormData();
+    formData.append('file', this.selectedFile, this.selectedFile.name);
+
+    // Agregar el JSON como un string en el FormData
+    const jsonData = {
+      idTicket: 123,
+      title: "Concert Ticket",
+      description: "Ticket for the annual concert",
+      totalPrice: 150.00
+    };
+    formData.append('data', JSON.stringify(jsonData));
+
+    // Opcional: indicar que el archivo está en proceso de subida
+    this.isUploading = true;
+
+    this.http.post('http://localhost:8090/payments/saveReceipt', formData).subscribe(
+      (response) => {
+        console.log('File uploaded successfully!', response);
+        this.isUploading = false;
+        this.uploadSuccess = true;
+      },
+      (error) => {
+        console.error('Error uploading file:', error);
+        this.isUploading = false;
+        this.uploadSuccess = false;
+      }
+    );
+}
+
   //#region FUNCIONES PARA PAGINADO
   onItemsPerPageChange() {
     --this.currentPage;
@@ -322,10 +347,8 @@ export class OwnerListExpensasComponent {
 
   pagar() {
     this.requestData.idTicket = this.ticketSelectedModal.id;
-    this.requestData.description = 'ads'; // `Expensas de ${this.formatDate(this.ticketSelectedModal.issueDate)}`;
-    this.requestData.title = 'ads'; //`Expensas de ${this.formatDate(this.ticketSelectedModal.issueDate )} con vencimiento: ${this.formatDate(
-    // this.ticketSelectedModal.expirationDate
-    // )}`;
+    this.requestData.description = `Expensas del periodo ${this.periodToMonthYearPipe.transform(this.ticketSelectedModal.period)}`;
+    this.requestData.title = `Expensas del periodo ${this.periodToMonthYearPipe.transform(this.ticketSelectedModal.period)}`;
     this.requestData.totalPrice = this.calculateTotal(this.ticketSelectedModal);
     console.log(this.requestData);
     this.mercadopagoservice.crearPreferencia(this.requestData).subscribe(

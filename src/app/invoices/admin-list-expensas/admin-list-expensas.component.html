@@ -197,7 +197,7 @@
               <td>{{ i + 1 }}</td>
               <td>{{ item.description }}</td>
               <td>
-                {{ item.amount | currency : "$" : "symbol-narrow" : "1.2-2" : "en-US" }}
+                {{ item.amount | currencyFormat}}
               </td>
               <!-- <td>{{ item.price | currency }}</td> -->
               <!-- <td>{{ (item.quantity * item.price) | currency }}</td> -->
@@ -221,7 +221,7 @@
           </div>
           <div class="col-md-6 text-end">
             <strong>Total:</strong>
-            {{ calculateTotal(ticketSelectedModal) | currency }}
+            {{ calculateTotal(ticketSelectedModal) | currencyFormat }}
           </div>
         </div>
       </div>

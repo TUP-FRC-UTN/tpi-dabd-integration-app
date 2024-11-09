@@ -233,7 +233,7 @@
           <div class="col-md-6 text-end">
             <strong>Fecha de emisión:</strong>
             {{ ticketSelectedModal.issueDate | date : "dd/MM/yyyy" }}<br />
-            <strong>Fecha de expiración:</strong>
+            <strong>Fecha de vencimiento</strong>
             {{ ticketSelectedModal.expirationDate | date : "dd/MM/yyyy" }}
           </div>
         </div>
@@ -259,7 +259,7 @@
               <td>{{ i + 1 }}</td>
               <td>{{ item.description }}</td>
               <td>
-                {{ item.amount | currency : "$" : "symbol-narrow" : "1.2-2" : "en-US" }}
+                {{ item.amount | currencyFormat }}
               </td>
               <!-- <td>{{ item.price | currency }}</td> -->
               <!-- <td>{{ (item.quantity * item.price) | currency }}</td> -->
@@ -285,7 +285,7 @@
             <strong>Total:</strong>
             {{
               calculateTotal(ticketSelectedModal)
-                | currency : "" : "symbol-narrow" : "1.2-2" : "es-ES"
+                | currencyFormat
             }}
           </div>
         </div>
@@ -295,7 +295,9 @@
           Cerrar
         </button>
         <!-- <button type="button" class="btn btn-primary" (click)="pagar()">Pagar</button> -->
-        <div id="wallet_container"></div>
+        <div *ngIf="ticketSelectedModal.status === 'PENDING'" id="wallet_container">
+        </div>
+        
       </div>
     </div>
   </div>
@@ -326,7 +328,7 @@
         <div class="row mb-4">
           <div class="col-md-6">
             <h6 class="mb-0">
-              ID Factura:
+              Factura - Ticket N°
               <strong>{{ ticketSelectedModal.ticketNumber }}</strong>
             </h6>
           </div>
@@ -352,7 +354,7 @@
           </div>
           <div class="col-md-6">
             <h6 class="mb-0">
-              Fecha de Expiración:
+              Fecha de Vencimiento:
               <strong>{{
                 ticketSelectedModal.expirationDate | date : "dd/MM/yyyy"
               }}</strong>
@@ -386,6 +388,7 @@
         >
           Cargar Comprobante
         </button>
+        
       </div>
     </div>
   </div>
