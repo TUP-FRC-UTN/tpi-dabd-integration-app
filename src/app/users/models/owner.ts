@@ -145,9 +145,9 @@ export enum DocumentType {
  * Dictionary for document types with their abbreviations.
  */
 export const DocumentTypeDictionary: { [key: string]: string } = {
-  DNI: 'P',
-  Cédula: 'I',
-  Pasaporte: 'T',
+  DNI: 'DNI',
+  Cédula: 'ID',
+  Pasaporte: 'PASSPORT',
 };
 
 /**
