@@ -64,8 +64,8 @@ export class StadisticsComponent implements OnInit {
       {
         label: 'Cantidad de Pagos por Día',
         data: [], // Cantidad de pagos para cada día
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: 'rgba(13, 110, 253, 0.2)',
+        borderColor: 'rgba(13, 110, 253, 1)',
         borderWidth: 1
       }
     ]
@@ -89,20 +89,38 @@ export class StadisticsComponent implements OnInit {
       {
         data: [], // Cantidad de pagos por estado
         backgroundColor: [
-          'rgba(255, 206, 86, 0.2)',  // Pendiente - amarillo
-          'rgba(75, 192, 192, 0.2)',  // Pagado - verde
-          'rgba(255, 99, 132, 0.2)'   // Anulado - rojo
+          'rgba(255, 193, 7, 0.2)',  // Pendiente - amarillo
+          'rgba(25, 135, 84, 0.2)',  // Pagado - verde
+          'rgba(220, 53, 69, 0.2)'   // Anulado - rojo
         ],
         borderColor: [
-          'rgba(255, 206, 86, 1)',    // Pendiente
-          'rgba(75, 192, 192, 1)',    // Pagado
-          'rgba(255, 99, 132, 1)'     // Anulado
+          'rgba(255, 193, 7, 1)',    // Pendiente
+          'rgba(25, 135, 84, 1)',    // Pagado
+          'rgba(220, 53, 69, 1)'     // Anulado
         ],
         borderWidth: 1
       }
     ]
   };
 
+  // Configuración del gráfico de torta para "Distribucion pagos"
+  public doughnutChartPaymentDistribution: ChartData<'pie'> = {
+    labels: ['Transferencia', 'Mercado Pago'],
+    datasets: [
+      {
+        data: [], // Cantidad de pagos por estado
+        backgroundColor: [
+          'rgba(255, 193, 7, 0.2)',  // Pendiente - amarillo
+          'rgba(13, 110, 253, 0.2)'  // Pagado - verde
+        ],
+        borderColor: [
+          'rgba(255, 193, 7, 1)',    // Pendiente
+          'rgba(13, 110, 253, 1)'    // Pagado
+        ],
+        borderWidth: 1
+      }
+    ]
+  };
 
 
 
