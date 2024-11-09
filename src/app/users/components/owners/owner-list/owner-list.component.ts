@@ -27,7 +27,7 @@ import {
 import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { OwnerDetailComponent } from '../owner-detail/owner-detail.component';
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { InfoComponent } from '../../commons/info/info.component';
 
 @Component({
@@ -73,7 +73,7 @@ export class OwnerListComponent implements OnInit {
   headers: string[] = ['Nombre', 'Apellido', 'Documento', 'Tipo propietario'];
 
   ownersList!: Owner[];
-  private filteredOwnersList = new Subject<Owner[]>();
+  private filteredOwnersList = new BehaviorSubject<Owner[]>([]);
   filter$ = this.filteredOwnersList.asObservable();
   //owners: Owner[] = [];
   //filteredOwnersList: Owner[] = [];
@@ -88,6 +88,8 @@ export class OwnerListComponent implements OnInit {
 
   ngOnInit(): void {
     this.getAllOwners();
+    this.filteredOwnersList.subscribe(ow => console.log(ow));
+    
   }
 
   ngAfterViewInit(): void {}
@@ -170,9 +172,9 @@ export class OwnerListComponent implements OnInit {
       'doc_type',
       'Seleccione un tipo de documento',
       [
-        { value: 'P', label: 'DNI' },
-        { value: 'I', label: 'Cédula' },
-        { value: 'T', label: 'Pasaporte' },
+        { value: 'DNI', label: 'DNI' },
+        { value: 'ID', label: 'Cédula' },
+        { value: 'PASSPORT', label: 'Pasaporte' },
       ]
     )
     .selectFilter(
@@ -225,7 +227,7 @@ export class OwnerListComponent implements OnInit {
     const filterValue = target.value.toLowerCase();
 
     //console.log("FILTRO->", filterValue);
-    //console.log("DICCIONARIO->", this.dictionaries);
+    console.log("DICCIONARIO->", this.ownerDicitionaries);
     //console.log("OWNERS->", this.owners);
 
     let filteredList = this.ownersList.filter((owner) => {
@@ -239,9 +241,9 @@ export class OwnerListComponent implements OnInit {
           : '';
 
         // Validar que dictionaries esté definido y tenga elementos antes de mapear
-        /* const translations = this.dictionaries && this.dictionaries.length
-          ? this.dictionaries.map(dict => this.translateDictionary(propString, dict)).filter(Boolean)
-          : []; */
+        const translations = this.ownerDicitionaries && this.ownerDicitionaries.length
+          ? this.ownerDicitionaries.map(dict => this.translateDictionary(propString, dict)).filter(Boolean)
+          : [];
 
         // Se puede usar `includes` para verificar si hay coincidencias
         return propString.includes(filterValue); //|| translations.some(trans => trans?.toLowerCase().includes(filterValue));
