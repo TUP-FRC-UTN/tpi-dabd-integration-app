@@ -167,6 +167,7 @@ export class UserUserDetailComponent {
   //#region RUTEO | CANCELAR
   cancel() {
     this.router.navigate(["/users/user/list"])
+
   }
   //#endregion
 
@@ -245,7 +246,7 @@ export class UserUserDetailComponent {
       // '1' is x-user-id
       next: (response) => {
         this.toastService.sendSuccess("Usuario creado con exito.")
-        this.router.navigate(['/user/list']);
+        this.router.navigate(['users/user/list']);
       },
       error: (error) => {
         console.error('Error creating owner:', error);
@@ -259,7 +260,7 @@ export class UserUserDetailComponent {
       this.userService.updateUser(this.user.id, this.user, 1).subscribe({
         next: (response) => {
           this.toastService.sendSuccess("Usuario actualizado con exito.")
-          this.router.navigate(['/owner/list']);
+          this.router.navigate(['users/owner/list']);
         },
         error: (error) => {
           this.toastService.sendError("Error actualizado el usuario.")

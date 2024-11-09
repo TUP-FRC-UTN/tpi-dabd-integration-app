@@ -1,9 +1,14 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
-import { MainLayoutComponent, NavbarItem, ToastsContainer } from 'ngx-dabd-grupo01';
+import { RouterModule, RouterOutlet, Router } from '@angular/router';
+import {
+  MainLayoutComponent,
+  NavbarItem,
+  ToastsContainer,
+} from 'ngx-dabd-grupo01';
 import { LoginComponent } from './users/components/login/login.component';
 import { SessionService } from './users/services/session.service';
+import { LoginService } from './users/services/login.service';
 
 @Component({
   selector: 'app-root',
@@ -14,15 +19,15 @@ import { SessionService } from './users/services/session.service';
     MainLayoutComponent,
     ToastsContainer,
     AsyncPipe,
-    LoginComponent
+    LoginComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  // title = 'AppName';
+  private loginService = inject(LoginService);
+  private router = inject(Router);
 
-  //variables
   navbarMenu: NavbarItem[] = [
     {
       label: 'Accesos',
@@ -179,10 +184,12 @@ export class AppComponent {
         {
           label: 'Dashboards',
           subMenu: [
-            { label: 'Reporte Propietarios', routerLink: '/users/owner/reports' },
+            {
+              label: 'Reporte Propietarios',
+              routerLink: '/users/owner/reports',
+            },
             { label: 'Reporte Usuarios', routerLink: '/users/user/reports' },
-
-          ]
+          ],
         },
         {
           label: 'Propietarios',
@@ -192,27 +199,30 @@ export class AppComponent {
             { label: 'Asignar Lote', routerLink: '/users/owner/assign' },
             { label: 'Cargar Archivo', routerLink: '/users/files/form' },
             { label: 'Validar Archivos', routerLink: '/users/files/view' },
-          ]
+          ],
         },
         {
           label: 'Lotes',
           subMenu: [
             { label: 'Lista de Lotes', routerLink: '/users/plot/list' },
             { label: 'Cargar Lote', routerLink: '/users/plot/form' },
-          ]
+          ],
         },
         {
           label: 'Usuarios',
           subMenu: [
             { label: 'Lista de Usuarios', routerLink: '/users/user/list' },
             { label: 'Cargar Usuario', routerLink: '/users/user/form' },
-            { label: 'Cargar Usuario Inquilino', routerLink: '/users/user/tenant/form' },
+            {
+              label: 'Cargar Usuario Inquilino',
+              routerLink: '/users/user/tenant/form',
+            },
             { label: 'Lista de Roles', routerLink: '/users/roles/list' },
             { label: 'Cargar Roles', routerLink: '/users/roles/form' },
             { label: 'Usuarios Creados', routerLink: '/users/user/created/1' },
-          ]
-        }
-      ]
+          ],
+        },
+      ],
     },
     // not working for now
     // {
@@ -224,8 +234,6 @@ export class AppComponent {
     //   ],
     // },
   ];
-
-
 
   //#region LOGIN
   /**
@@ -239,5 +247,18 @@ export class AppComponent {
    * providing real-time authentication status across components.
    */
   isAuthenticated$ = this.sessionService.isAuthenticated$;
+
+  /**
+   * Maneja el evento de clic en el botón de cierre de sesión.
+   *
+   * Este método llama al servicio de autenticación para cerrar la sesión
+   * del usuario, eliminando su sesión y actualizando el estado de autenticación.
+   * Es utilizado típicamente para limpiar cualquier dato de sesión almacenado
+   * y redirigir al usuario a una vista de inicio de sesión o pantalla principal.
+   */
+  onLogoutButtonClick() {
+    this.loginService.logout();
+    this.router.navigate([""]);
+  }
   //#endregion
 }

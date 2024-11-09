@@ -160,7 +160,7 @@ export class UserUserListComponent {
   LIMIT_32BITS_MAX = 2147483647
 
   itemsList!: User[];
-  formPath: string = "";
+  formPath: string = "users/user/form";
   objectName : string = ""
   dictionaries: Array<{ [key: string]: any }> = [];
 

@@ -118,7 +118,7 @@ export class OwnerDetailComponent implements OnInit {
   }
 
   onBack(): void {
-    this.router.navigate(['/owner/list']);
+    this.router.navigate(['/users/owner/list']);
   }
 
   mapType(type: string){

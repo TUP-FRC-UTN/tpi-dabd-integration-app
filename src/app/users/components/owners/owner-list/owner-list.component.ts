@@ -240,7 +240,7 @@ export class OwnerListComponent implements OnInit {
   }
 
   editOwner(id: any) {
-    this.router.navigate(['/owner/form/', id]);
+    this.router.navigate(['users/owner/form/', id]);
   }
 
   deleteOwner() {
@@ -252,7 +252,7 @@ export class OwnerListComponent implements OnInit {
   }
 
   detailOwner(id: any) {
-    this.router.navigate(['/owner/detail/', id]);
+    this.router.navigate(['users/owner/detail/', id]);
   }
 
   cleanOwnerId() {
@@ -266,7 +266,7 @@ export class OwnerListComponent implements OnInit {
   }
 
   ownerPlot(ownerId: any) {
-    this.router.navigate(['plots/owner/' + ownerId]);
+    this.router.navigate(['users/plots/owner/' + ownerId]);
   }
 
   //#region USO DE DICCIONARIOS
@@ -314,7 +314,7 @@ export class OwnerListComponent implements OnInit {
   ownersList!: Owner[];
 
   // Input to redirect to the form.
-  formPath: string = "";
+  formPath: string = 'users/owner/form';
   // Represent the name of the object for the exports.
   // Se va a usar para los nombres de los archivos.
   objectName : string = ""

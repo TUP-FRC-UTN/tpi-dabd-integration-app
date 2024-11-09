@@ -78,7 +78,7 @@ export class PlotsListComponent {
 
   //#region ATT FILTER BUTTONS
   itemsList!: Plot[];
-  formPath: string = "/plot/form";
+  formPath: string = "/users/plot/form";
   objectName : string = ""
   LIMIT_32BITS_MAX = 2147483647
   filterSubject = new Subject<Plot[]>();
