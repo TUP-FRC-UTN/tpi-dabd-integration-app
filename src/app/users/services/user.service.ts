@@ -93,8 +93,12 @@ export class UserService {
       );
   }
 
-  getUsersCreatedBy(id: string) {
-    return this.http.get<User[]>(`${this.host}/${id}`).pipe(
+  getUsersCreatedBy(id: string, size: number, page: number) {
+    let params = new HttpParams()
+      .set('page', page >= 0 ? page.toString() : "0")
+      .set('size', size.toString());
+
+    return this.http.get<User[]>(`${this.host}/created_by/${id}`).pipe(
       map((data: any) => {
         return toCamelCase(data)
       })

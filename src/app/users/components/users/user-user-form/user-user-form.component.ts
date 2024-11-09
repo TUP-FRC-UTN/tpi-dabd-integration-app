@@ -143,6 +143,8 @@ export class UserUserFormComponent {
           response => {
             this.user = response;
 
+            const [day, month, year] = this.user.birthdate.split('/');
+            const formattedDate = `${year}-${month}-${day}`;
             this.userForm.patchValue({
               email: this.user.email,
               firstName: this.user.firstName,
@@ -150,7 +152,7 @@ export class UserUserFormComponent {
               userName: this.user.userName,
               documentType: this.user.documentType,
               documentNumber: this.user.documentNumber,
-              birthdate: this.user.birthdate
+              birthdate: formattedDate
             });
 
             if (response.plotId !== undefined) {

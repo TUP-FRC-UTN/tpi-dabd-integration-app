@@ -26,6 +26,7 @@ import { CadastreOwnerAssignPlotComponent } from './components/owners/cadastre-o
 import { authGuard } from './guards/auth.guard';
 import { hasRoleCodeGuard } from './guards/has-role-code.guard';
 import { URLTargetType } from './models/role';
+import {UsersCreatedByUserComponent} from './components/users/users-created-by-user/users-created-by-user.component';
 
 export const USER_ROUTES: Routes = [
   /* { path: 'login', component: LoginComponent },
@@ -64,8 +65,8 @@ export const USER_ROUTES: Routes = [
     canMatch: [hasRoleCodeGuard],
     data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN] }
   },
-  { path: 'plot/form', 
-    component: PlotFormComponent, 
+  { path: 'plot/form',
+    component: PlotFormComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
     data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN] }
@@ -224,8 +225,15 @@ export const USER_ROUTES: Routes = [
     canMatch: [hasRoleCodeGuard],
     data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN] }
   },
-  { path: '**', 
-    component: NotFoundComponent, 
+  {
+    path: 'user/created',
+    component: UsersCreatedByUserComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.OWNER] }
+  },
+  { path: '**',
+    component: NotFoundComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
     data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN] }

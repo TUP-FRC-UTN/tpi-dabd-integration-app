@@ -16,6 +16,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
 import {Subject} from "rxjs";
 import { InfoComponent } from '../../commons/info/info.component';
+import {SessionService} from '../../../services/session.service';
 
 @Component({
   selector: 'app-users-created-by-user',
@@ -37,7 +38,7 @@ import { InfoComponent } from '../../commons/info/info.component';
 export class UsersCreatedByUserComponent {
   private router = inject(Router)
   private userService = inject(UserService)
-  private activatedRoute = inject(ActivatedRoute);
+  private sessionService = inject(SessionService);
   private toastService = inject(ToastService)
   private modalService = inject(NgbModal)
 
@@ -85,7 +86,8 @@ export class UsersCreatedByUserComponent {
   //#endregion
 
   ngOnInit() {
-    const id = this.activatedRoute.snapshot.params['id'];
+    let id = this.sessionService.getItem("user")
+    id = 1
 
     if (id) {
       this.userService.getUserById(id).subscribe({
@@ -93,6 +95,7 @@ export class UsersCreatedByUserComponent {
           this.userName = result.firstName + " " + result.lastName
         }
       })
+      // this.userService.getUsersCreatedBy(id, this.currentPage, this.pageSize).subscribe({
       this.userService.getAllUsers(this.currentPage, this.pageSize, true).subscribe({
         next: result => {
           this.userList = result.content;
@@ -237,13 +240,13 @@ export class UsersCreatedByUserComponent {
       keyboard: false,
       centered: true,
       scrollable: true
-    });   
+    });
 
     modalRef.componentInstance.title = 'Listado de usuarios creados por un usuario';
     modalRef.componentInstance.description = 'En esta pantalla se permite ver que usuarios han sido creados por otro usuario.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos', 
+      {
+        title: 'Datos',
         content: [
           {
             strong: 'Nombre completo:',
@@ -261,20 +264,20 @@ export class UsersCreatedByUserComponent {
       },
       {
         title: 'Acciones',
-        content: [        
+        content: [
           {
             strong: 'Detalles: ',
             detail: 'Redirige hacia la pantalla para poder visualizar detalladamente todos los datos del usuario.'
           }
         ]
       },
-      { 
+      {
         title: 'Filtros',
         content: [
         ]
       },
-      { 
-        title: 'Funcionalidades de los botones', 
+      {
+        title: 'Funcionalidades de los botones',
         content: [
           {
             strong: 'Filtros: ',
@@ -303,6 +306,6 @@ export class UsersCreatedByUserComponent {
       'La interfaz está diseñada para ofrecer una administración eficiente de los usuarios creados por un usuario, manteniendo la integridad y precisión de los datos.'
     ];
 
-    
+
   }
 }

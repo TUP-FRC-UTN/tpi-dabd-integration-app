@@ -157,11 +157,16 @@ export class UserUserTenantFormComponent {
           console.log(response)
           this.user = response;
 
+          const [day, month, year] = this.user.birthdate.split('/');
+          const formattedDate = `${year}-${month}-${day}`;
           this.userForm.patchValue({
             email: this.user.email,
             firstName: this.user.firstName,
             lastName: this.user.lastName,
             userName: this.user.userName,
+            documentType: this.user.documentType,
+            documentNumber: this.user.documentNumber,
+            birthdate: formattedDate
           });
 
           if (this.user.plotId) {
