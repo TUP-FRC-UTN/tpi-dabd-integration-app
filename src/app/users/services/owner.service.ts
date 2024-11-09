@@ -23,7 +23,7 @@ export class OwnerService {
     isActive?: boolean
   ): Observable<PaginatedResponse<Owner>> {
     let params = new HttpParams()
-      .set('page', page.toString())
+      .set('page', page >= 0 ? page.toString() : "0")
       .set('size', size.toString());
 
     if (typeof isActive === 'boolean' && !isActive) {

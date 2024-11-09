@@ -4,6 +4,7 @@ import { Observable, map } from 'rxjs';
 import { Role } from '../models/role';
 import { PaginatedResponse } from '../models/api-response';
 import { TransformRolePipe } from '../pipes/role-mapper.pipe';
+import { toCamelCase } from '../utils/owner-helper';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,7 @@ export class RoleService {
 
   getAllRoles(page : number, size : number, isActive? : boolean): Observable<PaginatedResponse<Role>>{
     let params = new HttpParams()
-      .set('page', page.toString())
+      .set('page', page >= 0 ? page.toString() : "0")
       .set('size', size.toString());
 
     if (isActive !== undefined) {
@@ -69,5 +70,23 @@ export class RoleService {
       'x-user-id': userId
     });
     return this.http.patch<void>(`${this.host}/${id}`, {}, {headers});
+  }
+
+  dinamicFilters(page: number, size: number, params: any) {
+    let httpParams = new HttpParams()
+      .set('page', page >= 0 ? page.toString() : "0")
+      .set('size', size.toString());
+
+    for (const key in params) {
+      if (params.hasOwnProperty(key) && params[key] !== undefined && params[key] !== '') {
+        httpParams = httpParams.set(key, params[key].toString());
+      }
+    }
+
+    return this.http.get<PaginatedResponse<Role>>(`${this.host}/filters`, { params: httpParams }).pipe(
+      map((data: any) => {
+        return toCamelCase(data)
+      })
+    )
   }
 }
