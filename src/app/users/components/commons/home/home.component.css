@@ -1,7 +1,136 @@
-.text-color {
-    color: #d98b16;
+:root {
+    --villa-green: #075f31;
+    --villa-green-light: #08703b;
+    --dark-bg: #2c3136;
+    --text-muted: #666;
+    --border-light: #eee;
 }
 
-.bg-orange {
-    background-color: #d98b16;
+.card {
+    margin-bottom: 1.5rem;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.welcome-section {
+    padding: 2rem 0;
+    background: linear-gradient(to right, #f8f9fa, #18ad60);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.welcome-title {
+    color: var(--villa-green-light);
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-message {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.villa-green {
+    background: linear-gradient(135deg, var(--villa-green), var(--villa-green-light)) !important;
+    color: white !important;
+    padding: 1rem 1.5rem;
+}
+
+.sidebar-color {
+    background: linear-gradient(135deg, var(--dark-bg), #3a4149) !important;
+    color: white !important;
+    padding: 1rem 1.5rem;
+}
+
+.list-group-item {
+    border-left: 4px solid transparent;
+    transition: all 0.2s ease;
+    padding: 1rem 1.25rem;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+.list-group-item.priority-high {
+    border-left-color: #dc3545;
+}
+
+.list-group-item.priority-medium {
+    border-left-color: #ffc107;
+}
+
+.list-group-item.priority-low {
+    border-left-color: #28a745;
+}
+
+.weather-card {
+    padding: 1rem;
+    text-align: center;
+    height: 100%;
+}
+
+.weather-card img {
+    width: 60px;
+    height: 60px;
+    margin: 0.5rem 0;
+    filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.2));
+}
+
+.weather-description {
+    color: var(--text-muted);
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+    text-transform: capitalize;
+}
+
+/* Números útiles */
+.contact-number {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.contact-number:hover {
+    background-color: #f8f9fa;
+}
+
+.contact-title {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.contact-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--dark-bg);
+}
+
+@media (max-width: 768px) {
+    .weather-card {
+        border-right: none !important;
+        border-bottom: 1px solid var(--border-light);
+        padding: 1rem 0;
+    }
+
+    .weather-card:last-child {
+        border-bottom: none;
+    }
+
+    .welcome-title {
+        font-size: 1.5rem;
+    }
 }

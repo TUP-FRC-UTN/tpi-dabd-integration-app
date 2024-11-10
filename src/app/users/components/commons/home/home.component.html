@@ -1,50 +1,105 @@
-<div class="container mt-4">
-  <!-- Título Principal -->
-  <h1 class="text-color">Bienvenido al Consorcio del Barrio Privado</h1>
-
-  <!-- Descripción -->
-  <p>
-    En nuestro consorcio, trabajamos para garantizar la mejor experiencia de
-    vida para nuestros residentes. Gestionamos de manera eficiente los
-    servicios, la seguridad y el mantenimiento de las instalaciones para
-    brindarles un entorno seguro y cómodo.
-  </p>
-
-  <hr />
-
-  <!-- Servicios Ofrecidos -->
-  <h2 class="mt-4 mb-3">Servicios que ofrecemos</h2>
-
-  <div class="card mb-4 shadow">
-    <div class="card-body">
-      <!-- Servicio 1: Gestión de Expensas -->
-      <div class="mb-4">
-        <h3 class="card-title">Gestión de expensas</h3>
-        <p class="card-text">
-          Administra fácilmente tus pagos y consulta tu cuenta corriente desde
-          cualquier lugar.
+<!-- home.component.html -->
+<div class="container-fluid mt-4">
+  <!-- Zona de Bienvenida -->
+  <div class="row mb-4">
+    <div class="col">
+      <div class="welcome-section">
+        <h2 class="welcome-title">¡Bienvenido {{userName}} a Villa del Cóndor!</h2>
+        <p class="welcome-message">
+          Descubre las últimas novedades de nuestra comunidad y mantente al día con toda la información importante del
+          consorcio.
         </p>
-        <button class="btn btn-outline-primary btn-sm">Ver más</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Columna Izquierda - Anuncios -->
+    <div class="col-md-7">
+      <div class="card">
+        <div class="card-header villa-green">
+          <h3 class="mb-0" style="color: black; text-align: center;">Anuncios Importantes</h3>
+        </div>
+        <div class="card-body">
+          <div class="list-group">
+            <div *ngFor="let announcement of announcements"
+              class="list-group-item list-group-item-action flex-column align-items-start"
+              [ngClass]="'priority-' + announcement.priority">
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{announcement.title}}</h5>
+                <small>{{announcement.date}}</small>
+              </div>
+              <p class="mb-1">{{announcement.content}}</p>
+              <small [ngClass]="{
+                'text-danger': announcement.priority === 'high',
+                'text-warning': announcement.priority === 'medium',
+                'text-success': announcement.priority === 'low'
+              }">
+                Prioridad: {{announcement.priority}}
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna Derecha -->
+    <div class="col-md-5">
+      <!-- Clima -->
+      <div class="card">
+        <div class="card-header sidebar-color">
+          <h3 class="mb-0" style="color: black; text-align: center;">Clima en Córdoba</h3>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <!-- Clima actual -->
+            <div class="col-md-4">
+              <div class="weather-card text-center" *ngIf="weather">
+                <h6 class="text-muted">Hoy</h6>
+                <img [src]="'http://openweathermap.org/img/w/' + weather.weather[0].icon + '.png'" alt="Clima actual">
+                <h4>{{weather.main.temp.toFixed(1)}}°C</h4>
+                <p class="weather-description">{{weather.weather[0].description}}</p>
+                <p class="text-muted">Humedad: {{weather.main.humidity}}%</p>
+              </div>
+            </div>
+
+            <!-- Pronóstico próximos días -->
+            <div class="col-md-4" *ngFor="let day of forecast">
+              <div class="weather-card text-center">
+                <h6 class="text-muted">{{formatDate(day.dt_txt || '')}}</h6>
+                <img [src]="'http://openweathermap.org/img/w/' + day.weather[0].icon + '.png'" alt="Pronóstico">
+                <h4>{{day.main.temp.toFixed(1)}}°C</h4>
+                <p class="weather-description">{{day.weather[0].description}}</p>
+                <p class="text-muted">Humedad {{day.main.humidity}}%</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Servicio 2: Seguridad 24/7 -->
-      <div class="mb-4">
-        <h3 class="card-title">Seguridad 24/7</h3>
-        <p class="card-text">
-          Nuestro personal de seguridad está disponible las 24 horas para
-          garantizar tu tranquilidad.
-        </p>
-        <button class="btn btn-outline-primary btn-sm">Ver más</button>
-      </div>
-
-      <!-- Servicio 3: Espacios Comunes -->
-      <div class="mb-4">
-        <h3 class="card-title">Espacios comunes</h3>
-        <p class="card-text">
-          Disfruta de áreas recreativas, piscinas y zonas verdes mantenidas al
-          más alto nivel.
-        </p>
-        <button class="btn btn-outline-primary btn-sm">Ver más</button>
+      <!-- Números Útiles -->
+      <div class="card border-dark">
+        <div class="card-header sidebar-color">
+          <h3 class="mb-0" style="color: black; text-align: center;">Números Útiles</h3>
+        </div>
+        <div class="card-body bg-white">
+          <div class="contact-number">
+            <div class="contact-title text-dark">Emergencias</div>
+            <div class="contact-value text-dark fw-bold">911</div>
+          </div>
+          <div class="contact-number">
+            <div class="contact-title text-dark">Mantenimiento</div>
+            <div class="contact-value text-dark fw-bold">(351) 555-0123</div>
+          </div>
+          <div class="contact-number">
+            <div class="contact-title text-dark">Seguridad</div>
+            <div class="contact-value text-dark fw-bold">(351) 555-0124</div>
+          </div>
+          <div class="contact-number">
+            <div class="contact-title text-dark">Servicio Médico</div>
+            <div class="contact-value text-dark fw-bold">(351) 555-0125</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
