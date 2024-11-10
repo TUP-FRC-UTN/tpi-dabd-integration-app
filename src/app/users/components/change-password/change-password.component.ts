@@ -80,7 +80,7 @@ export class ChangePasswordComponent {
   }
 
   onCancel() {
-    this.router.navigate([''])
+    this.router.navigate(['users/profile/detail'])
   }
 
   openInfo() { }
