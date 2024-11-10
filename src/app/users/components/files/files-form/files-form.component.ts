@@ -68,7 +68,7 @@ export class FilesFormComponent implements OnInit {
   dniFrontFile: any;
   dniBackFile: any;
 
-  uploadedFiles: Map<string, Document> = new Map()
+  uploadedFiles: Map<string, Document> = new Map();
 
   fileTypes: Map<string, string> = new Map();
 
@@ -95,6 +95,8 @@ export class FilesFormComponent implements OnInit {
   
 
   ngOnInit() {
+
+    
     this.setEnums();
 
     this.getUserSession();
@@ -151,6 +153,10 @@ export class FilesFormComponent implements OnInit {
   }
 
   getAllFiles(owner: Owner) {
+    
+    // limpiar el map de uploadFiles por las dudas
+    this.uploadedFiles.clear()
+
     // archivos del lote
     if(this.plots.length > 0) {
       this.plots.forEach(plot => {
@@ -158,7 +164,9 @@ export class FilesFormComponent implements OnInit {
         this.plotService.getPlotFilesById(plot.id).subscribe({
           next: (response) => {
             console.log("Plot files: ", response)
-            this.uploadedFiles.set("plotFile"+plot.id, response[0])
+            if(response.length > 0) {
+              this.uploadedFiles.set("plotFile-"+plot.id, response[0])
+            }
           },
           error: (error) => {
             console.error('Error al obtener archivos del lote:', error);
@@ -223,7 +231,110 @@ export class FilesFormComponent implements OnInit {
 
       modalRef.result.then(result => {        
         if (result) {
-          console.log("llamar a los emtodos del service")
+          console.log("llamar a los metodos del service");
+
+          if(this.owner.id) {
+            // archivos del owner (dniFront, dniBack)
+            for(const file of this.ownerFiles) {
+              
+              if(this.uploadedFiles.has(file.id)) {
+                // llamar al patch
+                const filePut = this.uploadedFiles.get(file.id);
+                if(filePut) {
+                  this.fileService.updateFile(filePut.id, filePut.fileType, file.file, '1').subscribe({
+                    next: (response) => {
+                      console.log('Owner Files uploaded successfully:', response);
+                      this.isUploading = false;
+                    },
+                    error: (error) => {
+                      console.error('Error uploading files:', error);
+                      this.toastService.sendError('Error al cargar los archivos');
+                      this.isUploading = false;
+                    },
+                    complete: () => {
+                      console.log('File upload process completed');
+                      this.toastService.sendSuccess('Archivos cargados exitosamente.');
+                      this.isUploading = false;
+                      // this.router.navigate(['/users/owner/list']);
+                    },
+                  }) // TODO cambiar user-id
+                }
+              } else {
+                // llamar al post
+                const fileTypeMap: FileTypeMap = this.createFileTypeMap([file]);
+                this.fileService.uploadFilesOwner([file.file], fileTypeMap, this.owner.id, 1).subscribe({
+                  next: (response) => {
+                    console.log('Owner Files uploaded successfully:', response);
+                    this.isUploading = false;
+                  },
+                  error: (error) => {
+                    console.error('Error uploading files:', error);
+                    this.toastService.sendError('Error al cargar los archivos');
+                    this.isUploading = false;
+                  },
+                  complete: () => {
+                    console.log('File upload process completed');
+                    this.toastService.sendSuccess('Archivos cargados exitosamente.');
+                    this.isUploading = false;
+                    // this.router.navigate(['/users/owner/list']);
+                  },
+                }) // TODO cambiar user-id
+              }
+            }
+          }
+
+          // archivos del plot ('plotFile'+plot.id)
+          for(const file of this.plotFiles) {
+            
+            if(this.uploadedFiles.has(file.id)) {
+              // llamar al patch
+              const filePut = this.uploadedFiles.get(file.id);
+              if(filePut) {
+                this.fileService.updateFile(filePut.id, filePut.fileType, file.file, '1').subscribe({
+                  next: (response) => {
+                    console.log('Plot Files uploaded successfully:', response);
+                    this.isUploading = false;
+                  },
+                  error: (error) => {
+                    console.error('Error uploading files:', error);
+                    this.toastService.sendError('Error al cargar los archivos');
+                    this.isUploading = false;
+                  },
+                  complete: () => {
+                    console.log('File upload process completed');
+                    this.toastService.sendSuccess('Archivos cargados exitosamente.');
+                    this.isUploading = false;
+                    // this.router.navigate(['/users/owner/list']);
+                  },
+                }) // TODO cambiar user-id
+              }
+            } else {
+               // llamar al post
+               const fileTypeMap: FileTypeMap = this.createFileTypeMap([file]);
+               const plotId = parseInt(file.id.split('-')[1]);
+
+               this.fileService.uploadFilesOwner([file.file], fileTypeMap, plotId, 1).subscribe({
+                next: (response) => {
+                  console.log('Plot Files uploaded successfully:', response);
+                  this.isUploading = false;
+                },
+                error: (error) => {
+                  console.error('Error uploading files:', error);
+                  this.toastService.sendError('Error al cargar los archivos');
+                  this.isUploading = false;
+                },
+                complete: () => {
+                  console.log('File upload process completed');
+                  this.toastService.sendSuccess('Archivos cargados exitosamente.');
+                  this.isUploading = false;
+                  // this.router.navigate(['/users/owner/list']);
+                },
+              }) // TODO cambiar user-id
+            }
+          }
+
+
+
         } else {
           this.toastService.sendError('operacion cancelada'); // aca no entra nunca
         }
@@ -270,17 +381,6 @@ export class FilesFormComponent implements OnInit {
     console.log("Files del plot: ", this.plotFiles);
   }
 
-  /* onFileTypeSelected(event: Event, controlName: string): void {
-    console.log("holalalala");
-
-    const selectElement = event.target as HTMLSelectElement;
-    console.log(selectElement);
-    if (selectElement) {
-      this.fileTypes.set(controlName, selectElement.value);
-    } else {
-      this.fileTypes.delete(controlName);
-    }
-  } */
 
   renameFileIfNeeded(originalFile: File): File {
     let counter = 0;
@@ -310,48 +410,7 @@ export class FilesFormComponent implements OnInit {
   }
 
 
-  /**
-   * Upload the selected file to the server using the FileUploadService.
-   */
-  /* onUpload(): void {
-    console.log("ARCHIVOS SELECCIONADOS ", this.selectedFiles);
-    if (this.selectedFiles.length > 0) {
-      this.isUploading = true;
-      const formData = this.getFormData();
-      const fileUploadData = this.buildFileUploadData(formData, this.selectedFiles);
-
-      console.log("DATA PARA SUBIR: fileUploadData = ", fileUploadData);
-
-      //  ---------------------------------- que hace este if(true) -----------------------------------
-
-      if (true) {
-        this.fileService
-          .uploadFiles(1, 1, fileUploadData) // mock owner and user ids
-          .subscribe({
-            next: (response) => {
-              console.log('Files uploaded successfully:', response);
-              this.isUploading = false;
-            },
-            error: (error) => {
-              console.error('Error uploading files:', error);
-              this.toastService.sendError('Error al cargar los archivos');
-              this.isUploading = false;
-            },
-            complete: () => {
-              console.log('File upload process completed');
-              this.toastService.sendSuccess('Archivos cargados exitosamente.');
-              this.isUploading = false;
-              this.router.navigate(['/owner/list']);
-            },
-          });
-      }
-    } else {
-      console.log('No files selected for upload.');
-      this.toastService.sendError('No hay archivos seleccionados para cargar');
-    }
-  }
- */
-  onUploadNacho(): void {
+  /* onUploadNacho(): void {
 
     // valido que haya al menos tres archivos (2 dni y 1 lote)
     console.log("fileTypes.size: ", this.fileTypes.size);
@@ -390,19 +449,15 @@ export class FilesFormComponent implements OnInit {
           this.router.navigate(['/users/owner/list']);
         },
       });
-  }
+  } */
 
-  private createFileTypeMap() {
+  private createFileTypeMap(filesWT: FileWithTypes[]) {
     const typeMap: { [key: string]: string } = {};
-    typeMap[this.files.get('dniFront')?.name!] = 'ID_DOCUMENT_FRONT';
-    typeMap[this.files.get('dniBack')?.name!] = 'ID_DOCUMENT_BACK';
-    //plotFile
-    //fileType
-    this.filesInput.controls.forEach((formGroup, i) => {
-      typeMap[this.files.get('plotFile' + i)?.name!] = this.fileTypes.get(
-        'fileType' + i
-      )!;
-    });
+    
+    for(const fwt of filesWT) {
+      typeMap[fwt.file.name] = fwt.type;
+    }
+    
     return { type_map: typeMap } as FileTypeMap;
   }
 

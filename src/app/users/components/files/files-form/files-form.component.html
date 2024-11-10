@@ -28,7 +28,7 @@
     }
     @if(!uploadedFiles.get("dniFront") || !(uploadedFiles.get("dniFront")?.approvalStatus === "APPROVED" 
       || uploadedFiles.get("dniFront")?.approvalStatus === "PRE_APPROVED" 
-      || uploadedFiles.get("dniFront")?.approvalStatus === "REVIEWED_WITH_NOTES")) {
+      || uploadedFiles.get("dniFront")?.approvalStatus === "UPLOADED")) {
       
       <div class="input-group mb-3">
         <label class="input-group-text" for="inputGroupFile01">DNI frente</label>
@@ -69,7 +69,7 @@
     }
     @if(!uploadedFiles.get("dniBack") || !(uploadedFiles.get("dniBack")?.approvalStatus === "APPROVED" 
       || uploadedFiles.get("dniBack")?.approvalStatus === "PRE_APPROVED" 
-      || uploadedFiles.get("dniBack")?.approvalStatus === "REVIEWED_WITH_NOTES")) {
+      || uploadedFiles.get("dniBack")?.approvalStatus === "UPLOADED")) {
       
       <div class="input-group mb-3">
         <label class="input-group-text" for="inputGroupFile01">DNI Dorso</label>
@@ -79,7 +79,7 @@
           id="inputGroupFile01"
           formControlName="dniBack"
           accept="image/*,.pdf"
-          (change)="onFileSelectedOwner($event, 'dniBack', BatchFileType.ID_DOCUMENT_FRONT)"
+          (change)="onFileSelectedOwner($event, 'dniBack', BatchFileType.ID_DOCUMENT_BACK)"
         />
       </div>
     }
@@ -99,30 +99,30 @@
         </div>
         
 
-        @if(uploadedFiles.get("plotFile"+plot.id) != undefined) {
-          <h6><span class="badge text-bg-secondary">{{ translateTable(uploadedFiles.get('plotFile'+plot.id)?.approvalStatus, fileStatusDictionary) }}</span></h6>
+        @if(uploadedFiles.get("plotFile-"+plot.id) != undefined) {
+          <h6><span class="badge text-bg-secondary">{{ translateTable(uploadedFiles.get('plotFile-'+plot.id)?.approvalStatus, fileStatusDictionary) }}</span></h6>
     
-          @if(uploadedFiles.get("plotFile"+plot.id)?.approvalStatus === "APPROVED"
-            || uploadedFiles.get("plotFile"+plot.id)?.approvalStatus === "PRE_APPROVED"
-            || uploadedFiles.get("plotFile"+plot.id)?.approvalStatus === "UPLOADED") {
+          @if(uploadedFiles.get("plotFile-"+plot.id)?.approvalStatus === "APPROVED"
+            || uploadedFiles.get("plotFile-"+plot.id)?.approvalStatus === "PRE_APPROVED"
+            || uploadedFiles.get("plotFile-"+plot.id)?.approvalStatus === "UPLOADED") {
             <div class="btn-group col-md-6">
-              <button type="button" class="btn btn-info" (click)="openFile(uploadedFiles.get('plotFile'+plot.id)?.url)">Ver Archivo</button>
+              <button type="button" class="btn btn-info" (click)="openFile(uploadedFiles.get('plotFile-'+plot.id)?.url)">Ver Archivo</button>
             </div>
           }
           
-          @if((uploadedFiles.get("plotFile"+plot.id)?.approvalStatus === "MODIFICATION_PERMIT_GRANTED" 
-            || uploadedFiles.get("plotFile"+plot.id)?.approvalStatus === "REVIEWED_WITH_NOTES")) {
+          @if((uploadedFiles.get("plotFile-"+plot.id)?.approvalStatus === "MODIFICATION_PERMIT_GRANTED" 
+            || uploadedFiles.get("plotFile-"+plot.id)?.approvalStatus === "REVIEWED_WITH_NOTES")) {
             <div class="btn-group col-md-6">
-              <button type="button" class="btn btn-info" (click)="openFile(uploadedFiles.get('plotFile'+plot.id)?.url)">Ver Archivo</button>
-              <button type="button" class="btn btn-warning" (click)="openNotes(uploadedFiles.get('plotFile'+plot.id))">Ver Notas</button>
+              <button type="button" class="btn btn-info" (click)="openFile(uploadedFiles.get('plotFile-'+plot.id)?.url)">Ver Archivo</button>
+              <button type="button" class="btn btn-warning" (click)="openNotes(uploadedFiles.get('plotFile-'+plot.id))">Ver Notas</button>
             </div>
           }
         }
-        @if(!uploadedFiles.get("plotFile"+plot.id) || !(uploadedFiles.get("plotFile"+plot.id)?.approvalStatus === "APPROVED" 
-          || uploadedFiles.get("plotFile"+plot.id)?.approvalStatus === "PRE_APPROVED" 
-          || uploadedFiles.get("plotFile"+plot.id)?.approvalStatus === "REVIEWED_WITH_NOTES")) {
+        @if(!uploadedFiles.get("plotFile-"+plot.id) || !(uploadedFiles.get("plotFile-"+plot.id)?.approvalStatus === "APPROVED" 
+          || uploadedFiles.get("plotFile-"+plot.id)?.approvalStatus === "PRE_APPROVED" 
+          || uploadedFiles.get("plotFile-"+plot.id)?.approvalStatus === "UPLOADED")) {
           
-            <div class="input-group mb-3" [formGroupName]="'plotFile'+plot.id">
+            <div class="input-group mb-3" [formGroupName]="'plotFile-'+plot.id">
               <label class="input-group-text" for="inputGroupFile02">Escritura</label>
               <input
                 type="file"
@@ -130,7 +130,7 @@
                 id="inputGroupFile02"
                 formControlName="purchaseSale"
                 accept="image/*,.pdf"
-                (change)="onFileSelectedPlot($event, 'plotFile'+plot.id)"
+                (change)="onFileSelectedPlot($event, 'plotFile-'+plot.id)"
               />
             </div>
         }

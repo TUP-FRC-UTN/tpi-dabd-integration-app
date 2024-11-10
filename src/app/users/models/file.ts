@@ -35,7 +35,7 @@ export interface FileTypeMap {
 }
 
 export interface FileWithTypes {
-  id?: string,
+  id: string,
   file: File,
   type: BatchFileType
 }
