@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-list-bills-info',
+  selector: 'app-expenses-list-bills-info',
   standalone: true,
   imports: [],
   templateUrl: './list-bills-info.component.html',
