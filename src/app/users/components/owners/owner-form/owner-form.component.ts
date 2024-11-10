@@ -430,6 +430,18 @@ export class OwnerFormComponent implements OnInit {
   removeContact(index: number): void {
     this.contacts.splice(index, 1);
   }
+
+
+  changeContactType(event: any) {
+    
+    const type = event.target.value;
+    if(type && type === "EMAIL") {
+      this.ownerForm.controls['contactsForm'].controls['contactValue'].addValidators(Validators.email)
+    } else {
+      this.ownerForm.controls['contactsForm'].controls['contactValue'].removeValidators(Validators.email)
+    }
+  }
+
   //#endregion
 
   //#region FUNCION ADDRESS
