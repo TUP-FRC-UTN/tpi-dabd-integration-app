@@ -105,17 +105,6 @@ export class UserUserFormComponent {
         country: new FormControl('ARGENTINA', [Validators.required]),
         postalCode: new FormControl(5000, [Validators.required]),
       }),
-
-      plotForm: new FormGroup({
-        plotNumber: new FormControl(
-          '',
-          [Validators.min(1)],
-          [plotForUserValidator(this.plotService)]
-        ),
-        blockNumber: new FormControl('', [
-          Validators.min(1),
-        ]),
-      }),
     });
     //#endregion
 
@@ -206,9 +195,6 @@ export class UserUserFormComponent {
               birthdate: formattedDate
             });
 
-            if (response.plotId !== undefined) {
-              this.setPlotValue(response.plotId);
-            }
 
             if (this.user.addresses) {
               this.addresses = [...this.user.addresses];
@@ -337,6 +323,8 @@ export class UserUserFormComponent {
     transformRoles(user: User): number[] | undefined {
       return user.roles?.map(role => role.code);
     }
+
+    
     //#endregion
 
     //#region CREATE / UPDATE
@@ -358,7 +346,6 @@ export class UserUserFormComponent {
 
     createUser() {
       this.fillUser();
-      this.getPlotValues();
       this.user.isActive = true;
       this.user.roleCodeList = this.transformRoles(this.user)
       this.user = toSnakeCase(this.user);
@@ -400,39 +387,10 @@ export class UserUserFormComponent {
     }
     //#endregion
 
-    //#region FUNCION PLOTS
-    getPlotValues() {
-      const plotFormGroup = this.userForm.get('plotForm') as FormGroup;
-      const blockNumber = plotFormGroup.get('blockNumber')?.value;
-      const plotNumber = plotFormGroup.get('plotNumber')?.value;
-      if (blockNumber && plotNumber) {
-        this.plotService
-          .getPlotByPlotNumberAndBlockNumber(plotNumber, blockNumber)
-          .subscribe({
-            next: (response) => {
-              this.plot = response;
-              this.user.plot_id = response.id
-            },
-            error: (error) => {
-              console.error("Plot->", error);
-            },
-          });
-      }
-    }
-
-    setPlotValue(plotId:number) {
-      const plotFormGroup = this.userForm.get('plotForm') as FormGroup;
-      this.plotService.getPlotById(plotId).subscribe(
-        response => {
-            plotFormGroup.patchValue({
-              plotNumber: response.plotNumber,
-              blockNumber: response.blockNumber,
-            })
-        })
-    }
-    //#endregion
+    
 
     //#region FUNCION ADDRESS
+    
   // Acceder directamente al valor del país en el FormControl
   get isArgentinaSelected(): boolean {
     return this.userForm.get('addressForm')?.get('country')?.value === 'ARGENTINA';
