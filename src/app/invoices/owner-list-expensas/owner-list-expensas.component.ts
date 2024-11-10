@@ -41,6 +41,7 @@ import { PaymentExcelService } from '../services/payment-excel.service';
 import { FilesServiceService } from '../services/files.service.service';
 import { PeriodToMonthYearPipe } from '../pipes/period-to-month-year.pipe';
 import { CurrencyFormatPipe } from '../pipes/currency-format.pipe';
+import { PaymentServiceService } from '../services/payment-service.service';
 
 registerLocaleData(localeEs, 'es');
 @Component({
@@ -159,7 +160,8 @@ export class OwnerListExpensasComponent {
     private datePipe: DatePipe,
     private excelService: PaymentExcelService,
     private fileService: FilesServiceService,
-    private periodToMonthYearPipe: PeriodToMonthYearPipe
+    private periodToMonthYearPipe: PeriodToMonthYearPipe,
+    private paymentService : PaymentServiceService
   ) {
     this.fechasForm = this.formBuilder.group({
       fechaInicio: [''],

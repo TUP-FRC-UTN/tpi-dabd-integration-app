@@ -8,11 +8,19 @@ import { TicketDto } from '../models/TicketDto';
 })
 export class FilesServiceService {
   private baseUrl = 'http://localhost:8087/files';
+  private baseUrl2 = 'http://localhost:8090/files';
+
 
   constructor(private http: HttpClient) {}
 
   downloadFile(fileUrl: string): Observable<Blob> {
     return this.http.get(`${this.baseUrl}/download?fileUrl=${fileUrl}`, {
+      responseType: 'blob',
+    });
+  }
+
+  downloadFilePayment(fileUrl: string): Observable<Blob> {
+    return this.http.get(`${this.baseUrl2}/download?fileUrl=${fileUrl}`, {
       responseType: 'blob',
     });
   }

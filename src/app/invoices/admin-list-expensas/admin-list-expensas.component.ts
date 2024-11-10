@@ -48,6 +48,9 @@ import localeEs from '@angular/common/locales/es';
 import { PeriodToMonthYearPipe } from '../pipes/period-to-month-year.pipe';
 import { CapitalizePipe } from '../pipes/capitalize.pipe';
 import { CurrencyFormatPipe } from '../pipes/currency-format.pipe';
+import { PaymentServiceService } from '../services/payment-service.service';
+import { PaymentDto } from '../models/PaymentDto';
+import { FilesServiceService } from '../services/files.service.service';
 registerLocaleData(localeEs, 'es');
 @Component({
   selector: 'app-admin-list-expensas',
@@ -94,6 +97,10 @@ export class AdminListExpensasComponent implements OnInit {
 
   lastPage: boolean | undefined;
   totalItems: number = 0;
+  payment: PaymentDto = {
+    id: 0,
+    receiptUrl: '',
+  };
   //#endregion
   //#region NgOnInit | BUSCAR
   ngOnInit(): void {
@@ -150,7 +157,9 @@ export class AdminListExpensasComponent implements OnInit {
     private ticketService: TicketService,
     private modalService: NgbModal,
     private excelService: PaymentExcelService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private paymentService: PaymentServiceService,
+    private fileService : FilesServiceService
   ) {
     this.fechasForm = this.formBuilder.group({
       fechaInicio: [''],
@@ -286,11 +295,19 @@ export class AdminListExpensasComponent implements OnInit {
     return total;
   }
 
+  
+
   selectTicket(ticket: TicketDto) {
     this.ticketSelectedModal = ticket;
     console.log('Ticket seleccionado:', this.ticketSelectedModal);
 
     this.totalTicketSelected = this.calculateTotal(ticket);
+
+    //aca se deberia llamar para obtener el recibo
+    this.paymentService.getPaymentByTicketId(ticket.id).subscribe((payment) => {
+      this.payment = payment;
+      console.log("pago:", this.payment)
+    });
   }
 
   formatDate(date: Date): string {
@@ -582,5 +599,18 @@ export class AdminListExpensasComponent implements OnInit {
         this.filteroptions
       )
       .build();
+  }
+
+  downloadTicket() {
+    this.fileService.downloadFilePayment(this.payment.receiptUrl).subscribe((response) => {
+      const blob = new Blob([response], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = this.payment.receiptUrl.split('/').pop() || 'download.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
   }
 }

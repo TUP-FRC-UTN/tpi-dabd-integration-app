@@ -292,12 +292,12 @@
               target="_blank">
             
               <img
-              [src]="'https://vientostucumanos.com.ar/download/multimedia.grande.b880c89f211440fe.N0E1N0RGRDItMDBBRS00Mjg5LUE2OUYtQjU4N0M5OTFfZ3JhbmRlLndlYnA%3D.webp'"
+              [src]= payment.receiptUrl
               alt="Imagen del Ticket" class="img-fluid img-thumbnail modal-image" />
             
             
             </a>
-         
+          <button class="btn btn-primary" (click)="downloadTicket()">Descargar comprobante</button>
           </div>
         </div>
 
