@@ -311,7 +311,7 @@ export class UserUserFormComponent {
       this.user = toSnakeCase(this.user);
       console.log(this.user)
       delete this.user.roles;
-      this.userService.addUser(this.user, 1).subscribe({
+      this.userService.addUser(this.user).subscribe({
         // '1' is x-user-id
         next: (response) => {
           this.toastService.sendSuccess("Usuario creado con exito.")
@@ -332,7 +332,7 @@ export class UserUserFormComponent {
         console.log(this.user)
         console.log(this.user.documentType)
         console.log(this.user.documentNumber)
-        this.userService.updateUser(this.user.id, toSnakeCase(this.user), 1).subscribe({
+        this.userService.updateUser(this.user.id, toSnakeCase(this.user)).subscribe({
           next: (response) => {
             this.toastService.sendSuccess("Usuario actualizado con exito.")
             this.router.navigate(['users/user/list']);

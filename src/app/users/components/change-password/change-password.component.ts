@@ -56,7 +56,7 @@ export class ChangePasswordComponent {
       this.newPassword = this.changePassForm.get('newPassword')?.value
       this.oldPassword = this.changePassForm.get('oldPassword')?.value
 
-      this.userService.changePassword(this.oldPassword, this.newPassword, this.getUserId())
+      this.userService.changePassword(this.oldPassword, this.newPassword)
 
       this.router.navigate([''])
     }

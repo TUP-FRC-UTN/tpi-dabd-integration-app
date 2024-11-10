@@ -12,6 +12,7 @@ import {
   OwnerFilters,
   OwnerTypeDictionary,
 } from '../../../models/owner';
+import * as XLSX from 'xlsx';
 import { Router } from '@angular/router';
 import { CadastreFilterButtonsComponent } from '../../commons/cadastre-filter-buttons/cadastre-filter-buttons.component';
 import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
@@ -29,6 +30,8 @@ import { OwnerDetailComponent } from '../owner-detail/owner-detail.component';
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { InfoComponent } from '../../commons/info/info.component';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-owner-list',
@@ -117,7 +120,7 @@ export class OwnerListComponent implements OnInit {
 
     modalRef.result.then((result) => {
       if (result && owner.id) {
-        this.ownerService.deleteOwner(owner.id, '1').subscribe({
+        this.ownerService.deleteOwner(owner.id).subscribe({
           next: () => {
             this.toastService.sendSuccess(
               'Propietario eliminado correctamente.'
@@ -138,7 +141,7 @@ export class OwnerListComponent implements OnInit {
 
   deleteOwner() {
     if (this.ownerId !== undefined) {
-      this.ownerService.deleteOwner(this.ownerId, '1').subscribe((response) => {
+      this.ownerService.deleteOwner(this.ownerId).subscribe((response) => {
         location.reload();
       });
     }
@@ -298,6 +301,7 @@ export class OwnerListComponent implements OnInit {
    * @returns The key that matches the value in the dictionary, or undefined if no match is found.
    */
   translateDictionary(value: any, dictionary?: { [key: string]: any }) {
+    debugger
     if (value !== undefined && value !== null && dictionary) {
       for (const key in dictionary) {
         if (dictionary[key].toString().toLowerCase() === value.toLowerCase()) {
@@ -333,32 +337,46 @@ export class OwnerListComponent implements OnInit {
   }
 
   exportToPdf() {
+    const doc = new jsPDF();
+  
+    doc.setFontSize(18);
+    doc.text('Propietarios', 14, 20);
+    
     this.ownerService.getOwners(0, this.LIMIT_32BITS_MAX, true).subscribe({
       next: (data) => {
-        this.excelService.exportListToPdf(
-          data.content,
-          `${this.getActualDayFormat()}_${this.objectName}`,
-          this.headers,
-          this.dataMapper
-        );
+        autoTable(doc, {
+          startY: 30,
+          head: [['Nombre', 'Apellido', 'Documento', 'Tipo propietario', 'Activo']],
+          body: data.content.map(owner => [
+            owner.firstName,
+            owner.lastName,
+            this.translateDictionary(owner.documentType, this.ownerDicitionaries[0])! + ': ' + owner.documentNumber,
+            this.translateDictionary(owner.ownerType, this.ownerDicitionaries[1])!,
+            owner.isActive? 'Activo' : 'Inactivo'
+          ])
+        });
+        doc.save(`${this.getActualDayFormat()}_Propietarios.pdf`);
       },
-      error: (error) => {
-        console.log(error);
-      },
+      error: () => {console.log("Error retrieved all, on export component.")}
     });
   }
 
   exportToExcel() {
     this.ownerService.getOwners(0, this.LIMIT_32BITS_MAX, true).subscribe({
       next: (data) => {
-        this.excelService.exportListToExcel(
-          data.content,
-          `${this.getActualDayFormat()}_${this.objectName}`
-        );
+        const toExcel = data.content.map(owner => ({
+          'Nombre': owner.firstName,
+          'Apellido': owner.lastName,
+          'Documento': this.translateDictionary(owner.documentType, this.ownerDicitionaries[0])! + ': ' + owner.documentNumber,
+          'Tipo propietario': this.translateDictionary(owner.ownerType, this.ownerDicitionaries[1])!,
+          'Activo': owner.isActive? 'Activo' : 'Inactivo',
+        }));
+        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Propietarios');
+        XLSX.writeFile(wb, `${this.getActualDayFormat()}_Propietarios.xlsx`);
       },
-      error: (error) => {
-        console.log(error);
-      },
+      error: () => { console.log("Error retrieved all, on export component.") }
     });
   }
   //#end region
@@ -440,7 +458,24 @@ export class OwnerListComponent implements OnInit {
       },
       {
         title: 'Filtros',
-        content: [],
+        content: [
+          {
+            strong: 'Tipo de documento: ',
+            detail: 'Filtra los propietarios por los tipos de documento.'
+          },
+          {
+            strong: 'Tipo de propietario: ',
+            detail: 'Filtra los propietarios por los tipos (Persona, Compañía, Otros).'
+          },
+          {
+            strong: 'Estado del propietario: ',
+            detail: 'Filtra por el estado de validación del propietario.'
+          },
+          {
+            strong: 'Activo: ',
+            detail: 'Filtra por los propietarios si están activos o inactivos.'
+          },
+        ],
       },
       {
         title: 'Funcionalidades de los botones',

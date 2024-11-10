@@ -16,6 +16,7 @@ import {PlotService} from '../../../services/plot.service';
 import {OwnerPlotService} from '../../../services/owner-plot.service';
 import {plotValidator} from '../../../validators/cadastre-plot-validators';
 import {plotForOwnerValidatorNoAssociation} from '../../../validators/cadastre-plot-for-owner-no-association';
+import { InfoComponent } from '../../commons/info/info.component';
 
 @Component({
   selector: 'app-cadastre-owner-assign-plot',
@@ -153,7 +154,7 @@ export class CadastreOwnerAssignPlotComponent {
           this.plotService.getPlotByPlotNumberAndBlockNumber(plotNumber, blockNumber).subscribe({
             next: (plot) => {
               if (this.selectedOwner?.id !== undefined) {
-                this.ownerService.linkOwnerWithPlot(this.selectedOwner.id, plot.id, "1").subscribe({
+                this.ownerService.linkOwnerWithPlot(this.selectedOwner.id, plot.id).subscribe({
                   next: () => {
                     this.toastService.sendSuccess("Dueño y lote asociado exitosamente.")
                     this.plotForm.reset()
@@ -172,5 +173,92 @@ export class CadastreOwnerAssignPlotComponent {
     } else {
       this.toastService.sendError("Debe seleccionar un propietario o lote válido.");
     }
+  }
+
+  openInfo() {
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true,
+    });
+
+    modalRef.componentInstance.title = 'Asignar Lote a un Propietario';
+    modalRef.componentInstance.description =
+      'En esta pantalla se permite visualizar todos los usuarios que están registrados en el sistema que tienen asignado el rol seleccionado para buscar.';
+    modalRef.componentInstance.body = [
+      {
+        title: 'Datos',
+        content: [
+          {
+            strong: 'Nombre completo:',
+            detail: 'Nombre completo del usuario.',
+          },
+          {
+            strong: 'Nombre de usuario:',
+            detail: 'Nombre de usuario.',
+          },
+          {
+            strong: 'Email: ',
+            detail: 'Email con el que está registrado el usuario.',
+          },
+          {
+            strong: 'Estado: ',
+            detail: 'Estado de activo o inactivo del usuario.',
+          },
+        ],
+      },
+      {
+        title: 'Acciones',
+        content: [
+          {
+            strong: 'Detalles: ',
+            detail:
+              'Botón con forma de ojo que redirige hacia la pantalla para poder visualizar detalladamente todos los datos del usuario.',
+          },
+        ],
+      },
+      {
+        title: 'Filtros',
+        content: [
+          {
+            strong: 'Rol: ',
+            detail:
+              'Filtra los usuarios que tienen el rol seleccionado.',
+          }
+        ],
+      },
+      {
+        title: 'Funcionalidades de los botones',
+        content: [
+          {
+            strong: 'Filtros: ',
+            detail:
+              'Botón con forma de tolva que despliega los filtros avanzados.',
+          },
+          {
+            strong: 'Añadir nuevo usuario: ',
+            detail:
+              'Botón "+" que redirige hacia la pantalla para dar de alta un nuevo usuario.',
+          },
+          {
+            strong: 'Exportar a Excel: ',
+            detail: 'Botón verde que exporta la grilla a un archivo de Excel.',
+          },
+          {
+            strong: 'Exportar a PDF: ',
+            detail: 'Botón rojo que exporta la grilla a un archivo de PDF.',
+          },
+          {
+            strong: 'Paginación: ',
+            detail: 'Botones para pasar de página en la grilla.',
+          },
+        ],
+      },
+    ];
+    modalRef.componentInstance.notes = [
+      'La interfaz está diseñada para ofrecer una administración eficiente de los usuarios, manteniendo la integridad y precisión de los datos.',
+    ];
   }
 }

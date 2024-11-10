@@ -9,12 +9,14 @@ import { toCamelCase } from '../utils/owner-helper';
 import {Owner} from '../models/owner';
 import {OwnerMapperPipe} from '../pipes/owner-mapper.pipe';
 import { ForgotPasswordRequest } from '../models/forgot-password';
+import { SessionService } from './session.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
   private http = inject(HttpClient)
+  private sessionService = inject(SessionService);
 
   host: string = "http://localhost:8015/users"
 
@@ -25,26 +27,26 @@ export class UserService {
     return this.http.get<boolean>(this.host + `/validEmail`, {params});
   }
 
-  updateUser(id: number, user: User, userId: number): Observable<User> {
+  updateUser(id: number, user: User): Observable<User> {
     const headers = new HttpHeaders({
-      'x-user-id': userId
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
     delete user.id
 
     return this.http.put<User>(`${this.host}/${id}`, user, { headers });
   }
 
-  deleteUser(id: number, userId: number) {
+  deleteUser(id: number) {
     const headers = new HttpHeaders({
-      'x-user-id': userId
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
 
     return this.http.delete<any>(`${this.host}/${id}`, {headers});
   }
 
-  addUser(user: User, userId: number): Observable<User> {
+  addUser(user: User): Observable<User> {
     const headers = new HttpHeaders({
-      'x-user-id': userId,
+      'x-user-id': this.sessionService.getItem('user').id.toString(),
       "Accept": "application/json"
     });
 
@@ -158,16 +160,16 @@ export class UserService {
       );
   }
 
-  changePassword(oldPassword: string, newPassword: string, userId: number) {
+  changePassword(oldPassword: string, newPassword: string) {
 
     let changePasswordRequest = {
-      userId: userId,
+      userId: this.sessionService.getItem('user').id.toString(),
       oldPassword:oldPassword,
       newPassword: newPassword
     }
 
     const headers = new HttpHeaders({
-      'x-user-id': userId
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
 
 

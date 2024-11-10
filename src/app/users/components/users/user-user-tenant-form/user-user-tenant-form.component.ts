@@ -306,7 +306,7 @@ export class UserUserTenantFormComponent {
     this.user.isActive = true;
     this.user.roleCodeList = [103]
     delete this.user.roles
-    this.userService.addUser(toSnakeCase(this.user), 1).subscribe({
+    this.userService.addUser(toSnakeCase(this.user)).subscribe({
       // '1' is x-user-id
       next: (response) => {
         this.toastService.sendSuccess("Usuario creado con exito.")
@@ -325,7 +325,7 @@ export class UserUserTenantFormComponent {
     this.user.plotId = parseInt(this.user.plotId)
     delete this.user.createdDate
     if (this.user.id) {
-      this.userService.updateUser(this.user.id, toSnakeCase(this.user), 1).subscribe({
+      this.userService.updateUser(this.user.id, toSnakeCase(this.user)).subscribe({
         next: (response) => {
           this.toastService.sendSuccess("Usuario actualizado con exito.")
           this.router.navigate(['users/user/list']);
