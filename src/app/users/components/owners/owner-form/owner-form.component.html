@@ -263,10 +263,10 @@
               @if (ownerForm.get('plotForm.plotNumber')?.hasError('serverError')) {
                 <small class="text-danger">Error en el servidor, por favor intenta nuevamente.</small>
               }
-              @if (ownerForm.get('plotForm.plotNumber')?.hasError('plotExists')) {
+              @if (ownerForm.get('plotForm.plotNumber')?.hasError('plotNotExists')) {
                 <small class="text-danger ms-2">No existe un lote con ese numero en esa manzana.</small>
               }
-              @if (ownerForm.get('plotForm.plotNumber')?.hasError('plotWithNoOwner')) {
+              @if (ownerForm.get('plotForm.plotNumber')?.hasError('plotHaveOwner')) {
                 <small class="text-danger ms-2">El lote ya tiene un dueño asociado.</small>
               }
             }
