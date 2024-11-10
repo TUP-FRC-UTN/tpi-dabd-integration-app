@@ -349,7 +349,8 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top',
+         //position: 'top',
+         display: false,
       },
     },
   };
