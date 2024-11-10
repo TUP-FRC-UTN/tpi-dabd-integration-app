@@ -96,35 +96,57 @@ export class UserUserFormComponent {
         contactValue: new FormControl('', []),
       }),
       addressForm: new FormGroup({
-        streetAddress: new FormControl('', []),
-        number: new FormControl(0, [ Validators.min(0)]),
+        streetAddress: new FormControl('', [Validators.required]),
+        number: new FormControl(0, [Validators.required, Validators.min(0)]),
         floor: new FormControl(0),
         apartment: new FormControl(''),
-        city: new FormControl('Córdoba', []),
-        province: new FormControl('CORDOBA', []),
-        country: new FormControl('ARGENTINA', []),
-        postalCode: new FormControl('', []),
-      }),
-
-      plotForm: new FormGroup({
-        plotNumber: new FormControl(
-          '',
-          [Validators.min(1)],
-          [plotForUserValidator(this.plotService)]
-        ),
-        blockNumber: new FormControl('', [
-          Validators.min(1),
-        ]),
+        city: new FormControl('Córdoba', [Validators.required]),
+        province: new FormControl('CORDOBA', [Validators.required]),
+        country: new FormControl('ARGENTINA', [Validators.required]),
+        postalCode: new FormControl(5000, [Validators.required]),
       }),
     });
     //#endregion
 
     //#region ON SUBMIT
     onSubmit(): void {
-      if (this.userForm.valid) {
-        this.id === null ? this.createUser() : this.updateUser()
+      
+      // debe tener al menos una direccion
+      if(this.addresses.length <= 0) {
+        this.toastService.sendError("Debes cargar al menos una dirección")
+      } else {
+        
+        if (this.isFormValid()) {
+          this.id === null ? this.createUser() : this.updateUser()
+          
+        } else {
+          this.toastService.sendError("Tienes errores en el formulario");
+          this.userForm.controls['email'].markAsTouched();
+          this.userForm.controls['firstName'].markAsTouched();
+          this.userForm.controls['lastName'].markAsTouched();
+          this.userForm.controls['userName'].markAsTouched();
+          this.userForm.controls['documentType'].markAsTouched();
+          this.userForm.controls['documentNumber'].markAsTouched();
+          this.userForm.controls['birthdate'].markAsTouched();
+          
+        }
       }
     }
+
+    isFormValid(){
+      if(this.userForm.controls['email'].errors ||  
+      this.userForm.controls['firstName'].errors ||  
+      this.userForm.controls['lastName'].errors ||  
+      this.userForm.controls['userName'].errors ||  
+      this.userForm.controls['documentType'].errors ||  
+      this.userForm.controls['documentNumber'].errors ||  
+      this.userForm.controls['birthdate'].errors) {
+        return false
+      } else {
+        return true
+      }
+    }
+
     //#endregion
 
     //#region ngOnInit
@@ -173,9 +195,6 @@ export class UserUserFormComponent {
               birthdate: formattedDate
             });
 
-            if (response.plotId !== undefined) {
-              this.setPlotValue(response.plotId);
-            }
 
             if (this.user.addresses) {
               this.addresses = [...this.user.addresses];
@@ -227,7 +246,10 @@ export class UserUserFormComponent {
     }
 
     addContact(): void {
-      if (this.userForm.get('contactsForm')?.valid) {
+      if (this.userForm.controls['contactsForm'].controls['contactValue'].value
+        && !this.userForm.controls['contactsForm'].controls['contactValue'].hasError('email')
+        && this.userForm.controls['contactsForm'].controls['contactType'].value) {
+
         const contactValues = this.getContactsValues();
         if (this.contactIndex == undefined && contactValues) {
           this.contacts.push(contactValues);
@@ -249,6 +271,23 @@ export class UserUserFormComponent {
     removeContact(index: number): void {
       this.contacts.splice(index, 1);
     }
+
+
+    changeContactType(event: any) {
+    
+      const type = event.target.value;
+      if(type) {
+        this.userForm.controls['contactsForm'].controls['contactValue'].addValidators(Validators.required);
+        if(type === "EMAIL") {
+          this.userForm.controls['contactsForm'].controls['contactValue'].addValidators(Validators.email)
+        } else {
+          this.userForm.controls['contactsForm'].controls['contactValue'].removeValidators(Validators.email)
+        }
+      }  else {
+        this.userForm.controls['contactsForm'].controls['contactValue'].removeValidators(Validators.required)
+      }
+    }
+
     //#endregion
 
     //#region FUNCION ROLES
@@ -284,6 +323,8 @@ export class UserUserFormComponent {
     transformRoles(user: User): number[] | undefined {
       return user.roles?.map(role => role.code);
     }
+
+    
     //#endregion
 
     //#region CREATE / UPDATE
@@ -305,7 +346,6 @@ export class UserUserFormComponent {
 
     createUser() {
       this.fillUser();
-      this.getPlotValues();
       this.user.isActive = true;
       this.user.roleCodeList = this.transformRoles(this.user)
       this.user = toSnakeCase(this.user);
@@ -347,39 +387,10 @@ export class UserUserFormComponent {
     }
     //#endregion
 
-    //#region FUNCION PLOTS
-    getPlotValues() {
-      const plotFormGroup = this.userForm.get('plotForm') as FormGroup;
-      const blockNumber = plotFormGroup.get('blockNumber')?.value;
-      const plotNumber = plotFormGroup.get('plotNumber')?.value;
-      if (blockNumber && plotNumber) {
-        this.plotService
-          .getPlotByPlotNumberAndBlockNumber(plotNumber, blockNumber)
-          .subscribe({
-            next: (response) => {
-              this.plot = response;
-              this.user.plot_id = response.id
-            },
-            error: (error) => {
-              console.error("Plot->", error);
-            },
-          });
-      }
-    }
-
-    setPlotValue(plotId:number) {
-      const plotFormGroup = this.userForm.get('plotForm') as FormGroup;
-      this.plotService.getPlotById(plotId).subscribe(
-        response => {
-            plotFormGroup.patchValue({
-              plotNumber: response.plotNumber,
-              blockNumber: response.blockNumber,
-            })
-        })
-    }
-    //#endregion
+    
 
     //#region FUNCION ADDRESS
+    
   // Acceder directamente al valor del país en el FormControl
   get isArgentinaSelected(): boolean {
     return this.userForm.get('addressForm')?.get('country')?.value === 'ARGENTINA';
@@ -390,7 +401,7 @@ export class UserUserFormComponent {
   }
 
   getAddressValue(): Address {
-    const postalCodeValue = this.userForm.get('addressForm.postalCode')?.value;
+    
     const address: Address = {
       streetAddress:
         this.userForm.get('addressForm.streetAddress')?.value || '',
@@ -400,7 +411,7 @@ export class UserUserFormComponent {
       city: this.userForm.get('addressForm.city')?.value || '',
       province: this.userForm.get('addressForm.province')?.value || '',
       country: this.userForm.get('addressForm.country')?.value || '',
-      postalCode: postalCodeValue ? parseInt(postalCodeValue, 10) : 0
+      postalCode: this.userForm.get('addressForm.postalCode')?.value || 0
     };
     return address;
   }
@@ -426,6 +437,10 @@ export class UserUserFormComponent {
   }
 
   addAddress(): void {
+
+    console.log(this.userForm.get('addressForm'));
+    
+
     if (this.userForm.get('addressForm')?.valid) {
       const addressValue = this.getAddressValue()
       if (this.addressIndex == undefined && addressValue) {
