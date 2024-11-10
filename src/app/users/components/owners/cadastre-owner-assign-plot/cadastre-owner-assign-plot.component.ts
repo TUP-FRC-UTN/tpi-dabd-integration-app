@@ -186,51 +186,55 @@ export class CadastreOwnerAssignPlotComponent {
 
     modalRef.componentInstance.title = 'Asignar Lote a un Propietario';
     modalRef.componentInstance.description =
-      'En esta pantalla se podrá seleccionar un propietario de la lista para asignarle un lote creado.';
+      'En esta pantalla se podrá seleccionar un propietario de la lista para asignarle un lote.';
     modalRef.componentInstance.body = [
       {
-        title: 'Datos',
+        title: 'Datos del propietario',
         content: [
           {
-            strong: 'Nombre completo:',
-            detail: 'Nombre completo del usuario.',
+            strong: 'Nombre:',
+            detail: 'Nombre del propietario.',
           },
           {
-            strong: 'Nombre de usuario:',
-            detail: 'Nombre de usuario.',
+            strong: 'Apellido:',
+            detail: 'Apellido del propietario.',
           },
           {
-            strong: 'Email: ',
-            detail: 'Email con el que está registrado el usuario.',
+            strong: 'Tipo Doc: ',
+            detail: 'tipo del documento del propietario.',
           },
           {
-            strong: 'Estado: ',
-            detail: 'Estado de activo o inactivo del usuario.',
+            strong: 'N° documento: ',
+            detail: 'Número de documento del propietario.',
           },
+          {
+            strong: 'Tipo del propietario: ',
+            detail: 'Estado de activo o inactivo del propietario.',
+          }
         ],
-      },
-      {
-        title: 'Acciones',
-        content: [
-          {
-            strong: 'Detalles: ',
-            detail:
-              'Botón con forma de ojo que redirige hacia la pantalla para poder visualizar detalladamente todos los datos del usuario.',
-          },
-        ],
-      },
+      },      
       {
         title: 'Filtros',
         content: [
           {
-            strong: 'Rol: ',
+            strong: 'Tipo de documento: ',
             detail:
-              'Filtra los usuarios que tienen el rol seleccionado.',
-          }
+              'Filtra los propietarios que coincidan con el tipo de documento.',
+          },
+          {
+            strong: 'Tipo de propietario: ',
+            detail:
+              'Filtra los propietarios que coincidan con el tipo de propietario.',
+          },
+          {
+            strong: 'Estado del propietario: ',
+            detail:
+              'Filtra los propietarios por el estado activo o inactivo del mismo.',
+          },
         ],
       },
       {
-        title: 'Funcionalidades de los botones',
+        title: 'Funcionalidades',
         content: [
           {
             strong: 'Filtros: ',
@@ -238,27 +242,14 @@ export class CadastreOwnerAssignPlotComponent {
               'Botón con forma de tolva que despliega los filtros avanzados.',
           },
           {
-            strong: 'Añadir nuevo usuario: ',
-            detail:
-              'Botón "+" que redirige hacia la pantalla para dar de alta un nuevo usuario.',
-          },
-          {
-            strong: 'Exportar a Excel: ',
-            detail: 'Botón verde que exporta la grilla a un archivo de Excel.',
-          },
-          {
-            strong: 'Exportar a PDF: ',
-            detail: 'Botón rojo que exporta la grilla a un archivo de PDF.',
-          },
-          {
-            strong: 'Paginación: ',
-            detail: 'Botones para pasar de página en la grilla.',
-          },
+            strong: 'Asociar un propietario a un lote: ',
+            detail: 'Para asociar un propietario a un lote, primero se debe seleccionar un propietario de la grilla haciendo click en un fila, luego, se deben rellenar los campos del lote al que se quiere asociar, y por último se debe hacer click en el botón asociar.',
+          }
         ],
       },
     ];
     modalRef.componentInstance.notes = [
-      'La interfaz está diseñada para ofrecer una administración eficiente de los usuarios, manteniendo la integridad y precisión de los datos.',
+      'La interfaz está diseñada para ofrecer una administración eficiente de los propietarios y lotes, manteniendo la integridad y precisión de los datos.',
     ];
   }
 }
