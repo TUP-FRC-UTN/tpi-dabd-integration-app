@@ -15,6 +15,8 @@ import {User} from '../../../models/user';
 import {CadastreExcelService} from '../../../services/cadastre-excel.service';
 import {Subject} from 'rxjs';
 import {DatePipe} from '@angular/common';
+import {Role} from '../../../models/role';
+import {RoleService} from '../../../services/role.service';
 
 @Component({
   selector: 'app-users-role-list',
@@ -32,6 +34,7 @@ import {DatePipe} from '@angular/common';
 export class UsersRoleListComponent {
   private router = inject(Router)
   private userService = inject(UserService)
+  private roleService = inject(RoleService)
   private sessionService = inject(SessionService);
   private toastService = inject(ToastService)
   private modalService = inject(NgbModal)
@@ -60,6 +63,7 @@ export class UsersRoleListComponent {
   userList!: User[]
   userName!: string;
   filteredUsersList: User[] = [];
+  rolesForCombo : Role[] = []
 
   //#region ATT de PAGINADO
   currentPage: number = 0
@@ -70,32 +74,23 @@ export class UsersRoleListComponent {
   //#endregion
 
   ngOnInit() {
-    let id = this.sessionService.getItem("user")
-    id = 1
-
-    if (id) {
-      this.userService.getUserById(id).subscribe({
-        next: result => {
-          this.userName = result.firstName + " " + result.lastName
-        }
-      })
-      // this.userService.getUsersCreatedBy(id, this.currentPage, this.pageSize).subscribe({
-      this.userService.getAllUsers(this.currentPage, this.pageSize, true).subscribe({
-        next: result => {
-          this.userList = result.content;
-          this.filteredUsersList = this.userList
-          this.totalItems = result.totalElements;
-        }
-      })
-    } else {
-      this.toastService.sendError("Error al cargar la pagina, reintente.")
-    }
+    this.getAllRoles();
+    /*
+    this.userService.getAllUsers(this.currentPage, this.pageSize, true).subscribe({
+      next: result => {
+        this.userList = result.content;
+        this.filteredUsersList = this.userList
+        this.totalItems = result.totalElements;
+      },
+      error : err => this.toastService.sendError("Error al cargar la lista.")
+    })
+    */
   }
 
-  redirectToDetail(id?: number) {
-    if (id) {
-      this.router.navigate([`users/user/detail/${id}`])
-    }
+  getAllRoles() {
+    this.roleService.getAllRoles(0, 2147483647, true).subscribe(
+      response => this.rolesForCombo = response.content
+    )
   }
 
   onPageChange(page: number) {

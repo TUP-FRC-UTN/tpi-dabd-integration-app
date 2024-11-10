@@ -97,12 +97,6 @@ export class UsersCreatedByUserComponent {
     }
   }
 
-  redirectToDetail(id?: number) {
-    if (id) {
-      this.router.navigate([`users/user/detail/${id}`])
-    }
-  }
-
   onPageChange(page: number) {
     this.currentPage = page;
     this.ngOnInit();

@@ -258,7 +258,7 @@ export class UserUserFormComponent {
     }
 
     getAllRoles() {
-      this.roleService.getAllRoles(0, 1000000, true).subscribe(
+      this.roleService.getAllRoles(0, 2147483647, true).subscribe(
         response => this.rolesForCombo = response.content
       )
     }
@@ -266,12 +266,6 @@ export class UserUserFormComponent {
     transformRoles(user: User): number[] | undefined {
       return user.roles?.map(role => role.code);
     }
-
-     // Acceder directamente al valor del país en el FormControl
-    get isArgentinaSelected(): boolean {
-      return this.userForm.get('addressForm')?.get('country')?.value === 'ARGENTINA';
-    }
-
     //#endregion
 
     //#region CREATE / UPDATE
@@ -368,6 +362,11 @@ export class UserUserFormComponent {
     //#endregion
 
     //#region FUNCION ADDRESS
+  // Acceder directamente al valor del país en el FormControl
+  get isArgentinaSelected(): boolean {
+    return this.userForm.get('addressForm')?.get('country')?.value === 'ARGENTINA';
+  }
+
   removeAddress(index: number): void {
     this.addresses.splice(index, 1);
   }
