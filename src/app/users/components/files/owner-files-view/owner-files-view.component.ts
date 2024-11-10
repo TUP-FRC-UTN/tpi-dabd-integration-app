@@ -83,7 +83,6 @@ export class OwnerFilesViewComponent {
     if(this.id) {
       this.getOwnerById(this.id);
     }
-    console.log("files length ", this.files.length)
 
     this.canApproveOwner = this.areAllApproved();
     
@@ -135,7 +134,8 @@ export class OwnerFilesViewComponent {
         this.plotService.getPlotFilesById(plot.id).subscribe({
           next: (response) => {
             console.log("Plot files: ", response)
-            this.plotFiles.push(response[0]);
+            // this.plotFiles.push(response[0]);
+            this.plotFiles = response;
           },
           error: (error) => {
             console.error('Error al obtener archivos del lote:', error);
@@ -231,7 +231,7 @@ export class OwnerFilesViewComponent {
       const modalRef = this.modalService.open(ConfirmAlertComponent)
       modalRef.componentInstance.alertTitle = 'Confirmación';
       modalRef.componentInstance.alertMessage = `¿Está seguro de que desea Aprobar al propietario ${this.owner?.firstName} ${this.owner?.lastName}
-                                                con ${this.translateTable(this.owner?.documentType, this.documentTypeDictionary)} ${this.owner?.documentNumber}`;
+                                                con ${this.translateTable(this.owner?.documentType, this.documentTypeDictionary)} ${this.owner?.documentNumber}?`;
       modalRef.componentInstance.alertType = 'warning';
       modalRef.componentInstance.onConfirm = () => {
         console.log("Aca le pego al back para actualizar el estado del owner");
