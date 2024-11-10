@@ -92,9 +92,9 @@
         <select id="doc-type" class="form-select m-2" formControlName="documentType"
                 [ngClass]="{'is-invalid': userForm.get('documentType')?.invalid && userForm.get('documentType')?.touched, 'is-valid': userForm.get('documentType')?.valid && userForm.get('documentType')?.touched}">
           <option disabled selected>Selecciona un tipo</option>
-          <option value="I">DNI</option>
-          <option value="C">Cédula</option>
-          <option value="P">Pasaporte</option>
+          <option value="DNI">DNI</option>
+          <option value="ID">Cédula</option>
+          <option value="PASSPORT">Pasaporte</option>
         </select>
       </div>
       <div>

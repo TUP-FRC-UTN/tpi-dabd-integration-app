@@ -670,119 +670,55 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     modalRef.componentInstance.title =
       'Información de Propietarios, Lotes y Cuentas';
     modalRef.componentInstance.description =
-      'En esta pantalla se podrán visualizar y gestionar los propietarios, lotes y cuentas del consorcio.';
+      'En esta pantalla se podrán visualizar reportes de los propietarios y los lotes con sus cuentas cargados en el consorcio.';
     modalRef.componentInstance.body = [
       {
-        title: 'Datos de Propietarios',
+        title: 'KPIs',
         content: [
           {
-            strong: 'Nombre Completo:',
-            detail: 'Nombre y apellido del propietario.',
-          },
-          {
-            strong: 'Tipo de Propietario:',
-            detail: 'Clasificación del propietario (Persona, Compañía, Otro).',
-          },
-          {
-            strong: 'Estado KYC:',
-            detail:
-              'Estado de verificación KYC del propietario (Iniciado, Validado, Cancelado).',
-          },
-          {
-            strong: 'Activo:',
-            detail: 'Estado activo o inactivo del propietario.',
-          },
+            strong: '',
+            detail: 'Métricas relevantes que muestra estadísticas claves para evaluar rápidamente el estado y desempeño de los lotes y propietarios del consorcio.',
+          }
         ],
       },
       {
-        title: 'Datos de Lotes',
+        title: 'Gráficos',
         content: [
           {
-            strong: 'N° de Manzana:',
-            detail: 'Número de manzana del lote.',
-          },
-          {
-            strong: 'N° de Lote:',
-            detail: 'Número identificador del lote.',
-          },
-          {
-            strong: 'Área Total:',
-            detail: 'Área total ocupada por el lote en metros cuadrados.',
-          },
-          {
-            strong: 'Área Construida:',
-            detail: 'Área construida en el lote (en metros cuadrados).',
-          },
-          {
-            strong: 'Tipo de Lote:',
-            detail: 'Tipo de lote (Comercial, Privado, Comunal).',
-          },
-          {
-            strong: 'Estado del Lote:',
-            detail:
-              'Estado del lote (En venta, Proceso de venta, Vacio, etc.).',
-          },
+            strong: '',
+            detail: 'Gráficos de barra o torta que permite visualizar de forma rápida y detallada el estado y desempeño de los lotes y propietarios del consorcio.',
+          }
         ],
-      },
-      {
-        title: 'Datos de Cuentas',
-        content: [
-          {
-            strong: 'Saldo de la Cuenta:',
-            detail: 'Balance de la cuenta asociado a cada lote.',
-          },
-          {
-            strong: 'Estado del Balance:',
-            detail:
-              'Clasificación de saldo como acreedor o deudor dependiendo del balance positivo o negativo.',
-          },
-          {
-            strong: 'Historial de Conceptos:',
-            detail:
-              'Detalle de los conceptos financieros registrados para cada cuenta.',
-          },
-          {
-            strong: 'Documentos Adjuntos:',
-            detail: 'Documentos de soporte asociados a cada transacción.',
-          },
-        ],
-      },
-      {
-        title: 'Acciones',
-        content: [
-          {
-            strong: 'Detalle:',
-            detail:
-              'Redirige a la vista detallada para cada propietario, lote o cuenta.',
-          },
-          {
-            strong: 'Editar:',
-            detail:
-              'Permite modificar la información de propietarios, lotes y cuentas.',
-          },
-          {
-            strong: 'Eliminar:',
-            detail: 'Inactiva el propietario, lote o cuenta.',
-          },
-        ],
-      },
+      },      
       {
         title: 'Filtros',
         content: [
           {
-            strong: 'Filtrar por Nombre o Documento:',
+            strong: 'Tipo de documento:',
             detail:
-              'Busca propietarios mediante el nombre completo o número de documento.',
+              'Filtra los gráficos y kpis correspondientes a propietarios por tipo de documento.',
           },
           {
-            strong: 'Filtrar por Tipo de Lote:',
+            strong: 'Tipo de propietario:',
             detail:
-              'Filtra los lotes según su clasificación (Comercial, Privado, Comunal).',
+              'Filtra los gráficos y kpis correspondientes a propietarios por tipo de propietario.',
           },
           {
-            strong: 'Filtrar por Saldo de Cuenta:',
-            detail: 'Muestra cuentas con saldo acreedor o deudor.',
+            strong: 'Estado del propietario:',
+            detail: 'Filtra los gráficos y kpis correspondientes a propietarios por estado de validación del propietario.',
           },
+          {
+            strong: 'Activo:',
+            detail: 'Filtra los gráficos y kpis correspondientes a propietarios por estado de activo del propietario.',
+          },
+          {
+            strong: 'Fecha nacimiento desde:',
+            detail: 'Filtra los gráficos y kpis correspondientes a propietarios por fecha de nacimiento del propietario.',
+          },
+          {
+            strong: 'Fecha nacimiento hasta:',
+            detail: 'Filtra los gráficos y kpis correspondientes a propietarios por fecha de nacimiento del propietario.',
+          }
         ],
       },
       {
@@ -791,22 +727,8 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
           {
             strong: 'Filtros:',
             detail:
-              'Botón que despliega los filtros avanzados para propietarios, lotes y cuentas.',
-          },
-          {
-            strong: 'Añadir Nuevo:',
-            detail:
-              'Permite añadir un nuevo propietario, lote o cuenta en el sistema.',
-          },
-          {
-            strong: 'Exportar a Excel o PDF:',
-            detail:
-              'Exporta la información actual a un archivo Excel o PDF para su almacenamiento y análisis.',
-          },
-          {
-            strong: 'Paginación:',
-            detail: 'Navega entre las páginas de información.',
-          },
+              'Botón que despliega los filtros avanzados para los gráficos y KPIs.',
+          }
         ],
       },
     ];

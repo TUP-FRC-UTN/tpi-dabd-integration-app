@@ -1,29 +1,58 @@
+import { OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule, DatePipe } from '@angular/common';
-import { AfterViewInit, Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { MainContainerComponent, TableComponent } from 'ngx-dabd-grupo01';
-import { BaseChartDirective } from 'ng2-charts';
-import { catchError, map, of } from 'rxjs';
-import { Chart, registerables, ChartDataset, ChartOptions } from 'chart.js';
-import { OwnerService } from '../../../services/owner.service';
-import { Owner } from '../../../models/owner';
-import { PaginatedResponse } from '../../../models/api-response';
-import { FormsModule } from '@angular/forms';
-import { NgbPagination } from '@ng-bootstrap/ng-bootstrap';
-import { UserService } from '../../../services/user.service';
-import { RoleService } from '../../../services/role.service';
-import { User } from '../../../models/user';
-import { Role } from '../../../models/role';
+import { FormsModule, NgForm } from '@angular/forms';
+import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
+import { Notice, NoticeService } from '../../../services/notice.service';
 
-Chart.register(...registerables);
+interface WeatherData {
+  main: {
+    temp: number;
+    humidity: number;
+  };
+  weather: [{
+    description: string;
+    icon: string;
+  }];
+  dt_txt?: string;
+}
+
+interface ForecastData {
+  list: WeatherData[];
+}
+
+interface Announcement {
+  id: number;
+  title: string;
+  content: string;
+  priority: 'high' | 'medium' | 'low';
+  date?: string;
+}
+
+const weatherTranslations: { [key: string]: string } = {
+  'clear sky': 'Cielo despejado',
+  'few clouds': 'Pocas nubes',
+  'scattered clouds': 'Nubes dispersas',
+  'broken clouds': 'Nublado parcial',
+  'shower rain': 'Lluvia fuerte',
+  'rain': 'Lluvia',
+  'thunderstorm': 'Tormenta eléctrica',
+  'snow': 'Nieve',
+  'mist': 'Neblina',
+  'overcast clouds': 'Nublado total',
+  'light rain': 'Lluvia ligera'
+};
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
     CommonModule,
+    HttpClientModule,
     MainContainerComponent,
     TableComponent,
-    BaseChartDirective,
     FormsModule,
     NgbPagination,
   ],
@@ -31,249 +60,181 @@ Chart.register(...registerables);
   styleUrls: ['./home.component.css'],
   providers: [DatePipe],
 })
-export class HomeComponent {
-  /* private ownerService = inject(OwnerService);
-  private userService = inject(UserService);
-  private roleService = inject(RoleService);
+export class HomeComponent implements OnInit {
+  @ViewChild('announcementModal') announcementModal: any;
+  @ViewChild('deleteModal') deleteModal: any;
 
-  owners: Owner[] = [];
-  users: User[] = [];
-  roles: Role[] = [];
-
-  // Chart configurations
-  public pieChartOptions: ChartOptions<'pie'> = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'right',
-      },
-    },
-  };
-  public barChartOptions: ChartOptions<'bar'> = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-    },
+  userName = 'Juan';
+  weather: WeatherData | null = null;
+  activeFilter: 'all' | 'active' | 'inactive' = 'all';
+  forecast: WeatherData[] = [];
+  announcements: Announcement[] = [];
+  currentUserId = 1;
+  
+  announcementToDelete: Announcement | null = null;
+  isEditing = false;
+  newAnnouncement: Notice = {
+    title: '',
+    content: '',
+    priority: 'MEDIUM',
+    isActive: true,
+    date: new Date().toISOString()
   };
 
-  // Owner Chart Data
-  public pieChartKycStatusLabels: string[] = [];
-  public pieChartKycStatusDatasets: ChartDataset<'pie', number[]>[] = [
-    {
-      data: [],
-      backgroundColor: ['#0dcaf0', '#0d6efd'], // Active (info) and Inactive (primary)
-      hoverBackgroundColor: ['#3dd5f3', '#1c7efd'], // Lighter on hover
-    },
-  ];
+  constructor(private http: HttpClient, private noticeService: NoticeService, private modalService: NgbModal) { }
 
-  public barChartOwnerTypeLabels: string[] = [];
-  public barChartOwnerTypeDatasets: ChartDataset<'bar', number[]>[] = [
-    {
-      data: [],
-      label: 'Tipo de propietario',
-      backgroundColor: '#198754', // Bootstrap success color
-      hoverBackgroundColor: '#28a745', // Hover color for bars
-      borderColor: '#198754',
-      borderWidth: 1,
-    },
-  ];
-
-  public pieChartActiveStatusLabels: string[] = ['Active', 'Inactive'];
-  public pieChartActiveStatusDatasets: ChartDataset<'pie', number[]>[] = [
-    {
-      data: [],
-      backgroundColor: ['#0dcaf0', '#0d6efd'], // Active (info) and Inactive (primary)
-      hoverBackgroundColor: ['#3dd5f3', '#1c7efd'], // Lighter on hover
-    },
-  ];
-
-  // User Chart Data
-  public pieChartUserActiveStatusLabels: string[] = ['Active', 'Inactive'];
-  public pieChartUserActiveStatusDatasets: ChartDataset<'pie', number[]>[] = [
-    {
-      data: [],
-      backgroundColor: ['#0dcaf0', '#0d6efd'], // Active (info) and Inactive (primary)
-      hoverBackgroundColor: ['#3dd5f3', '#1c7efd'], // Lighter on hover
-    },
-  ];
-
-  public barChartUserRoleLabels: string[] = [];
-  public barChartUserRoleDatasets: ChartDataset<'bar', number[]>[] = [
-    {
-      data: [],
-      label: 'Roles de usuarios',
-      backgroundColor: '#198754',
-      hoverBackgroundColor: '#28a745',
-      borderColor: '#198754',
-      borderWidth: 1,
-    },
-  ];
-
-  // Role Chart Data
-  public pieChartRoleActiveStatusLabels: string[] = ['Active', 'Inactive'];
-  public pieChartRoleActiveStatusDatasets: ChartDataset<'pie', number[]>[] = [
-    {
-      data: [],
-      backgroundColor: ['#0dcaf0', '#0d6efd'], // Active (info) and Inactive (primary)
-      hoverBackgroundColor: ['#3dd5f3', '#1c7efd'], // Lighter on hover
-    },
-  ];
-
-  ngOnInit(): void {
-    this.loadOwners();
-    this.loadUsers();
-    this.loadRoles();
+  ngOnInit() {
+    this.getWeather();
+    this.getForecast();
+    this.loadAnnouncements();
   }
 
-  ngAfterViewInit(): void {
-    this.updateCharts();
+  loadAnnouncements(isActive?: boolean) {
+    this.noticeService.getAllNotices(0, 10, isActive).subscribe({
+      next: (response) => {
+        this.announcements = response.content;
+      },
+      error: (error) => {
+        console.error('Error loading announcements:', error);
+      }
+    });
   }
 
-  loadOwners() {
-    this.ownerService
-      .getOwners(0, 1000)
-      .pipe(
-        map((response: PaginatedResponse<Owner>) => {
-          this.owners = response.content;
-          this.updateOwnerCharts();
-        }),
-        catchError((error) => {
-          console.error('Error loading owners', error);
-          return of([]);
-        })
-      )
-      .subscribe();
+  filterAnnouncements(filter: 'all' | 'active' | 'inactive') {
+    this.activeFilter = filter;
+    switch (filter) {
+      case 'active':
+        this.loadAnnouncements(true);
+        break;
+      case 'inactive':
+        this.loadAnnouncements(false);
+        break;
+      default:
+        this.loadAnnouncements();
+        break;
+    }
   }
 
-  loadUsers() {
-    this.userService
-      .getAllUsers(0, 1000)
-      .pipe(
-        map((response: PaginatedResponse<User>) => {
-          this.users = response.content;
-          this.updateUserCharts();
-        }),
-        catchError((error) => {
-          console.error('Error loading users', error);
-          return of([]);
-        })
-      )
-      .subscribe();
+
+  getPriorityClass(priority: string): string {
+    return `priority-${priority}`;
   }
 
-  loadRoles() {
-    this.roleService
-      .getAllRoles(0, 1000)
-      .pipe(
-        map((response: PaginatedResponse<Role>) => {
-          this.roles = response.content;
-          this.updateRoleCharts();
-        }),
-        catchError((error) => {
-          console.error('Error loading roles', error);
-          return of([]);
-        })
-      )
-      .subscribe();
+  openModal(content: any) {
+    this.modalService.open(content, { size: 'lg' });
   }
 
-  updateCharts() {
-    this.updateOwnerCharts();
-    this.updateUserCharts();
-    this.updateRoleCharts();
+  editAnnouncement(announcement: Announcement) {
+    this.noticeService.getNoticeById(announcement.id).subscribe({
+      next: (notice) => {
+        this.newAnnouncement = { ...notice };
+        this.isEditing = true;
+        this.openModal(this.announcementModal);
+      },
+      error: (error) => {
+        console.error('Error loading announcement details:', error);
+      }
+    });
   }
 
-  updateOwnerCharts() {
-    const kycStatusCounts = this.owners.reduce((acc, owner) => {
-      const status = owner.kycStatus ?? 'DESCONOCIDO';
-      acc[status] = (acc[status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    this.pieChartKycStatusLabels = Object.keys(kycStatusCounts);
-    this.pieChartKycStatusDatasets[0].data = Object.values(kycStatusCounts);
-
-    const ownerTypeCounts = this.owners.reduce((acc, owner) => {
-      acc[owner.ownerType] = (acc[owner.ownerType] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    this.barChartOwnerTypeLabels = Object.keys(ownerTypeCounts);
-    this.barChartOwnerTypeDatasets[0].data = Object.values(ownerTypeCounts);
-
-    const activeStatusCounts = this.owners.reduce((acc, owner) => {
-      const status = owner.isActive ? 'Activo' : 'Inactivo';
-      acc[status] = (acc[status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    this.pieChartActiveStatusLabels = Object.keys(activeStatusCounts);
-    this.pieChartActiveStatusDatasets[0].data =
-      Object.values(activeStatusCounts);
+  confirmDelete(announcement: Announcement) {
+    this.announcementToDelete = announcement;
+    this.modalService.open(this.deleteModal);
   }
 
-  updateUserCharts() {
-    const userActiveStatusCounts = this.users.reduce((acc, user) => {
-      const status = user.isActive ? 'Activo' : 'Inactivo';
-      acc[status] = (acc[status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+  deleteAnnouncement() {
+    if (this.announcementToDelete) {
+      this.noticeService.softDeleteNotice(this.announcementToDelete.id, this.currentUserId)
+        .subscribe({
+          next: () => {
+            this.modalService.dismissAll();
+            this.loadAnnouncements();
+            this.announcementToDelete = null;
+          },
+          error: (error) => {
+            console.error('Error deleting announcement:', error);
+          }
+        });
+    }
+  }
 
-    this.pieChartUserActiveStatusLabels = Object.keys(userActiveStatusCounts);
-    this.pieChartUserActiveStatusDatasets[0].data = Object.values(
-      userActiveStatusCounts
+  submitAnnouncement() {
+    const operation = this.isEditing 
+      ? this.noticeService.updateNotice(this.newAnnouncement, this.currentUserId)
+      : this.noticeService.createNotice(this.newAnnouncement, this.currentUserId);
+
+    operation.subscribe({
+      next: () => {
+        this.modalService.dismissAll();
+        this.loadAnnouncements();
+        this.resetForm();
+      },
+      error: (error) => {
+        console.error('Error saving announcement:', error);
+      }
+    });
+  }
+
+  private resetForm() {
+    this.newAnnouncement = {
+      title: '',
+      content: '',
+      priority: 'MEDIUM',
+      isActive: true,
+      date: new Date().toISOString()
+    };
+    this.isEditing = false;
+  }
+
+  getWeather() {
+    const apiKey = '19f297409130d09871fbdbf5922cfae5';
+    const city = 'Cordoba,AR';
+
+    this.http.get<WeatherData>(
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`
+    ).subscribe(
+      data => {
+        this.weather = data;
+        if (this.weather && this.weather.weather[0]) {
+          this.weather.weather[0].description =
+            weatherTranslations[this.weather.weather[0].description.toLowerCase()] ||
+            this.weather.weather[0].description;
+        }
+      },
+      error => console.error('Error fetching weather data', error)
     );
-
-    const userRoleCounts = this.users.reduce((acc, user) => {
-      user.roles?.forEach((role) => {
-        acc[role.name] = (acc[role.name] || 0) + 1;
-      });
-      return acc;
-    }, {} as Record<string, number>);
-
-    this.barChartUserRoleLabels = Object.keys(userRoleCounts);
-    this.barChartUserRoleDatasets[0].data = Object.values(userRoleCounts);
   }
 
-  updateRoleCharts() {
-    const roleActiveStatusCounts = this.roles.reduce((acc, role) => {
-      const status = role.active ? 'Activo' : 'Inactivo';
-      acc[status] = (acc[status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+  getForecast() {
+    const apiKey = '19f297409130d09871fbdbf5922cfae5';
+    const city = 'Cordoba,AR';
 
-    this.pieChartRoleActiveStatusLabels = Object.keys(roleActiveStatusCounts);
-    this.pieChartRoleActiveStatusDatasets[0].data = Object.values(
-      roleActiveStatusCounts
+    this.http.get<ForecastData>(
+      `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${apiKey}`
+    ).subscribe(
+      data => {
+        const dailyForecasts = data.list.reduce((acc: WeatherData[], curr) => {
+          const date = new Date(curr.dt_txt || '').toLocaleDateString();
+          if (!acc.find(item => new Date(item.dt_txt || '').toLocaleDateString() === date)) {
+            // Traducir la descripción
+            if (curr.weather[0]) {
+              curr.weather[0].description =
+                weatherTranslations[curr.weather[0].description.toLowerCase()] ||
+                curr.weather[0].description;
+            }
+            acc.push(curr);
+          }
+          return acc;
+        }, []);
+
+        this.forecast = dailyForecasts.slice(1, 3);
+      },
+      error => console.error('Error fetching forecast data', error)
     );
-  } */
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  formatDate(dateStr: string): string {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('es-ES', { weekday: 'long' });
+  }
 }
