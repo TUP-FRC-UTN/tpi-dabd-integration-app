@@ -214,7 +214,7 @@ export class AppComponent {
           subMenu: [
             {
               label: 'Cambiar contraseña',
-              routerLink: '/users/user/changepassword',
+              routerLink: '/users/changepassword',
             }
           ],
         },
