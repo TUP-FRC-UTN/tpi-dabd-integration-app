@@ -1,10 +1,11 @@
-import { OnInit } from '@angular/core';
+import { OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { MainContainerComponent, TableComponent } from 'ngx-dabd-grupo01';
-import { FormsModule } from '@angular/forms';
-import { NgbPagination } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule, NgForm } from '@angular/forms';
+import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
+import { Notice, NoticeService } from '../../../services/notice.service';
 
 interface WeatherData {
   main: {
@@ -26,8 +27,8 @@ interface Announcement {
   id: number;
   title: string;
   content: string;
-  date: string;
   priority: 'high' | 'medium' | 'low';
+  date?: string;
 }
 
 const weatherTranslations: { [key: string]: string } = {
@@ -60,43 +61,129 @@ const weatherTranslations: { [key: string]: string } = {
   providers: [DatePipe],
 })
 export class HomeComponent implements OnInit {
+  @ViewChild('announcementModal') announcementModal: any;
+  @ViewChild('deleteModal') deleteModal: any;
+
   userName = 'Juan';
   weather: WeatherData | null = null;
+  activeFilter: 'all' | 'active' | 'inactive' = 'all';
   forecast: WeatherData[] = [];
+  announcements: Announcement[] = [];
+  currentUserId = 1;
+  
+  announcementToDelete: Announcement | null = null;
+  isEditing = false;
+  newAnnouncement: Notice = {
+    title: '',
+    content: '',
+    priority: 'MEDIUM',
+    isActive: true,
+    date: new Date().toISOString()
+  };
 
-  announcements: Announcement[] = [
-    {
-      id: 1,
-      title: 'Mantenimiento Programado',
-      content: 'El próximo sábado se realizará mantenimiento en las áreas comunes.',
-      date: '2024-03-15',
-      priority: 'high'
-    },
-    {
-      id: 2,
-      title: 'Nueva Área Verde',
-      content: 'Se ha inaugurado un nuevo espacio verde para el esparcimiento familiar.',
-      date: '2024-03-10',
-      priority: 'medium'
-    },
-    {
-      id: 3,
-      title: 'Actualización de Normativa',
-      content: 'Se han actualizado las normativas de uso de instalaciones deportivas.',
-      date: '2024-03-05',
-      priority: 'low'
+  constructor(private http: HttpClient, private noticeService: NoticeService, private modalService: NgbModal) { }
+
+  ngOnInit() {
+    this.getWeather();
+    this.getForecast();
+    this.loadAnnouncements();
+  }
+
+  loadAnnouncements(isActive?: boolean) {
+    this.noticeService.getAllNotices(0, 10, isActive).subscribe({
+      next: (response) => {
+        this.announcements = response.content;
+      },
+      error: (error) => {
+        console.error('Error loading announcements:', error);
+      }
+    });
+  }
+
+  filterAnnouncements(filter: 'all' | 'active' | 'inactive') {
+    this.activeFilter = filter;
+    switch (filter) {
+      case 'active':
+        this.loadAnnouncements(true);
+        break;
+      case 'inactive':
+        this.loadAnnouncements(false);
+        break;
+      default:
+        this.loadAnnouncements();
+        break;
     }
-  ];
+  }
+
 
   getPriorityClass(priority: string): string {
     return `priority-${priority}`;
   }
 
-  constructor(private http: HttpClient) { }
+  openModal(content: any) {
+    this.modalService.open(content, { size: 'lg' });
+  }
 
-  ngOnInit() {
-    this.getWeather();
-    this.getForecast();
+  editAnnouncement(announcement: Announcement) {
+    this.noticeService.getNoticeById(announcement.id).subscribe({
+      next: (notice) => {
+        this.newAnnouncement = { ...notice };
+        this.isEditing = true;
+        this.openModal(this.announcementModal);
+      },
+      error: (error) => {
+        console.error('Error loading announcement details:', error);
+      }
+    });
+  }
+
+  confirmDelete(announcement: Announcement) {
+    this.announcementToDelete = announcement;
+    this.modalService.open(this.deleteModal);
+  }
+
+  deleteAnnouncement() {
+    if (this.announcementToDelete) {
+      this.noticeService.softDeleteNotice(this.announcementToDelete.id, this.currentUserId)
+        .subscribe({
+          next: () => {
+            this.modalService.dismissAll();
+            this.loadAnnouncements();
+            this.announcementToDelete = null;
+          },
+          error: (error) => {
+            console.error('Error deleting announcement:', error);
+          }
+        });
+    }
+  }
+
+  submitAnnouncement() {
+    const operation = this.isEditing 
+      ? this.noticeService.updateNotice(this.newAnnouncement, this.currentUserId)
+      : this.noticeService.createNotice(this.newAnnouncement, this.currentUserId);
+
+    operation.subscribe({
+      next: () => {
+        this.modalService.dismissAll();
+        this.loadAnnouncements();
+        this.resetForm();
+      },
+      error: (error) => {
+        console.error('Error saving announcement:', error);
+      }
+    });
+  }
+
+  private resetForm() {
+    this.newAnnouncement = {
+      title: '',
+      content: '',
+      priority: 'MEDIUM',
+      isActive: true,
+      date: new Date().toISOString()
+    };
+    this.isEditing = false;
   }
 
   getWeather() {
