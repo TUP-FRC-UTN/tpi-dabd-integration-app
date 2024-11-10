@@ -11,12 +11,15 @@ import { User } from '../../../models/user';
 import {DatePipe, NgClass} from "@angular/common";
 import {ActivatedRoute, Router} from "@angular/router";
 import { routes } from '../../../../app.routes';
+import * as XLSX from 'xlsx';
 import {NgbModal, NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
 import {Subject} from "rxjs";
 import { InfoComponent } from '../../commons/info/info.component';
 import {SessionService} from '../../../services/session.service';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-users-created-by-user',
@@ -44,6 +47,7 @@ export class UsersCreatedByUserComponent {
 
   userList!: User[]
   userName!: string;
+  userId!: number;
   filteredUsersList: User[] = [];
 
   //#region ATT de PAGINADO
@@ -55,19 +59,19 @@ export class UsersCreatedByUserComponent {
   //#endregion
 
   ngOnInit() {
-    let id = this.sessionService.getItem("user")
-    id = 1
+    let id = this.sessionService.getItem("user").id   
 
     if (id) {
       this.userService.getUserById(id).subscribe({
         next: result => {
-          this.userName = result.firstName + " " + result.lastName
+          this.userName = result.firstName + " " + result.lastName;
+          this.userId = result.id!;
         }
       })
       // this.userService.getUsersCreatedBy(id, this.currentPage, this.pageSize).subscribe({
       this.userService.getUsersCreatedBy(id, this.currentPage, this.pageSize).subscribe({
         next: result => {
-          this.userList = result.content;
+          this.userList = result;
           this.filteredUsersList = this.userList
           this.totalItems = result.totalElements;
         }
@@ -129,26 +133,45 @@ export class UsersCreatedByUserComponent {
    * Calls the `exportTableToPdf` method from the `CadastreExcelService`.
    */
   exportToPdf() {
-    this.userService.getAllUsers(0, this.LIMIT_32BITS_MAX).subscribe(
-      response => {
-        this.excelService.exportListToPdf(response.content, `${this.getActualDayFormat()}_${this.objectName}`, [], this.dataMapper);
-      },
-      error => {
-        console.log("Error retrieved all, on export component.")
+    const doc = new jsPDF();
+  
+    doc.setFontSize(18);
+    doc.text('Usuarios creados por' + this.userName, 14, 20);    
 
-      }
-    )
+    this.userService.getUsersCreatedBy(this.userId.toString(), 0, this.LIMIT_32BITS_MAX).subscribe({
+      next: (data) => {
+        autoTable(doc, {
+          startY: 30,
+          head: [['Nombre completo', 'Nombre de usuario', 'Email', 'Activo',]],
+          body: data.map(((user: User) => [
+            user.firstName + ' ' + user.lastName,
+            user.userName,
+            user.email,
+            user.isActive? 'Activo' : 'Inactivo'
+          ]))
+        });
+        doc.save(`${this.getActualDayFormat()}_Usuarios.pdf`);
+      },
+      error: () => {console.log("Error retrieved all, on export component.")}
+    });
   }
 
   exportToExcel() {
-    this.userService.getAllUsers(0, this.LIMIT_32BITS_MAX).subscribe(
-      response => {
-        this.excelService.exportListToExcel(response.content, `${this.getActualDayFormat()}_${this.objectName}`);
+    this.userService.getUsersCreatedBy(this.userId.toString(), 0, this.LIMIT_32BITS_MAX).subscribe({
+      next: (data) => {
+        const toExcel = data.map((user: User) => ({
+          'Nombre completo': user.firstName + ' ' + user.lastName,
+          'Nombre de usuario': user.userName,
+          'Email': user.email,  
+          'Activo': user.isActive? 'Activo' : 'Inactivo'
+        }));
+        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Usuarios');
+        XLSX.writeFile(wb, `${this.getActualDayFormat()}_Usuarios.xlsx`);
       },
-      error => {
-        console.log("Error retrieved all, on export component.")
-      }
-    )
+      error: () => { console.log("Error retrieved all, on export component.") }
+    });
   }
 
   onFilterTextBoxChanged(event: Event) {
@@ -231,11 +254,6 @@ export class UsersCreatedByUserComponent {
             strong: 'Detalles: ',
             detail: 'Redirige hacia la pantalla para poder visualizar detalladamente todos los datos del usuario.'
           }
-        ]
-      },
-      {
-        title: 'Filtros',
-        content: [
         ]
       },
       {

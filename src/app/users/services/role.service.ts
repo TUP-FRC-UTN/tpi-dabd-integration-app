@@ -1,15 +1,17 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { Role } from '../models/role';
 import { PaginatedResponse } from '../models/api-response';
 import { TransformRolePipe } from '../pipes/role-mapper.pipe';
 import { toCamelCase } from '../utils/owner-helper';
+import { SessionService } from './session.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoleService {
+  private sessionService = inject(SessionService);
   host: string = "http://localhost:8015/roles"
 
   constructor(private http: HttpClient) { }
@@ -46,32 +48,32 @@ export class RoleService {
     );
   }
 
-  createRole(role: Role, userId: number): Observable<Role>{
+  createRole(role: Role): Observable<Role>{
     const headers = new HttpHeaders({
-      'x-user-id': userId
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
 
     return this.http.post<Role>(this.host, role, {headers});
   }
 
-  updateRole(id: number, role: Role, userId: number): Observable<Role>{
+  updateRole(id: number, role: Role): Observable<Role>{
     const headers = new HttpHeaders({
-      'x-user-id': userId
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
 
     return this.http.put<Role>(`${this.host}/${id}`, role, {headers});
   }
 
-  deleteRole(id: number, userId: number): Observable<void> {
+  deleteRole(id: number): Observable<void> {
     const headers = new HttpHeaders({
-      'x-user-id': userId
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
     return this.http.delete<void>(`${this.host}/${id}`, {headers});
   }
 
-  reactiveRole(id: number, userId: number): Observable<void> {
+  reactiveRole(id: number): Observable<void> {
     const headers = new HttpHeaders({
-      'x-user-id': userId
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
     return this.http.patch<void>(`${this.host}/${id}`, {}, {headers});
   }
