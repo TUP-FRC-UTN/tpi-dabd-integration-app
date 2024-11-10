@@ -102,11 +102,11 @@
   <div class="chart-section mb-4 mt-3 p-3 border rounded">
     <h3 class="section-title">Estadísticas de Roles</h3>
     <div class="charts d-flex justify-content-between mt-4">
-      <div class="chart">
+      <!-- <div class="chart">
         <h6>Distribución de Roles</h6>
         <canvas baseChart height="220px" [type]="'bar'" [datasets]="barChartUserRoleDatasets"
           [labels]="barChartUserRoleLabels" [options]="barChartOptions"></canvas>
-      </div>
+      </div> -->
       <div class="chart">
         <h6>Roles Activos e Inactivos</h6>
         <canvas baseChart height="220px" [type]="'pie'" [datasets]="pieChartRoleActiveStatusDatasets"
@@ -117,6 +117,7 @@
         <canvas
           baseChart
           height="220px"
+          width="660px"
           [type]="'bar'"
           [datasets]="barChartUserByRoleDatasets"
           [labels]="barChartUserByRoleLabels"
