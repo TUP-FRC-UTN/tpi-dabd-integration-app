@@ -18,6 +18,7 @@ import {OwnerPlotService} from "../../../services/owner-plot.service";
 import { InfoComponent } from '../../commons/info/info.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {SessionService} from '../../../services/session.service';
+import {birthdateValidation} from '../../../validators/birthdate.validations';
 
 
 @Component({
@@ -69,6 +70,9 @@ export class UserUserTenantFormComponent {
     firstName: new FormControl('', [Validators.required, Validators.maxLength(50)]), // Cambiado
     lastName: new FormControl('', [Validators.required, Validators.maxLength(50)]), // Cambiado
     userName: new FormControl('', [Validators.required, Validators.maxLength(50)]), // Cambiado
+    documentType: new FormControl('', [Validators.required]),
+    documentNumber: new FormControl('', [Validators.required, Validators.maxLength(10)]),
+    birthdate: new FormControl('', [Validators.required, birthdateValidation]),
 
     rolesForm: new FormGroup({
       rol: new FormControl('', []),
@@ -79,14 +83,14 @@ export class UserUserTenantFormComponent {
       contactValue: new FormControl('', []),
     }),
     addressForm: new FormGroup({
-      streetAddress: new FormControl('', [Validators.required]),
-      number: new FormControl(0, [Validators.required, Validators.min(0)]),
+      streetAddress: new FormControl('', []),
+      number: new FormControl(0, [ Validators.min(0)]),
       floor: new FormControl(0),
       apartment: new FormControl(''),
-      city: new FormControl('Córdoba', [Validators.required]),
-      province: new FormControl('CORDOBA', [Validators.required]),
-      country: new FormControl('ARGENTINA', [Validators.required]),
-      postalCode: new FormControl('', [Validators.required]),
+      city: new FormControl('Córdoba', []),
+      province: new FormControl('CORDOBA', []),
+      country: new FormControl('ARGENTINA', []),
+      postalCode: new FormControl('', []),
     }),
 
     plotForm: new FormGroup({
@@ -98,12 +102,7 @@ export class UserUserTenantFormComponent {
   //#region ON SUBMIT
   onSubmit(): void {
     if (this.userForm.valid) {
-      if (this.id === null) {
-        this.createUser()
-      }
-      else {
-        this.updateUser()
-      }
+      this.id === null ? this.createUser() : this.updateUser();
     }
   }
   //#endregion
@@ -111,6 +110,7 @@ export class UserUserTenantFormComponent {
   //#region ngOnInit
   ngOnInit(): void {
     this.actualUserId = sessionStorage.getItem("user");
+    this.actualUserId = 1
     this.userService.getUserById(this.actualUserId).subscribe({
       next : response => {
         this.actualOwnerId = response.ownerId
@@ -152,34 +152,33 @@ export class UserUserTenantFormComponent {
           console.log(response)
           this.user = response;
 
+          const [day, month, year] = this.user.birthdate.split('/');
+          const formattedDate = `${year}-${month}-${day}`;
           this.userForm.patchValue({
             email: this.user.email,
             firstName: this.user.firstName,
             lastName: this.user.lastName,
             userName: this.user.userName,
+            documentType: this.user.documentType,
+            documentNumber: this.user.documentNumber,
+            birthdate: formattedDate
           });
 
+          console.log(this.user.plotId)
           if (this.user.plotId) {
             this.setPlotValue(this.user.plotId)
           }
 
           if (this.user.addresses) {
             this.addresses = [...this.user.addresses];
-            if (this.addresses.length > 0) {
-              this.setAddressValue(0);
-            }
           }
 
           if (this.user.contacts) {
             this.contacts = [...this.user.contacts];
-            if (this.contacts.length > 0) {
-              this.setContactValue(0);
-            }
           }
 
           if (this.user.roles) {
             this.roles = [...this.user.roles];
-            this.userForm.get('rolesForm.rol')?.setValue(this.roles[0]?.id || null);
           }
         },
         error => {
@@ -290,14 +289,16 @@ export class UserUserTenantFormComponent {
   fillUser() {
     this.user.id = this.id ? parseInt(this.id) : undefined;
     (this.user.firstName = this.userForm.get('firstName')?.value || ''),
-      (this.user.lastName = this.userForm.get('lastName')?.value || ''),
-      (this.user.userName = this.userForm.get('userName')?.value || ''),
-      (this.user.email = this.userForm.get('email')?.value || ''),
-      (this.user.isActive = this.userForm.get('isActive')?.value || undefined),
-      (this.user.contacts = [...this.contacts]),
-      (this.user.addresses = [...this.addresses]);
-    (this.user.roles = [...this.roles]),
-      (this.user.plotId = this.userForm.get('plotForm.plotAssign')?.value || undefined)
+    (this.user.lastName = this.userForm.get('lastName')?.value || ''),
+    (this.user.userName = this.userForm.get('userName')?.value || ''),
+    (this.user.email = this.userForm.get('email')?.value || ''),
+    (this.user.documentType = this.userForm.get('documentType')?.value || ''),
+    (this.user.documentNumber = this.userForm.get('documentNumber')?.value || ''),
+    (this.user.birthdate = this.userForm.get('birthdate')?.value || ''),
+    (this.user.isActive = this.userForm.get('isActive')?.value || undefined),
+    (this.user.contacts = [...this.contacts]),
+    (this.user.addresses = [...this.addresses]);
+    (this.user.plotId = this.userForm.get('plotForm.plotAssign')?.value || undefined)
   }
 
   createUser() {
@@ -319,13 +320,15 @@ export class UserUserTenantFormComponent {
 
   updateUser() {
     this.fillUser();
-    this.user.roleCodeList = this.transformRoles(this.user)
+    this.user.roles = [103]
+    this.user.isActive = true;
+    this.user.plotId = parseInt(this.user.plotId)
+    delete this.user.createdDate
     if (this.user.id) {
-      delete this.user.roles
-      this.userService.updateUser(this.user.id, this.user, 1).subscribe({
+      this.userService.updateUser(this.user.id, toSnakeCase(this.user), 1).subscribe({
         next: (response) => {
           this.toastService.sendSuccess("Usuario actualizado con exito.")
-          this.router.navigate(['users/owner/list']);
+          this.router.navigate(['users/user/list']);
         },
         error: (error) => {
           this.toastService.sendError("Error actualizado el usuario.")

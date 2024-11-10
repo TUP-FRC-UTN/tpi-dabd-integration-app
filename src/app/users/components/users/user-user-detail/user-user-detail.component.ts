@@ -15,6 +15,8 @@ import { User } from '../../../models/user';
 import { toSnakeCase } from '../../../utils/owner-helper';
 import { InfoComponent } from '../../commons/info/info.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {birthdateValidation} from '../../../validators/birthdate.validations';
+import {plotForUserValidator} from '../../../validators/cadastre-plot-for-users';
 
 @Component({
   selector: 'app-user-user-detail',
@@ -63,6 +65,9 @@ export class UserUserDetailComponent {
     firstName: new FormControl('', [Validators.required, Validators.maxLength(50)]), // Cambiado
     lastName: new FormControl('', [Validators.required, Validators.maxLength(50)]), // Cambiado
     userName: new FormControl('', [Validators.required, Validators.maxLength(50)]), // Cambiado
+    documentType: new FormControl('', [Validators.required]),
+    documentNumber: new FormControl('', [Validators.required, Validators.maxLength(10)]),
+    birthdate: new FormControl('', [Validators.required, birthdateValidation]),
 
     rolesForm: new FormGroup({
       rol: new FormControl('', []),
@@ -84,7 +89,14 @@ export class UserUserDetailComponent {
     }),
 
     plotForm: new FormGroup({
-      plotAssign: new FormControl('', [Validators.required])
+      plotNumber: new FormControl(
+        '',
+        [Validators.min(1)],
+        [plotForUserValidator(this.plotService)]
+      ),
+      blockNumber: new FormControl('', [
+        Validators.min(1),
+      ]),
     }),
   });
   //#endregion
@@ -123,37 +135,34 @@ export class UserUserDetailComponent {
     if (this.id) {
       this.userService.getUserById(Number(this.id)).subscribe(
         response => {
-          console.log(response)
           this.user = response;
 
+          const [day, month, year] = this.user.birthdate.split('/');
+          const formattedDate = `${year}-${month}-${day}`;
           this.userForm.patchValue({
             email: this.user.email,
             firstName: this.user.firstName,
             lastName: this.user.lastName,
             userName: this.user.userName,
+            documentType: this.user.documentType,
+            documentNumber: this.user.documentNumber,
+            birthdate: formattedDate
           });
 
-          if (this.user.plotId) {
-            this.setPlotValue(this.user.plotId)
+          if (response.plotId !== undefined) {
+            this.setPlotValue(response.plotId);
           }
 
           if (this.user.addresses) {
             this.addresses = [...this.user.addresses];
-            if (this.addresses.length > 0) {
-              this.setAddressValue(0);
-            }
           }
 
           if (this.user.contacts) {
             this.contacts = [...this.user.contacts];
-            if (this.contacts.length > 0) {
-              this.setContactValue(0);
-            }
           }
-
+          console.log(this.user.roles)
           if (this.user.roles) {
             this.roles = [...this.user.roles];
-            this.userForm.get('rolesForm.rol')?.setValue(this.roles[0]?.id || null);
           }
         },
         error => {
