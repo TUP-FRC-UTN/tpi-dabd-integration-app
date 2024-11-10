@@ -1,12 +1,14 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FileUploadData, Document, FileTypeMap } from '../models/file';
+import { SessionService } from './session.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoadFileService {
+  private sessionService = inject(SessionService);
 
   private ownerUploadUrl = 'http://localhost:8004/owners';
   private fileUploadUrl = 'http://localhost:8004/files';
@@ -23,7 +25,6 @@ export class LoadFileService {
    */
   uploadFiles(
     ownerId: number,
-    headerUserId: number,
     filesData: FileUploadData[]
   ): Observable<File[]> {
 
@@ -40,7 +41,7 @@ export class LoadFileService {
     formData.append(`type`, filesData[0].fileType); // TODO: EL BACK NO SOPORTA MULTIPLES TYPES
 
     const headers = new HttpHeaders({
-      'x-user-id': headerUserId.toString()
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
     return this.http.post<File[]>(`${this.ownerUploadUrl}/${ownerId}/files`, formData, { headers });
   }
@@ -67,7 +68,7 @@ export class LoadFileService {
 
 
   // metodo para subir archivos de Owners
-  uploadFilesOwner(files: File[], fileTypeMap: FileTypeMap, ownerId: number, headerUserId: number): Observable<Document[]> {
+  uploadFilesOwner(files: File[], fileTypeMap: FileTypeMap, ownerId: number): Observable<Document[]> {
     
     const formDataOwner = new FormData();
     formDataOwner.append(
@@ -88,14 +89,14 @@ export class LoadFileService {
     });
 
     const headers = new HttpHeaders({
-      'x-user-id': headerUserId.toString()
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
     return this.http.post<Document[]>(`${this.ownerUploadUrl}/${ownerId}/files`, formDataOwner, { headers });
   }
 
 
   // metodo para subir archivos de Plots
-  uploadFilesPlot(files: File[], fileTypeMap: FileTypeMap, plotId: number, headerUserId: number): Observable<Document[]> {
+  uploadFilesPlot(files: File[], fileTypeMap: FileTypeMap, plotId: number): Observable<Document[]> {
 
     const formDataPlot = new FormData();
     formDataPlot.append(
@@ -116,20 +117,20 @@ export class LoadFileService {
     });
 
     const headers = new HttpHeaders({
-      'x-user-id': headerUserId.toString()
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
     return this.http.post<Document[]>(`${this.fileUploadUrl}/${plotId}/files`, formDataPlot, { headers });
   }
 
 
-  updateFile(fileId: number, fileType: string, file: File, userId: string): Observable<Document> {
+  updateFile(fileId: number, fileType: string, file: File): Observable<Document> {
 
     const formData = new FormData();
     formData.append('type', fileType);
     formData.append('file', file);
 
     const headers = new HttpHeaders({
-      'x-user-id': userId.toString()
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
 
     return this.http.put<Document>(this.fileUploadUrl + '/' + fileId, formData, { headers })

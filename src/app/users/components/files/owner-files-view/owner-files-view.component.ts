@@ -186,7 +186,7 @@ export class OwnerFilesViewComponent {
     modalRef.componentInstance.onConfirm = () => {
       if(this.noteForm.valid) {
         console.log(this.noteForm.value.note)
-        this.fileService.updateFileStatus(file.id, status, this.noteForm.value.note, '1').subscribe({
+        this.fileService.updateFileStatus(file.id, status, this.noteForm.value.note).subscribe({
           next: (response) => {
             console.log(response);
             this.toastService.sendSuccess('Estado cambiado correctamente.')
@@ -237,7 +237,7 @@ export class OwnerFilesViewComponent {
         console.log("Aca le pego al back para actualizar el estado del owner");
         if(this.owner.id) {
           console.log(this.plots)
-          this.ownerService.validateOwner(this.owner.id, this.plots[0].id, "VALIDATED", '1').subscribe({
+          this.ownerService.validateOwner(this.owner.id, this.plots[0].id, "VALIDATED").subscribe({
             next: (response) => {
               console.log(response);
               this.toastService.sendSuccess('Propietario validado correctamente');

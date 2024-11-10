@@ -241,7 +241,7 @@ export class FilesFormComponent implements OnInit {
                 // llamar al patch
                 const filePut = this.uploadedFiles.get(file.id);
                 if(filePut) {
-                  this.fileService.updateFile(filePut.id, filePut.fileType, file.file, '1').subscribe({
+                  this.fileService.updateFile(filePut.id, filePut.fileType, file.file).subscribe({
                     next: (response) => {
                       console.log('Owner Files uploaded successfully:', response);
                       this.isUploading = false;
@@ -265,7 +265,7 @@ export class FilesFormComponent implements OnInit {
               } else {
                 // llamar al post
                 const fileTypeMap: FileTypeMap = this.createFileTypeMap([file]);
-                this.fileService.uploadFilesOwner([file.file], fileTypeMap, this.owner.id, 1).subscribe({
+                this.fileService.uploadFilesOwner([file.file], fileTypeMap, this.owner.id).subscribe({
                   next: (response) => {
                     console.log('Owner Files uploaded successfully:', response);
                     this.isUploading = false;
@@ -293,7 +293,7 @@ export class FilesFormComponent implements OnInit {
               // llamar al patch
               const filePut = this.uploadedFiles.get(file.id);
               if(filePut) {
-                this.fileService.updateFile(filePut.id, filePut.fileType, file.file, '1').subscribe({
+                this.fileService.updateFile(filePut.id, filePut.fileType, file.file).subscribe({
                   next: (response) => {
                     console.log('Plot Files uploaded successfully:', response);
                     this.isUploading = false;
@@ -316,7 +316,7 @@ export class FilesFormComponent implements OnInit {
                const fileTypeMap: FileTypeMap = this.createFileTypeMap([file]);
                const plotId = parseInt(file.id.split('-')[1]);
 
-               this.fileService.uploadFilesOwner([file.file], fileTypeMap, plotId, 1).subscribe({
+               this.fileService.uploadFilesOwner([file.file], fileTypeMap, plotId).subscribe({
                 next: (response) => {
                   console.log('Plot Files uploaded successfully:', response);
                   this.isUploading = false;
