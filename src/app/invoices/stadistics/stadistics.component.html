@@ -4,31 +4,38 @@
   <!-- Filtros de fecha y botón buscar -->
   <form [formGroup]="dateForm" (ngSubmit)="buscar()">
     <div class="row mb-4">
-      <div class="col-md-4">
+      <div class="col-md-6"> <!-- La primera fecha ocupará la mitad del ancho -->
         <label for="startDate" class="form-label">Periodo Desde</label>
-        <input type="date" id="startDate" class="form-control" formControlName="startDate">
-        @if (dateForm.get('startDate')?.errors?.['required'] && dateForm.get('startDate')?.touched) {
-          <div class="text-danger mt-1">La fecha de inicio es requerida.</div>
-        }
+        <input
+          type="month"
+          id="startDate"
+          class="form-control w-100"
+          formControlName="startDate"
+          (ngModelChange)="onDateChange()">
+        <div *ngIf="dateForm.get('startDate')?.errors?.['required'] && dateForm.get('startDate')?.touched" class="text-danger mt-1">
+          La fecha de inicio es requerida.
+        </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-6"> <!-- La segunda fecha también ocupará la mitad del ancho -->
         <label for="endDate" class="form-label">Periodo Hasta</label>
-        <input type="date" id="endDate" class="form-control" formControlName="endDate">
-        @if (dateForm.get('endDate')?.errors?.['required'] && dateForm.get('endDate')?.touched) {
-          <div class="text-danger mt-1">La fecha de fin es requerida.</div>
-        }
-        @if (dateForm.get('endDate')?.errors?.['endDateInvalid'] && dateForm.get('endDate')?.touched) {
-          <div class="text-danger mt-1">La fecha de fin no puede ser menor que la fecha de inicio.</div>
-        }
-      </div>
-      <div class="col-md-4 d-flex align-items-end">
-        <button class="btn btn-primary w-100" type="submit" [disabled]="dateForm.invalid">
-          <i class="bi bi-search"></i> Buscar
-        </button>
+        <input
+          type="month"
+          id="endDate"
+          class="form-control w-100"
+          formControlName="endDate"
+          (ngModelChange)="onDateChange()">
+        <div *ngIf="dateForm.get('endDate')?.errors?.['required'] && dateForm.get('endDate')?.touched" class="text-danger mt-1">
+          La fecha de fin es requerida.
+        </div>
+        <div *ngIf="dateForm.get('endDate')?.errors?.['endDateInvalid'] && dateForm.get('endDate')?.touched" class="text-danger mt-1">
+          La fecha de fin no puede ser menor que la fecha de inicio.
+        </div>
       </div>
     </div>
   </form>
-  
+
+
+
 
   <div class="row mb-4">
     <!-- Columnas de tarjetas de resumen -->
@@ -36,7 +43,7 @@
       <div class="card shadow-lg rounded-4 text-dark mb-3">
         <div class="card-body">
           <h5 class="card-title">Resumen de Ingresos</h5>
-          <p class="card-text fs-3"><i class="bi bi-cash-coin"></i> {{ resumenIngresos }} $</p>
+          <p class="card-text fs-3"><i class="bi bi-cash-coin"></i> $ {{ resumenIngresos }} </p>
           <small>Promedio mensual: {{ promedioMensual }}</small>
         </div>
       </div>
@@ -50,40 +57,44 @@
       <div class="card shadow-lg rounded-4 text-dark mb-3">
         <div class="card-body">
           <h5 class="card-title">Boleta más alta</h5>
-          <p class="card-text fs-3"><i class="bi bi-receipt"></i> {{ boletaMasAlta }} $</p>
-          <small>Promedio Top 5: {{ promedioTop5 }}$</small>
+          <p class="card-text fs-3"><i class="bi bi-receipt"></i> $ {{ boletaMasAlta }}</p>
+          <small>Promedio Top 5: ${{ promedioTop5 }}</small>
         </div>
       </div>
       <div class="card shadow-lg rounded-4 text-dark">
         <div class="card-body">
           <h5 class="card-title">MercadoPago - Promedio</h5>
-          <p class="card-text fs-3"><i class="bi bi-graph-up-arrow"></i> {{ mercadoPagoPromedio }} $</p>
+          <p class="card-text fs-3"><i class="bi bi-graph-up-arrow"></i> $ {{ mercadoPagoPromedio }}</p>
           <small>{{ porcentajeTransacciones }}% de las transacciones</small>
         </div>
       </div>
     </div>
-    
-    <!-- Gráfico de comparación de ingresos -->
-    <div class="col-md-6 col-lg-6">
+
+    <!-- Columna central con gráficos apilados -->
+    <div class="col-md-6 col-lg-6 d-flex flex-column">
+      <!-- Gráfico de comparación de ingresos -->
       <div class="card shadow-lg rounded-4 mb-4">
         <div class="card-body">
           <h3 class="card-title text-center">Comparación de Ingresos</h3>
-          <div class="chart-container" style="position: relative; height: 40vh; width: 100%;">
+          <div class="chart-container" style="position: relative; height: 100%;; width: 100%;">
             <canvas baseChart
-                    [data]="barChartData"
+                    [data]="chartDataPeriodsAmount"
                     [options]="barChartOptions"
                     chartType="bar">
             </canvas>
           </div>
         </div>
       </div>
-      <div class="card shadow-lg rounded-4 mb-4">
+
+      <!-- Gráfico TOP 5 -->
+      <div class="card shadow-lg rounded-4 flex-grow-1">
         <div class="card-body">
-          <h3 class="card-title text-center">Comparación de Ingresos</h3>
-          <div class="chart-container" style="position: relative; height: 40vh; width: 100%;">
+          <h3 class="card-title text-center">TOP 5</h3>
+          <p class="text-center">De expensas mas costosas</p>
+          <div class="chart-container" style="position: relative; height: calc(100% - 80px); width: 100%;">
             <canvas baseChart
-                    [data]="barChartData"
-                    [options]="barChartOptions"
+                    [data]="chartData"
+                    [options]="barChartOptionsHorizontal"
                     chartType="bar">
             </canvas>
           </div>
@@ -91,33 +102,22 @@
       </div>
     </div>
 
-    <!-- Gráfico de torta y top 5 de gastos -->
-    <div class="col-md-6 col-lg-3">
-      <div class="card shadow-lg rounded-4 mb-4">
-        <div class="card-body">
-          <h3 class="card-title text-center">Estados de Pagos</h3>
-          <div class="chart-container" style="position: relative; height: 40vh; width: 100%;">
-            <canvas baseChart
-                    [data]="doughnutChartData"
-                    [type]="pieChartType">
-            </canvas>
-          </div>
-        </div>
-      </div>
-
-      <div class="card shadow-lg rounded-4">
-        <div class="card-body">
-          <h3 class="card-title text-center">TOP 5</h3>
-          <p class="text-center">Gastos más caros</p>
-          <div class="chart-container" style="position: relative; height: 30vh; width: 100%;">
-            <canvas baseChart
-                    [data]=""
-                    [options]=""
-                    chartType="horizontalBar">
-            </canvas>
-          </div>
-        </div>
+<!-- Gráfico de torta -->
+<div class="col-md-6 col-lg-3">
+  <div class="card shadow-lg rounded-4 mb-4">
+    <div class="card-body">
+      <h3 class="card-title text-center">Estados de Pagos</h3>
+      <div class="chart-container" style="position: relative; height: 100%; width: 100%;">
+        <canvas baseChart
+                [data]="doughnutChartData"
+                [type]="pieChartType">
+        </canvas>
       </div>
     </div>
   </div>
-  
+</div>
+</div>
+</div>
+
+
+

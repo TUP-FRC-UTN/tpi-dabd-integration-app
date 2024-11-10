@@ -6,6 +6,8 @@ import { BaseChartDirective } from 'ng2-charts';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
 import { InfoComponent } from '../info/info.component';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { StadisticsService } from '../services/stadistics.service';
+import { OtherReport, PeriodRequest, TicketInfo, Top5 } from '../models/stadistics';
 
 @Component({
   selector: 'app-stadistics',
@@ -19,33 +21,39 @@ export class StadisticsComponent implements OnInit {
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
 
   // Variables cards izquierda
-  resumenIngresos: number = 377;
-  promedioMensual: number = 385;
+  resumenIngresos: number = 0;
+  promedioMensual: number = 0;
 
-  metodosPago: number = 22;
+  metodosPago: number = 0;
   metodoPrincipal: string = 'MercadoPago';
-  porcentajeMetodoPrincipal: number = 40.9;
+  porcentajeMetodoPrincipal: number = 0;
 
-  boletaMasAlta: number = 20000;
-  promedioTop5: number = 18860;
+  boletaMasAlta: number = 0;
+  promedioTop5: number = 0;
 
-  mercadoPagoPromedio: number = 17144;
-  porcentajeTransacciones: number = 40.9;
+  mercadoPagoPromedio: number = 0;
+  porcentajeTransacciones: number = 0;
 
   // Variables para enviar la request y carguen los datos al service
   dateForm: FormGroup;
 
+  //variables para guardar la info de los reportes
+  BaseReport!: Top5;
+  OtherReports!: OtherReport;
+  PeriodAmount: TicketInfo[] = [];
+  public chartData: any;
+  public chartDataPeriodsAmount: any;
 
-  constructor(private fb: FormBuilder, private modalService: NgbModal) {
+
+  constructor(private fb: FormBuilder, private modalService: NgbModal, private stadisticsService: StadisticsService) {
     this.dateForm = this.fb.group({
-      startDate: ['', Validators.required],
-      endDate: ['', [Validators.required, this.endDateValidator.bind(this)]]
+      startDate: ['2024-01', Validators.required],  // Fecha por defecto para 'Periodo Desde'
+      endDate: ['2024-09', Validators.required]     // Fecha por defecto para 'Periodo Hasta'
     });
   }
 
   ngOnInit(): void {
-    this.loadPaymentData();
-    this.loadPaymentStatusData();
+    this.buscar();
   }
 
    // Validar que la fecha fin sea mayor a fecha inicio
@@ -57,19 +65,7 @@ export class StadisticsComponent implements OnInit {
     }
     return null;
   }
-  // Configuración del gráfico de barras para "Cantidad de Pagos por Día"
-  public barChartData: ChartData<'bar'> = {
-    labels: [], // Fechas
-    datasets: [
-      {
-        label: 'Cantidad de Pagos por Día',
-        data: [], // Cantidad de pagos para cada día
-        backgroundColor: 'rgba(13, 110, 253, 0.2)',
-        borderColor: 'rgba(13, 110, 253, 1)',
-        borderWidth: 1
-      }
-    ]
-  };
+
   public pieChartType: ChartType = 'pie';
   // Opciones del gráfico de barras
   public barChartOptions: ChartOptions<'bar'> = {
@@ -122,51 +118,115 @@ export class StadisticsComponent implements OnInit {
     ]
   };
 
-
-
-
-  // Simulación de datos para el gráfico de barras
-  loadPaymentData() {
-    const fechas = ['01/11', '02/11', '03/11', '04/11', '05/11'];
-    const pagos = [5, 10, 7, 3, 8];
-
-    this.barChartData.labels = fechas;
-    this.barChartData.datasets[0].data = pagos;
-  }
-
-  // Simulación de datos para el gráfico de torta
-  loadPaymentStatusData() {
-    const pendiente = 15;
-    const pagado = 30;
-    const anulado = 5;
-
-    this.doughnutChartData.datasets[0].data = [pendiente, pagado, anulado];
-  }
-
-
-
-
-
-
-
-
   // Buscador que carga los filtros de fechas
+  async buscar() {
 
-  buscar() {
+    const fechas = this.dateForm.value;
+    const periodRequest: PeriodRequest = {
+      firstDate: this.formatMonthYear(fechas.startDate),
+      lastDate: this.formatMonthYear(fechas.endDate)
+    };
 
-    const fechas = this.dateForm.value
+    //Se realizan las consultas para obtener datos
+    await this.getReportDataTop5(periodRequest);
+    await this.getOtherReport(periodRequest);
+    await this.getPeriodAmount(periodRequest);
 
-    console.log('Fechas seleccionadas:', fechas);
-    const pendiente = 50;
-    const pagado = 25;
-    const anulado = 25;
+    // Se actualizan los graficos con los nuevos datos
+    this.loadInvoicesByPeriod();
+    this.loadTop5Invoices();
+    this.updateStatusChart();
+    this.chart?.update();
+    this.loadCardData();
+  }
 
-    // Asignar un nuevo objeto para forzar la detección de cambios
+  // ACA SE ABRE EL MODAL DE INFO
+  showInfo(): void {
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true,
+    });
+    modalRef.componentInstance.data = { role: 'owner' };
+  }
+
+  //Aqui se cargan los datos para las card de la izq
+  loadCardData() {
+    this.resumenIngresos = parseInt(this.OtherReports.totalPaid.toString(), 10);
+    this.promedioMensual = this.OtherReports.totalAveragePaid;
+
+    this.metodosPago = parseInt(this.OtherReports.paid.toString(), 10);
+    this.metodoPrincipal = 'MercadoPago';
+    this.porcentajeMetodoPrincipal = 0;
+
+    this.boletaMasAlta = this.BaseReport.topAmount;
+    this.promedioTop5 = parseInt(this.BaseReport.averageAmount.toString(), 10);
+
+    this.mercadoPagoPromedio = 0;
+    this.porcentajeTransacciones = 0;
+  }
+
+  getReportDataTop5(periodRequest: PeriodRequest): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.stadisticsService.getBaseReport(periodRequest).subscribe(
+        (data: Top5) => {
+          this.BaseReport = data;
+          resolve();
+        },
+        error => {
+          console.error('Error al obtener el reporte', error);
+          reject(error);
+        }
+      );
+    });
+  }
+
+  getOtherReport(periodRequest: PeriodRequest): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.stadisticsService.getOtherReport(periodRequest).subscribe(
+        (data: OtherReport) => {
+          this.OtherReports = data;
+          resolve();
+        },
+        error => {
+          console.error('Error al obtener el reporte', error);
+          reject(error);
+        }
+      );
+    });
+  }
+
+  //Se obtienen los totales cobrados en cada periodo para el grafico de comparacion
+  getPeriodAmount(periodRequest: PeriodRequest): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.stadisticsService.getAmountByDate(periodRequest).subscribe(
+        (data: TicketInfo[]) => {
+          this.PeriodAmount = data; // Asignamos el array recibido a PeriodAmount
+          resolve();
+        },
+        error => {
+          console.error('Error al obtener el reporte', error);
+          reject(error);
+        }
+      );
+    });
+  }
+
+  formatMonthYear(dateString: string): string {
+    const [year, month] = dateString.split('-');
+    return `${month}/${year.slice(2)}`; // Formato "MM/YY" para la API
+  }
+
+  updateStatusChart(){
     this.doughnutChartData = {
       labels: ['Pendiente', 'Pagado', 'Anulado'],
       datasets: [
         {
-          data: [pendiente, pagado, anulado],
+          data: [this.OtherReports.pending,
+                this.OtherReports.paid,
+                this.OtherReports.canceled],
           backgroundColor: [
             'rgba(255, 206, 86, 0.2)',  // Pendiente - amarillo
             'rgba(75, 192, 192, 0.2)',  // Pagado - verde
@@ -181,20 +241,73 @@ export class StadisticsComponent implements OnInit {
         }
       ]
     };
-    this.chart?.update();
   }
 
+  loadTop5Invoices(): void {
+    // Verificar que top5Data y top5Data.top5 están definidos
+    if (!this.BaseReport || !this.BaseReport.top5) return;
 
-  // ACA SE ABRE EL MODAL DE INFO
-  showInfo(): void {
-    const modalRef = this.modalService.open(InfoComponent, {
-      size: 'lg',
-      backdrop: 'static',
-      keyboard: false,
-      centered: true,
-      scrollable: true,
-    });
+    // Extraer etiquetas (números de ticket) y valores (monto total) para el gráfico
+    const labels = this.BaseReport.top5.map((item: TicketInfo) => item.ticketNumber);
+    const values = this.BaseReport.top5.map((item: TicketInfo) => item.totalAmount);
 
-    modalRef.componentInstance.data = { role: 'owner' };
+    // Configurar los datos del gráfico
+    this.chartData = {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Gastos en $',
+          data: values,
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }
+      ]
+    };
   }
+
+  //Se configura y cargan los graficos para la comparacion de ingresos
+  loadInvoicesByPeriod(): void {
+    // Verificar que top5Data y top5Data.top5 están definidos
+    if (!this.PeriodAmount) return;
+
+    // Extraer etiquetas (números de ticket) y valores (monto total) para el gráfico
+    const labels = this.PeriodAmount.map((item: TicketInfo) => item.period);
+    const values = this.PeriodAmount.map((item: TicketInfo) => item.totalAmount);
+
+    // Configurar los datos del gráfico
+    this.chartDataPeriodsAmount = {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Cantidad de cobros realizados por período',
+          data: values,
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }
+      ]
+    };
+  }
+
+  onDateChange() {
+    if (this.dateForm.valid) {
+      this.buscar(); // Llamar a la función buscar cuando las fechas son válidas
+    }
+  }
+
+  //Se cofigura las properties para el grafico TOP 5
+  public barChartOptionsHorizontal: ChartOptions<'bar'> = {
+    responsive: true,
+    indexAxis: 'y',
+    scales: {
+      x: {
+        beginAtZero: true,
+      },
+      y: {
+
+      }
+    }
+  };
+
 }
