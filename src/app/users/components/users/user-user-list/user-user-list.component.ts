@@ -10,12 +10,15 @@ import {
   Filter,
   FilterConfigBuilder,
 } from 'ngx-dabd-grupo01';
+import * as XLSX from 'xlsx';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
 import { InfoComponent } from '../../commons/info/info.component';
 import { AsyncPipe, DatePipe } from '@angular/common';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-user-user-list',
@@ -119,7 +122,7 @@ export class UserUserListComponent {
 
     modalRef.result.then((result) => {
       if (result && user.id) {
-        this.userService.deleteUser(user.id, 1).subscribe(
+        this.userService.deleteUser(user.id).subscribe(
           (response) => {
             this.toastService.sendSuccess('Usuario eliminado correctamente.');
           },
@@ -239,33 +242,49 @@ export class UserUserListComponent {
    * Calls the `exportTableToPdf` method from the `CadastreExcelService`.
    */
   exportToPdf() {
-    this.userService.getAllUsers(0, this.LIMIT_32BITS_MAX).subscribe(
-      (response) => {
-        this.excelService.exportListToPdf(
-          response.content,
-          `${this.getActualDayFormat()}_${this.objectName}`,
-          [],
-          this.dataMapper
-        );
+    const doc = new jsPDF();
+  
+    doc.setFontSize(18);
+    doc.text('Usuarios', 14, 20);
+
+    this.userService.getAllUsers(0, this.LIMIT_32BITS_MAX).subscribe({
+      next: (data) => {
+        autoTable(doc, {
+          startY: 30,
+          head: [['Nombre completo', 'Nombre de usuario', 'Email', 'Activo',]],
+          body: data.content.map(user => [
+            user.firstName + ' ' + user.lastName,
+            user.userName,
+            user.email,
+            user.isActive? 'Activo' : 'Inactivo'
+          ])
+        });
+        doc.save(`${this.getActualDayFormat()}_Usuarios.pdf`);
       },
-      (error) => {
-        console.log('Error retrieved all, on export component.');
-      }
-    );
+      error: () => {console.log("Error retrieved all, on export component.")}
+    });
   }
 
+  /**
+   * Export the HTML table to an Excel file (.xlsx).
+   * Calls the `exportTableToExcel` method from the `CadastreExcelService`.
+   */
   exportToExcel() {
-    this.userService.getAllUsers(0, this.LIMIT_32BITS_MAX).subscribe(
-      (response) => {
-        this.excelService.exportListToExcel(
-          response.content,
-          `${this.getActualDayFormat()}_${this.objectName}`
-        );
+    this.userService.getAllUsers(0, this.LIMIT_32BITS_MAX).subscribe({
+      next: (data) => {
+        const toExcel = data.content.map(user => ({
+          'Nombre completo': user.firstName + ' ' + user.lastName,
+          'Nombre de usuario': user.userName,
+          'Email': user.email,  
+          'Activo': user.isActive? 'Activo' : 'Inactivo'
+        }));
+        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Usuarios');
+        XLSX.writeFile(wb, `${this.getActualDayFormat()}_Usuarios.xlsx`);
       },
-      (error) => {
-        console.log('Error retrieved all, on export component.');
-      }
-    );
+      error: () => { console.log("Error retrieved all, on export component.") }
+    });
   }
 
   getActualDayFormat() {
@@ -329,7 +348,33 @@ export class UserUserListComponent {
       },
       {
         title: 'Filtros',
-        content: [],
+        content: [
+          {
+            strong: 'Nombre: ',
+            detail:
+              'Filtra los usuarios por el nombre personal del usuario.',
+          },
+          {
+            strong: 'Apellido: ',
+            detail:
+              'Filtra los usuarios por el apellido personal del usuario.',
+          },
+          {
+            strong: 'Nombre de usuario: ',
+            detail:
+              'Filtra los usuarios por el nombre del usuario.',
+          },
+          {
+            strong: 'Correo electrónico: ',
+            detail:
+              'Filtra los usuarios por el correo electrónico del usuario.',
+          },
+          {
+            strong: 'Activo: ',
+            detail:
+              'Filtra los usuarios por la condición de activo o inactivo.',
+          }
+        ],
       },
       {
         title: 'Funcionalidades de los botones',

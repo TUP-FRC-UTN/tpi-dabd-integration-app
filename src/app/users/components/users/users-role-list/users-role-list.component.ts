@@ -16,7 +16,11 @@ import {CadastreExcelService} from '../../../services/cadastre-excel.service';
 import {Subject} from 'rxjs';
 import {DatePipe} from '@angular/common';
 import {Role} from '../../../models/role';
+import * as XLSX from 'xlsx';
 import {RoleService} from '../../../services/role.service';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { InfoComponent } from '../../commons/info/info.component';
 
 @Component({
   selector: 'app-users-role-list',
@@ -56,6 +60,7 @@ export class UsersRoleListComponent {
   userList!: User[]
   userName!: string;
   filteredUsersList: User[] = [];
+  roleSelected: any;
 
   //#region ATT de PAGINADO
   currentPage: number = 0
@@ -131,26 +136,55 @@ export class UsersRoleListComponent {
    * Calls the `exportTableToPdf` method from the `CadastreExcelService`.
    */
   exportToPdf() {
-    this.userService.getAllUsers(0, this.LIMIT_32BITS_MAX).subscribe(
-      response => {
-        this.excelService.exportListToPdf(response.content, `${this.getActualDayFormat()}_${this.objectName}`, [], this.dataMapper);
-      },
-      error => {
-        console.log("Error retrieved all, on export component.")
+    if(this.roleSelected){    
+      const doc = new jsPDF();
+    
+      doc.setFontSize(18);
+      doc.text('Usuarios con Rol ' + this.roleSelected, 14, 20);
 
-      }
-    )
+      this.userService.getUsersByRole(this.roleSelected, 0, this.LIMIT_32BITS_MAX).subscribe({
+        next: (data) => {
+          autoTable(doc, {
+            startY: 30,
+            head: [['Nombre completo', 'Nombre de usuario', 'Email', 'Activo',]],
+            body: data.map((user: User) => [
+              user.firstName + ' ' + user.lastName,
+              user.userName,
+              user.email,
+              user.isActive? 'Activo' : 'Inactivo'
+            ])
+          });
+          doc.save(`${this.getActualDayFormat()}_Usuarios.pdf`);
+        },
+        error: () => {console.log("Error retrieved all, on export component.")}
+      });
+    }
+    else{
+      this.toastService.sendError("Por favor seleccione un rol para cargar en la sección de filtros")
+    }
   }
 
   exportToExcel() {
-    this.userService.getAllUsers(0, this.LIMIT_32BITS_MAX).subscribe(
-      response => {
-        this.excelService.exportListToExcel(response.content, `${this.getActualDayFormat()}_${this.objectName}`);
-      },
-      error => {
-        console.log("Error retrieved all, on export component.")
-      }
-    )
+    if(this.roleSelected){ 
+      this.userService.getUsersByRole(this.roleSelected, 0, this.LIMIT_32BITS_MAX).subscribe({
+        next: (data) => {
+          const toExcel = data.map((user: User) => ({
+            'Nombre completo': user.firstName + ' ' + user.lastName,
+            'Nombre de usuario': user.userName,
+            'Email': user.email,  
+            'Activo': user.isActive? 'Activo' : 'Inactivo'
+          }));
+          const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);
+          const wb: XLSX.WorkBook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(wb, ws, 'Usuarios');
+          XLSX.writeFile(wb, `${this.getActualDayFormat()}_Usuarios.xlsx`);
+        },
+        error: () => { console.log("Error retrieved all, on export component.") }
+      });
+    }
+    else{
+      this.toastService.sendError("Por favor seleccione un rol para cargar en la sección de filtros")
+    }
   }
 
   onFilterTextBoxChanged(event: Event) {
@@ -194,16 +228,104 @@ export class UsersRoleListComponent {
 
   //#endregion
   filterChange($event: Record<string, any>) {
-    console.log($event['rol'])
-
 
     this.userService.getUsersByRole($event['rol'], this.currentPage, this.pageSize).subscribe({
       next: result => {
-        this.userList = result.content;
+        this.roleSelected = $event['rol'];
+        this.userList = result;
         this.filteredUsersList = this.userList
         this.totalItems = result.totalElements;
       },
       error : err => this.toastService.sendError("Error al cargar la lista.")
     })
   }
+
+  //#region Info Button
+  openInfo() {
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true,
+    });
+
+    modalRef.componentInstance.title = 'Lista de usuarios que tienen el rol';
+    modalRef.componentInstance.description =
+      'En esta pantalla se permite visualizar todos los usuarios que están registrados en el sistema que tienen asignado el rol seleccionado para buscar.';
+    modalRef.componentInstance.body = [
+      {
+        title: 'Datos',
+        content: [
+          {
+            strong: 'Nombre completo:',
+            detail: 'Nombre completo del usuario.',
+          },
+          {
+            strong: 'Nombre de usuario:',
+            detail: 'Nombre de usuario.',
+          },
+          {
+            strong: 'Email: ',
+            detail: 'Email con el que está registrado el usuario.',
+          },
+          {
+            strong: 'Estado: ',
+            detail: 'Estado de activo o inactivo del usuario.',
+          },
+        ],
+      },
+      {
+        title: 'Acciones',
+        content: [
+          {
+            strong: 'Detalles: ',
+            detail:
+              'Botón con forma de ojo que redirige hacia la pantalla para poder visualizar detalladamente todos los datos del usuario.',
+          },
+        ],
+      },
+      {
+        title: 'Filtros',
+        content: [
+          {
+            strong: 'Rol: ',
+            detail:
+              'Filtra los usuarios que tienen el rol seleccionado.',
+          }
+        ],
+      },
+      {
+        title: 'Funcionalidades de los botones',
+        content: [
+          {
+            strong: 'Filtros: ',
+            detail:
+              'Botón con forma de tolva que despliega los filtros avanzados.',
+          },
+          {
+            strong: 'Añadir nuevo usuario: ',
+            detail:
+              'Botón "+" que redirige hacia la pantalla para dar de alta un nuevo usuario.',
+          },
+          {
+            strong: 'Exportar a Excel: ',
+            detail: 'Botón verde que exporta la grilla a un archivo de Excel.',
+          },
+          {
+            strong: 'Exportar a PDF: ',
+            detail: 'Botón rojo que exporta la grilla a un archivo de PDF.',
+          },
+          {
+            strong: 'Paginación: ',
+            detail: 'Botones para pasar de página en la grilla.',
+          },
+        ],
+      },
+    ];
+    modalRef.componentInstance.notes = [
+      'La interfaz está diseñada para ofrecer una administración eficiente de los usuarios, manteniendo la integridad y precisión de los datos.',
+    ];
+  }
+  //#end region
 }

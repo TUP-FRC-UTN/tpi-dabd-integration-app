@@ -2,6 +2,7 @@
   <!-- Filters Row -->
   <div class="d-flex align-items-center mb-3">
     <app-table-filters
+      style="z-index: 1;"
       [filters]="filterConfig"
       (filterValueChange)="filterChange($event)"
     ></app-table-filters>

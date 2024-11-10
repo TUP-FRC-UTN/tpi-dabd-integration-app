@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { map, Observable, of } from 'rxjs';
 import { Owner, OwnerResponse } from '../models/owner';
 import { PaginatedResponse } from '../models/api-response';
@@ -8,11 +8,13 @@ import { OwnerMapperPipe } from '../pipes/owner-mapper.pipe';
 import { Document } from '../models/file';
 import {Plot} from '../models/plot';
 import {TransformPlotPipe} from '../pipes/plot-mapper.pipe';
+import { SessionService } from './session.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OwnerService {
+  private sessionService = inject(SessionService);
   private apiUrl = 'http://localhost:8004/owners';
 
   constructor(private http: HttpClient) {}
@@ -55,17 +57,17 @@ export class OwnerService {
     );
   }
 
-  createOwner(ownerData: Owner, userId: string): Observable<Owner | null> {
+  createOwner(ownerData: Owner): Observable<Owner | null> {
     const headers = new HttpHeaders({
-      'x-user-id': userId,
+      'x-user-id': this.sessionService.getItem('user').id.toString(),
     });
     const owner = toSnakeCase(ownerData);
     return this.http.post<Owner>(this.apiUrl, owner, { headers });
   }
 
-  linkOwnerWithPlot(ownerId: number, plotId: number, userId: string) {
+  linkOwnerWithPlot(ownerId: number, plotId: number) {
     const headers = new HttpHeaders({
-      'x-user-id': userId,
+      'x-user-id': this.sessionService.getItem('user').id.toString(),
     });
 
     return this.http.post<Owner>(`http://localhost:8004/owner/${ownerId}/plot/${plotId}`, undefined, { headers });
@@ -73,11 +75,10 @@ export class OwnerService {
 
   updateOwner(
     ownerId: number,
-    ownerData: any,
-    userId: string
+    ownerData: any
   ): Observable<Owner> {
     const headers = new HttpHeaders({
-      'x-user-id': userId,
+      'x-user-id': this.sessionService.getItem('user').id.toString(),
     });
 
     const owner = toSnakeCase(ownerData);
@@ -87,9 +88,9 @@ export class OwnerService {
     });
   }
 
-  deleteOwner(id: number, userId: string) {
+  deleteOwner(id: number) {
     const headers = new HttpHeaders({
-      'x-user-id': userId,
+      'x-user-id': this.sessionService.getItem('user').id.toString(),
     });
     return this.http.delete<any>(this.apiUrl + `/${id}`, { headers });
   }
@@ -153,9 +154,9 @@ export class OwnerService {
 
 
   // agregar el metodo para actualizar el KYC status del owner
-  validateOwner(ownerId: number, plotId: number, status: any, userId: string): Observable<any> {
+  validateOwner(ownerId: number, plotId: number, status: any): Observable<any> {
     const headers = new HttpHeaders({
-      'x-user-id': userId,
+      'x-user-id': this.sessionService.getItem('user').id.toString(),
     });
 
     const change = {

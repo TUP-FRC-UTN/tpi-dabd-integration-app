@@ -259,7 +259,7 @@ export class ProfileComponent {
       const [day, month, year] = this.user.birthdate.split('/');
       const formattedDate = `${year}-${month}-${day}`;
       this.user.birthdate = formattedDate
-      this.userService.updateUser(this.id, toSnakeCase(this.user), this.id).subscribe({
+      this.userService.updateUser(this.id, toSnakeCase(this.user)).subscribe({
         next: (response) => {
           this.toastService.sendSuccess("Usuario actualizado con éxito.")
           //todo navigate to profile

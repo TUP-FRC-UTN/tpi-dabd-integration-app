@@ -213,7 +213,7 @@ export class OwnerFormComponent implements OnInit {
             this.plot = plot;
             console.log(this.owner)
             this.owner.plotId = plot.id
-            return this.ownerService.createOwner(this.owner, '1');
+            return this.ownerService.createOwner(this.owner);
           } else {
             return [];
           }
@@ -224,7 +224,6 @@ export class OwnerFormComponent implements OnInit {
             return this.ownerService.linkOwnerWithPlot(
               owner.id,
               this.plot.id,
-              '1'
             );
           } else {
             return [];
@@ -246,12 +245,12 @@ export class OwnerFormComponent implements OnInit {
     this.fillOwner();
     console.log('Owner->', this.owner);
     if (this.owner.id) {
-      this.ownerService.updateOwner(this.owner.id, this.owner, '1').subscribe({
+      this.ownerService.updateOwner(this.owner.id, this.owner).subscribe({
         next: (response) => {
           this.toastService.sendSuccess('Propietario actualizado');
           if (response.id) {
             this.ownerService
-              .linkOwnerWithPlot(response.id, this.plot.id, '1')
+              .linkOwnerWithPlot(response.id, this.plot.id)
               .subscribe();
           }
           this.router.navigate(['/users/owner/list']);

@@ -86,7 +86,7 @@ export class PlotFormComponent {
         };
         plotFormData.plot_status = this.translateCombo(this.plotForm, 'plotStatus', this.plotStatusDictionary);
         plotFormData.plot_type = this.translateCombo(this.plotForm, 'plotType', this.plotTypeDictionary);
-        this.plotService.createPlot(plotFormData, 1).subscribe(
+        this.plotService.createPlot(plotFormData).subscribe(
           response => {
             console.log('Plot created successfully:', response);
             this.router.navigate(["/users/plot/list"])
@@ -106,7 +106,7 @@ export class PlotFormComponent {
           plot_type: this.translateCombo(this.plotForm, 'plotType', this.plotTypeDictionary)
         }
 
-        this.plotService.updatePlot(Number.parseInt(this.id), plotForUpdate, 1).subscribe(
+        this.plotService.updatePlot(Number.parseInt(this.id), plotForUpdate).subscribe(
           response => {
             console.log('Plot updated successfully:', response);
             this.toastService.sendSuccess("Lote actualizado con exito.")

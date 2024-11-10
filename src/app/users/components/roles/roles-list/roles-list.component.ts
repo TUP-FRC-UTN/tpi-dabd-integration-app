@@ -10,6 +10,7 @@ import { Role } from '../../../models/role';
 import { RoleService } from '../../../services/role.service';
 import { Operations } from '../../../constants/operationContants';
 import { Router } from '@angular/router';
+import * as XLSX from 'xlsx';
 import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import {
@@ -25,6 +26,8 @@ import { CadastreExcelService } from '../../../services/cadastre-excel.service';
 import { InfoComponent } from '../../commons/info/info.component';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { ModalService } from 'ngx-dabd-2w1-core';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-roles-list',
@@ -123,7 +126,7 @@ export class RolesListComponent implements OnInit {
 
     modalRef.result.then((result) => {
       if (result) {
-        this.roleService.deleteRole(role.id, 1).subscribe({
+        this.roleService.deleteRole(role.id).subscribe({
           next: () => {
             this.toastService.sendSuccess('Rol eliminado correctamente.');
             this.getAllRoles();
@@ -137,7 +140,7 @@ export class RolesListComponent implements OnInit {
   }
 
   reactivatePlot(roleId: number) {
-    this.roleService.reactiveRole(roleId, 1).subscribe({
+    this.roleService.reactiveRole(roleId).subscribe({
       next: () => {
         this.toastService.sendSuccess('Rol reactivado correctamente.');
         this.getAllRoles();
@@ -231,18 +234,27 @@ export class RolesListComponent implements OnInit {
    * Calls the `exportTableToPdf` method from the `CadastreExcelService`.
    */
   exportToPdf() {
+    const doc = new jsPDF();
+  
+    doc.setFontSize(18);
+    doc.text('Roles', 14, 20);
+
     this.roleService.getAllRoles(0, this.LIMIT_32BITS_MAX).subscribe({
       next: (data) => {
-        this.excelService.exportListToPdf(
-          data.content,
-          `${this.getActualDayFormat()}_${this.objectName}`,
-          this.headers,
-          this.dataMapper
-        );
+        autoTable(doc, {
+          startY: 30,
+          head: [['Código', 'Nombre', 'Nombre especial', 'Descripción', 'Activo']],
+          body: data.content.map(role => [
+            role.code,
+            role.name,
+            role.prettyName,
+            role.description,
+            role.active? 'Activo' : 'Inactivo'
+          ])
+        });
+        doc.save(`${this.getActualDayFormat()}_Roles.pdf`);
       },
-      error: () => {
-        console.log('Error retrieved all, on export component.');
-      },
+      error: () => {console.log("Error retrieved all, on export component.")}
     });
   }
 
@@ -253,14 +265,19 @@ export class RolesListComponent implements OnInit {
   exportToExcel() {
     this.roleService.getAllRoles(0, this.LIMIT_32BITS_MAX).subscribe({
       next: (data) => {
-        this.excelService.exportListToExcel(
-          data.content,
-          `${this.getActualDayFormat()}_${this.objectName}`
-        );
+        const toExcel = data.content.map(role => ({
+          'Código': role.code,
+          'Nombre': role.name,
+          'Nombre especial': role.prettyName,
+          'Descripción': role.description,  
+          'Activo': role.active? 'Activo' : 'Inactivo'
+        }));
+        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Users');
+        XLSX.writeFile(wb, `${this.getActualDayFormat()}_Roles.xlsx`);
       },
-      error: () => {
-        console.log('Error retrieved all, on export component.');
-      },
+      error: () => { console.log("Error retrieved all, on export component.") }
     });
   }
 
@@ -332,7 +349,16 @@ export class RolesListComponent implements OnInit {
       },
       {
         title: 'Filtros',
-        content: [],
+        content: [
+          {
+            strong: 'Código: ',
+            detail: 'Filtra por el código del rol.',
+          },
+          {
+            strong: 'Activo: ',
+            detail: 'Filtra por la condición de activo o inactivo del rol.',
+          }
+        ],
       },
       {
         title: 'Funcionalidades de los botones',
