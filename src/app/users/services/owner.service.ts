@@ -6,14 +6,19 @@ import { PaginatedResponse } from '../models/api-response';
 import { toSnakeCase } from '../utils/owner-helper';
 import { OwnerMapperPipe } from '../pipes/owner-mapper.pipe';
 import { Document } from '../models/file';
-import {Plot} from '../models/plot';
-import {TransformPlotPipe} from '../pipes/plot-mapper.pipe';
+import { Plot } from '../models/plot';
+import { TransformPlotPipe } from '../pipes/plot-mapper.pipe';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OwnerService {
-  private apiUrl = 'http://localhost:8004/owners';
+  private apiUrl = `${
+    environment.production 
+    ? environment.apis.cadastre 
+    : 'http://localhost:8004'
+  }/owners`;
 
   constructor(private http: HttpClient) {}
 
@@ -23,7 +28,7 @@ export class OwnerService {
     isActive?: boolean
   ): Observable<PaginatedResponse<Owner>> {
     let params = new HttpParams()
-      .set('page', page >= 0 ? page.toString() : "0")
+      .set('page', page >= 0 ? page.toString() : '0')
       .set('size', size.toString());
 
     if (typeof isActive === 'boolean' && !isActive) {
@@ -68,7 +73,11 @@ export class OwnerService {
       'x-user-id': userId,
     });
 
-    return this.http.post<Owner>(`http://localhost:8004/owner/${ownerId}/plot/${plotId}`, undefined, { headers });
+    return this.http.post<Owner>(
+      `http://localhost:8004/owner/${ownerId}/plot/${plotId}`,
+      undefined,
+      { headers }
+    );
   }
 
   updateOwner(
@@ -108,7 +117,7 @@ export class OwnerService {
     isActive?: boolean
   ) {
     let params = new HttpParams()
-      .set('page', page >= 0 ? page.toString() : "0")
+      .set('page', page >= 0 ? page.toString() : '0')
       .set('size', size.toString())
       .set('doc_type', docType);
 
@@ -132,44 +141,40 @@ export class OwnerService {
       );
   }
 
-
-
-
   // metodo para traer los archivos del owner por id de owner
   getOwnerFilesById(ownerId: number): Observable<Document[]> {
-
     let params = new HttpParams().set('is-active', true);
 
-    return this.http.get<any>(this.apiUrl + `/${ownerId}/files`, {params} ).pipe(
-      map((response: any) => {
-
-        const transformPipe = new OwnerMapperPipe();
-        return response.map((file: any) =>
-          transformPipe.transformFile(file)
-        );
-      })
-    );
+    return this.http
+      .get<any>(this.apiUrl + `/${ownerId}/files`, { params })
+      .pipe(
+        map((response: any) => {
+          const transformPipe = new OwnerMapperPipe();
+          return response.map((file: any) => transformPipe.transformFile(file));
+        })
+      );
   }
 
-
   // agregar el metodo para actualizar el KYC status del owner
-  validateOwner(ownerId: number, plotId: number, status: any, userId: string): Observable<any> {
+  validateOwner(
+    ownerId: number,
+    plotId: number,
+    status: any,
+    userId: string
+  ): Observable<any> {
     const headers = new HttpHeaders({
       'x-user-id': userId,
     });
 
     const change = {
-      "owner_id": ownerId,
-      "plot_id": plotId,
-      "kyc_status": status,
-      "roles": [ 102 ] 
-    }
+      owner_id: ownerId,
+      plot_id: plotId,
+      kyc_status: status,
+      roles: [102],
+    };
 
     return this.http.post<any>(this.apiUrl + `/validate`, change, { headers });
   }
-
-
-
 
   filterOwnerByOwnerType(
     page: number,
@@ -178,7 +183,7 @@ export class OwnerService {
     isActive?: boolean
   ) {
     let params = new HttpParams()
-      .set('page', page >= 0 ? page.toString() : "0")
+      .set('page', page >= 0 ? page.toString() : '0')
       .set('size', size.toString())
       .set('owner_type', ownerType);
 
@@ -203,26 +208,34 @@ export class OwnerService {
 
   dinamicFilters(page: number, size: number, params: any) {
     let httpParams = new HttpParams()
-      .set('page', page >= 0 ? page.toString() : "0")
+      .set('page', page >= 0 ? page.toString() : '0')
       .set('size', size.toString());
 
     for (const key in params) {
-      if (params.hasOwnProperty(key) && params[key] !== undefined && params[key] !== '') {
+      if (
+        params.hasOwnProperty(key) &&
+        params[key] !== undefined &&
+        params[key] !== ''
+      ) {
         httpParams = httpParams.set(key, params[key].toString());
       }
     }
 
-    return this.http.get<PaginatedResponse<Owner>>(`${this.apiUrl}/filters`, { params: httpParams }).pipe(
-      map((response) => {
-        const transformPipe = new OwnerMapperPipe();
-        const transformedOwners = response.content.map((plot: any) =>
-          transformPipe.transform(plot)
-        );
-        return {
-          ...response,
-          content: transformedOwners,
-        };
+    return this.http
+      .get<PaginatedResponse<Owner>>(`${this.apiUrl}/filters`, {
+        params: httpParams,
       })
-    );
+      .pipe(
+        map((response) => {
+          const transformPipe = new OwnerMapperPipe();
+          const transformedOwners = response.content.map((plot: any) =>
+            transformPipe.transform(plot)
+          );
+          return {
+            ...response,
+            content: transformedOwners,
+          };
+        })
+      );
   }
 }

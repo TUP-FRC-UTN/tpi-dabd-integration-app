@@ -14,6 +14,7 @@ import { toCamelCase } from '../utils/owner-helper';
 import { Owner } from '../models/owner';
 import { OwnerMapperPipe } from '../pipes/owner-mapper.pipe';
 import { ForgotPasswordRequest } from '../models/forgot-password';
+import { environment } from '../../../environments/environment'
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +22,9 @@ import { ForgotPasswordRequest } from '../models/forgot-password';
 export class UserService {
   private http = inject(HttpClient);
 
-  host: string = 'http://localhost:8015/users';
+  host: string = environment.production
+    ? environment.apis.users
+    : 'http://localhost:8015/users';
 
   validateEmail(email: string): Observable<boolean> {
     const params = new HttpParams().set('email', email.toString());
