@@ -85,7 +85,7 @@ export class UsersCreatedByUserComponent {
         }
       })
       // this.userService.getUsersCreatedBy(id, this.currentPage, this.pageSize).subscribe({
-      this.userService.getAllUsers(this.currentPage, this.pageSize, true).subscribe({
+      this.userService.getUsersCreatedBy(id, this.currentPage, this.pageSize).subscribe({
         next: result => {
           this.userList = result.content;
           this.filteredUsersList = this.userList
