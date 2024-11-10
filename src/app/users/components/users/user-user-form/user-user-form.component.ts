@@ -190,7 +190,7 @@ export class UserUserFormComponent {
               firstName: this.user.firstName,
               lastName: this.user.lastName,
               userName: this.user.userName,
-              documentType: this.user.documentType,
+              //documentType: this.user.documentType,
               documentNumber: this.user.documentNumber,
               birthdate: formattedDate
             });
