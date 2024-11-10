@@ -211,14 +211,21 @@ export class AppComponent implements OnInit {
             },
             { label: 'Reporte Usuarios', routerLink: '/users/user/reports' },
           ],
-        },
-        {
-          label: 'Cambiar contraseña',
+        }, {
+          label: 'Perfil',
           subMenu: [
+            {
+              label: 'Consultar Perfil',
+              routerLink: '/users/profile/detail',
+            },
+            {
+              label: 'Editar Perfil',
+              routerLink: '/users/profile/edit',
+            },
             {
               label: 'Cambiar contraseña',
               routerLink: '/users/changepassword',
-            }
+            },
           ],
         },
         {

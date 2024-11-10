@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import * as XLSX from 'xlsx';
 import {
   ConfirmAlertComponent,
   ToastService,
@@ -27,6 +28,8 @@ import {
   DatePipe,
 } from '@angular/common';
 import { InfoComponent } from '../../commons/info/info.component';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-plots-list',
@@ -174,7 +177,7 @@ export class PlotsListComponent {
 
     modalRef.result.then((result) => {
       if (result) {
-        this.plotService.deletePlot(plot.id, 1).subscribe(
+        this.plotService.deletePlot(plot.id).subscribe(
           (response) => {
             this.toastService.sendSuccess('Lote eliminado correctamente.');
             //this.confirmFilterPlot();
@@ -293,7 +296,7 @@ export class PlotsListComponent {
 
   //#region REACTIVAR
   reactivatePlot(plotId: number) {
-    this.plotService.reactivatePlot(plotId, 1).subscribe((response) => {
+    this.plotService.reactivatePlot(plotId).subscribe((response) => {
       location.reload();
     });
   }
@@ -335,35 +338,51 @@ export class PlotsListComponent {
 
   //#region EXPORT FUNCTIONS
   exportToPdf() {
-    let actualPageSize = this.pageSize;
+    const doc = new jsPDF();
+  
+    doc.setFontSize(18);
+    doc.text('Lotes', 14, 20);
 
-    this.plotService.getAllPlots(0, this.LIMIT_32BITS_MAX, true).subscribe(
-      (response) => {
-        this.excelService.exportListToPdf(
-          response.content,
-          `${this.getActualDayFormat()}_${this.objectName}`,
-          this.headers,
-          this.dataMapper
-        );
+    this.plotService.getAllPlots(0, this.LIMIT_32BITS_MAX, true).subscribe({
+      next: (data) => {
+        autoTable(doc, {
+          startY: 30,
+          head: [['Nro. de Manzana', 'Nro. de Lote', 'Area Total', 'Area Construida', 'Tipo de Lote', 'Estado del Lote', 'Activo']],
+          body: data.content.map(plot => [
+            plot.blockNumber,
+            plot.plotNumber,
+            plot.totalArea,
+            plot.builtArea,
+            this.translateDictionary(plot.plotType, this.dictionaries[1]) || plot.plotType,
+            this.translateDictionary(plot.plotStatus, this.dictionaries[0]) || plot.plotStatus,
+            plot.isActive? 'Activo' : 'Inactivo'
+          ])
+        });
+        doc.save(`${this.getActualDayFormat()}_Lotes.pdf`);
       },
-      (error) => {
-        console.log('Error retrieved all, on export component.');
-      }
-    );
+      error: () => {console.log("Error retrieved all, on export component.")}
+    });
   }
 
   exportToExcel() {
-    this.plotService.getAllPlots(0, this.LIMIT_32BITS_MAX, true).subscribe(
-      (response) => {
-        this.excelService.exportListToExcel(
-          response.content,
-          `${this.getActualDayFormat()}_${this.objectName}`
-        );
+    this.plotService.getAllPlots(0, this.LIMIT_32BITS_MAX, true).subscribe({
+      next: (data) => {
+        const toExcel = data.content.map(plot => ({
+          'Nro. de Manzana': plot.blockNumber,
+          'Nro. de Lote': plot.plotNumber,
+          'Area Total': plot.totalArea,
+          'Area Construida': plot.builtArea,
+          'Tipo de Lote': this.translateDictionary(plot.plotType, this.dictionaries[1]) || plot.plotType,
+          'Estado del Lote': this.translateDictionary(plot.plotStatus, this.dictionaries[0]) || plot.plotStatus,
+          'Activo': plot.isActive? 'Activo' : 'Inactivo',
+        }));
+        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Lotes');
+        XLSX.writeFile(wb, `${this.getActualDayFormat()}_Lotes.xlsx`);
       },
-      (error) => {
-        console.log('Error retrieved all, on export component.');
-      }
-    );
+      error: () => { console.log("Error retrieved all, on export component.") }
+    });
   }
 
   getActualDayFormat() {

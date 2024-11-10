@@ -251,7 +251,7 @@ export class UserUserDetailComponent {
     this.user.isActive = true;
     this.user = toSnakeCase(this.user);
     this.user.roles = this.transformRoles(this.user)
-    this.userService.addUser(this.user, 1).subscribe({
+    this.userService.addUser(this.user).subscribe({
       // '1' is x-user-id
       next: (response) => {
         this.toastService.sendSuccess("Usuario creado con exito.")
@@ -266,7 +266,7 @@ export class UserUserDetailComponent {
   updateUser() {
     this.fillUser();
     if (this.user.id) {
-      this.userService.updateUser(this.user.id, this.user, 1).subscribe({
+      this.userService.updateUser(this.user.id, this.user).subscribe({
         next: (response) => {
           this.toastService.sendSuccess("Usuario actualizado con exito.")
           this.router.navigate(['users/owner/list']);

@@ -15,12 +15,14 @@ import { Owner } from '../models/owner';
 import { OwnerMapperPipe } from '../pipes/owner-mapper.pipe';
 import { ForgotPasswordRequest } from '../models/forgot-password';
 import { environment } from '../../../environments/environment'
+import { SessionService } from './session.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private http = inject(HttpClient);
+  private http = inject(HttpClient)
+  private sessionService = inject(SessionService);
 
   host: string = environment.production
     ? environment.apis.users
@@ -32,27 +34,27 @@ export class UserService {
     return this.http.get<boolean>(this.host + `/validEmail`, { params });
   }
 
-  updateUser(id: number, user: User, userId: number): Observable<User> {
+  updateUser(id: number, user: User): Observable<User> {
     const headers = new HttpHeaders({
-      'x-user-id': userId,
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
     delete user.id;
 
     return this.http.put<User>(`${this.host}/${id}`, user, { headers });
   }
 
-  deleteUser(id: number, userId: number) {
+  deleteUser(id: number) {
     const headers = new HttpHeaders({
-      'x-user-id': userId,
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
 
     return this.http.delete<any>(`${this.host}/${id}`, { headers });
   }
 
-  addUser(user: User, userId: number): Observable<User> {
+  addUser(user: User): Observable<User> {
     const headers = new HttpHeaders({
-      'x-user-id': userId,
-      Accept: 'application/json',
+      'x-user-id': this.sessionService.getItem('user').id.toString(),
+      "Accept": "application/json"
     });
 
     return this.http.post<User>(`${this.host}`, user, { headers });
@@ -64,16 +66,16 @@ export class UserService {
       
   }
 
-  changePassword(oldPassword: string, newPassword: string, userId: number):Observable<any> {
+  changePassword(oldPassword: string, newPassword: string):Observable<any> {
 
     let changePasswordRequest = {
-      user_id: userId,
+      user_id: this.sessionService.getItem('user').id.toString(),
       old_password:oldPassword,
       new_password: newPassword
     }
 
     const headers = new HttpHeaders({
-      'x-user-id': userId
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
 
 
@@ -92,7 +94,7 @@ export class UserService {
     }
 
     const headers = new HttpHeaders({
-      'x-user-id': '1', //TODO: agregar id de user logueado
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
     return this.http.get<PaginatedResponse<User>>(this.host, { params, headers }).pipe(
       map((response: PaginatedResponse<any>) => {

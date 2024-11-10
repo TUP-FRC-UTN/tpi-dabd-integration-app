@@ -16,6 +16,7 @@ import {PlotService} from '../../../services/plot.service';
 import {OwnerPlotService} from '../../../services/owner-plot.service';
 import {plotValidator} from '../../../validators/cadastre-plot-validators';
 import {plotForOwnerValidatorNoAssociation} from '../../../validators/cadastre-plot-for-owner-no-association';
+import { InfoComponent } from '../../commons/info/info.component';
 
 @Component({
   selector: 'app-cadastre-owner-assign-plot',
@@ -153,7 +154,7 @@ export class CadastreOwnerAssignPlotComponent {
           this.plotService.getPlotByPlotNumberAndBlockNumber(plotNumber, blockNumber).subscribe({
             next: (plot) => {
               if (this.selectedOwner?.id !== undefined) {
-                this.ownerService.linkOwnerWithPlot(this.selectedOwner.id, plot.id, "1").subscribe({
+                this.ownerService.linkOwnerWithPlot(this.selectedOwner.id, plot.id).subscribe({
                   next: () => {
                     this.toastService.sendSuccess("Dueño y lote asociado exitosamente.")
                     this.plotForm.reset()
@@ -172,5 +173,83 @@ export class CadastreOwnerAssignPlotComponent {
     } else {
       this.toastService.sendError("Debe seleccionar un propietario o lote válido.");
     }
+  }
+
+  openInfo() {
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true,
+    });
+
+    modalRef.componentInstance.title = 'Asignar Lote a un Propietario';
+    modalRef.componentInstance.description =
+      'En esta pantalla se podrá seleccionar un propietario de la lista para asignarle un lote.';
+    modalRef.componentInstance.body = [
+      {
+        title: 'Datos del propietario',
+        content: [
+          {
+            strong: 'Nombre:',
+            detail: 'Nombre del propietario.',
+          },
+          {
+            strong: 'Apellido:',
+            detail: 'Apellido del propietario.',
+          },
+          {
+            strong: 'Tipo Doc: ',
+            detail: 'tipo del documento del propietario.',
+          },
+          {
+            strong: 'N° documento: ',
+            detail: 'Número de documento del propietario.',
+          },
+          {
+            strong: 'Tipo del propietario: ',
+            detail: 'Estado de activo o inactivo del propietario.',
+          }
+        ],
+      },      
+      {
+        title: 'Filtros',
+        content: [
+          {
+            strong: 'Tipo de documento: ',
+            detail:
+              'Filtra los propietarios que coincidan con el tipo de documento.',
+          },
+          {
+            strong: 'Tipo de propietario: ',
+            detail:
+              'Filtra los propietarios que coincidan con el tipo de propietario.',
+          },
+          {
+            strong: 'Estado del propietario: ',
+            detail:
+              'Filtra los propietarios por el estado activo o inactivo del mismo.',
+          },
+        ],
+      },
+      {
+        title: 'Funcionalidades',
+        content: [
+          {
+            strong: 'Filtros: ',
+            detail:
+              'Botón con forma de tolva que despliega los filtros avanzados.',
+          },
+          {
+            strong: 'Asociar un propietario a un lote: ',
+            detail: 'Para asociar un propietario a un lote, primero se debe seleccionar un propietario de la grilla haciendo click en un fila, luego, se deben rellenar los campos del lote al que se quiere asociar, y por último se debe hacer click en el botón asociar.',
+          }
+        ],
+      },
+    ];
+    modalRef.componentInstance.notes = [
+      'La interfaz está diseñada para ofrecer una administración eficiente de los propietarios y lotes, manteniendo la integridad y precisión de los datos.',
+    ];
   }
 }

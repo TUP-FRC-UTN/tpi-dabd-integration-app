@@ -1,5 +1,6 @@
 import { Component, inject, Input } from '@angular/core';
 import { Role } from '../../../models/role';
+import * as XLSX from 'xlsx';
 import { Subject } from 'rxjs';
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
 import { Router } from '@angular/router';
@@ -115,6 +116,25 @@ export class RolesFilterButtonsComponent<T extends Record<string, any>>{
   redirectToForm() {
     console.log(this.formPath);
     this.router.navigate([this.formPath]);
+  }
+
+  downloadTable() {
+    this.roleService.getAllRoles(0, this.LIMIT_32BITS_MAX).subscribe({
+      next: (data) => {
+        const toExcel = data.content.map(role => ({
+          'Código': role.code,
+          'Nombre': role.name,
+          'Nombre especial': role.prettyName,
+          'Descripción': role.description,  
+          'Activo': role.active? 'Activo' : 'Inactivo'
+        }));
+        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Users');
+        XLSX.writeFile(wb, `${this.getActualDayFormat()}_${this.objectName}`);
+      },
+      error: () => { console.log("Error retrieved all, on export component.") }
+    });
   }
 
 }

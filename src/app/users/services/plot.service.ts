@@ -7,12 +7,14 @@ import { TransformPlotPipe } from '../pipes/plot-mapper.pipe';
 import { OwnerMapperPipe } from '../pipes/owner-mapper.pipe';
 import { Document } from '../models/file';
 import { environment } from '../../../environments/environment'
+import { SessionService } from './session.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PlotService {
   private http = inject(HttpClient)
+  private sessionService = inject(SessionService);
 
   host: string = `${environment.production 
   ? environment.apis.cadastre 
@@ -39,25 +41,25 @@ export class PlotService {
     );
   }
 
-  createPlot(plotData: any, userId: number): Observable<Plot> {
+  createPlot(plotData: any): Observable<Plot> {
     const headers = new HttpHeaders({
-      'x-user-id': userId
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
 
     return this.http.post<Plot>(this.host, plotData, { headers });
   }
 
-  updatePlot(id: number, plotData: any, userId: number): Observable<Plot> {
+  updatePlot(id: number, plotData: any): Observable<Plot> {
     const headers = new HttpHeaders({
-      'x-user-id': userId
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
 
     return this.http.put<Plot>(`${this.host}/${id}`, plotData, { headers });
   }
 
-  deletePlot(id: number, userId: number) {
+  deletePlot(id: number) {
     const headers = new HttpHeaders({
-      'x-user-id': userId
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
 
     return this.http.delete<any>(`${this.host}/${id}`, {headers});
@@ -143,9 +145,9 @@ export class PlotService {
     );
   }
 
-  reactivatePlot(id: number, userId: number) {
+  reactivatePlot(id: number) {
     const headers = new HttpHeaders({
-      'x-user-id': userId.toString()
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
 
     return this.http.patch<Plot>(`${this.host}/reactivate/${id}`, {}, {headers});
