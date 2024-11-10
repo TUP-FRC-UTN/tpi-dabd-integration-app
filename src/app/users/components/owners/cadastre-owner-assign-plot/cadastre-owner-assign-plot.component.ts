@@ -186,7 +186,7 @@ export class CadastreOwnerAssignPlotComponent {
 
     modalRef.componentInstance.title = 'Asignar Lote a un Propietario';
     modalRef.componentInstance.description =
-      'En esta pantalla se permite visualizar todos los usuarios que están registrados en el sistema que tienen asignado el rol seleccionado para buscar.';
+      'En esta pantalla se podrá seleccionar un propietario de la lista para asignarle un lote creado.';
     modalRef.componentInstance.body = [
       {
         title: 'Datos',

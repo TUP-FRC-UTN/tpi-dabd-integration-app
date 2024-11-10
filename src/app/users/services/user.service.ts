@@ -63,16 +63,16 @@ export class UserService {
       
   }
 
-  changePassword(oldPassword: string, newPassword: string, userId: number):Observable<any> {
+  changePassword(oldPassword: string, newPassword: string):Observable<any> {
 
     let changePasswordRequest = {
-      user_id: userId,
+      user_id: this.sessionService.getItem('user').id.toString(),
       old_password:oldPassword,
       new_password: newPassword
     }
 
     const headers = new HttpHeaders({
-      'x-user-id': userId
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
 
 
