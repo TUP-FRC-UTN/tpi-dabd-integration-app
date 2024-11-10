@@ -55,6 +55,30 @@ export class UserService {
     return this.http.post<User>(`${this.host}`, user, { headers });
   }
 
+
+  forgotPassword(forgotRequest: ForgotPasswordRequest): Observable<any> {
+    return this.http.post<any>(`${this.host}/password/reset`, forgotRequest)
+      
+  }
+
+  changePassword(oldPassword: string, newPassword: string, userId: number):Observable<any> {
+
+    let changePasswordRequest = {
+      user_id: userId,
+      old_password:oldPassword,
+      new_password: newPassword
+    }
+
+    const headers = new HttpHeaders({
+      'x-user-id': userId
+    });
+
+
+    return this.http.put<any>(`${this.host}/password/change`, changePasswordRequest, {headers})
+
+  }
+
+
   getAllUsers(page: number, size: number, isActive?: boolean) {
     let params = new HttpParams()
       .set('page', page >= 0 ? page.toString() : '0')
@@ -166,32 +190,4 @@ export class UserService {
     );
   }
 
-  forgotPassword(forgotRequest: ForgotPasswordRequest): Observable<any> {
-    // Hacemos la solicitud POST y retornamos el observable
-    return this.http
-      .post<any>(`${this.host}/password/reset`, forgotRequest)
-      .pipe(
-        catchError((error) => {
-          // Manejo de errores si es necesario
-          console.error('Error en la solicitud POST', error);
-          throw error;
-        })
-      );
-  }
-
-  changePassword(oldPassword: string, newPassword: string, userId: number) {
-    let changePasswordRequest = {
-      userId: userId,
-      oldPassword: oldPassword,
-      newPassword: newPassword,
-    };
-
-    const headers = new HttpHeaders({
-      'x-user-id': userId,
-    });
-
-    this.http.post<any>(`${this.host}/password/change`, changePasswordRequest, {
-      headers,
-    });
-  }
 }

@@ -28,6 +28,7 @@ import { hasRoleCodeGuard } from './guards/has-role-code.guard';
 import { URLTargetType } from './models/role';
 import {UsersCreatedByUserComponent} from './components/users/users-created-by-user/users-created-by-user.component';
 import {UsersRoleListComponent} from './components/users/users-role-list/users-role-list.component';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
 
 export const USER_ROUTES: Routes = [
   /* { path: 'login', component: LoginComponent },
@@ -239,6 +240,14 @@ export const USER_ROUTES: Routes = [
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
     data: { allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.USER_ADMIN] }
+  },
+  {
+    path: 'changepassword',
+    component: ChangePasswordComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard] ,
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN, URLTargetType.OWNER] }
+
   },
   { path: '**',
     component: NotFoundComponent,
