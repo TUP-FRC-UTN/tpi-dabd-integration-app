@@ -154,8 +154,8 @@ export class OwnerFormComponent implements OnInit {
       ]),
     }),
     contactsForm: new FormGroup({
-      contactType: new FormControl('', [Validators.required]),
-      contactValue: new FormControl('', [Validators.required]),
+      contactType: new FormControl('', ),
+      contactValue: new FormControl('', ),
     }),
     addressForm: new FormGroup({
       streetAddress: new FormControl('', [Validators.required]),
@@ -165,15 +165,27 @@ export class OwnerFormComponent implements OnInit {
       city: new FormControl('Córdoba', [Validators.required]),
       province: new FormControl('CORDOBA', [Validators.required]),
       country: new FormControl('ARGENTINA', [Validators.required]),
-      postalCode: new FormControl(0, [Validators.required]),
+      postalCode: new FormControl(5000, [Validators.required]),
     }),
     
   });
 
   onSubmit(): void {
     this.submitted= true
-    if(this.hasContactEmail())
-      this.id ? this.updateOwner() : this.createOwner();
+
+    // falta agregar el form.valid
+
+    if(this.hasContactEmail()) {
+      if(this.addresses.length > 0) {
+        this.id ? this.updateOwner() : this.createOwner();
+      } else {
+        this.ownerForm.markAllAsTouched();
+      this.toastService.sendError("Debes agregar al menos una direccion");
+      }
+    } else {
+      this.ownerForm.markAllAsTouched();
+      this.toastService.sendError("Debes agregar al menos un email de contacto");
+    }
     /* if (this.ownerForm.valid) {
       this.id
         ? this.updateOwner()
@@ -379,7 +391,7 @@ export class OwnerFormComponent implements OnInit {
 
   // Acceder directamente al valor del país en el FormControl
   get isArgentinaSelected(): boolean {
-    console.log(this.ownerForm.get('addressForm')?.get('country')?.value === 'ARGENTINA');
+    // console.log(this.ownerForm.get('addressForm')?.get('country')?.value === 'ARGENTINA');
     return this.ownerForm.get('addressForm')?.get('country')?.value === 'ARGENTINA';
   }
 
@@ -408,7 +420,11 @@ export class OwnerFormComponent implements OnInit {
   }
 
   addContact(): void {
-    if (this.ownerForm.get('contactsForm')?.valid) {
+
+
+    if (this.ownerForm.controls['contactsForm'].controls['contactValue'].value
+    && !this.ownerForm.controls['contactsForm'].controls['contactValue'].hasError('email')
+    && this.ownerForm.controls['contactsForm'].controls['contactType'].value) {
       const contactValues = this.getContactsValues();
       if (this.contactIndex == undefined && contactValues) {
         this.contacts.push(contactValues);
@@ -435,10 +451,15 @@ export class OwnerFormComponent implements OnInit {
   changeContactType(event: any) {
     
     const type = event.target.value;
-    if(type && type === "EMAIL") {
-      this.ownerForm.controls['contactsForm'].controls['contactValue'].addValidators(Validators.email)
-    } else {
-      this.ownerForm.controls['contactsForm'].controls['contactValue'].removeValidators(Validators.email)
+    if(type) {
+      this.ownerForm.controls['contactsForm'].controls['contactValue'].addValidators(Validators.required);
+      if(type === "EMAIL") {
+        this.ownerForm.controls['contactsForm'].controls['contactValue'].addValidators(Validators.email)
+      } else {
+        this.ownerForm.controls['contactsForm'].controls['contactValue'].removeValidators(Validators.email)
+      }
+    }  else {
+      this.ownerForm.controls['contactsForm'].controls['contactValue'].removeValidators(Validators.required)
     }
   }
 
@@ -492,6 +513,7 @@ export class OwnerFormComponent implements OnInit {
   }
 
   addAddress(): void {
+    
     if (this.ownerForm.get('addressForm')?.valid) {
       const addressValue = this.getAddressValue()
       if (this.addressIndex == undefined && addressValue) {
