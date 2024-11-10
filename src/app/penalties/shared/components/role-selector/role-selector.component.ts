@@ -2,7 +2,7 @@ import {Component, inject} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RoleService } from '../../services/role.service';
-import {DeleteLaterService} from "../../../delete-later.service";
+// import {DeleteLaterService} from "../../../delete-later.service";
 
 @Component({
   selector: 'app-role-selector',
@@ -15,23 +15,23 @@ export class RoleSelectorComponent {
   roles: string[] = ['OWNER', 'ADMIN', 'USER'];
   selectedRole: string = '';
 
-  lotes: number[] = [1, 2, 3, 4, 5];  
-  selectedLotes: number[] = []; 
-  
-  userIds: number[] = [1, 2, 3, 4, 5];  
-  selectedUserId: number = 0;  
+  lotes: number[] = [1, 2, 3, 4, 5];
+  selectedLotes: number[] = [];
+
+  userIds: number[] = [1, 2, 3, 4, 5];
+  selectedUserId: number = 0;
   isOwner: boolean = false;
 
   constructor(private roleService: RoleService) {}
 
-  protected changeService = inject(DeleteLaterService)
+  // protected changeService = inject(DeleteLaterService)
 
   onRoleChange(event: Event) {
     const target = event.target as HTMLSelectElement;
     const selectedValue = target.value;
     this.roleService.changeRole(selectedValue);
     this.selectedRole = selectedValue;
-    this.isOwner = selectedValue === 'OWNER'; 
+    this.isOwner = selectedValue === 'OWNER';
     console.log(`Selected role: ${selectedValue}`);
   }
 

@@ -11,15 +11,15 @@ import { ProviderListComponent } from "./components/provider/provider-list/provi
 
 export const INVENTORY_ROUTES: Routes = [
     { path: '', component: InventoryEmployeeProviderHomeComponent },
-    { path: 'employees/list', component: EmployeeListComponent },
+    { path: 'employees/list', component: EmployeeListComponent },//
     { path: 'employees/form', component: EmployeeFormComponent },
     { path: 'employees/form/:id', component: EmployeeFormComponent },
-    { path: 'providers/list', component: ProviderListComponent },
+    { path: 'providers/list', component: ProviderListComponent },//
     { path: 'providers/form', component: ProviderFormComponent },
     { path: 'providers/form/:id', component: ProviderFormComponent },
-    { path: 'articles/article', component: ArticleFormComponent },
+    { path: 'articles/article', component: ArticleFormComponent },//
     { path: 'articles/article/:id', component: ArticleFormComponent },
-    { path: 'inventories', component: InventoryTableComponent },
+    { path: 'inventories', component: InventoryTableComponent },//
     { path: 'transactions/:id', component: TransactionComponentForm },
     { path: 'inventories/transactions/:inventoryId', component: InventoryTransactionTableComponent },
     { path: '', redirectTo: '/employees', pathMatch: 'full' }

@@ -3,10 +3,8 @@ export interface PaginatedResponse<T> {
     pageable: {
       pageNumber: number;
       pageSize: number;
-      
     };
     totalPages: number;
     totalElements: number;
   }
-  
-  
+

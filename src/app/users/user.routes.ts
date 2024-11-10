@@ -246,4 +246,5 @@ export const USER_ROUTES: Routes = [
     canMatch: [hasRoleCodeGuard],
     data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN, URLTargetType.OWNER] }
   },
+
 ];
