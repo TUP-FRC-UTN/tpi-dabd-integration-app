@@ -47,14 +47,12 @@ export class UserService {
       'x-user-id': userId
     });
 
-    console.log(user)
-
     return this.http.post<User>(`${this.host}`, user, {headers});
   }
 
   getAllUsers(page: number, size: number, isActive?: boolean) {
     let params = new HttpParams()
-    .set('page', page.toString())
+    .set('page', page >= 0 ? page.toString() : "0")
     .set('size', size.toString());
 
     if (isActive !== undefined) {
@@ -105,7 +103,7 @@ export class UserService {
 
   dinamicFilters(page: number, size: number, params: any) {
     let httpParams = new HttpParams()
-      .set('page', page.toString())
+      .set('page', page >= 0 ? page.toString() : "0")
       .set('size', size.toString());
 
     for (const key in params) {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -18,13 +18,15 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MainContainerComponent, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
 export class LoginComponent implements OnInit {
+  @ViewChild('imageElement') imageElement!: ElementRef<HTMLImageElement>
   loginForm!: FormGroup;
   userId!: number;
+  meetsMinimunSize = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -35,10 +37,28 @@ export class LoginComponent implements OnInit {
     private router: Router
   ) {}
 
+  @HostListener('window:resize')
+  onResize() {
+    this.checkImageSize();
+  }
+
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
       email: ['', Validators.required],
       password: ['', Validators.required],
+    });
+  }
+
+  private checkImageSize() {
+    setTimeout(() => {
+      if (this.imageElement && this.imageElement.nativeElement) {
+        const img = this.imageElement.nativeElement;
+        const rect = img.getBoundingClientRect();
+
+        this.meetsMinimunSize = 
+          rect.width >= 450 && 
+          rect.height >= 450;
+      }
     });
   }
 

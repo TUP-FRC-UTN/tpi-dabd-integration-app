@@ -61,23 +61,27 @@ export class AppComponent {
     },
     {
       label: 'Gastos', //expensas
-      routerLink: 'expenses',
+      routerLink:'expenses',
       sidebarMenu: [
         {
-          label: 'Período',
-          routerLink: 'expenses/periodo',
-        },
-        {
-          label: 'Expensas',
-          routerLink: 'expenses/expenses',
+          label: 'Gastos',
+          subMenu: [
+            { label: 'Lista', routerLink: 'expenses/gastos' },
+            { label: 'Categorias', routerLink: 'expenses/gastos/categorias' },
+            { label: 'Reporte de gastos', routerLink: 'expenses/gastos/report' },
+          ],
         },
         {
           label: 'Cargos',
-          routerLink: 'expenses/cargos',
+          routerLink: 'expenses/cargos'
         },
         {
-          label: 'Gastos',
-          routerLink: 'expenses/gastos',
+          label: 'Periodo',
+          subMenu: [
+            { label: 'Lista', routerLink: 'expenses/periodo' },
+            { label: 'Historico de expensas', routerLink: 'expenses/expenses' },
+            { label: 'Reporte de expensas', routerLink: 'expenses/expenses/report' },
+          ]
         },
       ],
     },
@@ -168,24 +172,21 @@ export class AppComponent {
       ],
     },
     {
-      label: 'Tickets', //invoices
-      routerLink: 'invoices',
+      label: 'Boletas - Cobros',
+      routerLink: '/invoices',
       sidebarMenu: [
         {
-          label: 'Lista de Expensas (Propietario)',
-          routerLink: 'invoices/admin-list-expensas',
+          label: 'Lista de Expensas (Admin)',
+          routerLink: '/invoices/admin-list-expensas',
         },
         {
           label: 'Lista de Expensas (Propietario)',
-          routerLink: 'invoices/owner-list-expensas',
+          routerLink: '/invoices/owner-list-expensas',
         },
+        { label: 'Estadísticas', routerLink: '/invoices/stadistics' },
         {
-          label: 'Estadísticas',
-          routerLink: 'invoices/stadistics',
-        },
-        {
-          label: 'Review-Tickets-Transfer',
-          routerLink: 'invoices/review-tickets-transfer',
+          label: 'Revisar Transferencias de Tickets',
+          routerLink: '/invoices/review-tickets-transfer',
         },
       ],
     },
