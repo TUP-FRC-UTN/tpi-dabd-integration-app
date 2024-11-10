@@ -142,4 +142,22 @@ export class UserService {
         })
       );
   }
+
+  changePassword(oldPassword: string, newPassword: string, userId: number) {
+
+    let changePasswordRequest = {
+      userId: userId,
+      oldPassword:oldPassword,
+      newPassword: newPassword
+    }
+
+    const headers = new HttpHeaders({
+      'x-user-id': userId
+    });
+
+
+    this.http.post<any>(`${this.host}/password/change`, changePasswordRequest, {headers})
+
+  }
+
 }
