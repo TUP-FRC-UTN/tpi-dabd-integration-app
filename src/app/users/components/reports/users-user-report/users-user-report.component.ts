@@ -430,7 +430,7 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
   //#endregion
 
   //#region Info
-  openInfo(): void {
+  openInfo() {
     const modalRef = this.modalService.open(InfoComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -439,42 +439,69 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
       scrollable: true,
     });
 
-    modalRef.componentInstance.title = 'Información de Usuarios y Roles';
+    modalRef.componentInstance.title =
+      'Información de Usuarios y roles';
     modalRef.componentInstance.description =
-      'Esta pantalla permite visualizar estadísticas y gestionar usuarios y roles del sistema.';
+      'En esta pantalla se podrán visualizar reportes de los usuario y los roles cargados en el consorcio.';
     modalRef.componentInstance.body = [
       {
-        title: 'Usuarios',
+        title: 'KPIs',
         content: [
-          { strong: 'Nombre:', detail: 'Nombre del usuario.' },
-          { strong: 'Correo Electrónico:', detail: 'Correo del usuario.' },
-          { strong: 'Estado:', detail: 'Activo o Inactivo.' },
+          {
+            strong: '',
+            detail: 'Métricas relevantes que muestra estadísticas claves para evaluar rápidamente el estado y desempeño de los usuarios y los roles del consorcio.',
+          }
         ],
       },
       {
-        title: 'Roles',
+        title: 'Gráficos',
         content: [
-          { strong: 'Nombre:', detail: 'Nombre del rol.' },
-          { strong: 'Descripción:', detail: 'Descripción del rol.' },
-          { strong: 'Estado:', detail: 'Activo o Inactivo.' },
+          {
+            strong: '',
+            detail: 'Gráficos de barra o torta que permite visualizar de forma rápida y detallada el estado y desempeño de los usuarios y los roles del consorcio..',
+          }
         ],
-      },
+      },      
       {
         title: 'Filtros',
         content: [
           {
-            strong: 'Filtrar por Nombre:',
-            detail: 'Filtra por nombre del usuario.',
+            strong: 'Nombre:',
+            detail:
+              'Filtra los gráficos y kpis correspondientes a usuarios por el nombre personal del usuario.',
           },
           {
-            strong: 'Filtrar por Estado:',
-            detail: 'Filtra por estado activo o inactivo.',
+            strong: 'Apellido:',
+            detail:
+              'Filtra los gráficos y kpis correspondientes a usuarios por el apellido personal del usuario.',
           },
+          {
+            strong: 'Nombre de usuario:',
+            detail: 'Filtra los gráficos y kpis correspondientes a usuarios por el nombre del usuario.',
+          },
+          {
+            strong: 'Correo electrónico:',
+            detail: 'Filtra los gráficos y kpis correspondientes a usuarios por el correo electrónico del usuario',
+          },
+          {
+            strong: 'Activo:',
+            detail: 'Filtra los gráficos y kpis correspondientes a usuarios por el estado de activo o inactivo del usuario',
+          }
+        ],
+      },
+      {
+        title: 'Funcionalidades de los Botones',
+        content: [
+          {
+            strong: 'Filtros:',
+            detail:
+              'Botón que despliega los filtros avanzados para los gráficos y KPIs.',
+          }
         ],
       },
     ];
     modalRef.componentInstance.notes = [
-      'Esta interfaz permite administrar usuarios y roles con estadísticas detalladas.',
+      'La interfaz está diseñada para ofrecer una administración eficiente de usuarios y roles, garantizando la precisión y consistencia de los datos.',
     ];
   }
   //#end region
