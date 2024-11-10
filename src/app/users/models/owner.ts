@@ -20,6 +20,7 @@ export interface Address {
   country: string;
   /** The postal or ZIP code */
   postalCode: number | null;
+
 }
 
 /**

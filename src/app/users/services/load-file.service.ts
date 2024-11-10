@@ -45,7 +45,7 @@ export class LoadFileService {
     return this.http.post<File[]>(`${this.ownerUploadUrl}/${ownerId}/files`, formData, { headers });
   }
 
-  uploadFilesNacho(files: File[], fileTypeMap: FileTypeMap, ownerId: number, headerUserId: number): Observable<Document[]> {
+/*   uploadFilesNacho(files: File[], fileTypeMap: FileTypeMap, ownerId: number, headerUserId: number): Observable<Document[]> {
     const formData = new FormData();
     formData.append(
       'typeMap',
@@ -63,7 +63,7 @@ export class LoadFileService {
       'x-user-id': headerUserId.toString()
     });
     return this.http.post<Document[]>(`${this.ownerUploadUrl}/${ownerId}/files`, formData, { headers });
-  }
+  } */
 
 
   // metodo para subir archivos de Owners
@@ -95,7 +95,6 @@ export class LoadFileService {
 
 
   // metodo para subir archivos de Plots
-
   uploadFilesPlot(files: File[], fileTypeMap: FileTypeMap, plotId: number, headerUserId: number): Observable<Document[]> {
 
     const formDataPlot = new FormData();
@@ -121,6 +120,23 @@ export class LoadFileService {
     });
     return this.http.post<Document[]>(`${this.fileUploadUrl}/${plotId}/files`, formDataPlot, { headers });
   }
+
+
+  updateFile(fileId: number, fileType: string, file: File, userId: string): Observable<Document> {
+
+    const formData = new FormData();
+    formData.append('type', fileType);
+    formData.append('file', file);
+
+    const headers = new HttpHeaders({
+      'x-user-id': userId.toString()
+    });
+
+    return this.http.put<Document>(this.fileUploadUrl + '/' + fileId, formData, { headers })
+  } 
+
+
+
 
   updateFileNameAndType(file: File, newName: string): File {
     const newFile = new File([file], newName);

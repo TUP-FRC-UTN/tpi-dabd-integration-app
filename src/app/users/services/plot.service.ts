@@ -5,6 +5,7 @@ import { BehaviorSubject, map, Observable } from 'rxjs';
 import { PaginatedResponse } from '../models/api-response';
 import { TransformPlotPipe } from '../pipes/plot-mapper.pipe';
 import { OwnerMapperPipe } from '../pipes/owner-mapper.pipe';
+import { Document } from '../models/file';
 
 @Injectable({
   providedIn: 'root'
@@ -151,7 +152,9 @@ export class PlotService {
   // metodo para traer los archivos del plot por id de plot
   getPlotFilesById(plotId: number): Observable<Document[]> {
 
-    return this.http.get<any>(this.host + `/${plotId}/files`).pipe(
+    let params = new HttpParams().set('is-active', true);
+
+    return this.http.get<any>(this.host + `/${plotId}/files`, {params} ).pipe(
       map((response: any) => {
 
         const transformPipe = new OwnerMapperPipe();
