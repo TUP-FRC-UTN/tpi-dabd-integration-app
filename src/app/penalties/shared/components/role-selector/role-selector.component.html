@@ -1,7 +1,7 @@
 <form>
   <div class="container">
     <div class="row">
-      @if (!changeService.getBlack()){
+<!--      @if (!changeService.getBlack()){-->
         <div class="">
           <label for="rolesB" class="text-light">Selección Rol:</label>
           <select id="rolesB" class="form-select text-light bg-dark" [(ngModel)]="selectedRole"
@@ -25,7 +25,7 @@
             <option *ngFor="let user of userIds" [value]="user">UserID {{ user }}</option>
           </select>
         </div>
-      } @else {
+<!--      } @else {-->
         <div class="col-md-4">
           <label for="roles" >Selección Rol:</label>
           <select id="roles" class="form-select " [(ngModel)]="selectedRole"
@@ -49,7 +49,7 @@
             <option *ngFor="let user of userIds" [value]="user">UserID {{ user }}</option>
           </select>
         </div>
-      }
+<!--      }-->
     </div>
   </div>
 </form>

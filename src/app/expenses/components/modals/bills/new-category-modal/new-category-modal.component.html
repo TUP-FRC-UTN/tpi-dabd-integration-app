@@ -8,29 +8,72 @@
       <div class="row mb-3">
         <label for="newCategoryName" class="text-start">Nombre</label>
         <div class="col">
-          <input type="text" class="form-control" id="newCategoryName" formControlName="name"
-                  [ngClass]="{'is-invalid': newCategoryForm.get('name')?.invalid && (newCategoryForm.get('name')?.dirty || newCategoryForm.get('name')?.touched)}">
-          <div class="invalid-feedback">
-            Por favor, ingrese un nombre para la categoría.
-          </div>
+          <input
+            type="text"
+            class="form-control"
+            id="newCategoryName"
+            formControlName="name"
+            [ngClass]="{
+              'is-invalid': newCategoryForm.get('name')?.invalid &&
+                          (newCategoryForm.get('name')?.dirty || newCategoryForm.get('name')?.touched),
+              'is-valid': newCategoryForm.get('name')?.valid && !newCategoryForm.get('name')?.pending
+            }">
+
+          <!-- Mensajes de error -->
+          @if (newCategoryForm.get('name')?.errors?.['required'] &&
+          newCategoryForm.get('name')?.touched) {
+            <div class="invalid-feedback">
+              Por favor, ingrese un nombre para la categoría.
+            </div>
+          }
+
+          @if (newCategoryForm.get('name')?.errors?.['nameExists']) {
+            <div class="invalid-feedback">
+              Este nombre de categoría ya está en uso.
+            </div>
+          }
         </div>
       </div>
+
       <div class="row mb-3">
-        <label for="newCategoryDescription" class="text-start">Descripcion</label>
+        <label for="newCategoryDescription" class="text-start">Descripción</label>
         <div class="col">
-          <input type="text" class="form-control" id="newCategoryDescription" formControlName="description"
-                  [ngClass]="{'is-invalid': newCategoryForm.get('description')?.invalid && (newCategoryForm.get('description')?.dirty || newCategoryForm.get('description')?.touched)}">
-          <div class="invalid-feedback">
-            Por favor, ingrese una descripción para la categoría.
-          </div>
+          <input
+            type="text"
+            class="form-control"
+            id="newCategoryDescription"
+            formControlName="description"
+            [ngClass]="{
+              'is-invalid': newCategoryForm.get('description')?.invalid &&
+                          (newCategoryForm.get('description')?.dirty || newCategoryForm.get('description')?.touched),
+              'is-valid': newCategoryForm.get('description')?.valid
+            }">
+
+          @if (newCategoryForm.get('description')?.errors?.['required'] &&
+          newCategoryForm.get('description')?.touched) {
+            <div class="invalid-feedback">
+              Por favor, ingrese una descripción para la categoría.
+            </div>
+          }
         </div>
       </div>
     </form>
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-success" (click)="saveNewCategory()"
-          [disabled]="newCategoryForm.invalid">Confirmar
+  <button
+    type="button"
+    class="btn"
+    (click)="saveNewCategory()"
+    [disabled]="newCategoryForm.invalid || newCategoryForm.pending"
+    [ngClass]="{
+      'btn-success': !newCategoryForm.pending,
+      'btn-secondary': newCategoryForm.pending
+    }">
+    @if (newCategoryForm.pending) {
+      <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+    }
+    Confirmar
   </button>
   <button type="button" class="btn btn-danger" (click)="activeModal.dismiss()">Cancelar</button>
 </div>

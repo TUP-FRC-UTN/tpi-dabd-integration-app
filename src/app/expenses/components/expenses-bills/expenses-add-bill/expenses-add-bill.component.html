@@ -1,0 +1,164 @@
+<app-main-container title="Registrar Gasto" (infoButtonClick)="showInfo()">
+  <form [formGroup]="billForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
+
+    <!-- Primera fila con Proveedor y Categoría -->
+    <div class="col-md-6">
+      <div class="d-flex align-items-center">
+        <label for="supplierId" class="col-sm-2 col-form-label">Proveedor<span class="text-danger">*</span></label>
+        <div class="col-sm-10">
+          <div class="input-group">
+            <ng-select [clearable]="false" id="supplierId" [items]="providers | async | orderBy: 'name'"
+              bindLabel="name" bindValue="id" formControlName="supplierId"
+              [placeholder]="billForm.get('supplierId')?.value ? '' : 'Seleccione un proveedor'" [appendTo]="'body'"
+              [ngClass]="{
+      'is-invalid': billForm.get('supplierId')?.invalid && (billForm.get('supplierId')?.dirty || billForm.get('supplierId')?.touched),
+      'is-valid': billForm.get('supplierId')?.valid && (billForm.get('supplierId')?.dirty || billForm.get('supplierId')?.touched)
+    }" [searchable]="true" notFoundText="No se encontraron proveedores" class="form-select rounded-end-3">
+            </ng-select>
+            <div class="invalid-feedback">
+              El proveedor es obligatorio.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="d-flex align-items-center">
+        <label for="categoryId" class="col-sm-2 col-form-label">Categoría<span class="text-danger">*</span></label>
+        <div class="col-sm-10">
+          <div class="input-group">
+            <ng-select [clearable]="false" id="categoryId" [items]="categories | async | orderBy: 'name'"
+              bindLabel="name" bindValue="category_id" formControlName="categoryId"
+              [placeholder]="billForm.get('categoryId')?.value ? '' : 'Seleccione una categoría'" [appendTo]="'body'"
+              [ngClass]="{
+                'is-invalid': billForm.get('categoryId')?.invalid && (billForm.get('categoryId')?.dirty || billForm.get('categoryId')?.touched),
+                'is-valid': billForm.get('categoryId')?.valid && (billForm.get('categoryId')?.dirty || billForm.get('categoryId')?.touched)
+              }" [searchable]="true" notFoundText="No se encontraron categorías" class="form-select">
+            </ng-select>
+            <button class="btn form-control-sm border rounded-end-3 btn-outline-secondary" type="button"
+              (click)="openNewCategoryModal()">
+              <i class="bi bi-plus-lg"></i>
+            </button>
+            <div class="invalid-feedback">
+              La categoría es obligatoria.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Segunda fila con Periodo y Tipo -->
+    <div class="col-md-6">
+      <div class="d-flex align-items-center">
+        <label for="periodId" class="col-sm-2 col-form-label">Periodo<span class="text-danger">*</span></label>
+        <div class="col-sm-10">
+          <div class="input-group">
+            <ng-select [clearable]="false" id="periodId" [items]="periods | async | orderBy: ['-year','-month']"
+              formControlName="periodId" [bindValue]="'id'" [bindLabel]="'displayPeriod'"
+              [compareWith]="comparePeriodFn"
+              [placeholder]="billForm.get('periodId')?.value ? '' : 'Seleccione un periodo'" [appendTo]="'body'"
+              [ngClass]="{
+      'is-invalid': billForm.get('periodId')?.invalid && (billForm.get('periodId')?.dirty || billForm.get('periodId')?.touched),
+      'is-valid': billForm.get('periodId')?.valid && (billForm.get('periodId')?.dirty || billForm.get('periodId')?.touched)
+    }" [searchable]="true" notFoundText="No se encontraron periodos" class="form-select rounded-end-3">
+            </ng-select>
+            <div class="invalid-feedback">
+              El periodo es obligatorio.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="col-md-6">
+      <div class="d-flex align-items-center">
+        <label for="typeId" class="col-sm-2 col-form-label">Tipo<span class="text-danger">*</span></label>
+        <div class="col-sm-10">
+          <div class="input-group">
+            <ng-select [clearable]="false" id="typeId" [items]="types | async | orderBy: 'name'" bindLabel="name"
+              bindValue="bill_type_id" formControlName="typeId"
+              [placeholder]="billForm.get('typeId')?.value ? '' : 'Seleccione un tipo'" [appendTo]="'body'" [ngClass]="{
+                'is-invalid': billForm.get('typeId')?.invalid && (billForm.get('typeId')?.dirty || billForm.get('typeId')?.touched),
+                'is-valid': billForm.get('typeId')?.valid && (billForm.get('typeId')?.dirty || billForm.get('typeId')?.touched)
+              }" [searchable]="true" notFoundText="No se encontraron tipos" class="form-select rounded-end-3">
+            </ng-select>
+            <div class="invalid-feedback">
+              El tipo es obligatorio.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Última fila con Monto y Fecha -->
+    <div class="col-md-6">
+      <div class="d-flex align-items-center">
+        <label for="amount" class="col-sm-2 col-form-label">Monto<span class="text-danger">*</span></label>
+        <div class="col-sm-10">
+          <input placeholder="Ingrese un monto" type="number" id="amount" formControlName="amount" class="form-control"
+            [ngClass]="{
+            'is-invalid': billForm.get('amount')?.invalid && (billForm.get('amount')?.dirty || billForm.get('amount')?.touched),
+            'is-valid': billForm.get('amount')?.valid && (billForm.get('amount')?.dirty || billForm.get('amount')?.touched)
+          }">
+          <div class="invalid-feedback">
+            El monto es obligatorio.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="d-flex align-items-center">
+        <label for="date" class="col-sm-2 col-form-label">Fecha<span class="text-danger">*</span></label>
+        <div class="col-sm-10">
+          <input type="date" id="date" formControlName="date" class="form-control" [ngClass]="{
+              'is-invalid': billForm.get('date')?.invalid && (billForm.get('date')?.dirty || billForm.get('date')?.touched),
+              'is-valid': billForm.get('date')?.valid && (billForm.get('date')?.dirty || billForm.get('date')?.touched)
+            }">
+          @if (billForm.get('date')?.errors?.['required'] &&
+          (billForm.get('date')?.dirty || billForm.get('date')?.touched)) {
+          <div class="invalid-feedback">
+            La fecha es obligatoria.
+          </div>
+          }
+          @if (billForm.get('date')?.errors?.['invalidDate']) {
+          <div class="invalid-feedback">
+            La fecha seleccionada es anterior a la fecha de inicio del período.
+          </div>
+          }
+          <!-- @if (billForm.get('date')?.pending) {
+            <div class="text-info">
+              <small>Validando fecha...</small>
+            </div>
+          } -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Descripción -->
+    <div class="col-md">
+      <div class="d-flex align-items-center">
+        <label for="description" class="col-sm-1 col-form-label">Descripción</label>
+        <div class="col-sm-11">
+          <textarea placeholder="Ingrese una descripción" id="description" formControlName="description"
+            class="form-control" rows="3"
+            [ngClass]="{'is-invalid': billForm.get('description')?.invalid && (billForm.get('description')?.dirty || billForm.get('description')?.touched)}"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fila de botones -->
+    <div class="col-12 d-flex justify-content-end">
+      <div class="mx-2">
+        <button type="button" class="btn btn-danger" (click)="resetForm()">Cancelar</button>
+      </div>
+      <div>
+        <button type="submit" class="btn btn-primary" [disabled]="billForm.invalid">Guardar</button>
+      </div>
+    </div>
+  </form>
+
+</app-main-container>

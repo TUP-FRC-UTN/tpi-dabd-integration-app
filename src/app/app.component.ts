@@ -11,6 +11,8 @@ import { SessionService } from './users/services/session.service';
 import { LoginService } from './users/services/login.service';
 import { ForgotPasswordComponent } from './users/components/forgot-password/forgot-password.component';
 import { filter } from 'rxjs';
+import {RoleSelectorComponent} from './penalties/shared/components/role-selector/role-selector.component';
+
 
 @Component({
   selector: 'app-root',
@@ -22,7 +24,8 @@ import { filter } from 'rxjs';
     ToastsContainer,
     AsyncPipe,
     LoginComponent,
-  ForgotPasswordComponent
+	ForgotPasswordComponent,
+	RoleSelectorComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -58,6 +61,7 @@ export class AppComponent {
           routerLink: 'entries/auth-list',
         },
       ],
+
     },
     {
       label: 'Gastos', //expensas
@@ -69,6 +73,7 @@ export class AppComponent {
             { label: 'Lista', routerLink: 'expenses/gastos' },
             { label: 'Categorias', routerLink: 'expenses/gastos/categorias' },
             { label: 'Reporte de gastos', routerLink: 'expenses/gastos/report' },
+
           ],
         },
         {
@@ -87,31 +92,32 @@ export class AppComponent {
     },
     {
       label: 'Notificaciones',
-      routerLink: 'notifications',
+
+      routerLink:'notifications',
       sidebarMenu: [
         {
           label: 'Templates',
-          routerLink: 'notifications/templates',
+          routerLink: 'notifications/templates'
         },
         {
           label: 'Mandar Email',
-          routerLink: 'notifications/send-email',
+          routerLink: 'notifications/send-email'
         },
         {
           label: 'Mandar Email a Varios',
-          routerLink: 'notifications/send-email-contact',
+          routerLink: 'notifications/send-email-contact'
         },
         {
           label: 'Historial de Notificaciones',
-          routerLink: 'notifications/notifications-historic',
+          routerLink: 'notifications/notifications-historic'
         },
         {
           label: 'Auditoría de Contactos',
-          routerLink: 'notifications/contact-audit',
+          routerLink: 'notifications/contact-audit'
         },
         {
           label: 'Listar Contactos',
-          routerLink: 'notifications/contacts',
+          routerLink: 'notifications/contacts'
         },
         // se que notificaciones tenia un sub menu, pero como no recuerdo como era les dejo este "template" para que lo modifiquen como les parece
         // {
@@ -132,32 +138,31 @@ export class AppComponent {
         {
           label: 'Obras',
           routerLink: 'penalties/constructions',
+
         },
         {
           label: 'Multas',
           subMenu: [
-            { label: 'Multas', routerLink: 'penalties/fine' },
-            { label: 'Infracciones', routerLink: 'penalties/infraction' },
-            { label: 'Reclamos', routerLink: 'penalties/claim' },
-            {
-              label: 'Tipos de Sanciones',
-              routerLink: 'penalties/sanctionType',
-            },
-          ],
-        },
-      ],
+
+            {label: 'Multas',routerLink:'penalties/fine'},
+            {label: 'Infracciones',routerLink:'penalties/infraction'},
+            {label: 'Reclamos',routerLink:'penalties/claim'},
+            {label: 'Tipos de Sanciones',routerLink:'penalties/sanctionType'}
+          ]
+        }
+      ]
     },
     {
       label: 'Proveedores',
-      routerLink: 'inventories',
+      routerLink:'inventories',
       sidebarMenu: [
         {
           label: 'Empleados',
-          routerLink: 'inventories/employees/list',
+          routerLink: 'inventories/employees/list'
         },
         {
           label: 'Proveedores',
-          routerLink: 'inventories/providers/list',
+          routerLink: 'inventories/providers/list'
         },
         {
           label: 'Inventarios',
@@ -284,4 +289,5 @@ export class AppComponent {
     this.router.navigate([""]);
   }
   //#endregion
+
 }
