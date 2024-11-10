@@ -43,7 +43,8 @@ export class UserService {
 
   addUser(user: User, userId: number): Observable<User> {
     const headers = new HttpHeaders({
-      'x-user-id': userId
+      'x-user-id': userId,
+      "Accept": "application/json"
     });
 
     return this.http.post<User>(`${this.host}`, user, {headers});
@@ -92,8 +93,24 @@ export class UserService {
       );
   }
 
-  getUsersCreatedBy(id: string) {
-    return this.http.get<User[]>(`${this.host}/${id}`).pipe(
+  getUsersCreatedBy(id: string, size: number, page: number) {
+    let params = new HttpParams()
+      .set('page', page >= 0 ? page.toString() : "0")
+      .set('size', size.toString());
+
+    return this.http.get<User[]>(`${this.host}/created_by/${id}`).pipe(
+      map((data: any) => {
+        return toCamelCase(data)
+      })
+    )
+  }
+
+  getUsersByRole(role: string, size: number, page: number) {
+    let params = new HttpParams()
+      .set('page', page >= 0 ? page.toString() : "0")
+      .set('size', size.toString());
+
+    return this.http.get<User[]>(`${this.host}/rol/${role}`).pipe(
       map((data: any) => {
         return toCamelCase(data)
       })
