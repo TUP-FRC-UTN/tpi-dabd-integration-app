@@ -25,11 +25,11 @@ import { CadastreExcelService } from '../../../services/cadastre-excel.service';
     FormsModule,
     MainContainerComponent,
     CadastreOwnerPlotFilterButtonsComponent,
-    AsyncPipe
+    AsyncPipe,
   ],
   templateUrl: './cadastre-owner-plot-list.component.html',
   styleUrl: './cadastre-owner-plot-list.component.css',
-  providers: [DatePipe]
+  providers: [DatePipe],
 })
 export class CadastreOwnerPlotListComponent {
   private ownerPlotService = inject(OwnerPlotService);
@@ -85,19 +85,20 @@ export class CadastreOwnerPlotListComponent {
   getOwnersByPlot() {
     this.ownerPlotService
       .giveAllOwnersByPlot(this.plotId, this.currentPage, this.pageSize)
-      .subscribe(
-        (response) => {
-          console.log('Respesta', response.content);
-          
+      .subscribe({
+        next: (response) => {
           this.ownersList = response.content;
           this.filteredOwnersList.next(response.content);
           this.lastPage = response.last;
           this.totalItems = response.totalElements;
         },
-        (error) => {
+        error: (error) => {
           console.error('Error getting owners:', error);
-        }
-      );
+          this.toastService.sendError(
+            'Error al obtener la lista de propietarios.'
+          );
+        },
+      });
   }
 
   getPlot() {
@@ -121,25 +122,7 @@ export class CadastreOwnerPlotListComponent {
 
   formatDate(dateString: any | undefined) {
     const date = new Date(dateString + 'Z');
-    return date 
-      ? this.datePipe.transform(date, 'dd/MM/yyyy HH:mm')
-      : ""
-    
-  /*  if (!date) return '';
-
-    const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    };
-
-    return new Intl.DateTimeFormat('es-AR', options)
-      .format(date)
-      .replace(',', '');
- */
+    return date ? this.datePipe.transform(date, 'dd/MM/yyyy') : '';
   }
 
   onItemsPerPageChange() {
@@ -262,10 +245,9 @@ export class CadastreOwnerPlotListComponent {
                 .filter(Boolean)
             : [];
 
-        return propString.includes(filterValue); 
+        return propString.includes(filterValue);
       });
     });
-
 
     this.filteredOwnersList.next(filteredList);
   }
@@ -310,33 +292,37 @@ export class CadastreOwnerPlotListComponent {
   }
 
   exportToPdf() {
-    this.ownerPlotService.giveAllOwnersByPlot(this.plotId, this.currentPage, this.pageSize).subscribe({
-      next: (data) => {
-        this.excelService.exportListToPdf(
-          data.content,
-          `${this.getActualDayFormat()}_${this.objectName}`,
-          this.headers,
-          this.dataMapper
-        );
-      },
-      error: (error) => {
-        console.log(error);
-      },
-    });
+    this.ownerPlotService
+      .giveAllOwnersByPlot(this.plotId, this.currentPage, this.pageSize)
+      .subscribe({
+        next: (data) => {
+          this.excelService.exportListToPdf(
+            data.content,
+            `${this.getActualDayFormat()}_${this.objectName}`,
+            this.headers,
+            this.dataMapper
+          );
+        },
+        error: (error) => {
+          console.log(error);
+        },
+      });
   }
 
   exportToExcel() {
-    this.ownerPlotService.giveAllOwnersByPlot(this.plotId, this.currentPage, this.pageSize).subscribe({
-      next: (data) => {
-        this.excelService.exportListToExcel(
-          data.content,
-          `${this.getActualDayFormat()}_${this.objectName}`
-        );
-      },
-      error: (error) => {
-        console.log(error);
-      },
-    });
+    this.ownerPlotService
+      .giveAllOwnersByPlot(this.plotId, this.currentPage, this.pageSize)
+      .subscribe({
+        next: (data) => {
+          this.excelService.exportListToExcel(
+            data.content,
+            `${this.getActualDayFormat()}_${this.objectName}`
+          );
+        },
+        error: (error) => {
+          console.log(error);
+        },
+      });
   }
   //#end region
 }
