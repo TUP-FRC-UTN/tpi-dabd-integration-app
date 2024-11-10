@@ -8,6 +8,7 @@ import { UserMapperPipe } from '../pipes/user-mapper.pipe';
 import { toCamelCase } from '../utils/owner-helper';
 import {Owner} from '../models/owner';
 import {OwnerMapperPipe} from '../pipes/owner-mapper.pipe';
+import { ForgotPasswordRequest } from '../models/forgot-password';
 
 @Injectable({
   providedIn: 'root'
@@ -144,4 +145,34 @@ export class UserService {
     }
     return throwError(() => new Error('Something bad happened; please try again later.'));
   }
+
+  forgotPassword(forgotRequest: ForgotPasswordRequest): Observable<any> {
+    // Hacemos la solicitud POST y retornamos el observable
+    return this.http.post<any>(`${this.host}/password/reset`, forgotRequest)
+      .pipe(
+        catchError(error => {
+          // Manejo de errores si es necesario
+          console.error('Error en la solicitud POST', error);
+          throw error;
+        })
+      );
+  }
+
+  changePassword(oldPassword: string, newPassword: string, userId: number) {
+
+    let changePasswordRequest = {
+      userId: userId,
+      oldPassword:oldPassword,
+      newPassword: newPassword
+    }
+
+    const headers = new HttpHeaders({
+      'x-user-id': userId
+    });
+
+
+    this.http.post<any>(`${this.host}/password/change`, changePasswordRequest, {headers})
+
+  }
+
 }

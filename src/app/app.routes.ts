@@ -2,9 +2,13 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './users/components/login/login.component';
 import { authGuard } from './users/guards/auth.guard';
 import { HomeComponent } from './users/components/commons/home/home.component';
+import { ForgotPasswordComponent } from './users/components/forgot-password/forgot-password.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
+  
+  { path: 'forgotpassword', component: ForgotPasswordComponent },
+
   { path: 'home', component: HomeComponent },
   {
     path: 'entries',

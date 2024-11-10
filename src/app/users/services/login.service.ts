@@ -8,6 +8,7 @@ import { SessionService } from './session.service';
   providedIn: 'root',
 })
 export class LoginService {
+
   private apiUrl = 'http://localhost:8015/authentications';
 
   constructor(private http: HttpClient,
@@ -36,4 +37,6 @@ export class LoginService {
    logout(): void {
     this.sessionService.logout();
   }
+
+  
 }
