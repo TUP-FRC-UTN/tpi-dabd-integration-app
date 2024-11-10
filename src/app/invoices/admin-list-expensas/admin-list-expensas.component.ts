@@ -118,6 +118,7 @@ export class AdminListExpensasComponent implements OnInit {
     title: '',
     description: '',
     totalPrice: 0,
+    adminNameWhoApproves: '',
   };
 
   ticketSelectedModal: TicketDto = {
@@ -439,6 +440,8 @@ export class AdminListExpensasComponent implements OnInit {
         return 'Anulado';
       case TicketStatus.PENDING:
         return 'Pendiente';
+      case TicketStatus.UNDER_REVIEW:
+        return 'En revision';
       default:
         return '';
     }

@@ -3,5 +3,6 @@ export interface TicketPayDto {
     title: string; 
     description: string; 
     totalPrice: number;
+    adminNameWhoApproves: string;
   }
   

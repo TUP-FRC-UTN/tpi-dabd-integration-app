@@ -61,7 +61,11 @@ registerLocaleData(localeEs, 'es');
   ],
   templateUrl: './owner-list-expensas.component.html',
   styleUrl: './owner-list-expensas.component.css',
-  providers: [DatePipe, { provide: LOCALE_ID, useValue: 'es' }, PeriodToMonthYearPipe],
+  providers: [
+    DatePipe,
+    { provide: LOCALE_ID, useValue: 'es' },
+    PeriodToMonthYearPipe,
+  ],
 })
 export class OwnerListExpensasComponent {
   //#region ATT de PAGINADO
@@ -77,6 +81,9 @@ export class OwnerListExpensasComponent {
     { value: 'PENDING', label: 'Pendiente' },
     { value: 'PAID', label: 'Pagado' },
     { value: 'CANCELED', label: 'Anulado' },
+    { value: 'UNDER_REVIEW', label: 'En revision' },
+    { value: 'EXPIRED', label: 'Vencido' },
+    { value: 'IN_DEFAULT', label: 'Vencido2' },
   ];
 
   filterConfig: Filter[] = new FilterConfigBuilder()
@@ -91,6 +98,7 @@ export class OwnerListExpensasComponent {
     title: '',
     description: '',
     totalPrice: 0,
+    adminNameWhoApproves: '',
   };
   isFilter: boolean = false; // to keep the status to avoid load all values from backend
 
@@ -102,7 +110,7 @@ export class OwnerListExpensasComponent {
       .getAllByOwnerWithFilters(
         this.currentPage--,
         this.pageSize,
-        $event['status'],
+        $event['status']
       )
       .subscribe(
         (response: PaginatedResponse<TicketDto>) => {
@@ -150,8 +158,8 @@ export class OwnerListExpensasComponent {
     private modalService: NgbModal,
     private datePipe: DatePipe,
     private excelService: PaymentExcelService,
-    private fileService: FilesServiceService, 
-    private periodToMonthYearPipe:PeriodToMonthYearPipe
+    private fileService: FilesServiceService,
+    private periodToMonthYearPipe: PeriodToMonthYearPipe
   ) {
     this.fechasForm = this.formBuilder.group({
       fechaInicio: [''],
@@ -228,6 +236,12 @@ export class OwnerListExpensasComponent {
         return 'Anulado';
       case TicketStatus.PENDING:
         return 'Pendiente';
+      case TicketStatus.UNDER_REVIEW:
+        return 'En revision';
+      case TicketStatus.EXPIRED:
+        return 'Vencido';
+      case TicketStatus.IN_DEFAULT:
+        return 'Vencido2';
       default:
         return '';
     }
@@ -249,7 +263,6 @@ export class OwnerListExpensasComponent {
   isUploading = false;
   uploadSuccess: boolean | null = null;
 
-
   onUpload(): void {
     if (!this.selectedFile) {
       console.warn('No file selected!');
@@ -259,31 +272,43 @@ export class OwnerListExpensasComponent {
     const formData = new FormData();
     formData.append('file', this.selectedFile, this.selectedFile.name);
 
+    this.requestData.idTicket = this.ticketSelectedModal.id;
+    this.requestData.description = `Expensas del periodo ${this.periodToMonthYearPipe.transform(
+      this.ticketSelectedModal.period
+    )}`;
+    this.requestData.title = `Expensas del periodo ${this.periodToMonthYearPipe.transform(
+      this.ticketSelectedModal.period
+    )}`;
+    this.requestData.totalPrice = this.calculateTotal(this.ticketSelectedModal);
+    this.requestData.adminNameWhoApproves = 'ADMIN USER';
     // Agregar el JSON como un string en el FormData
-    const jsonData = {
-      idTicket: 123,
-      title: "Concert Ticket",
-      description: "Ticket for the annual concert",
-      totalPrice: 150.00
-    };
-    formData.append('data', JSON.stringify(jsonData));
+    // const jsonData = {
+    //   idTicket: 123,
+    //   title: "Concert Ticket",
+    //   description: "Ticket for the annual concert",
+    //   totalPrice: 150.00
+
+    // };
+    formData.append('ticketPayDtoJson', JSON.stringify(this.requestData));
 
     // Opcional: indicar que el archivo está en proceso de subida
     this.isUploading = true;
 
-    this.http.post('http://localhost:8090/payments/saveReceipt', formData).subscribe(
-      (response) => {
-        console.log('File uploaded successfully!', response);
-        this.isUploading = false;
-        this.uploadSuccess = true;
-      },
-      (error) => {
-        console.error('Error uploading file:', error);
-        this.isUploading = false;
-        this.uploadSuccess = false;
-      }
-    );
-}
+    this.http
+      .post('http://localhost:8090/payments/saveReceipt', formData)
+      .subscribe(
+        (response) => {
+          console.log('File uploaded successfully!', response);
+          this.isUploading = false;
+          this.uploadSuccess = true;
+        },
+        (error) => {
+          console.error('Error uploading file:', error);
+          this.isUploading = false;
+          this.uploadSuccess = false;
+        }
+      );
+  }
 
   //#region FUNCIONES PARA PAGINADO
   onItemsPerPageChange() {
@@ -346,8 +371,12 @@ export class OwnerListExpensasComponent {
 
   pagar() {
     this.requestData.idTicket = this.ticketSelectedModal.id;
-    this.requestData.description = `Expensas del periodo ${this.periodToMonthYearPipe.transform(this.ticketSelectedModal.period)}`;
-    this.requestData.title = `Expensas del periodo ${this.periodToMonthYearPipe.transform(this.ticketSelectedModal.period)}`;
+    this.requestData.description = `Expensas del periodo ${this.periodToMonthYearPipe.transform(
+      this.ticketSelectedModal.period
+    )}`;
+    this.requestData.title = `Expensas del periodo ${this.periodToMonthYearPipe.transform(
+      this.ticketSelectedModal.period
+    )}`;
     this.requestData.totalPrice = this.calculateTotal(this.ticketSelectedModal);
     console.log(this.requestData);
     this.mercadopagoservice.crearPreferencia(this.requestData).subscribe(
