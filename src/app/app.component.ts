@@ -1,37 +1,67 @@
-import {Component, inject} from '@angular/core';
-import {RouterModule, RouterOutlet} from '@angular/router';
-import {MainLayoutComponent, NavbarItem, ToastsContainer} from 'ngx-dabd-grupo01';
+import { AsyncPipe } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { RouterModule, RouterOutlet, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
+import {
+  MainLayoutComponent,
+  NavbarItem,
+  ToastsContainer,
+} from 'ngx-dabd-grupo01';
+import { LoginComponent } from './users/components/login/login.component';
+import { SessionService } from './users/services/session.service';
+import { LoginService } from './users/services/login.service';
+import { ForgotPasswordComponent } from './users/components/forgot-password/forgot-password.component';
+import { filter } from 'rxjs';
 import {RoleSelectorComponent} from './penalties/shared/components/role-selector/role-selector.component';
+
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, MainLayoutComponent, ToastsContainer, RoleSelectorComponent],
+  imports: [
+    RouterOutlet,
+    RouterModule,
+    MainLayoutComponent,
+    ToastsContainer,
+    AsyncPipe,
+    LoginComponent,
+	ForgotPasswordComponent,
+	RoleSelectorComponent
+  ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  // title = 'AppName';
+  private loginService = inject(LoginService);
+  private router = inject(Router);
+  private activatedRouter = inject(ActivatedRoute);
+  currentUrl!: string;
+  
+  ngOnInit(){
+    this.router.events
+    .pipe(filter(event => event instanceof NavigationEnd))
+    .subscribe(event => {
+        this.currentUrl = event.url;
+    });  }
 
-  //variables
   navbarMenu: NavbarItem[] = [
     {
       label: 'Accesos',
-      routerLink:'entries',
+      routerLink: 'entries',
       sidebarMenu: [
         {
           label: 'Visitantes',
-          routerLink: 'entries/visitors'
+          routerLink: 'entries/visitors',
         },
         {
           label: 'Consulta de Accesos',
-          routerLink: 'entries/access-query'
+          routerLink: 'entries/access-query',
         },
         {
           label: 'Listado de Autorización',
-          routerLink: 'entries/auth-list'
-        }
-      ]
+          routerLink: 'entries/auth-list',
+        },
+      ],
+
     },
     {
       label: 'Gastos', //expensas
@@ -41,7 +71,9 @@ export class AppComponent {
           label: 'Gastos',
           subMenu: [
             { label: 'Lista', routerLink: 'expenses/gastos' },
-            { label: 'Categorias', routerLink: 'expenses/gastos/categorias' }
+            { label: 'Categorias', routerLink: 'expenses/gastos/categorias' },
+            { label: 'Reporte de gastos', routerLink: 'expenses/gastos/report' },
+
           ],
         },
         {
@@ -60,6 +92,7 @@ export class AppComponent {
     },
     {
       label: 'Notificaciones',
+
       routerLink:'notifications',
       sidebarMenu: [
         {
@@ -96,7 +129,7 @@ export class AppComponent {
         //     {label: 'Tipos de Sanciones',routerLink:'penalties/sanctionType'}
         //   ]
         // }
-      ]
+      ],
     },
     {
       label: 'Obras y Multas',
@@ -104,11 +137,13 @@ export class AppComponent {
       sidebarMenu: [
         {
           label: 'Obras',
-          routerLink: 'penalties/constructions'
+          routerLink: 'penalties/constructions',
+
         },
         {
           label: 'Multas',
           subMenu: [
+
             {label: 'Multas',routerLink:'penalties/fine'},
             {label: 'Infracciones',routerLink:'penalties/infraction'},
             {label: 'Reclamos',routerLink:'penalties/claim'},
@@ -132,64 +167,97 @@ export class AppComponent {
         {
           label: 'Inventarios',
           subMenu: [
-            {label: 'Inventarios',routerLink:'inventories/inventories'},
-            {label: 'Nuevo Artículo',routerLink:'inventories/articles/article'},
-          ]
-        }
-      ]
-
+            { label: 'Inventarios', routerLink: 'inventories/inventories' },
+            {
+              label: 'Nuevo Artículo',
+              routerLink: 'inventories/articles/article',
+            },
+          ],
+        },
+      ],
     },
     {
-      label: 'Tickets', //invoices
-      routerLink:'invoices',
+      label: 'Boletas - Cobros',
+      routerLink: '/invoices',
       sidebarMenu: [
         {
-          label: 'Lista de Expensas (Propietario)',
-          routerLink: 'invoices/admin-list-expensas'
+          label: 'Lista de Expensas (Admin)',
+          routerLink: '/invoices/admin-list-expensas',
         },
         {
           label: 'Lista de Expensas (Propietario)',
-          routerLink: 'invoices/owner-list-expensas'
+          routerLink: '/invoices/owner-list-expensas',
         },
+        { label: 'Estadísticas', routerLink: '/invoices/stadistics' },
         {
-          label: 'Estadísticas',
-          routerLink: 'invoices/stadistics'
+          label: 'Revisar Transferencias de Tickets',
+          routerLink: '/invoices/review-tickets-transfer',
         },
-        {
-          label: 'Review-Tickets-Transfer',
-          routerLink: 'invoices/review-tickets-transfer'
-        }
-      ]
+      ],
     },
     {
       label: 'Usuarios',
-      routerLink:'users',
+      routerLink: 'users',
       sidebarMenu: [
         {
-          label: 'Home',
-          routerLink: 'users/home'
+          label: 'Dashboards',
+          subMenu: [
+            {
+              label: 'Reporte Propietarios',
+              routerLink: '/users/owner/reports',
+            },
+            { label: 'Reporte Usuarios', routerLink: '/users/user/reports' },
+          ],
+        }, {
+          label: 'Perfil',
+          subMenu: [
+            {
+              label: 'Consultar Perfil',
+              routerLink: '/users/profile/detail',
+            },
+            {
+              label: 'Editar Perfil',
+              routerLink: '/users/profile/edit',
+            },
+            {
+              label: 'Cambiar contraseña',
+              routerLink: '/users/changepassword',
+            },
+          ],
         },
         {
-          label: 'Dueños',
-          routerLink: 'users/owner/list'
+          label: 'Propietarios',
+          subMenu: [
+            { label: 'Lista de Propietarios', routerLink: '/users/owner/list' },
+            { label: 'Cargar Propietario', routerLink: '/users/owner/form' },
+            { label: 'Asignar Lote', routerLink: '/users/owner/assign' },
+            { label: 'Cargar Archivo', routerLink: '/users/files/form' },
+            { label: 'Validar Archivos', routerLink: '/users/files/view' },
+          ],
         },
         {
-          label: 'Plots',
-          routerLink: 'users/plot/list'
-        },
-        {
-          label: 'Propietario En Validación',
-          routerLink: 'users/files/view'
+          label: 'Lotes',
+          subMenu: [
+            { label: 'Lista de Lotes', routerLink: '/users/plot/list' },
+            { label: 'Cargar Lote', routerLink: '/users/plot/form' },
+          ],
         },
         {
           label: 'Usuarios',
-          routerLink: 'users/user/list'
+          subMenu: [
+            { label: 'Lista de Usuarios', routerLink: '/users/user/list' },
+            { label: 'Cargar Usuario', routerLink: '/users/user/form' },
+            {
+              label: 'Cargar Usuario Inquilino',
+              routerLink: '/users/user/tenant/form',
+            },
+            { label: 'Lista de Roles', routerLink: '/users/roles/list' },
+            { label: 'Cargar Roles', routerLink: '/users/roles/form' },
+            { label: 'Usuarios Creados', routerLink: '/users/user/created' },
+            { label: 'Usuarios de Roles', routerLink: '/users/user/role' },
+          ],
         },
-        {
-          label: 'Roles',
-          routerLink: 'users/roles/list'
-        },
-      ]
+      ],
     },
     // not working for now
     // {
@@ -200,9 +268,33 @@ export class AppComponent {
     //     { label: 'Lotes', routerLink: '/lot' },
     //   ],
     // },
-  ]
+  ];
 
-  //services
+  //#region LOGIN
+  /**
+   * Service responsible for managing user session and authentication state.
+   */
+  private sessionService = inject(SessionService);
 
-  //methods
+  /**
+   * Observable that emits the current authentication status.
+   * This observable updates automatically whenever the session state changes,
+   * providing real-time authentication status across components.
+   */
+  isAuthenticated$ = this.sessionService.isAuthenticated$;
+
+  /**
+   * Maneja el evento de clic en el botón de cierre de sesión.
+   *
+   * Este método llama al servicio de autenticación para cerrar la sesión
+   * del usuario, eliminando su sesión y actualizando el estado de autenticación.
+   * Es utilizado típicamente para limpiar cualquier dato de sesión almacenado
+   * y redirigir al usuario a una vista de inicio de sesión o pantalla principal.
+   */
+  onLogoutButtonClick() {
+    this.loginService.logout();
+    this.router.navigate([""]);
+  }
+  //#endregion
+
 }

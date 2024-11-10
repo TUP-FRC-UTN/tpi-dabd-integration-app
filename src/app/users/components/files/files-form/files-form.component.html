@@ -1,276 +1,148 @@
 <form [formGroup]="filesForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
   <h3 class="mt-2 p-2">Cargar Archivos de Propietario</h3>
 
-  <div class="col-md-6">
-    <div class="row g-0 align-items-center">
-      <div class="col-auto">
-        <label class="col-form-label me-2">Tipo de archivo</label>
-      </div>
-      <div class="col">
-        <select
-          id="fileTypeFront"
-          class="form-select"
-          formControlName="fileTypeFront"
-        >
-          @for(fileType of fileTypeOptions; track $index) {
-          <option [value]="fileType.value">{{ fileType.display }}</option>
-          }
-        </select>
-      </div>
-    </div>
-    <div>
-      @if(filesForm.get('fileTypeFront')?.invalid &&
-      filesForm.get('fileTypeFront')?.touched) {
-      @if(filesForm.get('fileTypeFront')?.errors?.['required']){
-      <small class="text-danger ms-2">requerido</small>
-      } }
-    </div>
-  </div>
+  @if (plots.length === 0) {
+    <h3>Debes asociar un lote para cargar archivos</h3>
+  } @else {
 
-  <div class="col-md-6">
-    <div class="row g-0 align-items-center">
-      <div class="col-auto">
-        <label class="col-form-label me-2">Nombre</label>
-      </div>
-      <div class="col">
-        <input type="text" class="form-control" formControlName="nameFront" />
-      </div>
-    </div>
-    <div>
-      @if(filesForm.get('nameFront')?.invalid &&
-      filesForm.get('nameFront')?.touched) {
-      @if(filesForm.get('nameFront')?.errors?.['required']){
-      <small class="text-danger ms-2">requerido</small>
-      } @if(filesForm.get('nameFront')?.errors?.['minlength']){
-      <small class="text-danger ms-2">al menos 2 caracteres</small>
-      } @if(filesForm.get('nameFront')?.errors?.['maxlength']){
-      <small class="text-danger ms-2">máximo 50 caracteres</small>
-      } }
-    </div>
-  </div>
+    <h5>Dni Frente</h5> 
 
-  <div class="input-group mb-3">
-   <!--  <label class="input-group-text" for="inputGroupFile01">DNI frente</label> -->
-    <input
-      type="file"
-      class="form-control"
-      id="inputGroupFile01"
-      formControlName="dniFront"
-      accept="image/*,.pdf"
-      (change)="onFileSelected($event, 'dniFront')"
-    />
-  </div>
+    @if(uploadedFiles.get("dniFront")) {
+      <h6><span class="badge text-bg-secondary">{{ translateTable(uploadedFiles.get('dniFront')?.approvalStatus, fileStatusDictionary) }}</span></h6>
 
-  <div class="col-md-6">
-    <div class="row g-0 align-items-center">
-      <div class="col-auto">
-        <label class="col-form-label me-2">Tipo de archivo</label>
-      </div>
-      <div class="col">
-        <select
-          id="fileTypeBack"
-          class="form-select"
-          formControlName="fileTypeBack"
-        >
-          @for(fileType of fileTypeOptions; track $index) {
-          <option [value]="fileType.value">{{ fileType.display }}</option>
-          }
-        </select>
-      </div>
-    </div>
-    <div>
-      @if(filesForm.get('fileTypeBack')?.invalid &&
-      filesForm.get('fileTypeBack')?.touched) {
-      @if(filesForm.get('fileTypeBack')?.errors?.['required']){
-      <small class="text-danger ms-2">requerido</small>
-      } }
-    </div>
-  </div>
-
-  <div class="col-md-6">
-    <div class="row g-0 align-items-center">
-      <div class="col-auto">
-        <label class="col-form-label me-2">Nombre</label>
-      </div>
-      <div class="col">
-        <input type="text" class="form-control" formControlName="nameBack" />
-      </div>
-    </div>
-    <div>
-      @if(filesForm.get('nameBack')?.invalid &&
-      filesForm.get('nameBack')?.touched) {
-      @if(filesForm.get('nameBack')?.errors?.['required']){
-      <small class="text-danger ms-2">requerido</small>
-      } @if(filesForm.get('nameBack')?.errors?.['minlength']){
-      <small class="text-danger ms-2">al menos 2 caracteres</small>
-      } @if(filesForm.get('nameBack')?.errors?.['maxlength']){
-      <small class="text-danger ms-2">máximo 50 caracteres</small>
-      } }
-    </div>
-  </div>
-
-  <div class="input-group mb-3">
-    <!-- <label class="input-group-text" for="inputGroupFile02">DNI atrás</label> -->
-    <input
-      type="file"
-      class="form-control"
-      id="inputGroupFile02"
-      formControlName="dniBack"
-      accept="image/*,.pdf"
-      (change)="onFileSelected($event, 'dniBack')"
-    />
-  </div>
-
-  <hr />
-
-  <div formArrayName="filesInput">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h4>Lotes asociados</h4>
-      <button
-        type="button"
-        class="btn btn-sm btn-outline-primary"
-        (click)="addFilesInput()"
-      >
-        Agregar Lote
-      </button>
-    </div>
-
-    @for(fileInput of filesInput.controls; track $index) {
-    <div [formGroupName]="$index" class="row g-3 mt-3 align-items-center">
-      <div class="col-md-6">
-        <div class="row g-0 align-items-center">
-          <div class="col-auto me-2">
-            <label for="block-number" class="col-form-label"
-              >Numero de Manzana</label
-            >
-          </div>
-          <div class="col">
-            <input
-              type="number"
-              class="form-control"
-              id="block-number"
-              formControlName="blockNumber"
-            />
-          </div>
-          <div class="col-12">
-            @if (fileInput.get('blockNumber')?.touched &&
-            fileInput.get('blockNumber')?.invalid) { @if
-            (fileInput.get('blockNumber')?.getError('required')) {
-            <small class="text-danger">Campo requerido.</small>
-            } @if (fileInput.get('blockNumber')?.getError('min')) {
-            <small class="text-danger">El numero minimo es 1.</small>
-            } }
-          </div>
+      @if(uploadedFiles.get("dniFront")?.approvalStatus === "APPROVED"
+        || uploadedFiles.get("dniFront")?.approvalStatus === "PRE_APPROVED"
+        || uploadedFiles.get("dniFront")?.approvalStatus === "UPLOADED") {
+        <div class="btn-group col-md-6">
+          <button type="button" class="btn btn-info" (click)="openFile(uploadedFiles.get('dniFront')?.url)">Ver Archivo</button>
         </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="row g-0 align-items-center">
-          <div class="col-auto me-2">
-            <label for="plot-number" class="col-form-label"
-              >Número de Lote</label
-            >
-          </div>
-          <div class="col">
-            <input
-              type="number"
-              class="form-control"
-              id="plot-number"
-              formControlName="plotNumber"
-            />
-          </div>
-          <div class="col-12">
-            @if (fileInput.get('plotNumber')?.touched &&
-            fileInput.get('plotNumber')?.invalid) { @if
-            (fileInput.get('plotNumber')?.getError('required')) {
-            <small class="text-danger">Campo requerido.</small>
-            } @if (fileInput.get('plotNumber')?.getError('min')) {
-            <small class="text-danger">El número mínimo es 1.</small>
-            } @if (fileInput.get('plotNumber')?.getError('serverError')) {
-            <small class="text-danger"
-              >Error en el servidor, por favor intenta nuevamente.</small
-            >
-            } @if (fileInput.get('plotNumber')?.getError('plotExists')) {
-            <small class="text-danger ms-2">
-              No existe un lote con ese numero en esa manzana.
-            </small>
-            }}
-          </div>
+      }
+      
+      @if(uploadedFiles.get("dniFront")?.approvalStatus === "MODIFICATION_PERMIT_GRANTED" 
+        || uploadedFiles.get("dniFront")?.approvalStatus === "REVIEWED_WITH_NOTES") {
+        <div class="btn-group col-md-6">
+          <button type="button" class="btn btn-info" (click)="openFile(uploadedFiles.get('dniFront')?.url)">Ver Archivo</button>
+          <button type="button" class="btn btn-warning" (click)="openNotes(uploadedFiles.get('dniFront'))">Ver Notas</button>
         </div>
-      </div>
-      <div class="col-md-6">
-        <div class="row g-0 align-items-center">
-          <div class="col-auto">
-            <label class="col-form-label me-2">Tipo de archivo</label>
-          </div>
-          <div class="col">
-            <select
-              id="fileType"
-              class="form-select"
-              formControlName="fileType"
-            >
-              @for(fileType of fileTypeOptions; track $index) {
-              <option [value]="fileType.value">{{ fileType.display }}</option>
-              }
-            </select>
-          </div>
-        </div>
-        <div>
-          @if(filesForm.get('fileType')?.invalid &&
-          filesForm.get('fileType')?.touched) {
-          @if(filesForm.get('fileType')?.errors?.['required']){
-          <small class="text-danger ms-2">requerido</small>
-          } }
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="row g-0 align-items-center">
-          <div class="col-auto">
-            <label class="col-form-label me-2">Nombre</label>
-          </div>
-          <div class="col">
-            <input type="text" class="form-control" formControlName="name" />
-          </div>
-        </div>
-        <div>
-          @if(filesForm.get('name')?.invalid && filesForm.get('name')?.touched)
-          { @if(filesForm.get('name')?.errors?.['required']){
-          <small class="text-danger ms-2">requerido</small>
-          } @if(filesForm.get('name')?.errors?.['minlength']){
-          <small class="text-danger ms-2">al menos 2 caracteres</small>
-          } @if(filesForm.get('name')?.errors?.['maxlength']){
-          <small class="text-danger ms-2">máximo 50 caracteres</small>
-          } }
-        </div>
-      </div>
-      <div class="col-md-11">
+      }
+    }
+    @if(!uploadedFiles.get("dniFront") || !(uploadedFiles.get("dniFront")?.approvalStatus === "APPROVED" 
+      || uploadedFiles.get("dniFront")?.approvalStatus === "PRE_APPROVED" 
+      || uploadedFiles.get("dniFront")?.approvalStatus === "UPLOADED")) {
+      
+      <div class="input-group mb-3">
+        <label class="input-group-text" for="inputGroupFile01">DNI frente</label>
         <input
           type="file"
           class="form-control"
-          formControlName="plotFile"
+          id="inputGroupFile01"
+          formControlName="dniFront"
           accept="image/*,.pdf"
-          (change)="onFileSelected($event, 'plotfile + ${{$index}}')"
+          (change)="onFileSelectedOwner($event, 'dniFront', BatchFileType.ID_DOCUMENT_FRONT)"
         />
-        @if(fileInput.get('plotFile')?.invalid &&
-        fileInput.get('plotFile')?.touched){
-        <small class="text-danger ms-2">requerido</small>
-        }
       </div>
-      <div class="col-md-1 mt-3">
-        <button
-          type="button"
-          class="btn btn-sm btn-outline-danger"
-          (click)="removeFileInput($index)"
-        >
-          <i class="bi bi-trash-fill"></i> Quitar
-        </button>
-      </div>
-    </div>
     }
-  </div>
+
+    <hr>
+
+    <h5>Dni Dorso</h5>
+
+
+    @if(uploadedFiles.get("dniBack") != undefined) {
+      <h6><span class="badge text-bg-secondary">{{ translateTable(uploadedFiles.get('dniBack')?.approvalStatus, fileStatusDictionary) }}</span></h6>
+
+      @if(uploadedFiles.get("dniBack")?.approvalStatus === "APPROVED"
+        || uploadedFiles.get("dniBack")?.approvalStatus === "PRE_APPROVED"
+        || uploadedFiles.get("dniBack")?.approvalStatus === "UPLOADED") {
+        <div class="btn-group col-md-6">
+          <button type="button" class="btn btn-info" (click)="openFile(uploadedFiles.get('dniBack')?.url)">Ver Archivo</button>
+        </div>
+      }
+      
+      @if((uploadedFiles.get("dniBack")?.approvalStatus === "MODIFICATION_PERMIT_GRANTED" 
+        || uploadedFiles.get("dniBack")?.approvalStatus === "REVIEWED_WITH_NOTES")) {
+        <div class="btn-group col-md-6">
+          <button type="button" class="btn btn-info" (click)="openFile(uploadedFiles.get('dniBack')?.url)">Ver Archivo</button>
+          <button type="button" class="btn btn-warning" (click)="openNotes(uploadedFiles.get('dniBack'))">Ver Notas</button>
+        </div>
+      }
+    }
+    @if(!uploadedFiles.get("dniBack") || !(uploadedFiles.get("dniBack")?.approvalStatus === "APPROVED" 
+      || uploadedFiles.get("dniBack")?.approvalStatus === "PRE_APPROVED" 
+      || uploadedFiles.get("dniBack")?.approvalStatus === "UPLOADED")) {
+      
+      <div class="input-group mb-3">
+        <label class="input-group-text" for="inputGroupFile01">DNI Dorso</label>
+        <input
+          type="file"
+          class="form-control"
+          id="inputGroupFile01"
+          formControlName="dniBack"
+          accept="image/*,.pdf"
+          (change)="onFileSelectedOwner($event, 'dniBack', BatchFileType.ID_DOCUMENT_BACK)"
+        />
+      </div>
+    }
+
+  
+    <hr />
+  
+    <div formArrayName="filesInput">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Lotes asociados</h4>
+      </div>  
+  
+      @for(plot of plots; track plot) {
+        <hr>
+        <div class="m-2 p-2">
+          N° Lote: {{plot.plotNumber}} | N° Manzana: {{plot.blockNumber}}
+        </div>
+        
+
+        @if(uploadedFiles.get("plotFile-"+plot.id) != undefined) {
+          <h6><span class="badge text-bg-secondary">{{ translateTable(uploadedFiles.get('plotFile-'+plot.id)?.approvalStatus, fileStatusDictionary) }}</span></h6>
+    
+          @if(uploadedFiles.get("plotFile-"+plot.id)?.approvalStatus === "APPROVED"
+            || uploadedFiles.get("plotFile-"+plot.id)?.approvalStatus === "PRE_APPROVED"
+            || uploadedFiles.get("plotFile-"+plot.id)?.approvalStatus === "UPLOADED") {
+            <div class="btn-group col-md-6">
+              <button type="button" class="btn btn-info" (click)="openFile(uploadedFiles.get('plotFile-'+plot.id)?.url)">Ver Archivo</button>
+            </div>
+          }
+          
+          @if((uploadedFiles.get("plotFile-"+plot.id)?.approvalStatus === "MODIFICATION_PERMIT_GRANTED" 
+            || uploadedFiles.get("plotFile-"+plot.id)?.approvalStatus === "REVIEWED_WITH_NOTES")) {
+            <div class="btn-group col-md-6">
+              <button type="button" class="btn btn-info" (click)="openFile(uploadedFiles.get('plotFile-'+plot.id)?.url)">Ver Archivo</button>
+              <button type="button" class="btn btn-warning" (click)="openNotes(uploadedFiles.get('plotFile-'+plot.id))">Ver Notas</button>
+            </div>
+          }
+        }
+        @if(!uploadedFiles.get("plotFile-"+plot.id) || !(uploadedFiles.get("plotFile-"+plot.id)?.approvalStatus === "APPROVED" 
+          || uploadedFiles.get("plotFile-"+plot.id)?.approvalStatus === "PRE_APPROVED" 
+          || uploadedFiles.get("plotFile-"+plot.id)?.approvalStatus === "UPLOADED")) {
+          
+            <div class="input-group mb-3" [formGroupName]="'plotFile-'+plot.id">
+              <label class="input-group-text" for="inputGroupFile02">Escritura</label>
+              <input
+                type="file"
+                class="form-control"
+                id="inputGroupFile02"
+                formControlName="purchaseSale"
+                accept="image/*,.pdf"
+                (change)="onFileSelectedPlot($event, 'plotFile-'+plot.id)"
+              />
+            </div>
+        }
+  
+        
+      }
+    </div>
+  }
+
 
   <hr />
-  <div class="col-12 d-flex justify-content-end mt-5">
+  <div class="col-12 d-flex justify-content-end mt-3">
     <div class="mx-2">
       <button type="button" class="btn btn-danger">Cancelar</button>
     </div>

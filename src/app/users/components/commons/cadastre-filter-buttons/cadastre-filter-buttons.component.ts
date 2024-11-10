@@ -33,7 +33,7 @@ export class CadastreFilterButtonsComponent implements OnInit{
   @Input() ownersList!: Owner[];
   
   // Input to redirect to the form.
-  @Input() formPath: string = "";
+  @Input() formPath: string = "/users/owner/form";
   // Represent the name of the object for the exports.
   // Se va a usar para los nombres de los archivos.
   @Input() objectName : string = ""

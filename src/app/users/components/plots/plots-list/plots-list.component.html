@@ -1,184 +1,163 @@
-<app-main-container title="Lista de Lotes">
+<app-main-container title="Lista de Lotes" (infoButtonClick)="openInfo()">
 
-    <!-- ESTE COMPONENTE LO VAN A TENER QUE MODIFICAR ES EL DEL BUSCAR, EXPORTAR, ETC -->
-     <!-- @param itemList => Mandan la lista con la cual hacen la tabla 
-          @param tableName => Mandan el nombre de la tabla el que definen con # 
-          @param tableName => Mandan el nombre de la tabla el que definen con # 
-          @param formPath => Van a poner la ruta de su formulario para crear uno nuevo 
-          @param dictionaries => En caso de usar diccionarios mandenlos, si no los mandan no pasa nada
-          @param objectName => Hace referencia al nombre de su objeto para guardar el archivo pdf o excel. Ej: 25/10/2024_LOTES 
-          -->
-    <app-cadastre-plot-filter-buttons
-    #filterComponent
-    [itemsList]="plotsList" 
-    [tableName]="tableName.nativeElement"
-    formPath="/plot/form"
-    [dictionaries]="plotDictionaries"
-    objectName="LOTES"></app-cadastre-plot-filter-buttons>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <!-- Sección de búsqueda y filtros -->
+    <div class="btn-group me-5" role="group">
+      <div class="col-sm-12 col-md-8 col-xl-8">
+        <div class="input-group">
+          <span class="input-group-text" id="search-icon">
+            <i class="bi bi-search"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control"
+            id="filter-text-box"
+            (input)="onFilterTextBoxChanged($event)"
+            placeholder="Buscar..."
+          />
+          <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <div class="btn-group me-5" role="group">
-        <div class="d-flex align-items-center">
-          <div class="btn-group me-2">
-            <button type="button" class="btn btn-outline-danger" (click)="changeFilterMode(filterTypes.NOTHING)">
-              <i class="bi bi-trash-fill"></i> Limpiar
-            </button>
-            
-            <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-funnel-fill"></i> Filtros
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" (click)="changeFilterMode(filterTypes.BLOCK_NUMBER)">Manzana</a></li>
-              <li><a class="dropdown-item" (click)="changeFilterMode(filterTypes.PLOT_STATUS)">Estado de Lote</a></li>
-              <li><a class="dropdown-item" (click)="changeFilterMode(filterTypes.PLOT_TYPE)">Tipo de Lote</a></li>
-            </ul>
-          </div>
-      
-          @if (applyFilterWithNumber === true || applyFilterWithCombo === true) {
-          <div class="d-flex">
-            @if (applyFilterWithNumber === true) {
-              <input type="number" class="form-control me-2" id="filter-number" [(ngModel)]="filterInput" name="ngModel" placeholder="Número de Lote">
-            } @else if (applyFilterWithCombo === true) {
-              <select id="content-filter" class="form-select me-2" [(ngModel)]="filterInput" name="ngModel">
-                <option disabled selected>Selecciona un filtro</option>
-                @for (content of contentForFilterCombo; track content) {
-                  <option value="{{content}}">{{content}}</option>
-                }
-              </select>
-            }
-            <div class="ms-auto">
-              <button class="btn btn-dark" type="button" (click)="confirmFilterPlot()">Buscar</button>
-            </div>
-          </div>
-        }
         </div>
       </div>
-      <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-        <input type="radio" class="btn-check" 
-        name="btnradio" id="btnradio1" 
-        autocomplete="off" (change)="changeActiveFilter(true)" checked>
-        <label class="btn btn-outline-primary" for="btnradio1">Lotes Activos</label>
-    
-        <input type="radio" class="btn-check" 
-        name="btnradio" id="btnradio2" 
-        autocomplete="off" (change)="changeActiveFilter(false)">
-        <label class="btn btn-outline-primary" for="btnradio2">Lotes Inactivos</label>
-    
-        <input type="radio" class="btn-check" 
-        name="btnradio" id="btnradio3" 
-        autocomplete="off" (change)="changeActiveFilter()">
-        <label class="btn btn-outline-primary" for="btnradio3">Todos</label>
-      </div>
+
+
     </div>
-    <div class="table-container">
-      <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #plotsTable>
-        @if (filteredPlotsList.length === 0) {
-          <thead>
-            <td colspan="7"> 
-              <div class="text-center p-2">
-                <div class="alert alert-secondary text-center" role="alert">
-                  No hay elementos para mostrar
-                </div>
+
+    <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
+    <div class="d-flex align-items-center">
+      <!-- Botón "+" -->
+      <button type="button" class="btn btn-outline-primary" (click)="redirectToForm()">+</button>
+
+      <!-- Línea vertical y botones de exportación -->
+      <div class="vertical-line mx-3"></div>
+      <button class="btn btn-success me-2" (click)="exportToExcel()">
+        <i class="bi bi-file-earmark-excel"></i>
+      </button>
+      <button class="btn btn-danger me-2" (click)="exportToPdf()">
+        <i class="bi bi-file-earmark-pdf"></i>
+      </button>
+    </div>
+  </div>
+
+<!--- TABLE --->
+<!--- TABLE --->
+<!--- TABLE --->
+<!--- TABLE --->
+<!--- TABLE --->
+
+<div class="table-container">
+  <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #plotsTable>
+    @if ((filter$ | async )?.length === 0) {
+      <thead>
+      <td colspan="7">
+        <div class="text-center p-2">
+          <div class="alert alert-secondary text-center" role="alert">
+            No hay elementos para mostrar
+          </div>
+        </div>
+      </td>
+      </thead>
+    } @else {
+      <thead>
+      <tr>
+        <th scope="col">N.º de Manzana</th>
+        <th scope="col">N.º de Lote</th>
+        <th scope="col">Area Total</th>
+        <th scope="col">Area Construida</th>
+        <th scope="col">Tipo de Lote</th>
+        <th scope="col">Estado del Lote</th>
+        @if (retrievePlotsByActive === undefined) {
+          <th scope="col">Estado</th>
+        }
+        <th scope="col">Balance</th>
+        <th scope="col">Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (plot of ((filter$ | async )); track plot) {
+
+          <tr>
+            <td>
+              {{ plot.blockNumber }}
+            </td>
+            <td>
+              {{ plot.plotNumber }}
+            </td>
+            <td>
+              {{ plot.totalArea }} m²
+            </td>
+            <td>
+              {{ plot.builtArea }} m²
+            </td>
+            <td>
+              {{ translateTable(plot.plotType, plotTypeDictionary) }}
+            </td>
+            <td>
+              {{ translateTable(plot.plotStatus, plotStatusDictionary) }}
+            </td>
+            @if (retrievePlotsByActive === undefined) {
+              <td>
+                @if (plot.isActive) {
+                  <p class="mb-0">
+                    <i class="bi bi-check2-circle text-success" style="font-size: 1.5rem;"></i>
+                  </p>
+                } @else {
+                  <p class="mb-0">
+                    <i class="bi bi-x-circle text-danger" style="font-size: 1.5rem;"></i>
+                  </p>
+                }
+              </td>
+            }
+            <td [ngClass]="{'text-danger': plot.balance > 0, 'text-success': !(plot.balance > 0)}" class="text-end">
+              <!-- {{ plot.balance | currency:'ARS':"symbol-narrow" }} -->
+                {{formatCurrency(plot.balance)}}
+            </td>
+            <td>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  @if (plot.isActive == false) {
+                    <li><a class="dropdown-item btn btn-danger" (click)="reactivatePlot(plot.id)">Reactivar</a></li>
+                  } @else {
+                    <li><a class="dropdown-item btn btn-primary" (click)="plotOwners(plot.id)">Detalle Dueños</a></li>
+                    <li><a class="dropdown-item btn btn-info" (click)="updatePlot(plot.id)" >Editar</a></li>
+                    <li><a class="dropdown-item btn btn-danger" (click)="assignPlotToDelete(plot)">Eliminar</a></li>
+                  }
+                  <li><a class="dropdown-item btn btn-primary" (click)="plotDetail(plot.id)">Detalle</a></li>
+                  <li><a class="dropdown-item btn btn-primary" (click)="currentAccount(plot.id)">Cuenta Corriente</a></li>
+                </ul>
               </div>
             </td>
-          </thead>
-        } @else {
-        <thead>
-          <tr>
-            <th scope="col">N.º de Manzana</th>
-            <th scope="col">N.º de Lote</th>
-            <th scope="col">Area Total</th>
-            <th scope="col">Area Construida</th>
-            <th scope="col">Tipo de Lote</th>
-            <th scope="col">Estado del Lote</th>
-            @if (retrievePlotsByActive === undefined) {
-              <th scope="col">Estado</th>
-            }
-            <th scope="col">Acciones</th>
           </tr>
-        </thead>
-        <tbody>
-            @for (plot of (filteredPlotsList.length ? filteredPlotsList : plotsList); track plot) {
-    
-            <tr>
-              <td>
-                {{ plot.blockNumber }}
-              </td>
-              <td>
-                {{ plot.plotNumber }}
-              </td>
-              <td>
-                {{ plot.totalArea }} m²
-              </td>
-              <td>
-                {{ plot.builtArea }} m²
-              </td>
-              <td>
-                {{ translateTable(plot.plotType, plotTypeDictionary) }}
-              </td>
-              <td>
-                {{ translateTable(plot.plotStatus, plotStatusDictionary) }}
-              </td>
-              @if (retrievePlotsByActive === undefined) {
-                <td>
-                  @if (plot.isActive) {
-                    <p class="mb-0">
-                      <i class="bi bi-check2-circle text-success" style="font-size: 1.5rem;"></i>
-                    </p>
-                  } @else {
-                    <p class="mb-0">
-                      <i class="bi bi-x-circle text-danger" style="font-size: 1.5rem;"></i>
-                    </p>
-                  }
-                </td>
-              }
-              <td>
-                <div class="btn-group" role="group">
-                  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-three-dots-vertical"></i>
-                  </button>
-                  <ul class="dropdown-menu">
-                    @if (plot.isActive == false) {
-                      <li><a class="dropdown-item btn btn-danger" (click)="reactivatePlot(plot.id)">Reactivar</a></li>
-                    } @else {
-                      <li><a class="dropdown-item btn btn-primary" (click)="plotOwners(plot.id)">Detalle Dueños</a></li>
-                      <li><a class="dropdown-item btn btn-info" (click)="updatePlot(plot.id)" >Editar</a></li>
-                      <li><a class="dropdown-item btn btn-danger" (click)="assignPlotToDelete(plot)">Eliminar</a></li>
-                    }
-                    <li><a class="dropdown-item btn btn-primary" (click)="plotDetail(plot.id)">Detalle</a></li>
-                  </ul>
-                </div>
-              </td>
-          </tr>
-            }
-        </tbody>
-          }
-        </table>
-    </div>
-      
-      <div class="d-flex justify-content-between align-items-center mt-3">
-        <ngb-pagination
-        [(page)]="currentPage"                   
-        [pageSize]="pageSize"                    
-        [collectionSize]="totalItems"            
-        (pageChange)="onPageChange($event)"      
-        [maxSize]="5"                            
-        [boundaryLinks]="false"                   
-      ></ngb-pagination>        
-      <div class="ms-auto"> 
-      </div>
+        }
+      </tbody>
+    }
+  </table>
+</div>
 
-      <div class="form-group mb-3 me-2">
-        <select
-          id="itemsPerPage"
-          class="form-select"
-          [(ngModel)]="pageSize"
-          (change)="onItemsPerPageChange()"
-        >
-          @for(option of sizeOptions; track $index) {
-            <option [value]="option">{{ option }} Elementos</option>
-          }
-        </select>
-      </div>     
-    </div>
+<div class="d-flex justify-content-between align-items-center mt-3">
+  <div class="form-group mb-3 me-2">
+    <select
+      id="itemsPerPage"
+      class="form-select"
+      [(ngModel)]="pageSize"
+      (change)="onItemsPerPageChange()"
+    >
+      @for(option of sizeOptions; track $index) {
+        <option [value]="option">{{ option }} Elementos</option>
+      }
+    </select>
+  </div>
+
+  <ngb-pagination
+    [(page)]="currentPage"
+    [pageSize]="pageSize"
+    [collectionSize]="totalItems"
+    (pageChange)="onPageChange($event)"
+    [maxSize]="5"
+    [boundaryLinks]="false"
+  ></ngb-pagination>
+</div>
 </app-main-container>

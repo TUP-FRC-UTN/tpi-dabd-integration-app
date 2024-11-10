@@ -13,8 +13,8 @@ export const authGuard: CanActivateFn = (route, state) => {
   return of(user).pipe(
     map((u) => {
       if (!u) {
-        //return router.parseUrl('/login');
-        return router.parseUrl('/home');
+        return router.parseUrl('');
+        //return router.parseUrl('/home');
       }
       return true;
     })

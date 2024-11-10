@@ -1,0 +1,47 @@
+<div class="modal-header fs-6 py-1">
+    <h4 class="modal-title">{{title}}</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body fs-6 py-2">
+    <div class="container-fluid">
+         <!-- Introducción -->
+        <div class="alert alert-info mb-2 py-2">
+            <h5 class="alert-heading">¿Qué es este formulario?</h5>
+            <p class="mb-0 small">{{description}}</p>
+        </div>
+        <!-- Contenido -->
+        @for (item of body; track $index) {
+            <div class="card mb-2">
+                <div class="card-header py-1">
+                  <h5 class="mb-0">{{item.title}}</h5>
+                </div>
+                <div class="card-body py-2">
+                  <ul class="list-group list-group-flush">
+                    @for (content of item.content; track $index) {
+                        <li class="list-group-item py-1">
+                            @if(content.strong.length > 0){
+                                <strong>{{content.strong}}</strong>
+                            }
+                            {{content.detail}}
+                        </li>
+                    }
+                  </ul>
+                </div>
+            </div>
+        }
+        <!-- Notas (Opcional) -->
+        @if (notes.length > 0) {
+            <div class="alert alert-warning py-2 mb-0">
+                <h5 class="alert-heading">Notas:</h5>
+                @for (note of notes; track $index) {
+                    <p class="mb-0 small">{{note}}</p>
+                }
+            </div>
+        }
+    </div>
+</div>
+<div class="modal-footer py-2">
+    <button type="button" class="btn btn-primary" (click)="activeModal.close()">Entendido</button>
+</div>
+  
+        

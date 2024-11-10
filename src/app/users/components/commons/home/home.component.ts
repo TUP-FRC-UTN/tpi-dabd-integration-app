@@ -1,6 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { OnInit } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
+import { Component } from '@angular/core';
+import { MainContainerComponent, TableComponent } from 'ngx-dabd-grupo01';
+import { FormsModule } from '@angular/forms';
+import { NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 
 interface WeatherData {
   main: {
@@ -45,10 +49,15 @@ const weatherTranslations: { [key: string]: string } = {
   standalone: true,
   imports: [
     CommonModule,
-    HttpClientModule
+    HttpClientModule,
+    MainContainerComponent,
+    TableComponent,
+    FormsModule,
+    NgbPagination,
   ],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrls: ['./home.component.css'],
+  providers: [DatePipe],
 })
 export class HomeComponent implements OnInit {
   userName = 'Juan';

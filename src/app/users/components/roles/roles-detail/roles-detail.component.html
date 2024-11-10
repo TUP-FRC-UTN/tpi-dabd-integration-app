@@ -1,38 +1,39 @@
-<app-main-container title="Consultar Rol">
-<form [formGroup]="roleForm" class="row g-3 m-2">
-    <div class="row">
-        <div class="col-2">  
-            <div class="mb-3">
-                <label for="codeControl" class="form-label">Código</label>
-                <input type="number" class="form-control" id="codeControl" formControlName="codeControl"/>                     
-            </div>
-        </div> 
-             
-    </div>
-    <div class="row">
-        <div class="col-6">  
-            <div class="mb-3">
-                <label for="nameControl" class="form-label">Nombre</label>
-                <input type="text" class="form-control" id="nameControl" formControlName="nameControl"/>                     
-            </div>
-        </div> 
-        <div class="col-6">  
-            <div class="mb-3">
-                <label for="prettyNameControl" class="form-label">Nombre detallado</label>
-                <input type="text" class="form-control" id="prettyNameControl" formControlName="prettyNameControl"/>                     
-            </div>
-        </div>         
-    </div>
-    <div class="row">
-        <div class="col-6">  
-            <div class="mb-3">
-                <label for="descriptionControl" class="form-label">Descripción</label>
-                <textarea name="descriptionControl" rows="3" cols="50" class="form-control" id="descriptionControl" formControlName="descriptionControl"></textarea>                     
-            </div>
-        </div> 
-    </div>
-    <div class="col-12 d-flex justify-content-end">
+<app-main-container title="Consultar Rol" (infoButtonClick)="openInfo()">
+    <form [formGroup]="roleForm" class="row g-3 m-2">
+      <div class="row">
+        <div class="col-2">
+          <div class="mb-3">
+            <label for="codeControl" class="form-label">Código</label>
+            <input type="number" class="form-control" id="codeControl" formControlName="codeControl"/>
+          </div>
+        </div>
+  
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <div class="mb-3">
+            <label for="nameControl" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nameControl" formControlName="nameControl"/>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="mb-3">
+            <label for="prettyNameControl" class="form-label">Nombre detallado</label>
+            <input type="text" class="form-control" id="prettyNameControl" formControlName="prettyNameControl"/>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <div class="mb-3">
+            <label for="descriptionControl" class="form-label">Descripción</label>
+            <textarea name="descriptionControl" rows="3" cols="50" class="form-control" id="descriptionControl" formControlName="descriptionControl"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 d-flex justify-content-end">
         <button type="submit" class="btn btn-secondary" (click)="goBack()">Volver</button>
-    </div>
-</form>
-</app-main-container>
+      </div>
+    </form>
+  </app-main-container>
+  
