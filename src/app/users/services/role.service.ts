@@ -33,7 +33,11 @@ export class RoleService {
       params = params.append('isActive', isActive);
     }
 
-    return this.http.get<PaginatedResponse<Role>>(this.host, {params}).pipe(
+    const headers = new HttpHeaders({
+      'x-user-id': '1', //TODO: agregar id de user logueado
+    });
+
+    return this.http.get<PaginatedResponse<Role>>(this.host, {params ,headers}).pipe(
       map((response: PaginatedResponse<any>) => {
         const transformedRoles = response.content.map((role: any) => new TransformRolePipe().transform(role));
         return {

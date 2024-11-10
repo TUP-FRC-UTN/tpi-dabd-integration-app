@@ -208,6 +208,22 @@ export class AppComponent {
             },
             { label: 'Reporte Usuarios', routerLink: '/users/user/reports' },
           ],
+        }, {
+          label: 'Perfil',
+          subMenu: [
+            {
+              label: 'Consultar Perfil',
+              routerLink: '/users/profile/detail',
+            },
+            {
+              label: 'Editar Perfil',
+              routerLink: '/users/profile/edit',
+            },
+            {
+              label: 'Cambiar contraseña',
+              routerLink: '/users/changepassword',
+            },
+          ],
         },
         {
           label: 'Propietarios',

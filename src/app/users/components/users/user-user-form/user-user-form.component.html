@@ -11,7 +11,7 @@
           <div>
               @if (userForm.get('email')?.invalid && userForm.get('email')?.touched) {
                   @if (userForm.get('email')?.getError('required')) {
-                      <small class="text-danger ms-2">Campo obligatorio</small>
+                      <small class="text-danger ms-2">Campo obligatorio </small>
                   }
                   @if (userForm.get('email')?.getError('email')) {
                     <small class="text-danger ms-2">El email tiene que ser valido</small>
@@ -39,7 +39,7 @@
           <div>
               @if (userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched) {
                   @if (userForm.get('firstName')?.getError('required')) {
-                      <small class="text-danger ms-2">El nombre es obligatorio</small>
+                      <small class="text-danger ms-2">El nombre es obligatorio </small>
                   }
                   @if (userForm.get('firstName')?.getError('maxlength')) {
                       <small class="text-danger ms-2">Máximo 50 caracteres</small>
@@ -57,7 +57,7 @@
           <div>
               @if (userForm.get('userName')?.invalid && userForm.get('userName')?.touched) {
                   @if (userForm.get('userName')?.getError('required')) {
-                      <small class="text-danger ms-2">El nombre de usuario es obligatorio</small>
+                      <small class="text-danger ms-2">El nombre de usuario es obligatorio </small>
                   }
                   @if (userForm.get('userName')?.getError('maxlength')) {
                       <small class="text-danger ms-2">Máximo 50 caracteres</small>
@@ -75,7 +75,7 @@
           <div>
               @if (userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched) {
                   @if (userForm.get('lastName')?.getError('required')) {
-                      <small class="text-danger ms-2">El apellido es obligatorio</small>
+                      <small class="text-danger ms-2">El apellido es obligatorio </small>
                   }
                   @if (userForm.get('lastName')?.getError('maxlength')) {
                       <small class="text-danger ms-2">Máximo 50 caracteres</small>
@@ -100,7 +100,7 @@
       <div>
         @if (userForm.get('documentType')?.invalid && userForm.get('documentType')?.touched) {
           @if (userForm.get('documentType')?.errors?.['required']) {
-            <small class="text-danger">Campo obligatorio</small>
+            <small class="text-danger">Campo obligatorio </small>
           }
         }
       </div>
@@ -120,7 +120,7 @@
       <div>
         @if (userForm.get('documentNumber')?.invalid && userForm.get('documentNumber')?.touched) {
           @if (userForm.get('documentNumber')?.errors?.['required']) {
-            <small class="text-danger">Campo obligatorio</small>
+            <small class="text-danger">Campo obligatorio </small>
           }
           @if (userForm.get('documentNumber')?.errors?.['ownerExists']) {
             <small class="text-danger">Documento en uso</small>
@@ -147,7 +147,7 @@
       <div>
         @if (userForm.get('birthdate')?.invalid && userForm.get('birthdate')?.touched) {
           @if (userForm.get('birthdate')?.errors?.['required']) {
-            <small class="text-danger">Campo obligatorio</small>
+            <small class="text-danger">Campo obligatorio </small>
           }
           @if (userForm.get('birthdate')?.errors) {
             <small class="text-danger">Fecha inválida</small>
@@ -229,75 +229,7 @@
         <div class="mb-3"></div>
         <hr />
 
-        <!-- Asignar un lote -->
-        <!-- Asignar un lote -->
-        <!-- Asignar un lote -->
-        <!-- Asignar un lote -->
-        <!-- Asignar un lote -->
-        <!-- Asignar un lote -->
-        <!-- Asignar un lote -->
-        <!-- Asignar un lote -->
-        <div formGroupName="plotForm" class="row g-3">
-          <h5 class="mt-2 p-2">Asociar un lote</h5>
-          <div class="col-md-6">
-            <div class="row g-0 align-items-center">
-              <label for="block-number" class="col-form-label col-md-3"
-                >Numero de Manzana</label>
-              <div class="col">
-                <input
-                  type="number"
-                  class="form-control"
-                  id="block-number"
-                  formControlName="blockNumber"
-                  [ngClass]="{'is-invalid': userForm.get('plotForm')?.get('blockNumber')?.invalid && userForm.get('plotForm')?.get('blockNumber')?.touched,
-                   'is-valid': userForm.get('plotForm')?.get('blockNumber')?.valid && userForm.get('plotForm')?.get('blockNumber')?.touched}"
-                >
-              </div>
-              <div class="col-12">
-              @if (userForm.get('plotForm.blockNumber')?.touched &&
-                userForm.get('plotForm.blockNumber')?.invalid) {
-                 @if (userForm.get('plotForm.blockNumber')?.getError('min')) {
-                <small class="text-danger">El numero minimo es 1.</small>
-                }
-              }
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-6">
-            <div class="row g-0 align-items-center">
-              <label for="plot-number" class="col-form-label col-md-2">Número de Lote</label>
-              <div class="col">
-                <input
-                  type="number"
-                  class="form-control"
-                  id="plot-number"
-                  formControlName="plotNumber"
-                  [ngClass]="{'is-invalid': userForm.get('plotForm')?.get('plotNumber')?.invalid && userForm.get('plotForm')?.get('plotNumber')?.touched,
-                   'is-valid': userForm.get('plotForm')?.get('plotNumber')?.valid && userForm.get('plotForm')?.get('plotNumber')?.touched}"
-                  >
-              </div>
-              <div class="col-12">
-                @if (userForm.get('plotForm.plotNumber')?.touched &&
-                userForm.get('plotForm.plotNumber')?.invalid) {
-                 @if (userForm.get('plotForm.plotNumber')?.getError('min')) {
-                <small class="text-danger">El número mínimo es 1.</small>
-                } @if (userForm.get('plotForm.plotNumber')?.getError('serverError')) {
-                <small class="text-danger"
-                  >Error en el servidor, por favor intenta nuevamente.</small
-                >
-                }  @if (userForm.get('plotForm.plotNumber')?.getError('plotExists')) { <small class="text-danger ms-2">
-                  No existe un lote con ese numero en esa manzana.
-                </small> }}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="mb-3"></div>
-      <hr />
-
-
+        
       <!-- Addresses -->
       <!-- Addresses -->
       <!-- Addresses -->
@@ -320,7 +252,7 @@
               <div>
                   @if(userForm.get('addressForm.streetAddress')?.invalid && userForm.get('addressForm.streetAddress')?.touched) {
                       @if(userForm.get('addressForm.streetAddress')?.errors?.['required']) {
-                          <small class="text-danger ms-2">Campo obligatorio.</small>
+                          <small class="text-danger ms-2">Campo obligatorio. </small>
                       }
                   }
               </div>
@@ -337,7 +269,7 @@
               <div>
                   @if(userForm.get('addressForm.number')?.invalid && userForm.get('addressForm.number')?.touched) {
                       @if(userForm.get('addressForm.number')?.errors?.['required']) {
-                          <small class="text-danger ms-2">Campo obligatorio.</small>
+                          <small class="text-danger ms-2">Campo obligatorio. </small>
                       }
                   }
               </div>
@@ -378,7 +310,7 @@
               <div>
                   @if(userForm.get('addressForm.country')?.invalid && userForm.get('addressForm.country')?.touched) {
                       @if(userForm.get('addressForm.country')?.errors?.['required']) {
-                          <small class="text-danger ms-2">Campo obligatorio.</small>
+                          <small class="text-danger ms-2">Campo obligatorio. </small>
                       }
                   }
               </div>
@@ -409,7 +341,7 @@
               <div>
                   @if(userForm.get('addressForm.province')?.invalid && userForm.get('addressForm.province')?.touched) {
                       @if(userForm.get('addressForm.province')?.errors?.['required']) {
-                          <small class="text-danger ms-2">Campo obligatorio.</small>
+                          <small class="text-danger ms-2">Campo obligatorio. </small>
                       }
                   }
               </div>
@@ -430,7 +362,7 @@
               @if(userForm.get('addressForm.city')?.invalid &&
               userForm.get('addressForm.city')?.touched ) {
               @if(userForm.get('addressForm.city')?.errors?.['required']){
-              <small class="text-danger ms-2">Campo obligatorio.</small> } }
+              <small class="text-danger ms-2">Campo obligatorio. </small> } }
             </div>
           </div>
 
@@ -453,7 +385,7 @@
                 @if(userForm.get('addressForm.postalCode')?.invalid &&
                 userForm.get('addressForm.postalCode')?.touched ) {
                 @if(userForm.get('addressForm.postalCode')?.errors?.['required']){
-                <small class="text-danger">Campo obligatorio.</small>
+                <small class="text-danger">Campo obligatorio. </small>
                 } }
               </div>
             </div>
@@ -516,11 +448,12 @@
                     id="contact-type"
                     class="form-select"
                     formControlName="contactType"
+                    (change)="changeContactType($event)"
                   >
                     <option disabled selected>Selecciona un tipo</option>
                     <option value="PHONE">Telefono</option>
                     <option value="EMAIL">Email</option>
-                    <option value="SOCIAL_MEDIA_LINK">Otro</option>
+                    <option value="SOCIAL_MEDIA_LINK">Link red social</option>
                   </select>
                 </div>
               </div>
@@ -539,6 +472,13 @@
                     formControlName="contactValue"
                   />
                 </div>
+              </div>
+              <div class="col">
+                @if(userForm.get('contactsForm.contactValue')?.invalid &&
+                userForm.get('contactsForm.contactValue')?.touched ) {
+                  @if(userForm.get('contactsForm.contactValue')?.errors?.['email']){
+                    <small class="text-danger">Email inválido</small>
+                  } }
               </div>
             </div>
 

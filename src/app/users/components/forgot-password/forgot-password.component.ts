@@ -1,18 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MainContainerComponent } from 'ngx-dabd-grupo01';
+import { MainContainerComponent, ToastsContainer, ToastService } from 'ngx-dabd-grupo01';
 import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MainContainerComponent, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule,ToastsContainer, MainContainerComponent, FormsModule],
   templateUrl: './forgot-password.component.html'
 })
 export class ForgotPasswordComponent {
   forgotForm!: FormGroup;
+  private toastService = inject(ToastService)
 
 
   constructor(
@@ -28,11 +29,19 @@ export class ForgotPasswordComponent {
   }
   
   onSubmit(){
-    if(this.forgotForm.valid)
-      this.userService.forgotPassword(this.forgotForm.value)
+    if(this.forgotForm.valid){
+      this.userService.forgotPassword(this.forgotForm.value).subscribe({
+        next: (response) => {
+          this.toastService.sendSuccess("Email enviado a "+ this.forgotForm.get('email')?.value +" con éxito. Revisa tu casilla de correo.")
+          this.router.navigate(['']);
+        },
+        error: (error) => {
+          this.toastService.sendError("Error al enviar el mail, intente nuevamente")
+        },
+      });}
   }
 
   cancel(){
-    this.router.navigate(['/'])
+    this.router.navigate([''])
   }
 }

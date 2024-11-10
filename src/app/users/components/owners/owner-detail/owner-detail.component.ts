@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Address, Contact, Owner, StateKYC } from '../../../models/owner';
 import { OwnerService } from '../../../services/owner.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { mapOwnerType } from '../../../utils/owner-helper';
 import { Country, Provinces } from '../../../models/generics';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
@@ -46,10 +46,7 @@ export class OwnerDetailComponent implements OnInit {
     birthdate: new FormControl({value:'', disabled: true}, [Validators.required]), // falta valdiar que sea pasada
     kycStatus: new FormControl({value:StateKYC.INITIATED, disabled: true}),
     isActive: new FormControl({value:true, disabled: true}),
-    contactsForm: new FormGroup({
-      contact_type: new FormControl({value:'', disabled: true}, [Validators.required]),
-      contact_value: new FormControl({value:'', disabled: true}, [Validators.required]),
-    }),
+    contactsForm: new FormArray([]),
     addressForm: new FormGroup({
       street_address: new FormControl({value:'', disabled: true}, [Validators.required]),
       number: new FormControl({value:0, disabled: true}, [Validators.required, Validators.min(0)]),
@@ -79,6 +76,14 @@ export class OwnerDetailComponent implements OnInit {
     }
   }
 
+  createContactFormGroup(contactType: string = '', contactValue: string = ''): FormGroup {
+    const contact = new FormGroup({
+      contact_type: new FormControl({ value: contactType, disabled: true }, [Validators.required]),
+      contact_value: new FormControl({ value: contactValue, disabled: true }, [Validators.required]),
+    });
+    return contact;
+  }
+
   fillFieldsToDetail(owner: any): void {
     console.log('DETAIL->', owner);
     this.ownerForm.patchValue({
@@ -106,7 +111,17 @@ export class OwnerDetailComponent implements OnInit {
       country: address?.country ? address.country : '',
       postal_code: address?.postalCode != null ? address.postalCode : null,
     });
-    this.contacts = owner.contacts;
+    this.setContactsValues(owner.contacts);
+  }
+
+  setContactsValues(contacts: Contact[]){
+    const contactFormArray = this.ownerForm.get('contactsForm') as FormArray;
+    contactFormArray.clear();
+    contacts?.forEach((contact: Contact) => {
+      const contactForm = this.createContactFormGroup(contact.contactType, contact.contactValue);
+      contactFormArray?.push(contactForm);
+    });
+    this.contacts = contactFormArray.value;
   }
 
   getContactsValues(): Contact {

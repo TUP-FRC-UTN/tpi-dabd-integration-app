@@ -12,13 +12,13 @@ import { catchError, of, switchMap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../services/user.service';
 import { SessionService } from '../../services/session.service';
-import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
+import { MainContainerComponent, ToastsContainer, ToastService } from 'ngx-dabd-grupo01';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, ToastsContainer],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
@@ -69,7 +69,7 @@ export class LoginComponent implements OnInit {
         .login(this.loginForm.value)
         .pipe(
           catchError((error: HttpErrorResponse) => {
-            if (error.status === 400) {
+            if (error.status === 401) {
               this.toastService.sendError("La contraseña o el email son invalidos, por favor vuelva a intentar");
             } else {
               console.log('An unexpected error occurred:', error);

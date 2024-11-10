@@ -229,9 +229,8 @@ export class OwnerListComponent implements OnInit {
     const target = event.target as HTMLInputElement;
     const filterValue = target.value.toLowerCase();
 
-    //console.log("FILTRO->", filterValue);
-    console.log("DICCIONARIO->", this.ownerDicitionaries);
-    //console.log("OWNERS->", this.owners);
+
+    
 
     let filteredList = this.ownersList.filter((owner) => {
       return Object.values(owner).some((prop) => {
