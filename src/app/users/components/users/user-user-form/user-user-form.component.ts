@@ -55,7 +55,25 @@ export class UserUserFormComponent {
     provinceOptions!: any;
     countryOptions!: any;
     editMode: boolean = false;
+    emailInput: string = ""
     //#endregion
+
+  onEmailChange(userEmail: string): void {
+    if (this.userForm.controls["email"].valid) {
+      const index = this.contacts.findIndex(contact => contact.contactValue === userEmail);
+
+      let userContactEmail : Contact = {
+        contactValue: userEmail,
+        contactType: "EMAIL"
+      }
+
+      if (index !== -1) {
+        this.contacts[index] = userContactEmail;
+      } else {
+        this.contacts.push(userContactEmail);
+      }
+    }
+  }
 
     //#region FORMULARIO REACTIVO
     userForm = new FormGroup({

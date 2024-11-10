@@ -105,6 +105,18 @@ export class UserService {
     )
   }
 
+  getUsersByRole(role: string, size: number, page: number) {
+    let params = new HttpParams()
+      .set('page', page >= 0 ? page.toString() : "0")
+      .set('size', size.toString());
+
+    return this.http.get<User[]>(`${this.host}/rol/${role}`).pipe(
+      map((data: any) => {
+        return toCamelCase(data)
+      })
+    )
+  }
+
   dinamicFilters(page: number, size: number, params: any) {
     let httpParams = new HttpParams()
       .set('page', page >= 0 ? page.toString() : "0")

@@ -39,17 +39,10 @@ export class UsersRoleListComponent {
   private toastService = inject(ToastService)
   private modalService = inject(NgbModal)
 
+  rolesForCombo : any[] = []
   //TODO: Cambiar filtro porfavor
   filterConfig: Filter[] = new FilterConfigBuilder()
-    .textFilter('Nombre', 'firstName', 'Nombre')
-    .textFilter('Apellido', 'lastName', 'Apellido')
-    .textFilter('Nombre de Usuario', 'userName', 'Nombre de Usuario')
-    .textFilter('Correo Electrónico', 'email', 'Correo Electrónico')
-    .selectFilter('Activo', 'isActive', '', [
-      { value: 'true', label: 'Activo' },
-      { value: 'false', label: 'Inactivo' },
-      { value: '', label: 'Todo' },
-    ])
+    .selectFilter("Rol", "rol", "Seleccionar un Rol", this.rolesForCombo)
     .build();
   /*
       "Creado": "CREATED",
@@ -63,7 +56,6 @@ export class UsersRoleListComponent {
   userList!: User[]
   userName!: string;
   filteredUsersList: User[] = [];
-  rolesForCombo : Role[] = []
 
   //#region ATT de PAGINADO
   currentPage: number = 0
@@ -75,21 +67,15 @@ export class UsersRoleListComponent {
 
   ngOnInit() {
     this.getAllRoles();
-    /*
-    this.userService.getAllUsers(this.currentPage, this.pageSize, true).subscribe({
-      next: result => {
-        this.userList = result.content;
-        this.filteredUsersList = this.userList
-        this.totalItems = result.totalElements;
-      },
-      error : err => this.toastService.sendError("Error al cargar la lista.")
-    })
-    */
   }
 
   getAllRoles() {
     this.roleService.getAllRoles(0, 2147483647, true).subscribe(
-      response => this.rolesForCombo = response.content
+      response => {
+        for (const role of response.content) {
+          this.rolesForCombo.push({ value: role.name, label: role.prettyName })
+        }
+      }
     )
   }
 
@@ -208,6 +194,16 @@ export class UsersRoleListComponent {
 
   //#endregion
   filterChange($event: Record<string, any>) {
-    console.log($event)
+    console.log($event['rol'])
+
+
+    this.userService.getUsersByRole($event['rol'], this.currentPage, this.pageSize).subscribe({
+      next: result => {
+        this.userList = result.content;
+        this.filteredUsersList = this.userList
+        this.totalItems = result.totalElements;
+      },
+      error : err => this.toastService.sendError("Error al cargar la lista.")
+    })
   }
 }
