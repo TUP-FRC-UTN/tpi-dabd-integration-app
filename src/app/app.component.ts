@@ -94,59 +94,94 @@ export class AppComponent implements OnInit {
       ],
     },
     {
-      label: 'Notificaciones',
-
-      routerLink:'notifications',
+      label: 'Plantillas',
+      routerLink: 'notifications/templates',
       sidebarMenu: [
         {
-          label: 'Templates',
-          routerLink: 'notifications/templates'
+          label: 'Listar Plantillas',
+          routerLink: 'notifications/templates',
         },
         {
-          label: 'Mandar Email',
-          routerLink: 'notifications/send-email'
-        },
-        {
-          label: 'Mandar Email a Varios',
-          routerLink: 'notifications/send-email-contact'
-        },
-        {
-          label: 'Historial de Notificaciones',
-          routerLink: 'notifications/notifications-historic'
-        },
-        {
-          label: 'Auditoría de Contactos',
-          routerLink: 'notifications/contact-audit'
-        },
-        {
-          label: 'Listar Contactos',
-          routerLink: 'notifications/contacts'
-        },
-        // se que notificaciones tenia un sub menu, pero como no recuerdo como era les dejo este "template" para que lo modifiquen como les parece
-        // {
-        //   label: 'Moderations',
-        //   subMenu: [
-        //     {label: 'Multas',routerLink:'penalties/fine'},
-        //     {label: 'Infracciones',routerLink:'penalties/infraction'},
-        //     {label: 'Reclamos',routerLink:'penalties/claim'},
-        //     {label: 'Tipos de Sanciones',routerLink:'penalties/sanctionType'}
-        //   ]
-        // }
+          label: 'Registrar Plantillas',
+          routerLink: 'notifications/templates/new',
+        }
       ],
     },
     {
-      label: 'Obras y Multas',
-      routerLink: 'penalties',
+      label: 'Contactos',
+      routerLink: 'notifications/contacts',
       sidebarMenu: [
         {
-          label: 'Obras',
-          routerLink: 'penalties/constructions',
-
+          label: 'Listar Contactos',
+          routerLink: 'notifications/contacts',
         },
+        {
+          label: 'Registrar Contacto',
+          routerLink: 'notifications/contact/new',
+        },
+        {
+          label: 'Auditoría de Contactos',
+          routerLink: 'notifications/contact-audit',
+        }
+      ],
+    },
+    {
+      label: 'Notificaciones',
+      routerLink: 'notifications/send-email',
+      sidebarMenu: [
+        {
+          label: 'Enviar Notificación',
+          routerLink: 'notifications/send-email',
+        },
+        {
+          label: 'Notificación Múltiple',
+          routerLink: 'notifications/send-email-contact',
+        },
+        {
+          label: 'Histórico',
+          routerLink: 'notifications/notifications-historic',
+        },
+        {
+          label: 'Dashboard',
+          routerLink: 'notifications/notification/charts',
+        },
+        {
+          label: 'Mis Notificaciones',
+          routerLink: 'notifications/my-notification',
+        }
+      ],
+    },
+    {
+      label: 'Empleados',
+      routerLink:'inventories',
+      sidebarMenu: [
+        {
+          label: 'Empleados',
+          routerLink: 'inventories/employees/list'
+        }
+      ]
+    },
+    {
+      label: 'Inventarios',
+      routerLink:'inventories',
+      sidebarMenu: [
+        {
+          label: 'Inventarios',
+          subMenu: [
+            {label: 'Inventarios',routerLink:'inventories/inventories'},
+            {label: 'Nuevo Artículo',routerLink:'inventories/articles/article'},
+          ]
+        }
+      ]
+    },
+    {
+      label: 'Multas',
+      routerLink: 'penalties/sanctionType',
+      sidebarMenu: [
+
         {
           label: 'Multas',
           subMenu: [
-
             {label: 'Multas',routerLink:'penalties/fine'},
             {label: 'Infracciones',routerLink:'penalties/infraction'},
             {label: 'Reclamos',routerLink:'penalties/claim'},
@@ -154,30 +189,6 @@ export class AppComponent implements OnInit {
           ]
         }
       ]
-    },
-    {
-      label: 'Proveedores',
-      routerLink:'inventories',
-      sidebarMenu: [
-        {
-          label: 'Empleados',
-          routerLink: 'inventories/employees/list'
-        },
-        {
-          label: 'Proveedores',
-          routerLink: 'inventories/providers/list'
-        },
-        {
-          label: 'Inventarios',
-          subMenu: [
-            { label: 'Inventarios', routerLink: 'inventories/inventories' },
-            {
-              label: 'Nuevo Artículo',
-              routerLink: 'inventories/articles/article',
-            },
-          ],
-        },
-      ],
     },
     {
       label: 'Boletas - Cobros',
@@ -197,6 +208,26 @@ export class AppComponent implements OnInit {
           routerLink: '/invoices/review-tickets-transfer',
         },
       ],
+    },
+    {
+      label: 'Obras',
+      routerLink: 'penalties',
+      sidebarMenu: [
+        {
+          label: 'Obras',
+          routerLink: 'penalties/constructions'
+        }
+      ]
+    },
+    {
+      label: 'Proveedores',
+      routerLink:'inventories',
+      sidebarMenu: [
+        {
+          label: 'Proveedores',
+          routerLink: 'inventories/providers/list'
+        },
+      ]
     },
     {
       label: 'Usuarios',
@@ -251,13 +282,13 @@ export class AppComponent implements OnInit {
             { label: 'Lista de Usuarios', routerLink: '/users/user/list' },
             { label: 'Cargar Usuario', routerLink: '/users/user/form' },
             {
-              label: 'Cargar Usuario Inquilino',
+              label: 'Cargar Inquilino',
               routerLink: '/users/user/tenant/form',
             },
             { label: 'Lista de Roles', routerLink: '/users/roles/list' },
-            { label: 'Cargar Roles', routerLink: '/users/roles/form' },
+          /*   { label: 'Cargar Roles', routerLink: '/users/roles/form' }, */
             { label: 'Usuarios Creados', routerLink: '/users/user/created' },
-            { label: 'Usuarios de Roles', routerLink: '/users/user/role' },
+            { label: 'Usuarios por Rol', routerLink: '/users/user/role' },
           ],
         },
       ],

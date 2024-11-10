@@ -290,7 +290,7 @@ export class UserUserDetailComponent {
         this.actualPlotOfOwner = [response];
       },
       error => {
-        this.toastService.sendError("Error recuperando los lotes. Reinicie la pagina.")
+        this.toastService.sendError("Error recuperando los datos del usuario. Reinicie la pagina.")
       }
     )
   }

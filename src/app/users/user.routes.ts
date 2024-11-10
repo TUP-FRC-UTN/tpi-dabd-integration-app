@@ -159,13 +159,13 @@ export const USER_ROUTES: Routes = [
     canMatch: [hasRoleCodeGuard],
     data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.OWNER] }
   },
-  {
+  /* {
     path: 'roles/form',
     component: RolesFormComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
     data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN] }
-  },
+  }, */
   {
     path: 'roles/form/:roleId',
     component: RolesFormComponent,
