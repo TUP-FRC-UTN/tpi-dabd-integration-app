@@ -41,26 +41,6 @@ export class UsersCreatedByUserComponent {
   private toastService = inject(ToastService)
   private modalService = inject(NgbModal)
 
-  //TODO: Cambiar filtro porfavor
-  filterConfig: Filter[] = new FilterConfigBuilder()
-    .textFilter('Nombre', 'firstName', 'Nombre')
-    .textFilter('Apellido', 'lastName', 'Apellido')
-    .textFilter('Nombre de Usuario', 'userName', 'Nombre de Usuario')
-    .textFilter('Correo Electrónico', 'email', 'Correo Electrónico')
-    .selectFilter('Activo', 'isActive', '', [
-      { value: 'true', label: 'Activo' },
-      { value: 'false', label: 'Inactivo' },
-      { value: '', label: 'Todo' },
-    ])
-    .build();
-/*
-    "Creado": "CREATED",
-    "En Venta": "FOR_SALE",
-    "Venta": "SALE",
-    "Proceso de Venta": "SALE_PROCESS",
-    "En construcciones": "CONSTRUCTION_PROCESS",
-    "Vacio": "EMPTY"
- */
 
   userList!: User[]
   userName!: string;
