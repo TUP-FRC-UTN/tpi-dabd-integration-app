@@ -45,7 +45,7 @@ export class FilesViewComponent {
 
 
   ngOnInit() {
-    this.getAllOwners();
+    this.getAllOwners(true);
 
     console.log("owners length", this.owners.length);
     console.log("filtered owners length", this.filteredOwnersList.length);

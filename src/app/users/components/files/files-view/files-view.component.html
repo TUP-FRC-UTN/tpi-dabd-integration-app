@@ -71,16 +71,8 @@
                 <td>{{ translateTable(owner.documentType, documentTypeDictionary) }}  {{ owner.documentNumber }}</td>
                 <td>{{ translateTable(owner.kycStatus, ownerStatusDictionary) }}</td>
                 <td>
-                  <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="bi bi-three-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu">
-                      <li><a class="dropdown-item btn btn-info" (click)="ownerFilesDetail(owner.id)">Ver Detalle</a></li>
-                      <!-- <li><a class="dropdown-item btn btn-success" (click)="approbeOwnerFiles(owner.id)">Aprobar</a></li>
-                      <li><a class="dropdown-item btn btn-danger" (click)="rejectOwnerFiles(owner.id)">Rechazar</a></li> -->
-                    </ul>
-                  </div>
+                  
+                  <a class="btn btn-info" (click)="ownerFilesDetail(owner.id)"><i class="bi bi-eye-fill"></i>  Detalle</a>
                 </td>
               </tr>
             }
