@@ -102,12 +102,7 @@ export class UserUserTenantFormComponent {
   //#region ON SUBMIT
   onSubmit(): void {
     if (this.userForm.valid) {
-      if (this.id === null) {
-        this.createUser()
-      }
-      else {
-        this.updateUser()
-      }
+      this.id === null ? this.createUser() : this.updateUser();
     }
   }
   //#endregion
@@ -169,27 +164,21 @@ export class UserUserTenantFormComponent {
             birthdate: formattedDate
           });
 
+          console.log(this.user.plotId)
           if (this.user.plotId) {
             this.setPlotValue(this.user.plotId)
           }
 
           if (this.user.addresses) {
             this.addresses = [...this.user.addresses];
-            if (this.addresses.length > 0) {
-              this.setAddressValue(0);
-            }
           }
 
           if (this.user.contacts) {
             this.contacts = [...this.user.contacts];
-            if (this.contacts.length > 0) {
-              this.setContactValue(0);
-            }
           }
 
           if (this.user.roles) {
             this.roles = [...this.user.roles];
-            this.userForm.get('rolesForm.rol')?.setValue(this.roles[0]?.id || null);
           }
         },
         error => {
@@ -309,7 +298,6 @@ export class UserUserTenantFormComponent {
     (this.user.isActive = this.userForm.get('isActive')?.value || undefined),
     (this.user.contacts = [...this.contacts]),
     (this.user.addresses = [...this.addresses]);
-    (this.user.roles = [...this.roles]),
     (this.user.plotId = this.userForm.get('plotForm.plotAssign')?.value || undefined)
   }
 
@@ -332,11 +320,12 @@ export class UserUserTenantFormComponent {
 
   updateUser() {
     this.fillUser();
-    this.user.roleCodeList = [103]
-    console.log(this.user)
+    this.user.roles = [103]
+    this.user.isActive = true;
+    this.user.plotId = parseInt(this.user.plotId)
+    delete this.user.createdDate
     if (this.user.id) {
-      delete this.user.roles
-      this.userService.updateUser(this.user.id, this.user, 1).subscribe({
+      this.userService.updateUser(this.user.id, toSnakeCase(this.user), 1).subscribe({
         next: (response) => {
           this.toastService.sendSuccess("Usuario actualizado con exito.")
           this.router.navigate(['users/user/list']);

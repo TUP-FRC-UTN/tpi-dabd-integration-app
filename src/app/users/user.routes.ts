@@ -27,6 +27,7 @@ import { authGuard } from './guards/auth.guard';
 import { hasRoleCodeGuard } from './guards/has-role-code.guard';
 import { URLTargetType } from './models/role';
 import {UsersCreatedByUserComponent} from './components/users/users-created-by-user/users-created-by-user.component';
+import {UsersRoleListComponent} from './components/users/users-role-list/users-role-list.component';
 
 export const USER_ROUTES: Routes = [
   /* { path: 'login', component: LoginComponent },
@@ -231,6 +232,13 @@ export const USER_ROUTES: Routes = [
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
     data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.OWNER] }
+  },
+  {
+    path: 'user/role',
+    component: UsersRoleListComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.USER_ADMIN] }
   },
   { path: '**',
     component: NotFoundComponent,
