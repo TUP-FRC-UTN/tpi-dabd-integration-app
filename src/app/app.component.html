@@ -4,9 +4,9 @@
     
   </app-main-layout>
 } @else {
-  @if (currentUrl === '/forgotpassword') {
+  @if ((currentUrl$ | async) === '/forgotpassword') {
     <app-forgot-password></app-forgot-password>
-  }@else {
+  } @else {
     <app-login></app-login>
   }
 }

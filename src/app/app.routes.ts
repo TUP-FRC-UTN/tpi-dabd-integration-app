@@ -6,10 +6,8 @@ import { ForgotPasswordComponent } from './users/components/forgot-password/forg
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  
   { path: 'forgotpassword', component: ForgotPasswordComponent },
-
-  { path: 'home', component: HomeComponent },
+  { path: 'home', component: HomeComponent, canActivate: [authGuard] },
   {
     path: 'entries',
     loadChildren: () =>

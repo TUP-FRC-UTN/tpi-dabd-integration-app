@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterModule, RouterOutlet, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import {
   MainLayoutComponent,
@@ -10,7 +10,7 @@ import { LoginComponent } from './users/components/login/login.component';
 import { SessionService } from './users/services/session.service';
 import { LoginService } from './users/services/login.service';
 import { ForgotPasswordComponent } from './users/components/forgot-password/forgot-password.component';
-import { filter } from 'rxjs';
+import { BehaviorSubject, filter, Observable } from 'rxjs';
 import {RoleSelectorComponent} from './penalties/shared/components/role-selector/role-selector.component';
 
 
@@ -30,17 +30,20 @@ import {RoleSelectorComponent} from './penalties/shared/components/role-selector
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   private loginService = inject(LoginService);
   private router = inject(Router);
   private activatedRouter = inject(ActivatedRoute);
-  currentUrl!: string;
+  
+  
+  private currentUrlSubject = new BehaviorSubject<string>('');
+  currentUrl$: Observable<string> = this.currentUrlSubject.asObservable();
   
   ngOnInit(){
     this.router.events
     .pipe(filter(event => event instanceof NavigationEnd))
     .subscribe(event => {
-        this.currentUrl = event.url;
+      this.currentUrlSubject.next(event.url);
     });  }
 
   navbarMenu: NavbarItem[] = [
