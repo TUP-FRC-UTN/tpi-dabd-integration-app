@@ -1,4 +1,4 @@
-<app-main-container title="Dashboard de usuarios">
+<app-main-container title="Dashboard de usuarios" (infoButtonClick)="openInfo()">
   <!-- User Charts Section -->
   <h3>KPIs</h3>
 
@@ -6,48 +6,122 @@
 
   <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
 
-  <div class="chart-section mb-4 p-3 border rounded">
+   <!-- KPIs de Usuarios -->
+   <div class="row mb-4">
+    <h2 class="h4 mb-3">KPIs</h2>
+  
+    <!-- Usuarios Creados Último Mes -->
+    <div class="col-md-3 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <div class="icon-circle bg-primary text-white me-3">
+              <i class="bi bi-calendar-plus"></i>
+            </div>
+            <h6 class="card-subtitle text-muted mb-0">Usuarios Creados Último Mes</h6>
+          </div>
+          <h2 class="card-title mb-0">{{ usersCreatedLastMonth }}</h2>
+          <small class="text-muted">Usuarios registrados</small>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Usuarios Propietarios -->
+    <div class="col-md-3 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <div class="icon-circle bg-success text-white me-3">
+              <i class="bi bi-house-door"></i>
+            </div>
+            <h6 class="card-subtitle text-muted mb-0">Usuarios Propietarios</h6>
+          </div>
+          <h2 class="card-title mb-0">{{ ownerUsersCount }}</h2>
+          <small class="text-muted">Usuarios con propiedades</small>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Usuarios Activos -->
+    <div class="col-md-3 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <div class="icon-circle bg-warning text-white me-3">
+              <i class="bi bi-check-circle"></i>
+            </div>
+            <h6 class="card-subtitle text-muted mb-0">Usuarios Activos</h6>
+          </div>
+          <h2 class="card-title mb-0">{{ activeUsersCount }}</h2>
+          <small class="text-muted">Actualmente activos</small>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Rol Más Frecuente -->
+    <div class="col-md-3 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <div class="icon-circle bg-info text-white me-3">
+              <i class="bi bi-people"></i>
+            </div>
+            <h6 class="card-subtitle text-muted mb-0">Rol Más Frecuente</h6>
+          </div>
+          <h2 class="card-title mb-0">{{ mostFrequentUserRole }}</h2>
+          <small class="text-muted">Tipo de rol</small>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- Gráficos de Usuarios -->
+  <div class="chart-section mb-4 mt-3 p-3 border rounded">
     <h3 class="section-title">Estadísticas de Usuarios</h3>
     <div class="charts d-flex justify-content-between mt-4">
       <div class="chart">
-        <h6>Usuarios Activos e Inactivos</h6>
-        <canvas
-          baseChart
-          height="220px"
-          [type]="'pie'"
-          [datasets]="pieChartUserActiveStatusDatasets"
-          [labels]="pieChartUserActiveStatusLabels"
-          [options]="pieChartOptions"
-        ></canvas>
+        <h6>Distribución de Usuarios Activos e Inactivos</h6>
+        <canvas baseChart height="220px" [type]="'pie'" [datasets]="pieChartUserActiveStatusDatasets"
+          [labels]="pieChartUserActiveStatusLabels" [options]="pieChartOptions"></canvas>
       </div>
-
       <div class="chart">
-        <h6>Distribución de Roles de Usuario</h6>
-        <canvas
-          baseChart
-          height="220px"
-          [type]="'bar'"
-          [datasets]="barChartUserRoleDatasets"
-          [labels]="barChartUserRoleLabels"
-          [options]="barChartOptions"
-        ></canvas>
+        <h6>Distribución por Edad</h6>
+        <canvas baseChart height="220px" [type]="'bar'" [datasets]="histogramAgeDistributionDatasets"
+          [labels]="histogramAgeDistributionLabels" [options]="barChartOptions"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Categorías de Usuarios</h6>
+        <canvas baseChart height="220px" [type]="'bar'" [datasets]="barChartUserCategoryDatasets"
+          [labels]="barChartUserCategoryLabels" [options]="barChartOptions"></canvas>
       </div>
     </div>
   </div>
 
-  <!-- Role Charts Section -->
-  <div class="chart-section mb-4 p-3 border rounded">
+  <!-- Gráficos de Roles -->
+  <div class="chart-section mb-4 mt-3 p-3 border rounded">
     <h3 class="section-title">Estadísticas de Roles</h3>
     <div class="charts d-flex justify-content-between mt-4">
+      <!-- <div class="chart">
+        <h6>Distribución de Roles</h6>
+        <canvas baseChart height="220px" [type]="'bar'" [datasets]="barChartUserRoleDatasets"
+          [labels]="barChartUserRoleLabels" [options]="barChartOptions"></canvas>
+      </div> -->
       <div class="chart">
         <h6>Roles Activos e Inactivos</h6>
+        <canvas baseChart height="220px" [type]="'pie'" [datasets]="pieChartRoleActiveStatusDatasets"
+          [labels]="pieChartRoleActiveStatusLabels" [options]="pieChartOptions"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Distribución de Usuarios por Rol</h6>
         <canvas
           baseChart
           height="220px"
-          [type]="'pie'"
-          [datasets]="pieChartRoleActiveStatusDatasets"
-          [labels]="pieChartRoleActiveStatusLabels"
-          [options]="pieChartOptions"
+          width="660px"
+          [type]="'bar'"
+          [datasets]="barChartUserByRoleDatasets"
+          [labels]="barChartUserByRoleLabels"
+          [options]="barChartOptions"
         ></canvas>
       </div>
     </div>
