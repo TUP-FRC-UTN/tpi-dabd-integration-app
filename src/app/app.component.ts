@@ -205,6 +205,15 @@ export class AppComponent {
           ],
         },
         {
+          label: 'Cambiar contraseña',
+          subMenu: [
+            {
+              label: 'Cambiar contraseña',
+              routerLink: '/users/user/changepassword',
+            }
+          ],
+        },
+        {
           label: 'Propietarios',
           subMenu: [
             { label: 'Lista de Propietarios', routerLink: '/users/owner/list' },
