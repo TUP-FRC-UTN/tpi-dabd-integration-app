@@ -13,8 +13,8 @@ import { UserService } from '../../../services/user.service';
 import { SessionService } from '../../../services/session.service';
 import { User } from '../../../models/user';
 import { CadastreExcelService } from '../../../services/cadastre-excel.service';
-import { Subject } from 'rxjs';
-import { DatePipe } from '@angular/common';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { Role } from '../../../models/role';
 import * as XLSX from 'xlsx';
 import { RoleService } from '../../../services/role.service';
@@ -30,6 +30,7 @@ import { InfoComponent } from '../../commons/info/info.component';
     MainContainerComponent,
     NgbPagination,
     TableFiltersComponent,
+    AsyncPipe
   ],
   templateUrl: './users-role-list.component.html',
   styleUrl: './users-role-list.component.scss',
@@ -60,7 +61,9 @@ export class UsersRoleListComponent {
   userList!: User[];
   userName!: string;
   filteredUsersList: User[] = [];
-  roleSelected: any;
+  roleSelected: string = '';
+  defaultRole: string = 'OWNER';
+  prettyNameRoleSelected: string = 'Propietario';
 
   //#region ATT de PAGINADO
   currentPage: number = 0;
@@ -72,11 +75,12 @@ export class UsersRoleListComponent {
 
   ngOnInit() {
     this.getAllRoles();
+    this.loadTable(this.defaultRole);
+    this.roleSelected = this.defaultRole;
   }
 
   getAllRoles() {
     this.roleService.getAllRoles(0, 2147483647, true).subscribe((response) => {
-      this.roleSelected = response.content[0];
       for (const role of response.content) {
         this.rolesForCombo.push({ value: role.name, label: role.prettyName });
       }
@@ -108,7 +112,7 @@ export class UsersRoleListComponent {
   dictionaries: Array<{ [key: string]: any }> = [];
 
   // Subject to emit filtered results
-  private filterSubject = new Subject<User[]>();
+  private filterSubject = new BehaviorSubject<User[]>([]);
   // Observable that emits filtered owner list
   filter$ = this.filterSubject.asObservable();
 
@@ -144,7 +148,7 @@ export class UsersRoleListComponent {
       const doc = new jsPDF();
 
       doc.setFontSize(18);
-      doc.text('Usuarios con Rol ' + this.roleSelected, 14, 20);
+      doc.text('Usuarios con rol de ' + this.prettyNameRoleSelected, 14, 20);
 
       this.userService
         .getUsersByRole(this.roleSelected, 0, this.LIMIT_32BITS_MAX)
@@ -207,11 +211,11 @@ export class UsersRoleListComponent {
     const target = event.target as HTMLInputElement;
 
     if (target.value?.length <= 2) {
-      this.filterSubject.next(this.itemsList);
+      this.filterSubject.next(this.userList);
     } else {
       const filterValue = target.value.toLowerCase();
 
-      const filteredList = this.itemsList.filter((item) => {
+      const filteredList = this.userList.filter((item) => {
         return Object.values(item).some((prop) => {
           const propString = prop ? prop.toString().toLowerCase() : '';
 
@@ -256,15 +260,21 @@ export class UsersRoleListComponent {
     if (!$event['rol']) {
       return;
     }
+    this.loadTable($event['rol']);
+    this.roleSelected = $event['rol'];
+    this.prettyNameRoleSelected = this.rolesForCombo.find(role => role.value === this.roleSelected).label!;
+  }
 
+  loadTable(role: string){
     this.userService
-      .getUsersByRole($event['rol'], this.currentPage, this.pageSize)
+      .getUsersByRole(role, this.currentPage, this.pageSize)
       .subscribe({
         next: (result) => {
-          this.roleSelected = $event['rol'];
-          this.userList = result.content;
+          this.roleSelected = role;
+          this.userList = result;
           this.filteredUsersList = this.userList;
           this.totalItems = result.totalElements;
+          this.filterSubject.next(result);
         },
         error: (err) =>
           this.toastService.sendError('Error al cargar la lista.'),
