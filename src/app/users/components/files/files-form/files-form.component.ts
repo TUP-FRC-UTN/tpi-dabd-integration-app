@@ -23,10 +23,11 @@ import {
   FileStatusDictionary,
 } from '../../../models/file';
 import { plotForOwnerValidator } from '../../../validators/cadastre-plot-for-owner';
-import { ConfirmAlertComponent, ToastService } from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, ToastService, MainContainerComponent } from 'ngx-dabd-grupo01';
 import { Owner } from '../../../models/owner';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { catchError, concatMap, from, tap } from 'rxjs';
+import { InfoComponent } from '../../commons/info/info.component';
 
 interface FileData {
   fileType: BatchFileType;
@@ -36,7 +37,7 @@ interface FileData {
 @Component({
   selector: 'app-files-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, MainContainerComponent],
   templateUrl: './files-form.component.html',
   styleUrl: './files-form.component.css',
 })
@@ -528,4 +529,39 @@ export class FilesFormComponent implements OnInit {
     }
     return;
   }
+
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
+
+    modalRef.componentInstance.title = 'Carga de archivos para validación de propietario';
+    modalRef.componentInstance.description = 'Pantalla para la gestión carga y visualización de archivos de propietario';
+    modalRef.componentInstance.body = [
+      {
+        title: 'Campos para subir archivos',
+        content: [
+          {
+            strong: 'Dni Frente:',
+            detail: 'Campo para cargar un archivo con una foto del frente del documento del propietario.'
+          },
+          {
+            strong: 'Dni Dorso:',
+            detail: 'Campo para cargar un archivo con una foto del dorso del documento del propietario.'
+          },
+          {
+            strong: 'N° Lote: XX | N° Manzana: XX:',
+            detail: 'Campo para cargar un archivo con una foto de la escritura del lote correspondiente al n° de lote y n° de manzana.'
+          },
+        ]
+      },
+    ];
+    modalRef.componentInstance.notes = ['Se pueden cargar archivos en formato ".pdf", ".jpg", ".png" '];
+  }
+
 }
