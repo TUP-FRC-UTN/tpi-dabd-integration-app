@@ -1,21 +1,30 @@
 import { Component, inject } from '@angular/core';
 import { ValidateOwner } from '../../../models/ownerXplot';
-import { DocumentTypeDictionary, Owner, OwnerStatusDictionary, OwnerTypeDictionary, StateKYC } from '../../../models/owner';
+import { DocumentTypeDictionary, Owner, OwnerFilters, OwnerStatusDictionary, OwnerTypeDictionary, StateKYC } from '../../../models/owner';
 import { OwnerService } from '../../../services/owner.service';
 import { mapKycStatus } from '../../../utils/owner-helper';
 import { FormsModule } from '@angular/forms';
 import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
-import { MainContainerComponent } from 'ngx-dabd-grupo01';
+import { Filter, FilterConfigBuilder, MainContainerComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
 import { Router } from '@angular/router';
 import { InfoComponent } from '../../commons/info/info.component';
-import { Location } from '@angular/common';
+import { AsyncPipe, CommonModule, DatePipe, Location } from '@angular/common';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
+import * as XLSX from 'xlsx';
+import { BehaviorSubject } from 'rxjs';
+import { CadastreFilterButtonsComponent } from '../../commons/cadastre-filter-buttons/cadastre-filter-buttons.component';
 
 @Component({
   selector: 'app-files-view',
   standalone: true,
-  imports: [ FormsModule, NgbPagination, MainContainerComponent],
+  imports: [
+    CommonModule, FormsModule, NgbPagination, MainContainerComponent,
+    CadastreFilterButtonsComponent, TableFiltersComponent, AsyncPipe],
   templateUrl: './files-view.component.html',
-  styleUrl: './files-view.component.css'
+  styleUrl: './files-view.component.css',
+  providers: [DatePipe],
 })
 export class FilesViewComponent {
 
@@ -27,16 +36,15 @@ export class FilesViewComponent {
   totalItems: number = 0;
   filteredFilesList: ValidateOwner[] = [];
 
-  applyFilterWithInput!: boolean;
-  filterInput!: any;
 
   owners: Owner[] = [];
-  filteredOwnersList: Owner[] = [];
+  private filteredOwnersList = new BehaviorSubject<Owner[]>([]);
+  filter$ = this.filteredOwnersList.asObservable();
 
-  documentTypeDictionary = DocumentTypeDictionary;
-  ownerTypeDictionary = OwnerTypeDictionary;
-  ownerStatusDictionary = OwnerStatusDictionary;
-  ownerDicitionaries = [this.documentTypeDictionary, this.ownerTypeDictionary, this.ownerStatusDictionary];
+  
+  dictionaries: Array<{ [key: string]: any }> = [];
+  LIMIT_32BITS_MAX = 2147483647;
+  headers: string[] = ['Nombre', 'Apellido', 'Documento', 'Tipo propietario'];
 
   protected ownerService = inject(OwnerService);
   private router = inject(Router);
@@ -45,10 +53,9 @@ export class FilesViewComponent {
 
 
   ngOnInit() {
+    
     this.getAllOwners(true);
-
-    console.log("owners length", this.owners.length);
-    console.log("filtered owners length", this.filteredOwnersList.length);
+    this.filteredOwnersList.subscribe(ow => console.log(ow));
     
   }
 
@@ -62,7 +69,7 @@ export class FilesViewComponent {
     this.ownerService.getOwners(this.currentPage - 1, this.pageSize, isActive).subscribe({
       next: (response) => {
         this.owners = response.content;
-        this.filteredOwnersList = [...this.owners];
+        this.filteredOwnersList.next([...this.owners]);
         this.lastPage = response.last;
         this.totalItems = response.totalElements;
       },
@@ -70,31 +77,6 @@ export class FilesViewComponent {
     });
   }
 
-
-
-  //#region USO DE DICCIONARIOS
-  getKeys(dictionary: any) {
-    return Object.keys(dictionary);
-  }
-
-  translateCombo(value: any, dictionary: any) {
-    if (value !== undefined && value !== null) {
-      return dictionary[value];
-    }
-    return;
-  }
-
-  translateTable(value: any, dictionary: { [key: string]: any }) {
-    if (value !== undefined && value !== null) {
-      for (const key in dictionary) {
-        if (dictionary[key] === value) {
-          return key;
-        }
-      }
-    }
-    return;
-  }
-  //#endregion
 
 
   ownerFilesDetail(id: number | undefined) {
@@ -134,6 +116,7 @@ export class FilesViewComponent {
   clearFilters(){}
   confirmFilter(){}
 
+
   
   goBack() {
     this.location.back()
@@ -155,12 +138,20 @@ export class FilesViewComponent {
         title: 'Datos',
         content: [
           {
-            strong: 'Nombre y apellido:',
-            detail: 'Nombre y apellido del propietario.'
+            strong: 'Nombre:',
+            detail: 'Nombre del propietario.'
           },
           {
-            strong: 'Documento: ',
-            detail: 'Tipo y númeroo de documento del propietario.'
+            strong: 'Apellido:',
+            detail: 'Apellido del propietario.'
+          },
+          {
+            strong: 'Tipo Doc: ',
+            detail: 'Tipo de documento del propietario.'
+          },
+          {
+            strong: 'Doc N°: ',
+            detail: 'Número de documento del propietario.'
           },
           {
             strong: 'Estado: ',
@@ -203,4 +194,217 @@ export class FilesViewComponent {
       'La interfaz está diseñada para ofrecer una administración eficiente de los procesos de validación de propietarios.'
     ];
   }
+
+
+
+  //#region Dictionaries
+  getKeys(dictionary: any) {
+    return Object.keys(dictionary);
+  }
+
+  translateCombo(value: any, dictionary: any) {
+    if (value !== undefined && value !== null) {
+      return dictionary[value];
+    }
+    return;
+  }
+
+  translateTable(value: any, dictionary: { [key: string]: any }) {
+    if (value !== undefined && value !== null) {
+      for (const key in dictionary) {
+        if (dictionary[key] === value) {
+          return key;
+        }
+      }
+    }
+    return;
+  }
+
+  dataMapper(item: Owner) {
+    return [
+      item['firstName'] + (item['secondName'] ? ' ' + item['secondName'] : ''),
+      item['lastName'],
+      this.translateDictionary(item['documentType'], this.dictionaries[0]) +
+        ': ' +
+        item['documentNumber'],
+      this.translateDictionary(item['ownerType'], this.dictionaries[1]),
+    ];
+  }
+  /**
+   * Translates a value using the provided dictionary.
+   *
+   * @param value - The value to translate.
+   * @param dictionary - The dictionary used for translation.
+   * @returns The key that matches the value in the dictionary, or undefined if no match is found.
+   */
+  translateDictionary(value: any, dictionary?: { [key: string]: any }) {
+    debugger
+    if (value !== undefined && value !== null && dictionary) {
+      for (const key in dictionary) {
+        if (dictionary[key].toString().toLowerCase() === value.toLowerCase()) {
+          return key;
+        }
+      }
+    }
+    return;
+  }
+  //#endregion
+
+  //#region Filters
+  applyFilterWithNumber: boolean = false;
+  applyFilterWithCombo: boolean = false;
+  contentForFilterCombo: string[] = [];
+  actualFilter: string | undefined = OwnerFilters.NOTHING;
+  filterTypes = OwnerFilters;
+  filterInput: string = '';
+
+  documentTypeDictionary = DocumentTypeDictionary;
+  ownerTypeDictionary = OwnerTypeDictionary;
+  ownerStatusDictionary = OwnerStatusDictionary;
+  ownerDictionaries = [this.documentTypeDictionary, this.ownerTypeDictionary, this.ownerStatusDictionary];
+
+  filterConfig: Filter[] = new FilterConfigBuilder()
+    .selectFilter(
+      'Tipo de Documento',
+      'doc_type',
+      'Seleccione un tipo de documento',
+      [
+        { value: 'DNI', label: 'DNI' },
+        { value: 'ID', label: 'Cédula' },
+        { value: 'PASSPORT', label: 'Pasaporte' },
+      ]
+    )
+    .selectFilter(
+      'Tipo de Propietario',
+      'owner_type',
+      'Seleccione un tipo de propietario',
+      [
+        { value: 'PERSON', label: 'Persona' },
+        { value: 'COMPANY', label: 'Compañía' },
+        { value: 'OTHER', label: 'Otro' },
+      ]
+    )
+    .selectFilter(
+      'Estado del Propietario',
+      'owner_kyc',
+      'Seleccione un estado del propietario',
+      [
+        { value: 'INITIATED', label: 'Iniciado' },
+        { value: 'TO_VALIDATE', label: 'Para Validar' },
+        { value: 'VALIDATED', label: 'Validado' },
+        { value: 'CANCELED', label: 'Cancelado' },
+      ]
+    )
+    .selectFilter('Activo', 'is_active', '', [
+      { value: 'true', label: 'Activo' },
+      { value: 'false', label: 'Inactivo' },
+    ])
+    .build();
+
+  filterChange($event: Record<string, any>) {
+    this.ownerService.dinamicFilters(0, this.pageSize, $event).subscribe({
+      next: (result) => {
+        this.owners = result.content;
+        this.filteredOwnersList.next([...result.content]);
+        this.lastPage = result.last;
+        this.totalItems = result.totalElements;
+      },
+    });
+  }
+
+  /**
+   * Filters the list of owners based on the input value in the text box.
+   * The filter checks if any property of the owner contains the search string (case-insensitive).
+   * The filtered list is then emitted through the `filterSubject`.
+   *
+   * @param event - The input event from the text box.
+   */
+  onFilterTextBoxChanged(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const filterValue = target.value.toLowerCase();
+
+    let filteredList = this.owners.filter((owner) => {
+      return Object.values(owner).some((prop) => {
+        const propString = prop
+          ? prop
+              .toString()
+              .toLowerCase()
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f.]/g, '')
+          : '';
+
+        // Validar que dictionaries esté definido y tenga elementos antes de mapear
+        const translations = this.ownerDictionaries && this.ownerDictionaries.length
+          ? this.ownerDictionaries.map(dict => this.translateDictionary(propString, dict)).filter(Boolean)
+          : [];
+
+        // Se puede usar `includes` para verificar si hay coincidencias
+        return propString.includes(filterValue); //|| translations.some(trans => trans?.toLowerCase().includes(filterValue));
+      });
+    });
+
+    //console.log("LISTA FILTRADA->", filteredList);
+
+    this.filteredOwnersList.next(filteredList);
+  }
+
+  //#end region
+
+
+
+  //#region Export
+  // Se va a usar para los nombres de los archivos.
+  getActualDayFormat() {
+    const today = new Date();
+
+    const formattedDate = today.toISOString().split('T')[0];
+
+    return formattedDate;
+  }
+
+  exportToPdf() {
+    const doc = new jsPDF();
+  
+    doc.setFontSize(18);
+    doc.text('Propietarios', 14, 20);
+    
+    this.ownerService.getOwners(0, this.LIMIT_32BITS_MAX, true).subscribe({
+      next: (data) => {
+        autoTable(doc, {
+          startY: 30,
+          head: [['Nombre', 'Apellido', 'Documento', 'Tipo propietario', 'Estado KYC']],
+          body: data.content.map(owner => [
+            owner.firstName,
+            owner.lastName,
+            this.translateDictionary(owner.documentType, this.ownerDictionaries[0])! + ': ' + owner.documentNumber,
+            this.translateDictionary(owner.ownerType, this.ownerDictionaries[1])!,
+            this.translateDictionary(owner.kycStatus, this.ownerStatusDictionary)!
+          ])
+        });
+        doc.save(`${this.getActualDayFormat()}_Propietarios.pdf`);
+      },
+      error: () => {console.log("Error retrieved all, on export component.")}
+    });
+  }
+
+  exportToExcel() {
+    this.ownerService.getOwners(0, this.LIMIT_32BITS_MAX, true).subscribe({
+      next: (data) => {
+        const toExcel = data.content.map(owner => ({
+          'Nombre': owner.firstName,
+          'Apellido': owner.lastName,
+          'Documento': this.translateDictionary(owner.documentType, this.ownerDictionaries[0])! + ': ' + owner.documentNumber,
+          'Tipo propietario': this.translateDictionary(owner.ownerType, this.ownerDictionaries[1])!,
+          'Estado KYC': this.translateDictionary(owner.kycStatus, this.ownerStatusDictionary)!,
+        }));
+        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Propietarios');
+        XLSX.writeFile(wb, `${this.getActualDayFormat()}_Propietarios.xlsx`);
+      },
+      error: () => { console.log("Error retrieved all, on export component.") }
+    });
+  }
+  //#end region
+
 }
