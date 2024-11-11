@@ -126,6 +126,7 @@ export class AdminListExpensasComponent implements OnInit {
     description: '',
     totalPrice: 0,
     adminNameWhoApproves: '',
+    period:''
   };
 
   ticketSelectedModal: TicketDto = {
