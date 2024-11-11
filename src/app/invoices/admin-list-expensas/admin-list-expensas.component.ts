@@ -459,7 +459,7 @@ export class AdminListExpensasComponent implements OnInit {
       case TicketStatus.PENDING:
         return 'Pendiente';
       case TicketStatus.UNDER_REVIEW:
-        return 'En revision';
+        return 'En revisión';
       default:
         return '';
     }

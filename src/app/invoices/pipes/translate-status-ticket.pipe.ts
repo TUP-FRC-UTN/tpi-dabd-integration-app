@@ -11,7 +11,7 @@ export class TranslateStatusTicketPipe implements PipeTransform {
     } else if (value === 'PAID') {
       return 'Pagado';
     } else if (value === 'UNDER_REVIEW') {
-      return 'En revision';
+      return 'En revisión';
     } else {
       return 'Anulado';
     }

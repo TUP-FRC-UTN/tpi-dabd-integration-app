@@ -354,6 +354,7 @@
               class="form-control"
               id="inputGroupFile02"
               (change)="onFileSelected($event)"
+              accept=".pdf, .jpg, .png, .jpeg"
             />
             <label class="input-group-text" for="inputGroupFile02"
               >Subir comprobante</label
@@ -370,6 +371,7 @@
           class="btn btn-primary"
           [disabled]="!selectedFile"
           (click)="onUpload()"
+          data-bs-dismiss="modal"
         >
           Cargar Comprobante
         </button>

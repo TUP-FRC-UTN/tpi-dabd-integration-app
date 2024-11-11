@@ -82,7 +82,7 @@ export class OwnerListExpensasComponent {
     { value: 'PENDING', label: 'Pendiente' },
     { value: 'PAID', label: 'Pagado' },
     { value: 'CANCELED', label: 'Anulado' },
-    { value: 'UNDER_REVIEW', label: 'En revision' },
+    { value: 'UNDER_REVIEW', label: 'En revisión' },
     { value: 'EXPIRED', label: 'Vencido' },
     { value: 'IN_DEFAULT', label: 'Vencido2' },
   ];
@@ -240,7 +240,7 @@ export class OwnerListExpensasComponent {
       case TicketStatus.PENDING:
         return 'Pendiente';
       case TicketStatus.UNDER_REVIEW:
-        return 'En revision';
+        return 'En revisión';
       case TicketStatus.EXPIRED:
         return 'Vencido';
       case TicketStatus.IN_DEFAULT:
@@ -305,6 +305,7 @@ export class OwnerListExpensasComponent {
           console.log('File uploaded successfully!', response);
           this.isUploading = false;
           this.uploadSuccess = true;
+          
         },
         (error) => {
           console.error('Error uploading file:', error);
