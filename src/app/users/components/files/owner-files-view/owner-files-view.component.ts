@@ -1,4 +1,4 @@
-import { Component, inject, TemplateRef, ViewChild } from '@angular/core';
+import { Component, inject, TemplateRef, ViewChild, OnInit } from '@angular/core';
 import { OwnerService } from '../../../services/owner.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
@@ -8,7 +8,7 @@ import { ConfirmAlertComponent, ToastService, MainContainerComponent, FormFields
 import { Document, FileStatusDictionary, FileTypeDictionary } from '../../../models/file';
 import { DocumentTypeDictionary, Owner, StateKYC } from '../../../models/owner';
 import { FileService } from '../../../services/file.service';
-import { combineLatest } from 'rxjs';
+import { catchError, combineLatest, concat, concatMap, finalize, forkJoin, from, of, tap } from 'rxjs';
 import { PlotService } from '../../../services/plot.service';
 import { OwnerPlotService } from '../../../services/owner-plot.service';
 import { InfoComponent } from '../../commons/info/info.component';
@@ -21,7 +21,7 @@ import { InfoComponent } from '../../commons/info/info.component';
   templateUrl: './owner-files-view.component.html',
   styleUrl: './owner-files-view.component.css'
 })
-export class OwnerFilesViewComponent {
+export class OwnerFilesViewComponent implements OnInit {
 
   private fileService = inject(FileService);
   private modalService = inject(NgbModal);
@@ -81,7 +81,8 @@ export class OwnerFilesViewComponent {
   ngOnInit() {
     this.id = this.activatedRoute.snapshot.paramMap.get('ownerId');
     if(this.id) {
-      this.getOwnerById(this.id);
+      //this.getOwnerById(this.id);
+      this.getOwnerData(this.id);
     }
 
     this.canApproveOwner = this.areAllApproved();
@@ -98,7 +99,7 @@ export class OwnerFilesViewComponent {
 
   }
 
-  getOwnerById(ownerId: string ) {
+ /*  getOwnerById(ownerId: string ) {
     const id = parseInt(ownerId, 10);
     this.ownerService.getOwnerById(id).subscribe({
       next: (response) => {
@@ -109,13 +110,12 @@ export class OwnerFilesViewComponent {
         console.error('Error al obtener propietario: ', error);
       },
     });
-  }
+  } */
 
-  getOwnerPlots() {
+  /* getOwnerPlots() {
     if(this.owner.id) {
       this.ownerPlotService.giveAllPlotsByOwner(this.owner.id, 0, 1000).subscribe({
         next: (response) => {
-          console.log("AAAAAAAAAAA", response.content)
           this.plots = response.content;
           this.getAllFiles(this.owner)
         },
@@ -124,18 +124,31 @@ export class OwnerFilesViewComponent {
         },
       })
     }
-  }
+  } */
 
-  getAllFiles(owner: Owner) {
+   getAllFiles(owner: Owner) {
     // archivos del lote
     if(this.plots.length > 0) {
       this.plots.forEach(plot => {
 
         this.plotService.getPlotFilesById(plot.id).subscribe({
           next: (response) => {
-            console.log("Plot files: ", response)
             // this.plotFiles.push(response[0]);
             this.plotFiles = response;
+            if(owner.id) {
+              this.ownerService.getOwnerFilesById(owner.id).subscribe({
+                next: (response) => {
+                  this.files = response;
+                  this.plotFiles.forEach(file => {
+                    this.files.push(file);
+                  })
+                  this.canApproveOwner = this.areAllApproved();
+                },
+                error: (error) => {
+                  console.error('Error al obtener archivos del lote:', error);
+                },
+              });
+            }
           },
           error: (error) => {
             console.error('Error al obtener archivos del lote:', error);
@@ -145,28 +158,90 @@ export class OwnerFilesViewComponent {
       })
     }
     // archivos del owner
-    if(owner.id) {
-      this.ownerService.getOwnerFilesById(owner.id).subscribe({
-        next: (response) => {
-          console.log("RESP DE GETOWNERFILES", response)
-          this.files = response;
-          console.log("FILES DE ", this.files)
-          this.plotFiles.forEach(file => {
-            this.files.push(file);
-          })
-          this.canApproveOwner = this.areAllApproved();
-        },
-        error: (error) => {
-          console.error('Error al obtener archivos del lote:', error);
-        },
-      });
-    }
-
-    
 
     console.log("plots: ", this.plots);
     console.log("files: ", this.files);
-  }
+  } 
+
+    /* getAllFiles(owner: Owner) {
+      // Observable para procesar archivos de lotes
+      const plotFiles$ = from(this.plots).pipe(
+        concatMap(plot =>
+          this.plotService.getPlotFilesById(plot.id).pipe(
+            tap(response => {
+              this.plotFiles.push(...response);
+            }),
+            catchError(error => {
+              console.error('Error al obtener archivos del lote:', error);
+              return of([]);
+            })
+          )
+        )
+      );
+    
+      // Observable para procesar archivos del propietario
+      if (owner.id) {
+        const ownerFiles$ = this.ownerService.getOwnerFilesById(owner.id).pipe(
+          tap(response => {
+            this.files = response;
+            this.plotFiles.forEach(file => {
+              this.files.push(file);
+            });
+            this.canApproveOwner = this.areAllApproved();
+          }),
+          catchError(error => {
+            console.error('Error al obtener archivos del propietario:', error);
+            return of([]);
+          })
+        );
+
+        // Encadenamiento de operaciones
+      plotFiles$.pipe(
+        finalize(() => {
+          ownerFiles$.subscribe({
+            complete: () => {
+              console.log('Archivos combinados:', this.files);
+              console.log('Archivos de lotes:', this.plotFiles);
+            }
+          });
+        })
+      ).subscribe();
+      }
+    
+    } */
+
+    getOwnerData(ownerId: string) {
+      const id = parseInt(ownerId, 10);
+    
+      this.ownerService.getOwnerById(id).pipe(
+        concatMap((ownerResponse) => {
+          this.owner = ownerResponse;
+          return this.ownerPlotService.giveAllPlotsByOwner(id, 0, 1000);
+        }),
+        concatMap((plotsResponse) => {
+          this.plots = plotsResponse.content;
+          const plotFilesRequests = this.plots.map(plot => 
+            this.plotService.getPlotFilesById(plot.id).pipe(catchError(() => of([])))
+          );
+          return forkJoin(plotFilesRequests);
+        }),
+        concatMap((plotFilesResponses) => {
+          this.plotFiles = plotFilesResponses.flat();
+          return this.ownerService.getOwnerFilesById(id);
+        }),
+        catchError((error) => {
+          console.error('Error al obtener datos:', error);
+          return of([]);
+        })
+      ).subscribe({
+        next: (ownerFiles) => {
+          this.files = [...ownerFiles, ...this.plotFiles];
+          this.canApproveOwner = this.areAllApproved();
+          console.log('Plots:', this.plots);
+          console.log('Files:', this.files);
+        }
+      });
+    }
 
   // metodo para abrir el archivo en otra ventana
   openFile(url: string): void {
