@@ -271,10 +271,10 @@ export class UsersRoleListComponent {
       .subscribe({
         next: (result) => {
           this.roleSelected = role;
-          this.userList = result;
+          this.userList = result.content;
           this.filteredUsersList = this.userList;
           this.totalItems = result.totalElements;
-          this.filterSubject.next(result);
+          this.filterSubject.next(result.content);
         },
         error: (err) =>
           this.toastService.sendError('Error al cargar la lista.'),
