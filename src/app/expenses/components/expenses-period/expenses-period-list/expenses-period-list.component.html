@@ -1,0 +1,217 @@
+<app-main-container
+  title="Lista de Periodos"
+  (infoButtonClick)="showModal()"
+>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Sección de búsqueda y filtros -->
+        <div class="d-flex align-items-center mb-2" role="group">
+            <div class="col-sm-12 col-md-8 col-xl-12">
+                <div class="input-group">
+            <span class="input-group-text" id="search-icon">
+              <i class="bi bi-search"></i>
+            </span>
+                    <input
+                            type="text"
+                            class="form-control"
+                            id="filter-text-box"
+                            [(ngModel)]="searchTerm"
+                            (input)="searchTerm"
+                            placeholder="Buscar..."
+                    />
+                    <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)">
+                      
+                    </app-table-filters>
+                </div>
+            </div>
+        </div>
+        <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
+        <div class="d-flex align-items-center">
+            <!-- Botón "+" -->
+            <button type="button" class="btn btn-outline-primary" (click)="newPeriod()">+</button>
+
+            <!-- Línea vertical y botones de exportación -->
+            <div class="vertical-line mx-3"></div>
+            <button class="btn btn-success me-2" (click)="downloadTable()">
+                <i class="bi bi-file-earmark-excel"></i>
+            </button>
+            <button class="btn btn-danger me-2" (click)="imprimir()">
+                <i class="bi bi-file-earmark-pdf"></i>
+            </button>
+        </div>
+    </div>
+
+
+
+
+  <div class="">
+    <table
+      class="table table-striped fixed-table"
+      style="
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        border-collapse: collapse;
+        margin-top: 10px;
+      "
+    >
+      <thead>
+        <tr>
+          <th scope="col">Fecha</th>
+          <th scope="col" style="text-align: end">Total Extraordinarias</th>
+          <th scope="col" style="text-align: end">Total Ordinarias</th>
+          <th scope="col">Estado</th>
+          <th scope="col" style="text-align: center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (listPeriod.length ===0) {
+        <tr>
+          <td
+            class="alert alert-secondary"
+            role="alert"
+            colspan="5"
+            style="width: 100%; text-align: center"
+          >
+            No hay elementos para mostrar
+          </td>
+        </tr>
+
+        } @else { @for (period of listPeriod | filterBy : ['month', 'year',
+        'ordinary.amount', 'extraordinary.amount', 'state'] : searchTerm; track
+        $index) {
+        <tr>
+          <td>{{ period.month }} / {{ period.year }}</td>
+          <td style="text-align: end">
+            {{
+              period.extraordinary?.amount?.toLocaleString("es-AR", {
+                style: "currency",
+                currency: "ARS",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })
+            }}
+          </td>
+          <td style="text-align: end">
+            {{
+              period.ordinary?.amount?.toLocaleString("es-AR", {
+                style: "currency",
+                currency: "ARS",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })
+            }}
+          </td>
+          <td>
+            <app-expenses-state-period-style
+              [estado]="period.state"
+            ></app-expenses-state-period-style>
+          </td>
+          <td
+            style="
+              display: flex;
+              flex-direction: row;
+              gap: 2px;
+              justify-content: center;
+            "
+          >
+            <div class="btn-group" ngbDropdown>
+              <button
+                type="button"
+                class="btn btn-sm btn-secondary"
+                ngbDropdownToggle
+                aria-expanded="false"
+              >
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <div ngbDropdownMenu>
+                <button
+                  class="dropdown-item"
+                  [routerLink]="[period.id, 'expensas']"
+                >
+                  Expensas
+                </button>
+                <button
+                  class="dropdown-item"
+                  [routerLink]="[period.id, 'gastos']"
+                >
+                  Liquidación
+                </button>
+                @if ( period.state == 'Liquidación Cerrada') {
+                <li>
+                  <button
+                    class="dropdown-item btn btn-danger"
+                    (click)="open( period.id)"
+                  >
+                    Finalizar
+                  </button>
+                </li>
+                }
+                @if ( period.state !== 'Liquidación Cerrada'&&  period.state !== 'Cerrada') {
+                  <li>
+                    <button
+                      class="dropdown-item btn btn-danger"
+                      (click)="openLiquidationClose( period.id)"
+                    >
+                      Cerrar Liquidación
+                    </button>
+                  </li>
+                 }
+                 @if ( period.state == 'Liquidación Cerrada') {
+                  <li>
+                    <button
+                      class="dropdown-item btn btn-danger"
+                      (click)="openLiquidationOpen( period.id)"
+                    >
+                      Abrir Liquidación
+                    </button>
+                  </li>
+                 }
+              </div>
+            </div>
+          </td>
+        </tr>
+        } }
+      </tbody>
+    </table>
+    <div class="row d-flex align-items-between">
+      <div class="col-1">
+        <select style="width: 147px;"
+          name="tipoExpensa"
+          id="tipoExpensa"
+          class="form-select"
+          aria-label="Default select example"
+          (change)="onSelectChange($event)"
+        >
+          <option value="10">10 Elementos</option>
+          <option value="25">25 Elementos</option>
+          <option value="50">50 Elementos</option>
+        </select>
+      </div>
+      <div
+        class="col-11"
+        style="display: flex; flex-direction: row; justify-content: end"
+      >
+        <ngb-pagination
+          [(page)]="currentPage"
+          [pageSize]="size"
+          [collectionSize]="cantPages.length"
+          (pageChange)="changeIndex($event)"
+          [maxSize]="5"
+          [boundaryLinks]="false"
+        ></ngb-pagination>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #modalTemplateInfo let-modal>
+    <app-confirm-alert
+      [alertTitle]="'Confirmación requerida'"
+      [alertType]="'info'"
+      [alertMessage]="
+        'Se muestra una lista con todos los periodos, con su estado y sus montos de liquidaciones de expensas tanto ordinarias como extraordinarias. En la fila del periodo se visualizan distintas acciones para cerrar los periodos en vigencia y poder visualizar mayor detalle de los mismos.'
+      "
+      [alertVariant]="'default'"
+      [contentPlacement]="'top'"
+    >
+    </app-confirm-alert>
+  </ng-template>
+
+</app-main-container>
