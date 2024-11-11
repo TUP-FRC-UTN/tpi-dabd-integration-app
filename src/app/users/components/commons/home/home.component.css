@@ -20,10 +20,9 @@
 }
 
 .welcome-section {
-    padding: 2rem 0;
+    padding: 0.8rem 0;
     background: linear-gradient(to right, #f8f9fa, #18ad60);
     border-radius: 12px;
-    margin-bottom: 1.5rem;
 }
 
 .welcome-title {
@@ -163,7 +162,7 @@
 
 /* Buttons */
 .btn {
-    border-radius: 0.5rem;
+    border-radius: 0.3rem;
     padding: 0.5rem 1.5rem;
     font-weight: 500;
     transition: all 0.2s ease-in-out;
@@ -205,4 +204,16 @@
 .modal-header,
 .modal-footer {
     padding: 1.5rem;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 0.8rem;
+    width: 100%;
+}
+
+.pagination {
+    display: inline-flex;
 }

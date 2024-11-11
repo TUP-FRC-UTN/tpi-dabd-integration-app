@@ -182,9 +182,11 @@ export class UserUserFormComponent {
         this.userService.getUserById(Number(this.id)).subscribe(
           response => {
             this.user = response;
-
-            const [day, month, year] = this.user.birthdate.split('/');
-            const formattedDate = `${year}-${month}-${day}`;
+            let formattedDate: any
+            if (this.user.birthdate) {
+              const [day, month, year] = this.user.birthdate?.split('/');
+              formattedDate = `${year}-${month}-${day}`;
+            }
             this.userForm.patchValue({
               email: this.user.email,
               firstName: this.user.firstName,
