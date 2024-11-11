@@ -4,8 +4,9 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { MainContainerComponent, TableComponent } from 'ngx-dabd-grupo01';
 import { FormsModule, NgForm } from '@angular/forms';
-import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbPagination, NgbPaginationConfig } from '@ng-bootstrap/ng-bootstrap';
 import { Notice, NoticeService } from '../../../services/notice.service';
+import { SessionService } from '../../../services/session.service';
 
 interface WeatherData {
   main: {
@@ -29,6 +30,7 @@ interface Announcement {
   content: string;
   priority: 'high' | 'medium' | 'low';
   date?: string;
+  isVisible: boolean;
 }
 
 const weatherTranslations: { [key: string]: string } = {
@@ -38,11 +40,25 @@ const weatherTranslations: { [key: string]: string } = {
   'broken clouds': 'Nublado parcial',
   'shower rain': 'Lluvia fuerte',
   'rain': 'Lluvia',
+  'dust': 'Polvo',
   'thunderstorm': 'Tormenta eléctrica',
   'snow': 'Nieve',
   'mist': 'Neblina',
   'overcast clouds': 'Nublado total',
-  'light rain': 'Lluvia ligera'
+  'light rain': 'Lluvia ligera',
+  'hot': 'Calor',
+  'warm': 'Cálido',
+  'mild': 'Templado',
+  'cool': 'Fresco',
+  'cold': 'Frío',
+  'freezing': 'Muy Frío',
+  'chilly': 'Muy Frío',
+  'breezy': 'Viento suave',
+  'windy': 'Viento fuerte',
+  'humid': 'Húmedo',
+  'dry': 'Seco',
+  'heatwave': 'Ola de calor',
+  'cold snap': 'Ola de frío'
 };
 
 @Component({
@@ -64,40 +80,79 @@ export class HomeComponent implements OnInit {
   @ViewChild('announcementModal') announcementModal: any;
   @ViewChild('deleteModal') deleteModal: any;
 
-  userName = 'Juan';
+  visibility: boolean = false;
+  adminRoles: number[] = [999, 100]
+  userName: string = "";
   weather: WeatherData | null = null;
   activeFilter: 'all' | 'active' | 'inactive' = 'all';
   forecast: WeatherData[] = [];
   announcements: Announcement[] = [];
   currentUserId = 1;
-  
+
   announcementToDelete: Announcement | null = null;
   isEditing = false;
   newAnnouncement: Notice = {
     title: '',
     content: '',
     priority: 'MEDIUM',
-    isActive: true,
+    is_active: true,
     date: new Date().toISOString()
   };
 
-  constructor(private http: HttpClient, private noticeService: NoticeService, private modalService: NgbModal) { }
+  pagedAnnouncements: Announcement[] = [];
+  currentPage: number = 1;
+  pageSize: number = 4;
+  totalPages: number = 1; 
+  totalElements: number = 0;
+
+  constructor(private http: HttpClient, private noticeService: NoticeService, private modalService: NgbModal,
+     private paginationConfig: NgbPaginationConfig, private sessionService: SessionService
+  ) { }
 
   ngOnInit() {
     this.getWeather();
     this.getForecast();
     this.loadAnnouncements();
+    this.checkVisibility();
+    this.userName = this.sessionService.getItem('name');
   }
 
-  loadAnnouncements(isActive?: boolean) {
-    this.noticeService.getAllNotices(0, 10, isActive).subscribe({
+  checkVisibility() {
+    this.visibility = this.sessionService.hasRoleCodes(this.adminRoles);
+  }
+
+  loadAnnouncements(isActive?: boolean): void {
+    this.announcements = []
+    this.noticeService.getAllNotices(this.currentPage - 1, this.pageSize, isActive).subscribe({
       next: (response) => {
         this.announcements = response.content;
+
+        // Ordenar los anuncios por fecha en orden descendente
+        this.announcements.sort((a, b) => {
+          const dateA = new Date(a.date || '').getTime();
+          const dateB = new Date(b.date || '').getTime();
+          return dateB - dateA;  // Orden descendente
+        });
+
+        // Actualizar la paginación
+        this.totalPages = response.totalPages;
+        this.totalElements = response.totalElements;
       },
       error: (error) => {
         console.error('Error loading announcements:', error);
       }
     });
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.filterAnnouncements(this.activeFilter);
+  }
+
+  updatePagedAnnouncements(): void {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.pagedAnnouncements = this.announcements.slice(startIndex, endIndex);
   }
 
   filterAnnouncements(filter: 'all' | 'active' | 'inactive') {
@@ -140,6 +195,8 @@ export class HomeComponent implements OnInit {
   confirmDelete(announcement: Announcement) {
     this.announcementToDelete = announcement;
     this.modalService.open(this.deleteModal);
+    this.totalElements = 0;
+    this.totalPages = 1
   }
 
   deleteAnnouncement() {
@@ -148,7 +205,7 @@ export class HomeComponent implements OnInit {
         .subscribe({
           next: () => {
             this.modalService.dismissAll();
-            this.loadAnnouncements();
+            this.filterAnnouncements(this.activeFilter);
             this.announcementToDelete = null;
           },
           error: (error) => {
@@ -159,14 +216,14 @@ export class HomeComponent implements OnInit {
   }
 
   submitAnnouncement() {
-    const operation = this.isEditing 
+    const operation = this.isEditing
       ? this.noticeService.updateNotice(this.newAnnouncement, this.currentUserId)
       : this.noticeService.createNotice(this.newAnnouncement, this.currentUserId);
 
     operation.subscribe({
       next: () => {
         this.modalService.dismissAll();
-        this.loadAnnouncements();
+        this.filterAnnouncements(this.activeFilter);
         this.resetForm();
       },
       error: (error) => {
@@ -180,7 +237,7 @@ export class HomeComponent implements OnInit {
       title: '',
       content: '',
       priority: 'MEDIUM',
-      isActive: true,
+      is_active: true,
       date: new Date().toISOString()
     };
     this.isEditing = false;
@@ -227,7 +284,7 @@ export class HomeComponent implements OnInit {
           return acc;
         }, []);
 
-        this.forecast = dailyForecasts.slice(1, 3);
+        this.forecast = dailyForecasts.slice(0, 2);
       },
       error => console.error('Error fetching forecast data', error)
     );
