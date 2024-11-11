@@ -8,39 +8,49 @@ import { SendEmailContactComponent } from "./modules/components/send-email-conta
 import { SendEmailComponent } from "./modules/components/send-email/send-email.component";
 import { TemplateEmailComponent } from "./modules/components/template-email/template-email.component";
 import { TemplateListComponent } from "./modules/components/template-list/template-list.component";
+import { MyNotificationComponent } from "./modules/components/my-notification/my-notification.component";
+import { NotificationChartComponent } from "./modules/components/notification-chart/notification-chart.component";
 
 export const NOTIFICATION_ROUTES: Routes = [
-    { path: '', component: NotificationHomeComponent },
-    {
-        path: 'templates/new',
-        component: TemplateEmailComponent,
-      },
-      {
-        path: 'templates',
-        component: TemplateListComponent,
-      },
-      {
-        path: 'send-email',
-        component: SendEmailComponent,
-      },
-      {
-        path: 'send-email-contact',
-        component: SendEmailContactComponent,
-      },
-      {
-        path: 'notifications-historic',
-        component: NotificationHistoricComponent,
-      },
-      {
-        path: 'contact-audit', component: ContactAuditHistoryComponent
-      },
-      {
-    
-        path: 'contacts',
-        component: ContactListComponent
-      },
-      {
-        path: 'contact/new',
-        component: ContactNewComponent
-      }
+  {
+    path: 'templates/new',
+    component: TemplateEmailComponent,
+  },
+  {
+    path: 'templates',
+    component: TemplateListComponent,
+  },
+  {
+    path: 'send-email',
+    component: SendEmailComponent,
+  },
+  {
+    path: 'send-email-contact',
+    component: SendEmailContactComponent,
+  },
+  {
+    path: 'notifications-historic',
+    component: NotificationHistoricComponent,
+  },
+  {
+    path: 'my-notification',
+    component: MyNotificationComponent,
+  },
+  {
+    path: 'contact-audit', component: ContactAuditHistoryComponent
+  },
+  {
+
+    path: 'contacts',
+    component: ContactListComponent
+  },
+  {
+    path: 'contact/new',
+    component: ContactNewComponent
+  }, {
+
+    path: 'notification/charts',
+    component: NotificationChartComponent
+  }
+
 ];

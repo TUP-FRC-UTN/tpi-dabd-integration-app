@@ -1,55 +1,40 @@
-<app-main-container title="Auditoría de Contactos">
-    <div class="card-body">
-  
-      <!-- Botones de exportación -->
-      <div class="col row d-flex justify-content-end mb-3">
-      
-        <div class="col-auto">
-          <button class="btn" (click)="exportToExcel()" style="background-color: #239b56; color: white;">
-            <i class="bi bi-file-earmark-excel"></i>
-          </button>
-        </div>
-  
-        <div class="col-auto btn-export-pdf">
-          <button class="btn " (click)="exportToPDF()" style="background-color: red; color: white;">
-            <i class="bi bi-file-pdf"></i>
-          </button>
-        </div>
-      </div>
-  
+<app-main-container title="Auditoría de Contactos" (infoButtonClick)="showInfo()" >
+
       <div class="d-flex justify-content-between align-items-center mb-3">
         <!-- Grupo de botones izquierdo -->
         <div class="btn-group me-5" role="group">
-          <div class="d-flex align-items-center">
-            <div class="btn-group me-2">
-              <button class="btn btn-outline-danger " (click)="clearSearch()">
-                <i class="bi bi-trash-fill"></i> Limpiar
-              </button>
-  
-              <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                <i class="bi bi-funnel-fill"></i> Filtros
-              </button>
-              <ul class="dropdown-menu">
-                <li>
-                  <h6 class="dropdown-header">Tipo de Contacto</h6>
-                </li>
-                <li><a class="dropdown-item" (click)="filterByContactType('')">Todos</a></li>
-                <li><a class="dropdown-item" (click)="filterByContactType('EMAIL')">Email</a></li>
-                <li><a class="dropdown-item" (click)="filterByContactType('PHONE')">Teléfono</a></li>
-                <li><a class="dropdown-item" (click)="filterByContactType('SOCIAL_MEDIA_LINK')">Redes Sociales</a></li>
-              </ul>
-              <div class="input-group" *ngIf="showInput">
-                <input type="text" class="form-control rounded-start" [(ngModel)]="searchTerm"
-                  (input)="onSearchTextChange(searchTerm)" placeholder="Buscar...">
-                <button class="btn btn-dark rounded-start ms-2">Buscar</button>
-              </div>
+          <div class="col-sm-12 col-md-8 col-xl-10" id="general-search">
+            <div class="input-group" style="max-width: 280px">
+              <span class="input-group-text mr-3" id="search-icon">
+                <i class="bi bi-search"></i>
+              </span>
+              <input
+              [(ngModel)]="globalSearchTerm"
+                type="text"
+                class="form-control"
+                id="filter-text-box"
+                (input)="onGlobalSearchTextChange(globalSearchTerm)"
+              />
+             <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)" (clearFilters)="clearFilters()"></app-table-filters> 
+        
             </div>
           </div>
         </div>
+
+            <!-- Botones de Activo, Inactivo,  en el mismo grupo -->
+      <div class="d-flex align-items-center">
+
+        <!-- Línea vertical y botones de exportación -->
+        <div class="vertical-line mx-3"></div>
+        <button class="btn btn-success me-2" (click)="exportToExcel()">
+          <i class="bi bi-file-earmark-excel"></i>
+        </button>
+        <button class="btn btn-danger me-2" (click)="exportToPDF()">
+          <i class="bi bi-file-earmark-pdf"></i>
+        </button>
+      </div>
   
   
-        <!-- Botones de estado -->
 
       </div>
   
@@ -70,9 +55,7 @@
           } @else {
           <thead>
             <tr>
-              <th>ID del Contacto</th>
               <th>Fecha del cambio</th>
-              <th>ID de revisión</th>
               <th>Tipo de revisión</th>
               <th>Tipo de contacto</th>
               <th>Valor</th>
@@ -81,9 +64,8 @@
           <tbody>
             @for(auditItem of paginatedContacts; track auditItem.auditId) {
             <tr>
-              <td>{{auditItem.contactId}}</td>
-              <td>{{auditItem.revisionDate}}</td>
-              <td>{{auditItem.revisionId}}</td>
+
+              <td>{{auditItem.revisionDate  | date:'dd/MM/yyyy HH:mm:ss'}}</td>
               <td>{{auditItem.revisionType}}</td>
               <td>{{auditItem.contactType}}</td>
               <td>{{auditItem.value}}</td>
@@ -114,7 +96,7 @@
         </div>
       </div>
   
-    </div>
+
   
   
   

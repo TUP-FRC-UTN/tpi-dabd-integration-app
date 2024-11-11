@@ -1,20 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, inject, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Form, FormsModule } from '@angular/forms';
-
-import { ToastService } from 'ngx-dabd-grupo01';
-import { EmailData } from '../../../models/notifications/emailData';
+import { EmailService } from '../../../services/emailService';
 import { TemplateModel } from '../../../models/templates/templateModel';
+import { EmailData } from '../../../models/notifications/emailData';
 import { Variable } from '../../../models/variables';
 import { Base64Service } from '../../../services/base64-service.service';
-import { EmailService } from '../../../services/emailService';
+import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 import { TemplateService } from '../../../services/template.service';
 
 
 @Component({
   selector: 'app-send-email',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule,MainContainerComponent],
   templateUrl: './send-email.component.html',
   styleUrl: './send-email.component.css'
 })
@@ -42,11 +41,17 @@ export class SendEmailComponent implements OnInit {
   templates: TemplateModel[] = []
 
   showModalToRenderHTML: boolean = false;
+  isLoading: boolean = false;
 
+    // Estado del modal
+    isModalOpen = false;  // Controla si el modal está abierto o cerrado
+    informationModalTitle = '';
+    informationModalMessage = '';
+  
 
   ngOnInit(): void {
 
-    this.templateService.getAllTemplates().subscribe((data:any) => {
+    this.templateService.getAllTemplates().subscribe((data) => {
       this.templates = data;
     });
   }
@@ -79,6 +84,7 @@ export class SendEmailComponent implements OnInit {
 
 
   enviar(form: Form) {
+    this.isLoading = true
 
     const data: EmailData = {
       recipient: this.emailToSend,
@@ -87,12 +93,14 @@ export class SendEmailComponent implements OnInit {
       templateId: Number(this.templateID)
     }
     this.emailService.sendEmail(data).subscribe({
-      next: (data:any) => {
+      next: (data) => {
         this.toastService.sendSuccess("Enviado con exito")
         this.clean()
+        this.isLoading = false
       },
-      error: (errr: any) => {
+      error: (errr) => {
         this.toastService.sendError("Hubo un error al enviar el correo, pruebe más tarde")
+        this.isLoading = false
       }
     })
   }
@@ -120,6 +128,24 @@ export class SendEmailComponent implements OnInit {
 
 
 
+  showInformationModal(title: string, message: string) {
+    this.informationModalTitle = title;
+    this.informationModalMessage = message;
+    this.isModalOpen = true;  // Abre el modal
+  }
 
+  closeInformationModal() {
+    this.isModalOpen = false;  // Cierra el modal
+  }
+
+  // Método para mostrar información sobre el envío de notificaciones
+  showInfo() {
+    const message = `
+      <strong>Envío de Notificaciones</strong><br>
+      Esta funcionalidad permite enviar notificaciones a contactos registrados. 
+      Asegúrese de completar todos los campos obligatorios antes de enviar.
+    `;
+    this.showInformationModal('Información', message);
+  }
 
 }

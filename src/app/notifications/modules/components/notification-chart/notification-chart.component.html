@@ -1,0 +1,320 @@
+<app-main-container title="Estadisticas de Notificaciones" (infoButtonClick)="showInfo()">
+
+  <div class="d-flex justify-content-end tooltip-wrapper mb-2">
+    <button type="button" class="btn btn-outline-primary" (click)="toggleTooltip()">
+      Asistente IA
+      <i class="bi bi-stars"></i>
+    </button>
+  
+    <div *ngIf="isTooltipOpen" class="tooltip-container">
+      <div class="tooltip-content">
+        <div *ngIf="isLoading" class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <div *ngIf="!isLoading">
+          <h5>Respuesta del Asistente:</h5>
+          <p>{{ iaResponse }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="d-flex justify-content-between align-items-center mb-3">
+
+    @if (isBrowser) {
+    <div class="container-fluid p-4">
+
+
+      <!-- Filtro de búsqueda (Moved to top) -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="btn-group me-5" role="group">
+          <button class="btn btn-outline-info position-relative" type="button" (click)="toggleDropdown()">
+            <div class="icon-container">
+              <i class="bi bi-funnel-fill"></i>
+              <i class="bi bi-caret-down-fill"></i>
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                {{ getActiveFiltersCount() }}
+              </span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+
+
+      <!-- Filter Dropdown -->
+      <div class="dropdown">
+        <div class="dropdown-menu dropdown-menu-end p-3" [ngClass]="{'show': isDropdownOpen}">
+          <!-- Asunto -->
+          <div class="mb-3">
+            <label class="form-label">Asunto</label>
+            <input type="text" class="form-control" placeholder="Buscar por asunto..." [(ngModel)]="searchSubject">
+          </div>
+
+          <!-- Usuario -->
+          <div class="mb-3">
+            <label class="form-label">Usuario</label>
+            <input type="text" class="form-control" placeholder="Buscar por email de destinatario..."
+              [(ngModel)]="searchEmail">
+          </div>
+
+          <!-- Estado -->
+          <div class="mb-3">
+            <label class="form-label">Estado</label>
+            <select class="form-select" [(ngModel)]="selectedStatus">
+              <option value="ALL">Todas</option>
+              <option value="SENT">Enviadas</option>
+              <option value="VISUALIZED">Vistas</option>
+            </select>
+          </div>
+
+          <!-- Fecha desde -->
+          <div class="mb-3">
+            <label class="form-label">Fecha desde:</label>
+            <input type="date" class="form-control" [(ngModel)]="dateFrom">
+          </div>
+
+          <!-- Fecha hasta -->
+          <div class="mb-3">
+            <label class="form-label">Fecha hasta:</label>
+            <input type="date" class="form-control" [(ngModel)]="dateUntil" [max]="today">
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-danger w-50" (click)="resetFilters()">
+              <i class="bi bi-trash"></i>
+            </button>
+            <button class="btn btn-outline-primary w-50" (click)="applyFilters()">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+<!-- KPIs Row -->
+<div class="row mb-4">
+  <!-- Success Rate KPI -->
+  <div class="col-md-6 mb-3">
+    <div class="card">
+      <div class="card-body" style="height: 150px; width: 100%;">
+
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-success text-white me-3">
+            <i class="bi bi-check-circle"></i>
+          </div>
+          <h6 class="card-subtitle text-muted mb-0">Tasa de Visualización</h6>
+        </div>
+        <h2 class="card-title mb-0 text-success">{{kpis.viewedRate | number:'1.0-1'}}%</h2>
+        <small class="text-muted">Notificaciones Visualizadas</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily Average KPI -->
+  <div class="col-md-6 mb-3">
+    <div class="card">
+      <div class="card-body" style="height: 150px; width: 100%;">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-primary text-white me-3">
+            <i class="bi bi-graph-up"></i>
+          </div>
+          <h6 class="card-subtitle text-muted mb-0">Promedio Diario</h6>
+        </div>
+        <h2 class="card-title mb-0">{{kpis.dailyAverage | number:'1.0-1'}}</h2>
+        <small class="text-muted">Notificaciones por día</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Most Used Template KPI -->
+  <div class="col-md-3 mb-3">
+    <div class="card">
+      <div class="card-body" style="height: 150px; width: 100%;">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-warning text-white me-3">
+            <i class="bi bi-file-text"></i>
+          </div>
+          <h6 class="card-subtitle text-muted mb-0">Plantilla más Usada</h6>
+        </div>
+        <h2 class="card-title mb-0">{{kpis.mostUsedTemplate.count}}</h2>
+        <small class="text-muted">{{kpis.mostUsedTemplate.name}}</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Peak Hour KPI -->
+  <div class="col-md-3 mb-3">
+    <div class="card">
+      <div class="card-body" style="height: 150px; width: 100%;">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-info text-white me-3">
+            <i class="bi bi-clock"></i>
+          </div>
+          <h6 class="card-subtitle text-muted mb-0">Hora Pico</h6>
+        </div>
+        <h2 class="card-title mb-0">{{kpis.peakHour.hour}}:00</h2>
+        <small class="text-muted">{{kpis.peakHour.count}} notificaciones</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Most Frequent Contact KPI -->
+  <div class="col-md-3 mb-3">
+    <div class="card">
+      <div class="card-body" style="height: 150px; width: 100%;">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-danger text-white me-3">
+            <i class="bi bi-person"></i>
+          </div>
+          <h6 class="card-subtitle text-muted mb-0 ">Contacto más Frecuente</h6>
+        </div>
+        <small class="text-muted text-truncate d-block mt-4">{{kpis.mostFrequentContact.email}}</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3 mb-3">
+    <div class="card">
+      <div class="card-body" style="height: 150px; width: 100%;">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-violet text-white me-3">
+            <i class="bi bi-calendar-week"></i>
+          </div>
+          <h6 class="card-subtitle text-muted mb-0">Día más Activo</h6>
+        </div>
+        <h2 class="card-title mb-0">{{kpis.mostActiveDay.day}}</h2>
+        <small class="text-muted">{{kpis.mostActiveDay.count}} envíos ({{kpis.mostActiveDay.percentage | number:'1.0-1'}}%)</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+        <div style="margin-bottom: 15px;">
+        </div>
+      <br>
+      <!-- Charts Row -->
+      <div class="row">
+        <!-- Daily Notifications Chart -->
+        <div class="col-md-8 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title text-center hover-underline">
+                <a [routerLink]="['/notifications-historic']" class="hover-underline"  style="text-decoration: none; color: inherit;">
+                  Notificaciones por Día
+                </a>
+              </h5>              <div class="chart-container">
+                <canvas baseChart #dailyChart="base-chart" [data]="dailyChartData" [options]="dailyChartOptions" [type]="'line'"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Chart -->
+        <div class="col-md-4 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <a [routerLink]="['/notifications-historic']" style="text-decoration: none; color: inherit;">
+
+              <h5 class="card-title text-center hover-underline">Estado de Notificaciones</h5>
+              </a>
+              <div class="chart-container">
+                <canvas baseChart #statusChart="base-chart" [data]="statusChartData" [options]="statusChartOptions" [type]="'pie'"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weekly Activity Chart -->
+      <div class="row">
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title text-center">Actividad Semanal</h5>
+              <div class="chart-container">
+                <canvas baseChart #weeklyChart="base-chart" [data]="weeklyChartData" [options]="weeklyChartOptions" [type]="'bar'"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Template Usage Chart -->
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <a [routerLink]="['/templates']" style="text-decoration: none; color: inherit;">
+
+              <h5 class="card-title text-center hover-underline">Uso de Plantillas</h5>
+              </a>
+              <div class="chart-container">
+                <canvas baseChart #templateChart="base-chart" [data]="templateChartData" [options]="templateChartOptions" [type]="'bar'"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+    }
+  </div>
+
+</app-main-container>
+
+
+<!-- Modal de Información -->
+<div [class.show]="isModalOpen" [style.display]="isModalOpen ? 'block' : 'none'" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ modalTitle }}</h5>
+        <button type="button" class="btn-close" (click)="isModalOpen = false"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+          <!-- Introducción -->
+          <div class="alert alert-info mb-2">
+            <h5 class="alert-heading">Información sobre las Estadísticas</h5>
+            <p class="mb-0 small">Este dashboard presenta un resumen completo de las métricas y estadísticas de las notificaciones enviadas.</p>
+          </div>
+
+          <!-- Descripción de las secciones -->
+          <div class="card mb-2">
+            <div class="card-header">
+              <h5 class="mb-0">Descripción de las Secciones</h5>
+            </div>
+            <div class="card-body">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                  <strong>KPIs:</strong> Indicadores clave que muestran tasa de éxito, promedio diario, plantilla más usada y hora pico de envíos.
+                </li>
+                <li class="list-group-item">
+                  <strong>Estado de Notificaciones:</strong> Gráfico circular que muestra la distribución de notificaciones (enviadas, fallidas, no leídas).
+                </li>
+                <li class="list-group-item">
+                  <strong>Uso de Plantillas:</strong> Gráfico de barras que muestra la frecuencia de uso de cada plantilla.
+                </li>
+                <li class="list-group-item">
+                  <strong>Notificaciones por Día:</strong> Gráfico de línea que muestra la tendencia temporal de envíos.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Nota sobre Filtros -->
+          <div class="alert alert-warning mb-0">
+            <h5 class="alert-heading">Nota sobre Filtros:</h5>
+            <p class="mb-0 small">Puedes filtrar los datos por fecha, asunto, destinatario y estado para obtener análisis más específicos. Todos los gráficos y KPIs se actualizarán según los filtros aplicados.</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="isModalOpen = false">Volver</button>
+      </div>
+    </div>
+  </div>
+</div>

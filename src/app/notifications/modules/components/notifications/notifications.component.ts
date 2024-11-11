@@ -1,7 +1,8 @@
 import { Component, OnInit, HostListener, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NotificationService } from '../../../app/services/notification.service';
-import { NotificationApi, NotificationFront } from '../../../app/models/notification';
+import { NotificationService } from '../../../services/notification.service';
+import { Notification } from '../../../models/notifications/notification';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-notifications',
@@ -10,23 +11,34 @@ import { NotificationApi, NotificationFront } from '../../../app/models/notifica
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.css']
 })
+
 export class NotificationsComponent implements OnInit {
-  notifications: NotificationFront[] = [];
-  selectedNotification: NotificationFront | null = null;
+  notifications: Notification[] = [];
+  selectedNotification: Notification | null = null;
   showNotifications = false;
   showModal = false;
 
+  displayedNotifications: Notification[] = [];
+  remainingNotifications: Notification[] = [];
+
   showModalToRenderHTML: boolean = false;
 
+  clickCount = 0;
+  showNotification = false;
+
   notificationService = new NotificationService();
+  constructor(private router: Router) {}
+
   @ViewChild('iframePreview', { static: false }) iframePreview!: ElementRef;
 
   ngOnInit() {
-    this.notificationService.getAllNotification().subscribe({
+    this.notificationService.getNotificationByContact().subscribe({
       next: (notifications) => {
         this.notifications = notifications.sort((a, b) => {
-          return Number(a.isRead) - Number(b.isRead);
+          return new Date(b.dateSend).getTime() - new Date(a.dateSend).getTime();
         });
+        this.displayedNotifications = this.notifications.slice(0, 4);
+        this.remainingNotifications = this.notifications.slice(4);
       },
       error: (error) => {
         console.error('Error al cargar las notificaciones', error);
@@ -46,9 +58,10 @@ export class NotificationsComponent implements OnInit {
   }
 
 
-  showNotificationDetails(notification: NotificationFront) {
+  showNotificationDetails(notification: Notification) {
     // Marca la notificación como leída
     notification.isRead = true;
+    this.selectedNotification = notification;
     this.notificationService.isRead(notification.id).subscribe({
       next: () => {
         notification.isRead = true;
@@ -79,7 +92,7 @@ export class NotificationsComponent implements OnInit {
     this.showModalToRenderHTML = false;
   }
 
-  previewContent(notification: NotificationFront): void {
+  previewContent(notification: Notification): void {
     this.showModalToRenderHTML = true;
     setTimeout(() => {
       const iframe = this.iframePreview.nativeElement as HTMLIFrameElement;
@@ -92,5 +105,23 @@ export class NotificationsComponent implements OnInit {
         }
       };
     }, 5);
+  }
+
+  handleDoubleClick() {
+    this.clickCount++;
+    if (this.clickCount === 2) {
+      console.log("doble click")
+      this.router.navigate(['/my-notification']);
+      this.clickCount = 0;
+      console.log(this.clickCount)
+    }
+  }
+
+  loadMoreNotifications(){
+    const nextNotifications = this.remainingNotifications.slice(0, 5);
+    this.displayedNotifications = [...this.displayedNotifications, ...nextNotifications];
+    this.remainingNotifications = this.remainingNotifications.slice(5); // Elimina las cargadas
+    this.handleDoubleClick();
+
   }
 }

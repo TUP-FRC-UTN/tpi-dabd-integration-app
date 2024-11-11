@@ -67,7 +67,7 @@ export class ContactNewComponent {
       };
 
       this.contactService.saveContact(contact).subscribe({
-        next: (response:any) => {
+        next: (response) => {
 
           this.toastService.sendSuccess('El contacto ha sido registrado correctamente');
 
