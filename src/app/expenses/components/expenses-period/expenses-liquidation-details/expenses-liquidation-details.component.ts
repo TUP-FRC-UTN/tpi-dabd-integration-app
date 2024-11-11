@@ -3,9 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, DatePipe } from '@angular/common';
 import { CurrencyPipe } from '@angular/common';
 import { NgbActiveModal, NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
-import LiquidationExpense from '../../../models/liquidationExpense';
-import { FormsModule, NgControl, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { InfoModalComponent } from '../../modals/info-modal/info-modal.component';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { BillService } from '../../../services/bill.service';
@@ -20,6 +18,7 @@ import { ConfirmAlertComponent, MainContainerComponent, TableFiltersComponent, T
 import { ProviderService } from '../../../services/provider.service';
 import Period from '../../../models/period';
 import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal/edit-bill-modal.component';
+import { ViewBillModalComponent } from '../../modals/bills-modal/view-bill-modal/view-bill-modal.component';
 
 @Component({
   selector: 'app-expenses-liquidation-details',
@@ -59,7 +58,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   //
 
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
 
 
   //
@@ -103,7 +101,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   // pagination
   originalTotalItems = 0;
   totalItems = 0;
-  page = 0;
+  page = 1;
   size = 10;
 
   // other variables
@@ -132,7 +130,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
       {headerName: 'Proveedor', accessorKey: 'supplier.name'},
       {headerName: 'Descripción', accessorKey: 'description'},
       {headerName: 'Estado', accessorKey: 'status', cellRenderer: this.statusTemplate},
-      {headerName: 'Monto', accessorKey: 'amount', cellRenderer: this.amountTemplate},
+      {headerName: 'Monto', accessorKey: 'amount', cellRenderer: this.amountTemplate, align:'right'},
       {headerName: 'Acciones', accessorKey: 'actions', cellRenderer: this.actionsTemplate},
     ];
   }
@@ -282,7 +280,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
   onPageSizeChange = (size: number) => {
     this.size = size;
-    this.page = 0;
+    this.page = 1;
     if (this.isFiltering) return;
 
     this.loadLiquidationExpenseDetails();
@@ -369,19 +367,15 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   }
 
   showPaidModal(item: Bill) {
-    const modalRef = this.modalService.open(ConfirmAlertComponent);
-
-    modalRef.componentInstance.alertTitle = 'Pago'
-    modalRef.componentInstance.content = this.paidPdf;
-    modalRef.componentInstance.alertMessage = `${item.category.name} ${item.billType.name} - ${item.supplier.name} (${item.amount?.toLocaleString("es-AR", {
-      style: "currency",
-      currency: "ARS",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })})`;
-    modalRef.componentInstance.alertType = 'info';
+    this.openViewModal(item);
   }
 
+  openViewModal(bill: Bill) {
+    const modalRef = this.modalService.open(ViewBillModalComponent, {
+      size: 'lg',
+    });
+    modalRef.componentInstance.bill = bill;
+  }
 
   //  Pther buttons
   edit(bill: Bill) {

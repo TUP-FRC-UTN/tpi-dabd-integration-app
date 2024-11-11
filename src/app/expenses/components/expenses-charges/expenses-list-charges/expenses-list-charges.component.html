@@ -42,18 +42,20 @@
     <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;">
       <thead>
         <tr>
-          <th scope="col" style="text-align:center;" >Fecha</th>
-          <th scope="col" style="text-align: center;">Número de lote</th>
-          <th scope="col" style="text-align: center;">Categoría</th>
-          <th scope="col" style="text-align: center;">Descripción</th>
-          <th scope="col" style="text-align: center;">Monto</th>
-          <th scope="col" style="text-align: center;">Acciones</th>
+          <th scope="col" style="text-align: left;" >Periodo</th>
+          <th scope="col" style="text-align: left;" >Fecha</th>
+          <th scope="col" style="text-align: left;">Número de lote</th>
+          <th scope="col" style="text-align: left;">Categoría</th>
+          <th scope="col" style="text-align: left;">Descripción</th>
+          <th scope="col" style="text-align: right;">Monto</th>
+          <th scope="col" style="text-align: left;">Acciones</th>
         </tr>
       </thead>
       <tbody>
         @for (charge of chargesCompleted | filterBy: ['plotNumber', 'amount','description','categoryCharge.name','amountSign','date']: searchTerm; track $index) {<tr>
-          <td style="text-align: center;" >{{charge.date | date:'MMM d, yyyy'}}</td>
-          <td style="text-align: center;">{{charge.plotNumber}}</td>
+          <td style="text-align: left;" >{{charge.period.month }}/{{charge.period.year}}</td>
+          <td style="text-align: left;" >{{charge.date | date:'MMM d, yyyy'}}</td>
+          <td style="text-align: left;">{{charge.plotNumber}}</td>
           <td>{{charge.categoryCharge.name}}</td>
           <td>{{charge.description}}</td>
           @if (charge.amountSign.toString() == "Porcentaje") {
@@ -68,8 +70,8 @@
               minimumFractionDigits: 2,
               maximumFractionDigits: 2
             }) }}</td>
-          }          
-          <td  style="text-align: center; justify-content: center;" >
+          }
+          <td  style="text-align: left; justify-content: center;" >
             @if(isFine(charge.categoryCharge.name)  ||charge.period.state == "CLOSE") {
 
               <button class="btn btn-primary btn-sm m-1" (click)="openViewModal(charge)">
@@ -164,33 +166,17 @@
           </li>
         </ul>
       </nav>
-    </div>     
+    </div>
   </div>
 
   <!--POSIBLE IMPLEMENTACIÓN-->
-  
+
 </app-main-container>
-<!-- <app-table
-  [items]="chargesCompleted"
-  [columns]="columns"
-  [showSearchBar]="true"
-  [showHeaderButton]="true"
-  (excelButtonClick)="downloadTable()"
-  (pdfButtonClick)="imprimir()"
-  [tableFilters]="filters"
-  [pagination]="{
-      totalItems: totalItems,
-      page: currentPage,
-      size: pageSize,
-      onPageChange: onPageChange,
-      onPageSizeChange: changesPageSize
-    }"
->
-</app-table> -->
 
 
 <ng-template #modalTemplate let-modal >
   <app-expenses-modal
+
     [title]="'Eliminar Cargo'"
     [paragraph]="'¿Desea eliminar el cargo registrado al lote?'"
     (onAccept)="deleteCharge2()"

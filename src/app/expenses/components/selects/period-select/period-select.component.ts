@@ -33,7 +33,6 @@ export class PeriodSelectComponent implements OnInit {
   onPeriodChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     const selectedValue = selectElement.value;
-
     if (selectedValue) {
       this.periodSelected.emit(Number(selectedValue));
     }
@@ -41,7 +40,7 @@ export class PeriodSelectComponent implements OnInit {
 
   private redirectToAnotherPage(id:number): void {
     if(this.redirectOnInit){
-      this.router.navigate([`expenses/period/${this.periodList[0]?.id}/expensas`]);
+      this.router.navigate([`expense/expenses/liquidation-expense/${this.periodList[0]?.id}`]);
     }
   }
 

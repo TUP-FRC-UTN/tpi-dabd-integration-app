@@ -1,0 +1,46 @@
+<app-main-container title="Top Proveedores">
+
+  <div class="row" style="align-items: end">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <!-- Sección de búsqueda -->
+      <div class="d-flex align-items-center mb-2" role="group">
+        <div class="col-sm-12 col-md-8 col-xl-12">
+          <div class="input-group">
+            <span class="input-group-text" id="search-icon">
+              <i class="bi bi-search"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              id="filter-text-box"
+              placeholder="Buscar proveedores..."
+              (input)="onSearchChange($event)"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="justify-content-lg-start">
+        <div class="card-header">Top de Proveedores</div>
+          <div class="card-boddy">
+            @if (filteredSuppliers.length > 0){
+            <div>
+              <h3>Top Suppliers</h3>
+              <ul>
+                @for (supplier of filteredSuppliers; track $index){
+                <li>
+                  {{ supplier.name }} - Total Amount: {{ supplier.totalAmount | currency }}
+                </li>
+                }
+              </ul>
+            </div>
+            } @else {
+              <p>No se han encontrado proveedores.</p>
+            }
+          </div>
+      </div>
+    </div>
+  </div>
+</app-main-container>
