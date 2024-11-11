@@ -5,9 +5,10 @@ import { AccessQueryComponent } from "./accesses/features/access-query/access-qu
 import { AuthorizedFormComponent } from "./authorization/features/authorized-form/authorized-form.component";
 import { AuthorizedRangeFormComponent } from "./authorization/features/authorized-range-form/authorized-range-form.component";
 import { ListAuthComponent } from "./authorization/features/list-auth/list-auth.component";
-import { QrFormComponent } from "./qr/features/qr-form/qr-form.component";
+
 import { VisitorFormComponent } from "./visitor/features/visitor-form/visitor-form.component";
 import { VisitorListComponent } from "./visitor/features/visitor-list/visitor-list.component";
+import { QrComponent } from "./qr/qr.component";
 
 export const ENTRY_ROUTES: Routes = [
     { path: '', component: EntryHomeComponent },
@@ -25,7 +26,7 @@ export const ENTRY_ROUTES: Routes = [
       },
       {
         path: 'qr',
-        component: QrFormComponent,
+        component: QrComponent,
       },
       {
         path: 'register-range',

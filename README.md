@@ -1,4 +1,90 @@
-# TPI UTN
+# TPI
+
+# ⚠️ IMPORTANTE: Ruteo y Configuración de API
+
+## 🛣️ Estructura de Rutas
+Este proyecto implementa un sistema de rutas jerárquico donde cada módulo funcional tiene su propio conjunto de rutas que DEBE seguir el prefijo asignado en el ruteo principal (`app.routes.ts`).
+
+### Prefijos de Rutas por Módulo
+Los prefijos coinciden con la estructura del backend:
+- Accesos: `/accesses/...`
+- Cuentas: `/accounts/...`
+- Direcciones: `/addresses/...`
+- Catastro: `/cadastre/...`
+- Construcciones: `/constructions/...`
+- Contactos: `/contacts/...`
+- Empleados: `/employees/...`
+- Gastos: `/expenses/...`
+- Inventario: `/inventory/...`
+- Moderaciones: `/moderations/...`
+- Notificaciones: `/notifications/...`
+- Pagos: `/payments/...`
+- Proveedores: `/suppliers/...`
+- Tickets: `/tickets/...`
+- Usuarios: `/users/...`
+
+## 🌐 Configuración de API
+El proyecto maneja tres ambientes distintos configurados en la carpeta `environments/`:
+
+### Ambientes Disponibles
+1. **Local (Development Individual)**:
+```typescript
+// environment.ts
+export const environment = {
+  production: false,
+  apis: {
+    accesses: 'http://localhost:8001/',
+    accounts: 'http://localhost:8002/',
+    // ... resto de las APIs con sus puertos específicos
+  }
+};
+```
+
+2. **Desarrollo (Docker Compose)**:
+```typescript
+// environment.dev.ts
+export const environment = {
+  production: false,
+  apis: {
+    accesses: 'http://localhost:8080/accesses/',
+    accounts: 'http://localhost:8080/accounts/',
+    // ... resto de las APIs a través del nginx
+  }
+};
+```
+
+3. **Producción**:
+```typescript
+// environment.prod.ts
+export const environment = {
+  production: true,
+  apis: {
+    accesses: 'http://localhost:8080/accesses/',
+    accounts: 'http://localhost:8080/accounts/',
+    // ... resto de las APIs a través del nginx
+  }
+};
+```
+
+### Ejemplo de Uso en Servicios
+```typescript
+import { environment } from '../environments/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class UsersService {
+  private readonly baseUrl = environment.apis.users;
+
+  constructor(private http: HttpClient) {}
+
+  getUsers() {
+    return this.http.get(`${this.baseUrl}list`);
+  }
+}
+```
+
+---
 
 ## 🚀 Configuración del Proyecto
 
@@ -20,6 +106,9 @@ tpi-dabd-integration-app/
 │       └── docker-build.yml    # Configuración de GitHub Actions
 ├── Dockerfile                  # Configuración de Docker
 ├── .dockerignore              # Archivos ignorados por Docker
+├── environments/              # Configuración de entornos
+│   ├── environment.ts         # Configuración de desarrollo
+│   └── environment.prod.ts    # Configuración de producción
 └── README.md                  # Este archivo
 ```
 
@@ -83,7 +172,6 @@ El workflow de GitHub Actions automatiza el proceso de build y publicación de l
    - Build de la imagen Docker
    - Push de la imagen al registro
 
-
 ## 🔑 Configuración del Token para Pull Local
 
 Para poder descargar la imagen localmente, necesitas configurar un Personal Access Token (PAT):
@@ -104,17 +192,17 @@ docker login ghcr.io -u TU-USUARIO-DE-GITHUB -p TU-TOKEN
 
 3. Pull de la imagen:
 ```bash
-docker pull ghcr.io/tup-frc-utn/tpi-dabd-integration-app:main
+docker pull ghcr.io/tup-frc-utn/tpi-dabd-integration-app-2w1:main
 ```
 
 4. Ejecutar la imagen:
 ```bash
-docker run -d -p 4200:4200 ghcr.io/tup-frc-utn/tpi-dabd-integration-app:main
+docker run -d -p 4200:4200 ghcr.io/tup-frc-utn/tpi-dabd-integration-app-2w1:main
 ```
 
 ## 📝 Notas Importantes
 
-- La imagen se publica en: `ghcr.io/tup-frc-utn/tpi-dabd-integration-app`
+- La imagen se publica en: `ghcr.io/tup-frc-utn/tpi-dabd-integration-app-2w1:main`
 - Se generan tags basados en:
   - Nombre de la rama (`main`, `develop`)
   - SHA del commit
@@ -129,7 +217,7 @@ docker run -d -p 4200:4200 ghcr.io/tup-frc-utn/tpi-dabd-integration-app:main
 
 2. Verifica la imagen publicada:
    - Ve a la pestaña "Packages"
-   - Busca la imagen `tpi-dabd-integration-app`
+   - Busca la imagen `tpi-dabd-integration-app-2w1`
 
 ## 🛠️ Troubleshooting
 
