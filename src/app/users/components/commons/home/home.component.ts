@@ -38,7 +38,7 @@ interface Announcement {
   id: number;
   title: string;
   content: string;
-  priority: 'high' | 'medium' | 'low';
+  priority: 'alto' | 'medio' | 'bajo';
   date?: string;
   isVisible: boolean;
 }
@@ -151,16 +151,17 @@ export class HomeComponent implements OnInit {
       .getAllNotices(this.currentPage - 1, this.pageSize, isActive)
       .subscribe({
         next: (response) => {
-          this.announcements = response.content;
-
-          // Ordenar los anuncios por fecha en orden descendente
+          this.announcements = response.content.map((notice) => ({
+            ...notice,
+            priority: translatePriority(notice.priority),
+          }));
+  
           this.announcements.sort((a, b) => {
             const dateA = new Date(a.date || '').getTime();
             const dateB = new Date(b.date || '').getTime();
             return dateB - dateA; // Orden descendente
           });
-
-          // Actualizar la paginación
+  
           this.totalPages = response.totalPages;
           this.totalElements = response.totalElements;
         },
@@ -357,5 +358,18 @@ export class HomeComponent implements OnInit {
   formatDate(dateStr: string): string {
     const date = new Date(dateStr);
     return date.toLocaleDateString('es-ES', { weekday: 'long' });
+  }
+}
+
+export function translatePriority(priority: 'high' | 'medium' | 'low'): 'alto' | 'medio' | 'bajo' {
+  switch (priority) {
+    case 'high':
+      return 'alto';
+    case 'medium':
+      return 'medio';
+    case 'low':
+      return 'bajo';
+    default:
+      return 'medio';
   }
 }
