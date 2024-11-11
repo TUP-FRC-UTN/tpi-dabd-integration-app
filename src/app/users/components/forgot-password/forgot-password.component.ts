@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MainContainerComponent, ToastsContainer, ToastService } from 'ngx-dabd-grupo01';
+import { ToastsContainer, ToastService } from 'ngx-dabd-grupo01';
 import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,ToastsContainer, MainContainerComponent, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule,ToastsContainer, FormsModule],
   templateUrl: './forgot-password.component.html'
 })
 export class ForgotPasswordComponent {
