@@ -385,16 +385,113 @@ export class OwnerFilesViewComponent implements OnInit {
   clearFilters(){}
   confirmFilter(){}
 
-  openInfo(){
+
+  //#region Info Button
+  openInfo() {
     const modalRef = this.modalService.open(InfoComponent, {
       size: 'lg',
       backdrop: 'static',
       keyboard: false,
       centered: true,
-      scrollable: true
+      scrollable: true,
     });
 
+    modalRef.componentInstance.title = 'Lista de Archivos subidos por un Propietario';
+    modalRef.componentInstance.description =
+      'En esta pantalla se visualizan todos los archivos cargados por un propietario para su validación.';
+    modalRef.componentInstance.body = [
+      {
+        title: 'Datos',
+        content: [
+          {
+            strong: 'Nombre:',
+            detail: 'Nombre del archivo.',
+          },
+          {
+            strong: 'Tipo: ',
+            detail: 'Tipo de archivo. (Documento Frente, Documento Dorso o Escritura)',
+          },
+          {
+            strong: 'Estado de KYC: ',
+            detail: 'Estado de aprobación del documento.',
+          },
+        ],
+      },
+      {
+        title: 'Acciones',
+        content: [
+          {
+            strong: 'Ver Archivo: ',
+            detail:
+              'Redirige hacia otra pantalla fuera de la aplicación para poder visualizar y descargar el archivo.',
+          },
+          {
+            strong: 'Pre-Aprobar: ',
+            detail:
+              'Abre un modal para poder dejar una observación al archivo y cambiar el estado a "Pre-Aprobado".',
+          },
+          {
+            strong: 'Aprobar: ',
+            detail:
+              'Abre un modal para poder dejar una observación al archivo y cambiar el estado a "Aprobado".',
+          },
+          {
+            strong: 'Agregar Nota: ',
+            detail:
+              'Abre un modal para poder dejar una observación al archivo y cambiar el estado a "Revisado".',
+          },
+          {
+            strong: 'Permitir Cambio: ',
+            detail:
+              'Abre un modal para poder dejar una observación al archivo y cambiar el estado a "Modificar" para que el propietario pueda subir otro archivo.',
+          },
+        ],
+      },
+      {
+        title: 'Filtros',
+        content: [
+          {
+            strong: 'Tipo de documento: ',
+            detail: 'Filtra los propietarios por los tipos de documento.'
+          },
+          {
+            strong: 'Tipo de propietario: ',
+            detail: 'Filtra los propietarios por los tipos (Persona, Compañía, Otros).'
+          },
+          {
+            strong: 'Estado del propietario: ',
+            detail: 'Filtra por el estado de validación del propietario.'
+          },
+          {
+            strong: 'Activo: ',
+            detail: 'Filtra por los propietarios si están activos o inactivos.'
+          },
+        ],
+      },
+      {
+        title: 'Funcionalidades de los botones',
+        content: [
+          {
+            strong: 'Filtros: ',
+            detail:
+              'Botón con forma de tolva que despliega los filtros avanzados.',
+          },
+          {
+            strong: 'Validar Propietario: ',
+            detail: 'Botón azul que permite presionarlo cuando es posible cambiar el estado del Propietario a "Validado". Abre un modal para confirmación.',
+          },
+          {
+            strong: 'Paginación: ',
+            detail: 'Botones para pasar de página en la grilla.',
+          },
+        ],
+      },
+    ];
+    modalRef.componentInstance.notes = [
+      'La interfaz está diseñada para ofrecer una administración eficiente, manteniendo la integridad y seguridad de los datos de los propietarios.',
+    ];
   }
+  //#end region
 
 
   callMock() {
