@@ -160,7 +160,7 @@ export class FilesViewComponent {
           },
           {
             strong: 'Documento: ',
-            detail: 'Número y tipo del documento del propietario.'
+            detail: 'Tipo y númeroo de documento del propietario.'
           },
           {
             strong: 'Estado: ',
@@ -172,16 +172,8 @@ export class FilesViewComponent {
         title: 'Acciones',
         content: [
           {
-            strong: 'Ver detalles: ',
+            strong: 'Detalle: ',
             detail: 'Redirige hacia la pantalla para poder visualizar los documentos cargados por el propietario.'
-          },
-          {
-            strong: 'Aprobar: ',
-            detail: 'Aprueba la validación del propietario y pasa al estado de validado.'
-          },
-          {
-            strong: 'Rechazar: ',
-            detail: 'Rechaza la validación del propietario y pasa al estado de rechazado.'
           }
         ]
       },
