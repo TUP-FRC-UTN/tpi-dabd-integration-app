@@ -17,39 +17,31 @@
     <div class="col-md-7">
       <div class="card">
         <div class="card-header villa-green">
-          <div class="d-flex justify-content-between align-items-center">
+          <div [class]="visibility ? 'd-flex justify-content-between align-items-center' : 'text-center'">
             <h3 class="mb-0" style="color: black;">Anuncios Importantes</h3>
+            @if (visibility) {
             <div class="d-flex gap-3 align-items-center">
               <!-- Filtro de estado -->
               <div class="btn-group" role="group">
-                <button 
-                  class="btn btn-sm" 
-                  [class.btn-primary]="activeFilter === 'all'" 
-                  [class.btn-outline-primary]="activeFilter !== 'all'" 
-                  (click)="filterAnnouncements('all')">
+                <button class="btn btn-sm" [class.btn-primary]="activeFilter === 'all'"
+                  [class.btn-outline-primary]="activeFilter !== 'all'" (click)="filterAnnouncements('all')">
                   Todos
                 </button>
-                <button 
-                  class="btn btn-sm" 
-                  [class.btn-primary]="activeFilter === 'active'"
-                  [class.btn-outline-primary]="activeFilter !== 'active'"
-                  (click)="filterAnnouncements('active')">
-                  Activos
+                <button class="btn btn-sm" [class.btn-primary]="activeFilter === 'active'"
+                  [class.btn-outline-primary]="activeFilter !== 'active'" (click)="filterAnnouncements('active')">
+                  Visibles
                 </button>
-                <button 
-                  class="btn btn-sm" 
-                  [class.btn-primary]="activeFilter === 'inactive'"
-                  [class.btn-outline-primary]="activeFilter !== 'inactive'"
-                  (click)="filterAnnouncements('inactive')">
-                  Inactivos
+                <button class="btn btn-sm" [class.btn-primary]="activeFilter === 'inactive'"
+                  [class.btn-outline-primary]="activeFilter !== 'inactive'" (click)="filterAnnouncements('inactive')">
+                  Ocultos
                 </button>
               </div>
               <!-- Botón nuevo anuncio -->
-              <button type="button" class="btn btn-outline-primary"
-                (click)="openModal(announcementModal)">
+              <button type="button" class="btn btn-outline-primary" (click)="openModal(announcementModal)">
                 <i class="bi bi-plus-lg"></i>
               </button>
             </div>
+            }
           </div>
         </div>
         <div class="card-body">
@@ -63,24 +55,25 @@
                     <h5 class="mb-1">{{announcement.title}}</h5>
                     <div class="d-flex align-items-center gap-2">
                       <small>{{announcement.date | date:'dd/MM/yyyy'}}</small>
+                      <span class="badge" [class.bg-success]="announcement.isVisible"
+                        [class.bg-secondary]="!announcement.isVisible">
+                        {{announcement ? 'Visible' : 'No visible'}}
+                      </span>
                       <!-- Menú de tres puntos -->
                       <div class="dropdown">
-                        <button class="btn btn-link btn-sm p-0" 
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false">
+                        <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" style="padding: 0.4rem;"
+                          data-bs-toggle="dropdown" aria-expanded="false">
                           <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                           <li>
-                            <button class="dropdown-item" 
-                                    (click)="editAnnouncement(announcement)">
-                              <i class="bi bi-pencil me-2"></i>Editar
+                            <button class="dropdown-item" (click)="editAnnouncement(announcement)">
+                              Editar
                             </button>
                           </li>
                           <li>
-                            <button class="dropdown-item text-danger" 
-                                    (click)="confirmDelete(announcement)">
-                              <i class="bi bi-trash me-2"></i>Eliminar
+                            <button class="dropdown-item" (click)="confirmDelete(announcement)">
+                              Eliminar
                             </button>
                           </li>
                         </ul>
@@ -97,6 +90,11 @@
                   </small>
                 </div>
               </div>
+            </div>
+            <div class="pagination-container">
+              <ngb-pagination [(page)]="currentPage" [pageSize]="pageSize" [collectionSize]="totalElements"
+                (pageChange)="onPageChange($event)">
+              </ngb-pagination>
             </div>
           </div>
         </div>
@@ -182,37 +180,24 @@
         <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Close"></button>
       </div>
     </div>
-    
+
     <div class="modal-body px-4 py-4">
       <form #announcementForm="ngForm" (ngSubmit)="submitAnnouncement()">
         <div class="mb-4">
           <label for="title" class="form-label fw-semibold">Título</label>
-          <input 
-            type="text" 
-            class="form-control form-control-lg shadow-sm" 
-            id="title" 
-            name="title"
-            placeholder="Ingrese el título del anuncio"
-            [(ngModel)]="newAnnouncement.title" 
-            required
-            #title="ngModel">
+          <input type="text" class="form-control form-control-lg shadow-sm" id="title" name="title"
+            placeholder="Ingrese el título del anuncio" [(ngModel)]="newAnnouncement.title" required #title="ngModel">
           <div *ngIf="title.invalid && (title.dirty || title.touched)" class="text-danger mt-1">
             <small *ngIf="title.errors?.['required']">
               <i class="bi bi-exclamation-circle me-1"></i>El título es requerido
             </small>
           </div>
         </div>
-  
+
         <div class="mb-4">
           <label for="content" class="form-label fw-semibold">Contenido</label>
-          <textarea 
-            class="form-control shadow-sm" 
-            id="content" 
-            rows="4" 
-            name="content"
-            placeholder="Escriba el contenido del anuncio"
-            [(ngModel)]="newAnnouncement.content"
-            required 
+          <textarea class="form-control shadow-sm" id="content" rows="4" name="content"
+            placeholder="Escriba el contenido del anuncio" [(ngModel)]="newAnnouncement.content" required
             #content="ngModel"></textarea>
           <div *ngIf="content.invalid && (content.dirty || content.touched)" class="text-danger mt-1">
             <small *ngIf="content.errors?.['required']">
@@ -220,16 +205,11 @@
             </small>
           </div>
         </div>
-  
+
         <div class="mb-4">
           <label for="priority" class="form-label fw-semibold">Prioridad</label>
-          <select 
-            class="form-select shadow-sm" 
-            id="priority" 
-            name="priority"
-            [(ngModel)]="newAnnouncement.priority" 
-            required
-            #priority="ngModel">
+          <select class="form-select shadow-sm" id="priority" name="priority" [(ngModel)]="newAnnouncement.priority"
+            required #priority="ngModel">
             <option value="" disabled selected>Seleccione una prioridad</option>
             <option value="HIGH">Alta</option>
             <option value="MEDIUM">Media</option>
@@ -243,15 +223,12 @@
         </div>
       </form>
     </div>
-  
+
     <div class="modal-footer border-0 bg-light">
-      <button type="button" class="btn btn-outline-secondary px-4" (click)="modal.dismiss()">
+      <button type="button" class="btn btn-outline-danger px-4" (click)="modal.dismiss()">
         Cancelar
       </button>
-      <button 
-        type="button" 
-        class="btn btn-primary px-4" 
-        (click)="submitAnnouncement()"
+      <button type="button" class="btn btn-primary px-4" (click)="submitAnnouncement()"
         [disabled]="!announcementForm.form.valid">
         Guardar
       </button>
@@ -259,18 +236,18 @@
   </ng-template>
 
   <!-- Delete Confirmation Modal -->
-<ng-template #deleteModal let-modal>
-  <div class="modal-header">
-    <h5 class="modal-title">Confirmar eliminación</h5>
-    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
-  </div>
-  <div class="modal-body">
-    ¿Está seguro que desea eliminar este anuncio?
-    <p class="mt-2 mb-0 font-weight-bold">{{announcementToDelete?.title}}</p>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancelar</button>
-    <button type="button" class="btn btn-danger" (click)="deleteAnnouncement()">Eliminar</button>
-  </div>
-</ng-template>
+  <ng-template #deleteModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">Confirmar eliminación</h5>
+      <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+      ¿Está seguro que desea eliminar este anuncio?
+      <p class="mt-2 mb-0 font-weight-bold">{{announcementToDelete?.title}}</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-primary" (click)="modal.dismiss()">Cancelar</button>
+      <button type="button" class="btn btn-danger" (click)="deleteAnnouncement()">Eliminar</button>
+    </div>
+  </ng-template>
 </div>
