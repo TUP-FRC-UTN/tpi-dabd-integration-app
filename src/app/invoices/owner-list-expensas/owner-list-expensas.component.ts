@@ -100,6 +100,7 @@ export class OwnerListExpensasComponent {
     description: '',
     totalPrice: 0,
     adminNameWhoApproves: '',
+    period:''
   };
   isFilter: boolean = false; // to keep the status to avoid load all values from backend
 
@@ -283,6 +284,7 @@ export class OwnerListExpensasComponent {
     )}`;
     this.requestData.totalPrice = this.calculateTotal(this.ticketSelectedModal);
     this.requestData.adminNameWhoApproves = 'ADMIN USER';
+    this.requestData.period = this.ticketSelectedModal.period;
     // Agregar el JSON como un string en el FormData
     // const jsonData = {
     //   idTicket: 123,

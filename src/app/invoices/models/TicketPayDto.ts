@@ -4,5 +4,6 @@ export interface TicketPayDto {
     description: string; 
     totalPrice: number;
     adminNameWhoApproves: string;
+    period: string;
   }
   

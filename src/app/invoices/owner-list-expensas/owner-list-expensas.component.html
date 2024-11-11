@@ -104,7 +104,11 @@
                 </li>
                 <li>
                   <a
-                    *ngIf="item.status !== 'PAID' && item.status !== 'CANCELED'"
+                    *ngIf="
+                      item.status !== 'PAID' &&
+                      item.status !== 'CANCELED' &&
+                      item.status !== 'UNDER_REVIEW'
+                    "
                     class="dropdown-item"
                     data-bs-toggle="modal"
                     data-bs-target="#statusModal"
@@ -114,7 +118,11 @@
                 </li>
                 <li>
                   <a
-                    *ngIf="item.status !== 'PAID' && item.status !== 'CANCELED'"
+                    *ngIf="
+                      item.status !== 'PAID' &&
+                      item.status !== 'CANCELED' &&
+                      item.status !== 'UNDER_REVIEW'
+                    "
                     class="dropdown-item"
                     data-bs-toggle="modal"
                     data-bs-target="#ticketModal"
@@ -218,9 +226,9 @@
             <tr>
               <th scope="col">#</th>
               <th scope="col">Descripción</th>
-              <th scope="col">Cantidad</th>
+              <!-- <th scope="col">Cantidad</th> -->
               <!-- <th scope="col">Precio Unitario</th> -->
-              <th scope="col">Costo Total</th>
+              <th scope="col">Sub Total</th>
             </tr>
           </thead>
           <tbody>
