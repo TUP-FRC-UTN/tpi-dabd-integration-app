@@ -114,7 +114,16 @@ export class HomeComponent implements OnInit {
     this.getForecast();
     this.loadAnnouncements();
     this.checkVisibility();
-    this.userName = this.sessionService.getItem('name');
+    this.userName = this.getUserSession();
+  }
+
+  getUserSession() {
+    const user = sessionStorage.getItem('user');
+    console.log('Usuario logueado: ', user);
+    if (user) {
+      const parsedUser = JSON.parse(user);
+      return parsedUser.value.first_name;
+    }
   }
 
   checkVisibility() {
