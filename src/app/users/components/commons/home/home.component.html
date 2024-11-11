@@ -84,9 +84,9 @@
                   </div>
                   <p class="mb-1">{{announcement.content}}</p>
                   <small [ngClass]="{
-                    'text-danger': announcement.priority === 'high',
-                    'text-warning': announcement.priority === 'medium',
-                    'text-success': announcement.priority === 'low'
+                    'text-danger': announcement.priority === 'alto',
+                    'text-warning': announcement.priority === 'medio',
+                    'text-success': announcement.priority === 'bajo'
                   }">
                     Prioridad: {{announcement.priority | titlecase}}
                   </small>
