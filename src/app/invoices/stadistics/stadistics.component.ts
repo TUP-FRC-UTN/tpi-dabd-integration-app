@@ -34,6 +34,10 @@ export class StadisticsComponent implements OnInit {
   mercadoPagoPromedio: number = 0;
   porcentajeTransacciones: number = 0;
 
+  cantidadAprobados: number = 0;
+  cantidadPendientes: number = 0;
+  cantidadCancelados: number = 0;
+
   // Variables para enviar la request y carguen los datos al service
   dateForm: FormGroup;
 
@@ -166,6 +170,10 @@ export class StadisticsComponent implements OnInit {
 
     this.mercadoPagoPromedio = 0;
     this.porcentajeTransacciones = 0;
+
+    this.cantidadAprobados = this.OtherReports.paid;
+    this.cantidadPendientes = this.OtherReports.pending;
+    this.cantidadCancelados = this.OtherReports.canceled;
   }
 
   getReportDataTop5(periodRequest: PeriodRequest): Promise<void> {
@@ -248,9 +256,10 @@ export class StadisticsComponent implements OnInit {
     if (!this.BaseReport || !this.BaseReport.top5) return;
 
     // Extraer etiquetas (números de ticket) y valores (monto total) para el gráfico
-    const labels = this.BaseReport.top5.map((item: TicketInfo) => item.ticketNumber);
+    const labels = this.BaseReport.top5.map((item: TicketInfo) => item.lot);
     const values = this.BaseReport.top5.map((item: TicketInfo) => item.totalAmount);
 
+    console.log(this.BaseReport);
     // Configurar los datos del gráfico
     this.chartData = {
       labels: labels,
@@ -280,7 +289,7 @@ export class StadisticsComponent implements OnInit {
       labels: labels,
       datasets: [
         {
-          label: 'Cantidad de cobros realizados por período',
+          label: 'Monto de expensas cobradas en el mes',
           data: values,
           backgroundColor: 'rgba(75, 192, 192, 0.6)',
           borderColor: 'rgba(75, 192, 192, 1)',

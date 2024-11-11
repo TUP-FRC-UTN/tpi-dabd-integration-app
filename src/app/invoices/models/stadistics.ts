@@ -7,7 +7,7 @@ export interface Top5 {
 }
 
 export interface TicketInfo {
-  ticketNumber: string;
+  lot: string;
   period: string;
   totalAmount: number;
 }

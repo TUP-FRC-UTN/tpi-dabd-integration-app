@@ -26,7 +26,7 @@ export class StadisticsService {
   }
 
   getAmountByDate(fechas: PeriodRequest): Observable<TicketInfo[]> {
-    return this.http.post<TicketInfo[]>(this.apiUrl + '/', fechas);
+    return this.http.post<TicketInfo[]>(this.apiUrl + '/totalPayments', fechas);
   }
 
 }
