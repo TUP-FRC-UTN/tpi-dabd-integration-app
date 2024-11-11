@@ -7,7 +7,7 @@ import { MainContainerComponent } from 'ngx-dabd-grupo01';
 import { InfoComponent } from '../info/info.component';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { StadisticsService } from '../services/stadistics.service';
-import { OtherReport, PeriodRequest, TicketInfo, Top5 } from '../models/stadistics';
+import { OtherReport, PeriodRequest, TicketInfo, Top5, TopPayments } from '../models/stadistics';
 
 @Component({
   selector: 'app-stadistics',
@@ -45,6 +45,7 @@ export class StadisticsComponent implements OnInit {
   BaseReport!: Top5;
   OtherReports!: OtherReport;
   PeriodAmount: TicketInfo[] = [];
+  PreferredPayment!: TopPayments;
   public chartData: any;
   public chartDataPeriodsAmount: any;
 
@@ -135,6 +136,7 @@ export class StadisticsComponent implements OnInit {
     await this.getReportDataTop5(periodRequest);
     await this.getOtherReport(periodRequest);
     await this.getPeriodAmount(periodRequest);
+    await this.getReportDataTopPreferred(periodRequest);
 
     // Se actualizan los graficos con los nuevos datos
     this.loadInvoicesByPeriod();
@@ -162,14 +164,22 @@ export class StadisticsComponent implements OnInit {
     this.promedioMensual = this.OtherReports.totalAveragePaid;
 
     this.metodosPago = parseInt(this.OtherReports.paid.toString(), 10);
-    this.metodoPrincipal = 'MercadoPago';
-    this.porcentajeMetodoPrincipal = 0;
 
     this.boletaMasAlta = this.BaseReport.topAmount;
     this.promedioTop5 = parseInt(this.BaseReport.averageAmount.toString(), 10);
 
+
+    console
     this.mercadoPagoPromedio = 0;
-    this.porcentajeTransacciones = 0;
+    if (this.PreferredPayment.byMercadoPago > this.PreferredPayment.byTransfer) {
+      this.metodoPrincipal = 'MercadoPago';
+      this.porcentajeMetodoPrincipal = this.PreferredPayment.percentageByMercadoPago;
+      this.mercadoPagoPromedio = this.PreferredPayment.totalByMercadoPago;
+    } else {
+      this.metodoPrincipal = 'Transferencia';
+      this.porcentajeMetodoPrincipal = this.PreferredPayment.percentageByTransfer;
+      this.mercadoPagoPromedio = this.PreferredPayment.totalByTransfer;
+    }
 
     this.cantidadAprobados = this.OtherReports.paid;
     this.cantidadPendientes = this.OtherReports.pending;
@@ -212,6 +222,21 @@ export class StadisticsComponent implements OnInit {
       this.stadisticsService.getAmountByDate(periodRequest).subscribe(
         (data: TicketInfo[]) => {
           this.PeriodAmount = data; // Asignamos el array recibido a PeriodAmount
+          resolve();
+        },
+        error => {
+          console.error('Error al obtener el reporte', error);
+          reject(error);
+        }
+      );
+    });
+  }
+
+  getReportDataTopPreferred(periodRequest: PeriodRequest): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.stadisticsService.getPreferred(periodRequest).subscribe(
+        (data: TopPayments) => {
+          this.PreferredPayment = data;
           resolve();
         },
         error => {

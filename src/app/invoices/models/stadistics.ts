@@ -25,3 +25,13 @@ export interface OtherReport {
   totalAveragePaid: number;
 }
 
+export interface TopPayments {
+  byTransfer: number;
+  totalByTransfer: number;
+  percentageByTransfer: number;
+  byMercadoPago: number;
+  totalByMercadoPago: number;
+  percentageByMercadoPago: number;
+  preferredMethod: string;
+}
+
