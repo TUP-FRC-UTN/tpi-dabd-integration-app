@@ -15,8 +15,8 @@ import { User } from '../../../models/user';
 import { toSnakeCase } from '../../../utils/owner-helper';
 import { InfoComponent } from '../../commons/info/info.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import {birthdateValidation} from '../../../validators/birthdate.validations';
-import {plotForUserValidator} from '../../../validators/cadastre-plot-for-users';
+import { birthdateValidation } from '../../../validators/birthdate.validations';
+import { plotForUserValidator } from '../../../validators/cadastre-plot-for-users';
 
 @Component({
   selector: 'app-user-user-detail',
@@ -40,21 +40,21 @@ export class UserUserDetailComponent {
 
   //#region ATT
   id: string | null = null;
-  user : any = {};
+  user: any = {};
   address!: Address;
   addresses: Address[] = [];
-  addressIndex:number | undefined = undefined;
+  addressIndex: number | undefined = undefined;
   contact!: Contact;
   contacts: Contact[] = [];
-  contactIndex:number | undefined = undefined;
+  contactIndex: number | undefined = undefined;
   rol!: Role;
-  plot! : Plot;
+  plot!: Plot;
   roles: any[] = []
-  rolesForCombo : Role[] = []
+  rolesForCombo: Role[] = []
   provinceOptions!: any;
   countryOptions!: any;
   actualPlotOfOwner!: Plot[]
-  minDate :any
+  minDate: any
   //#endregion
 
   //#region FORMULARIO REACTIVO
@@ -117,7 +117,7 @@ export class UserUserDetailComponent {
     this.minDate = tomorrow.toISOString().split('T')[0];
   }
 
-  setEnums(){
+  setEnums() {
     this.provinceOptions = Object.entries(Provinces).map(([key, value]) => ({
       value: key,
       display: value
@@ -136,9 +136,11 @@ export class UserUserDetailComponent {
       this.userService.getUserById(Number(this.id)).subscribe(
         response => {
           this.user = response;
-
-          const [day, month, year] = this.user.birthdate.split('/');
-          const formattedDate = `${year}-${month}-${day}`;
+          let formattedDate: any
+          if (this.user.birthdate) {
+            const [day, month, year] = this.user.birthdate?.split('/');
+            formattedDate = `${year}-${month}-${day}`;
+          }
           this.userForm.patchValue({
             email: this.user.email,
             firstName: this.user.firstName,
@@ -285,23 +287,26 @@ export class UserUserDetailComponent {
 
   getPlotsOfOwner() {
     // TODO: Ver como obtener el ownerId
-    this.plotService.getPlotById(this.user.plotId).subscribe(
-      response => {
-        this.actualPlotOfOwner = [response];
-      },
-      error => {
-        this.toastService.sendError("Error recuperando los lotes. Reinicie la pagina.")
-      }
-    )
+    if (this.user.plotId) {
+      this.plotService.getPlotById(this.user.plotId).subscribe(
+        response => {
+          this.actualPlotOfOwner = [response];
+        },
+        error => {
+          this.toastService.sendError("Error recuperando los datos del usuario. Reinicie la pagina.")
+        }
+      )
+    }
   }
 
-  setPlotValue(plotId:number) {
+  setPlotValue(plotId: number) {
     const plotFormGroup = this.userForm.get('plotForm') as FormGroup;
     this.plotService.getPlotById(plotId).subscribe(
       response => {
         console.log(response);
         plotFormGroup.patchValue({
-          plotAssign: response.id
+          plotNumber: response.plotNumber,
+          blockNumber: response.blockNumber
         })
       })
   }
@@ -376,7 +381,7 @@ export class UserUserDetailComponent {
     this.location.back()
   }
 
-  openInfo(){
+  openInfo() {
     const modalRef = this.modalService.open(InfoComponent, {
       size: 'lg',
       backdrop: 'static',

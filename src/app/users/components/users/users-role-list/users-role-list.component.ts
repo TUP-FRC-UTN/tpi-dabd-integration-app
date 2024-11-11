@@ -1,23 +1,23 @@
-import {Component, inject} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import {
   Filter,
   FilterConfigBuilder,
   MainContainerComponent,
   TableFiltersComponent,
-  ToastService
+  ToastService,
 } from 'ngx-dabd-grupo01';
-import {NgbModal, NgbPagination} from '@ng-bootstrap/ng-bootstrap';
-import {Router} from '@angular/router';
-import {UserService} from '../../../services/user.service';
-import {SessionService} from '../../../services/session.service';
-import {User} from '../../../models/user';
-import {CadastreExcelService} from '../../../services/cadastre-excel.service';
-import {Subject} from 'rxjs';
-import {DatePipe} from '@angular/common';
-import {Role} from '../../../models/role';
+import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
+import { Router } from '@angular/router';
+import { UserService } from '../../../services/user.service';
+import { SessionService } from '../../../services/session.service';
+import { User } from '../../../models/user';
+import { CadastreExcelService } from '../../../services/cadastre-excel.service';
+import { Subject } from 'rxjs';
+import { DatePipe } from '@angular/common';
+import { Role } from '../../../models/role';
 import * as XLSX from 'xlsx';
-import {RoleService} from '../../../services/role.service';
+import { RoleService } from '../../../services/role.service';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { InfoComponent } from '../../commons/info/info.component';
@@ -29,24 +29,24 @@ import { InfoComponent } from '../../commons/info/info.component';
     FormsModule,
     MainContainerComponent,
     NgbPagination,
-    TableFiltersComponent
+    TableFiltersComponent,
   ],
   templateUrl: './users-role-list.component.html',
   styleUrl: './users-role-list.component.scss',
-  providers: [DatePipe]
+  providers: [DatePipe],
 })
 export class UsersRoleListComponent {
-  private router = inject(Router)
-  private userService = inject(UserService)
-  private roleService = inject(RoleService)
+  private router = inject(Router);
+  private userService = inject(UserService);
+  private roleService = inject(RoleService);
   private sessionService = inject(SessionService);
-  private toastService = inject(ToastService)
-  private modalService = inject(NgbModal)
+  private toastService = inject(ToastService);
+  private modalService = inject(NgbModal);
 
-  rolesForCombo : any[] = []
+  rolesForCombo: any[] = [];
   //TODO: Cambiar filtro porfavor
   filterConfig: Filter[] = new FilterConfigBuilder()
-    .selectFilter("Rol", "rol", "Seleccionar un Rol", this.rolesForCombo)
+    .selectFilter('Rol', 'rol', 'Seleccionar un Rol', this.rolesForCombo)
     .build();
   /*
       "Creado": "CREATED",
@@ -57,16 +57,16 @@ export class UsersRoleListComponent {
       "Vacio": "EMPTY"
    */
 
-  userList!: User[]
+  userList!: User[];
   userName!: string;
   filteredUsersList: User[] = [];
   roleSelected: any;
 
   //#region ATT de PAGINADO
-  currentPage: number = 0
-  pageSize: number = 10
-  sizeOptions : number[] = [10, 25, 50]
-  lastPage: boolean | undefined
+  currentPage: number = 0;
+  pageSize: number = 10;
+  sizeOptions: number[] = [10, 25, 50];
+  lastPage: boolean | undefined;
   totalItems: number = 0;
   //#endregion
 
@@ -75,13 +75,12 @@ export class UsersRoleListComponent {
   }
 
   getAllRoles() {
-    this.roleService.getAllRoles(0, 2147483647, true).subscribe(
-      response => {
-        for (const role of response.content) {
-          this.rolesForCombo.push({ value: role.name, label: role.prettyName })
-        }
+    this.roleService.getAllRoles(0, 2147483647, true).subscribe((response) => {
+      this.roleSelected = response.content[0];
+      for (const role of response.content) {
+        this.rolesForCombo.push({ value: role.name, label: role.prettyName });
       }
-    )
+    });
   }
 
   onPageChange(page: number) {
@@ -94,18 +93,18 @@ export class UsersRoleListComponent {
     this.ngOnInit();
   }
 
-  userDetail(userId? : number) {
-    this.router.navigate([`users/user/detail/${userId}`])
+  userDetail(userId?: number) {
+    this.router.navigate([`users/user/detail/${userId}`]);
   }
 
   //#region POR ACOMODAR
 
   private excelService = inject(CadastreExcelService);
 
-  LIMIT_32BITS_MAX = 2147483647
+  LIMIT_32BITS_MAX = 2147483647;
 
   itemsList!: User[];
-  objectName : string = ""
+  objectName: string = '';
   dictionaries: Array<{ [key: string]: any }> = [];
 
   // Subject to emit filtered results
@@ -113,13 +112,18 @@ export class UsersRoleListComponent {
   // Observable that emits filtered owner list
   filter$ = this.filterSubject.asObservable();
 
-  headers : string[] = ['Nombre completo', 'Nombre de usuario', 'Email', 'Activo']
+  headers: string[] = [
+    'Nombre completo',
+    'Nombre de usuario',
+    'Email',
+    'Activo',
+  ];
 
   private dataMapper = (item: User) => [
-    item["firstName"] + ' ' + item["lastName"],
-    item["userName"],
-    item["email"],
-    item['isActive']? 'Activo' : 'Inactivo',
+    item['firstName'] + ' ' + item['lastName'],
+    item['userName'],
+    item['email'],
+    item['isActive'] ? 'Activo' : 'Inactivo',
   ];
 
   // Se va a usar para los nombres de los archivos.
@@ -136,54 +140,66 @@ export class UsersRoleListComponent {
    * Calls the `exportTableToPdf` method from the `CadastreExcelService`.
    */
   exportToPdf() {
-    if(this.roleSelected){    
+    if (this.roleSelected) {
       const doc = new jsPDF();
-    
+
       doc.setFontSize(18);
       doc.text('Usuarios con Rol ' + this.roleSelected, 14, 20);
 
-      this.userService.getUsersByRole(this.roleSelected, 0, this.LIMIT_32BITS_MAX).subscribe({
-        next: (data) => {
-          autoTable(doc, {
-            startY: 30,
-            head: [['Nombre completo', 'Nombre de usuario', 'Email', 'Activo',]],
-            body: data.map((user: User) => [
-              user.firstName + ' ' + user.lastName,
-              user.userName,
-              user.email,
-              user.isActive? 'Activo' : 'Inactivo'
-            ])
-          });
-          doc.save(`${this.getActualDayFormat()}_Usuarios.pdf`);
-        },
-        error: () => {console.log("Error retrieved all, on export component.")}
-      });
-    }
-    else{
-      this.toastService.sendError("Por favor seleccione un rol para cargar en la sección de filtros")
+      this.userService
+        .getUsersByRole(this.roleSelected, 0, this.LIMIT_32BITS_MAX)
+        .subscribe({
+          next: (data) => {
+            autoTable(doc, {
+              startY: 30,
+              head: [
+                ['Nombre completo', 'Nombre de usuario', 'Email', 'Activo'],
+              ],
+              body: data.map((user: User) => [
+                user.firstName + ' ' + user.lastName,
+                user.userName,
+                user.email,
+                user.isActive ? 'Activo' : 'Inactivo',
+              ]),
+            });
+            doc.save(`${this.getActualDayFormat()}_Usuarios.pdf`);
+          },
+          error: () => {
+            console.log('Error retrieved all, on export component.');
+          },
+        });
+    } else {
+      this.toastService.sendError(
+        'Por favor seleccione un rol para cargar en la sección de filtros'
+      );
     }
   }
 
   exportToExcel() {
-    if(this.roleSelected){ 
-      this.userService.getUsersByRole(this.roleSelected, 0, this.LIMIT_32BITS_MAX).subscribe({
-        next: (data) => {
-          const toExcel = data.map((user: User) => ({
-            'Nombre completo': user.firstName + ' ' + user.lastName,
-            'Nombre de usuario': user.userName,
-            'Email': user.email,  
-            'Activo': user.isActive? 'Activo' : 'Inactivo'
-          }));
-          const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);
-          const wb: XLSX.WorkBook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(wb, ws, 'Usuarios');
-          XLSX.writeFile(wb, `${this.getActualDayFormat()}_Usuarios.xlsx`);
-        },
-        error: () => { console.log("Error retrieved all, on export component.") }
-      });
-    }
-    else{
-      this.toastService.sendError("Por favor seleccione un rol para cargar en la sección de filtros")
+    if (this.roleSelected) {
+      this.userService
+        .getUsersByRole(this.roleSelected, 0, this.LIMIT_32BITS_MAX)
+        .subscribe({
+          next: (data) => {
+            const toExcel = data.map((user: User) => ({
+              'Nombre completo': user.firstName + ' ' + user.lastName,
+              'Nombre de usuario': user.userName,
+              Email: user.email,
+              Activo: user.isActive ? 'Activo' : 'Inactivo',
+            }));
+            const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);
+            const wb: XLSX.WorkBook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Usuarios');
+            XLSX.writeFile(wb, `${this.getActualDayFormat()}_Usuarios.xlsx`);
+          },
+          error: () => {
+            console.log('Error retrieved all, on export component.');
+          },
+        });
+    } else {
+      this.toastService.sendError(
+        'Por favor seleccione un rol para cargar en la sección de filtros'
+      );
     }
   }
 
@@ -195,15 +211,23 @@ export class UsersRoleListComponent {
     } else {
       const filterValue = target.value.toLowerCase();
 
-      const filteredList = this.itemsList.filter(item => {
-        return Object.values(item).some(prop => {
+      const filteredList = this.itemsList.filter((item) => {
+        return Object.values(item).some((prop) => {
           const propString = prop ? prop.toString().toLowerCase() : '';
 
-          const translations = this.dictionaries && this.dictionaries.length
-            ? this.dictionaries.map(dict => this.translateDictionary(propString, dict)).filter(Boolean)
-            : [];
+          const translations =
+            this.dictionaries && this.dictionaries.length
+              ? this.dictionaries
+                  .map((dict) => this.translateDictionary(propString, dict))
+                  .filter(Boolean)
+              : [];
 
-          return propString.includes(filterValue) || translations.some(trans => trans?.toLowerCase().includes(filterValue));
+          return (
+            propString.includes(filterValue) ||
+            translations.some((trans) =>
+              trans?.toLowerCase().includes(filterValue)
+            )
+          );
         });
       });
 
@@ -223,21 +247,28 @@ export class UsersRoleListComponent {
   }
 
   redirectToForm() {
-    this.router.navigate(["/users/user/form"]);
+    this.router.navigate(['/users/user/form']);
   }
 
   //#endregion
   filterChange($event: Record<string, any>) {
 
-    this.userService.getUsersByRole($event['rol'], this.currentPage, this.pageSize).subscribe({
-      next: result => {
-        this.roleSelected = $event['rol'];
-        this.userList = result;
-        this.filteredUsersList = this.userList
-        this.totalItems = result.totalElements;
-      },
-      error : err => this.toastService.sendError("Error al cargar la lista.")
-    })
+    if (!$event['rol']) {
+      return;
+    }
+
+    this.userService
+      .getUsersByRole($event['rol'], this.currentPage, this.pageSize)
+      .subscribe({
+        next: (result) => {
+          this.roleSelected = $event['rol'];
+          this.userList = result.content;
+          this.filteredUsersList = this.userList;
+          this.totalItems = result.totalElements;
+        },
+        error: (err) =>
+          this.toastService.sendError('Error al cargar la lista.'),
+      });
   }
 
   //#region Info Button
@@ -290,9 +321,8 @@ export class UsersRoleListComponent {
         content: [
           {
             strong: 'Rol: ',
-            detail:
-              'Filtra los usuarios que tienen el rol seleccionado.',
-          }
+            detail: 'Filtra los usuarios que tienen el rol seleccionado.',
+          },
         ],
       },
       {

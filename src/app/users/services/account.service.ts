@@ -8,6 +8,8 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import autoTable from 'jspdf-autotable';
+import { environment } from '../../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +17,9 @@ import autoTable from 'jspdf-autotable';
 export class AccountService {
   private http = inject(HttpClient);
 
-  host: string = 'http://localhost:8002/accounting-concepts/';
+  host: string = environment.production 
+  ? `${environment.apis.accounts}accounting-concepts/` 
+  : 'http://localhost:8002/accounting-concepts/';
 
   getConceptsByPlotId(
     plotId: number,

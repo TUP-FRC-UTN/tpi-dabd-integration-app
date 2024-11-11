@@ -14,6 +14,7 @@ import { toCamelCase } from '../utils/owner-helper';
 import { Owner } from '../models/owner';
 import { OwnerMapperPipe } from '../pipes/owner-mapper.pipe';
 import { ForgotPasswordRequest } from '../models/forgot-password';
+import { environment } from '../../../environments/environment'
 import { SessionService } from './session.service';
 
 @Injectable({
@@ -23,7 +24,9 @@ export class UserService {
   private http = inject(HttpClient)
   private sessionService = inject(SessionService);
 
-  host: string = 'http://localhost:8015/users';
+  host: string = environment.production
+    ? environment.apis.users
+    : 'http://localhost:8015/users';
 
   validateEmail(email: string): Observable<boolean> {
     const params = new HttpParams().set('email', email.toString());
@@ -91,7 +94,7 @@ export class UserService {
     }
 
     const headers = new HttpHeaders({
-      'x-user-id': '1', //TODO: agregar id de user logueado
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
     return this.http.get<PaginatedResponse<User>>(this.host, { params, headers }).pipe(
       map((response: PaginatedResponse<any>) => {

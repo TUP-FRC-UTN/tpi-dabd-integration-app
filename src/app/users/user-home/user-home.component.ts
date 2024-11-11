@@ -47,7 +47,7 @@ export class UserHomeComponent {
             { label: 'Cargar Usuario', routerLink: '/users/user/form' },
             { label: 'Cargar Usuario Inquilino', routerLink: '/users/user/tenant/form' },
             { label: 'Lista de Roles', routerLink: '/users/roles/list' },
-            { label: 'Cargar Roles', routerLink: '/users/roles/form' },
+            /* { label: 'Cargar Roles', routerLink: '/users/roles/form' }, */
             { label: 'Usuarios Creados', routerLink: '/users/user/created/1' },
           ]
         }

@@ -7,6 +7,7 @@ import { map } from 'rxjs';
 import { TransformPlotPipe } from '../pipes/plot-mapper.pipe';
 import { TransformOwnerPlotHistoryPipe } from '../pipes/owner-history-plots-mapper.pipe';
 import { OwnerPlotHistoryDTO } from '../models/ownerXplot';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,9 @@ import { OwnerPlotHistoryDTO } from '../models/ownerXplot';
 export class OwnerPlotService {
   constructor(private http: HttpClient) { }
 
-  host: string = "http://localhost:8004"
+  host: string = environment.production
+  ? `${environment.apis.cadastre}`
+  : 'http://localhost:8004';
 
   giveActualOwner(plotId : number) {
     return this.http.get<Owner>(`${this.host}/owner/current/plot/${plotId}`);

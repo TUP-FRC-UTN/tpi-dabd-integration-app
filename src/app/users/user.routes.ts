@@ -46,97 +46,97 @@ export const USER_ROUTES: Routes = [
     component: OwnerFormComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN] }
   },
   {
     path: 'owner/form/:id',
     component: OwnerFormComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN] }
   },
   {
     path: 'owner/detail/:id',
     component: OwnerDetailComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN, URLTargetType.OWNER] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC, URLTargetType.OWNER] }
   },
   {
     path: 'owner/list',
     component: OwnerListComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN,] }
   },
   { path: 'plot/form',
     component: PlotFormComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN] }
   },
   {
     path: 'plot/form/:id',
     component: PlotFormComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC] }
   },
   {
     path: 'plot/list',
     component: PlotsListComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN] }
   },
   {
     path: 'files/form',
     component: FilesFormComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN, URLTargetType.OWNER] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC, URLTargetType.OWNER] }
   },
   {
     path: 'files/view',
     component: FilesViewComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN] }
   },
   {
     path: 'files/:ownerId/view',
     component: OwnerFilesViewComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN, URLTargetType.OWNER] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.OWNER] }
   },
   {
     path: 'user/list',
     component: UserUserListComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN] }
   },
   {
     path: 'user/form',
     component: UserUserFormComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN, URLTargetType.OWNER] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.OWNER] }
   },
   {
     path: 'user/form/:id',
     component: UserUserFormComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN, URLTargetType.OWNER] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.OWNER] }
   },
   {
     path: 'user/detail/:id',
     component: UserUserDetailComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN, URLTargetType.OWNER] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.OWNER] }
   },
   {
     path: 'roles/list',
@@ -159,13 +159,13 @@ export const USER_ROUTES: Routes = [
     canMatch: [hasRoleCodeGuard],
     data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.OWNER] }
   },
-  {
+  /* {
     path: 'roles/form',
     component: RolesFormComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
     data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN] }
-  },
+  }, */
   {
     path: 'roles/form/:roleId',
     component: RolesFormComponent,
@@ -185,7 +185,7 @@ export const USER_ROUTES: Routes = [
     component: CadastreOwnerPlotListComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN] }
   },
   {
     path: 'owner/reports',
@@ -227,7 +227,7 @@ export const USER_ROUTES: Routes = [
     component: CadastreOwnerAssignPlotComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN] }
   },
   {
     path: 'user/created',
@@ -248,7 +248,7 @@ export const USER_ROUTES: Routes = [
     component: ChangePasswordComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard] ,
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN, URLTargetType.OWNER] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC, URLTargetType.OWNER] }
 
   },
   {
@@ -256,7 +256,7 @@ export const USER_ROUTES: Routes = [
     component: ProfileDetailComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard] ,
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN, URLTargetType.OWNER] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC, URLTargetType.OWNER] }
 
   },
   {
@@ -264,14 +264,14 @@ export const USER_ROUTES: Routes = [
     component: ProfileComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard] ,
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN, URLTargetType.OWNER] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC, URLTargetType.OWNER] }
 
   },
   { path: '**',
     component: NotFoundComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC_ADMIN, URLTargetType.OWNER] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC, URLTargetType.OWNER] }
   },
 
 ];

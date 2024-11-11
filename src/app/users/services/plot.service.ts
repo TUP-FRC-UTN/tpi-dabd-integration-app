@@ -6,6 +6,7 @@ import { PaginatedResponse } from '../models/api-response';
 import { TransformPlotPipe } from '../pipes/plot-mapper.pipe';
 import { OwnerMapperPipe } from '../pipes/owner-mapper.pipe';
 import { Document } from '../models/file';
+import { environment } from '../../../environments/environment'
 import { SessionService } from './session.service';
 
 @Injectable({
@@ -15,7 +16,9 @@ export class PlotService {
   private http = inject(HttpClient)
   private sessionService = inject(SessionService);
 
-  host: string = "http://localhost:8004/plots"
+  host: string = `${environment.production 
+  ? environment.apis.cadastre 
+  : 'http://localhost:8004'}/plots`;
 
   getAllPlots(page : number, size : number, isActive? : boolean): Observable<PaginatedResponse<Plot>> {
     let params = new HttpParams()

@@ -104,7 +104,7 @@ export class LoginComponent implements OnInit {
   }
 
   forgotPassword(){
-    this.router.navigate(['forgotpassword'])
+    this.router.navigate(['/forgotpassword'])
   }
 
 }
