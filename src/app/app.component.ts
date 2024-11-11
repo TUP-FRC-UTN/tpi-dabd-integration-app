@@ -34,6 +34,16 @@ export class AppComponent {
       ]
     },
     {
+      label: 'Empleados',
+      routerLink:'inventories',
+      sidebarMenu: [
+        {
+          label: 'Empleados',
+          routerLink: 'inventories/employees/list'
+        }
+      ]
+    },
+    {
       label: 'Gastos', //expensas
       routerLink:'expenses',
       sidebarMenu: [
@@ -57,6 +67,35 @@ export class AppComponent {
           ]
         },
       ],
+    },
+    {
+      label: 'Inventarios',
+      routerLink:'inventories',
+      sidebarMenu: [
+        {
+          label: 'Inventarios',
+          subMenu: [
+            {label: 'Inventarios',routerLink:'inventories/inventories'},
+            {label: 'Nuevo Artículo',routerLink:'inventories/articles/article'},
+          ]
+        }
+      ]
+    },
+    {
+      label: 'Multas',
+      routerLink: 'penalties/sanctionType',
+      sidebarMenu: [
+
+        {
+          label: 'Multas',
+          subMenu: [
+            {label: 'Multas',routerLink:'penalties/fine'},
+            {label: 'Infracciones',routerLink:'penalties/infraction'},
+            {label: 'Reclamos',routerLink:'penalties/claim'},
+            {label: 'Tipos de Sanciones',routerLink:'penalties/sanctionType'}
+          ]
+        }
+      ]
     },
     {
       label: 'Notificaciones',
@@ -99,21 +138,12 @@ export class AppComponent {
       ]
     },
     {
-      label: 'Obras y Multas',
+      label: 'Obras',
       routerLink: 'penalties',
       sidebarMenu: [
         {
           label: 'Obras',
           routerLink: 'penalties/constructions'
-        },
-        {
-          label: 'Multas',
-          subMenu: [
-            {label: 'Multas',routerLink:'penalties/fine'},
-            {label: 'Infracciones',routerLink:'penalties/infraction'},
-            {label: 'Reclamos',routerLink:'penalties/claim'},
-            {label: 'Tipos de Sanciones',routerLink:'penalties/sanctionType'}
-          ]
         }
       ]
     },
@@ -122,22 +152,10 @@ export class AppComponent {
       routerLink:'inventories',
       sidebarMenu: [
         {
-          label: 'Empleados',
-          routerLink: 'inventories/employees/list'
-        },
-        {
           label: 'Proveedores',
           routerLink: 'inventories/providers/list'
         },
-        {
-          label: 'Inventarios',
-          subMenu: [
-            {label: 'Inventarios',routerLink:'inventories/inventories'},
-            {label: 'Nuevo Artículo',routerLink:'inventories/articles/article'},
-          ]
-        }
       ]
-
     },
     {
       label: 'Tickets', //invoices
