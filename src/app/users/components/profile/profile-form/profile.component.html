@@ -1,4 +1,4 @@
-<app-main-container title="Editar información del perfil">
+<app-main-container title="Editar información del perfil" (infoButtonClick)="openInfo()">
   <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
     <div class="col-md-6">
       <div class="flex-row d-flex align-items-center">
@@ -106,7 +106,7 @@
     <!-- Addresses -->
     <!-- Addresses -->
     <div formGroupName="addressForm" class="row g-3">
-      <h5 class="mt-2 p-2">Añadir Dirección</h5>
+      <h5 class="mt-2 p-2">Dirección</h5>
 
       <div class="col-md-6">
         <div class="d-flex flex-row align-items-center">
