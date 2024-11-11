@@ -1,3 +1,19 @@
 .equal-height-card {
-  min-height: 300px; /* Ajusta el valor según tus necesidades */
+  min-height: 300px;
+}
+
+
+.full-height-card {
+  height: 100%; 
+}
+
+.full-height-card .card-body {
+  display: flex; 
+  flex-direction: column;
+  height: 100%; 
+}
+
+.chart-container {
+  flex-grow: 1; 
+  position: relative;
 }
