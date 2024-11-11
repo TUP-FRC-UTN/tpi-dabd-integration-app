@@ -36,8 +36,10 @@ import {
   TableColumn,
   TableComponent,
   TableFiltersComponent,
+  ToastService,
 } from 'ngx-dabd-grupo01';
 import { of } from 'rxjs';
+import { DeleteBillModalComponent } from '../../modals/bills/delete-bill-modal/delete-bill-modal.component';
 
 @Component({
   selector: 'app-list-expenses_bills',
@@ -59,6 +61,9 @@ import { of } from 'rxjs';
 })
 export class ExpensesListBillsComponent implements OnInit {
   //#region VARIABLES
+
+  private readonly toastService = inject(ToastService);
+  
   bills: Bill[] = [];
   filteredBills: Bill[] = [];
   currentPage: number = 1;
@@ -428,6 +433,24 @@ export class ExpensesListBillsComponent implements OnInit {
       centered: true,
       scrollable: true,
     });
+  }
+
+  deleteBill(bill: Bill) {
+    const modalRef = this.modalService.open(DeleteBillModalComponent, {
+      backdrop: 'static',
+      keyboard: false
+    });
+    modalRef.componentInstance.bill = bill;
+    modalRef.result.then(
+      (result) => {
+        if (result.success) {
+          this.toastService.sendSuccess(result.message)
+          window.location.reload();
+        } else {
+          this.toastService.sendError(result.message)
+        }
+      }
+    );
   }
 
   //#endregion

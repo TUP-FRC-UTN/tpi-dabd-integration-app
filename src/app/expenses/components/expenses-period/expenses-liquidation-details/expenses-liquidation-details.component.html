@@ -37,16 +37,41 @@
 </ng-template>
 
 <ng-template #actionsTemplate let-item>
-  <td style="display: flex; flex-direction: row; gap: 4px;">
+  @if(period.state !== 'Cerrado') {
+
+    <td style="
+      display: flex;
+      flex-direction: row;
+      gap: 2px;
+      justify-content: center;
+    ">
+      <div class="btn-group" ngbDropdown>
+        <button
+          type="button"
+          class="btn btn-sm btn-secondary"
+          ngbDropdownToggle
+          aria-expanded="false"
+        >
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+        <div ngbDropdownMenu>
+          <button type="button" class="dropdown-item" (click)="showPaidModal(item)">
+            Detalles
+          </button>
+          <button type="button" class="dropdown-item" (click)="edit(item)">
+            Editar
+          </button>
+          <button type="button" class="dropdown-item" (click)="deleteBill(item)">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </td>
+  } @else {
     <button type="button" class="btn btn-primary" (click)="showPaidModal(item)">
       <i class="bi bi-eye"></i>
     </button>
-    @if(period.state !== 'Cerrado') {
-      <button type="button" class="btn btn-warning" (click)="edit(item)">
-        <i class="bi bi-pencil"></i>
-      </button>
-    }
-  </td>
+  }
 </ng-template>
 
 <ng-template #paidPdf let-item>

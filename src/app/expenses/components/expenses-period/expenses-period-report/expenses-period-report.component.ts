@@ -97,7 +97,14 @@ export class ExpensesPeriodReportComponent implements OnInit {
   }
   loadPeriodsList() {
     this.periodService.get().subscribe((data) => {
-      this.periodsList =data.map((per)=>{return {value:per.id.toString(),label:`${per.month}/${per.year}`}})
+      this.periodsList =data.map((per,index)=>{
+        return {value:per.id.toString(),label:`${per.month}/${per.year}`}})
+        this.periodsList.forEach((p,index)=>{
+          if(index<3){
+            this.listPeriodFind.unshift(p); // Agrega el período al inicio de la lista
+            this.loadReportPeriod(this.listPeriodFind.map((p) => Number(p.value)));
+          }
+        })
       this.createFilter()
 
     });
@@ -166,7 +173,54 @@ export class ExpensesPeriodReportComponent implements OnInit {
     const periodToDelete = this.listPeriodFind[index];
     this.listPeriodFind.splice(index, 1);
     this.createFilter(); // Actualiza el filtro de períodos
+    if(this.listPeriodFind.length===0){
+      const parentElement = document.getElementById("supplier-ordinary"); // Obtén el elemento padre
+      this.valueKPI1=0,
+      this.valueKPI3=0,
+      this.valueKPI2=0
+      if (parentElement) {
+        // Elimina todos los hijos del contenedor
+        while (parentElement.firstChild) {
+          parentElement.removeChild(parentElement.firstChild);
+        }
+      }
+      const parentElement2 = document.getElementById("supplier-extraordinary"); // Obtén el elemento padre
+
+      if (parentElement2) {
+        // Elimina todos los hijos del contenedor
+        while (parentElement2.firstChild) {
+          parentElement2.removeChild(parentElement2.firstChild);
+        }
+      }
+      const parentElement3 = document.getElementById("chart-container-periods-extraordinary"); // Obtén el elemento padre
+
+      if (parentElement3) {
+        // Elimina todos los hijos del contenedor
+        while (parentElement3.firstChild) {
+          parentElement3.removeChild(parentElement3.firstChild);
+        }
+      }
+      const parentElement4 = document.getElementById("chart-container-periods-ordinary"); // Obtén el elemento padre
+
+      if (parentElement4) {
+        // Elimina todos los hijos del contenedor
+        while (parentElement4.firstChild) {
+          parentElement4.removeChild(parentElement4.firstChild);
+        }
+      }
+      const parentElement5 = document.getElementById("chart-container-ordinary"); // Obtén el elemento padre
+
+      if (parentElement5) {
+        // Elimina todos los hijos del contenedor
+        while (parentElement5.firstChild) {
+          parentElement5.removeChild(parentElement5.firstChild);
+        }
+      }
+
+      return
+    }
     this.loadReportPeriod(this.listPeriodFind.map((p) => Number(p.value)));
+
   }
   getPeriodOptions(): { value: string; label: string }[] {
     return this.periodsList.filter(
@@ -264,7 +318,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
   private router = inject(Router);
 
   navigateToTopSuppliers() {
-    this.router.navigate(['expense/gastos/top-proveedores']);
+    this.router.navigate(['/gastos/top-proveedores']);
   }
 
   //De aca para abajo son los metodos que crean los graficos
