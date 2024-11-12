@@ -1,81 +1,82 @@
 <app-main-container title="Registrar Rol">
-<form [formGroup]="roleForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
-    <div class="row">
-        <div class="col-2">  
-            <div class="mb-3">
-                <label for="codeControl" class="form-label">Código<label class="text-danger">*</label></label>
-                <input type="number" class="form-control" id="codeControl" formControlName="codeControl"
-                [ngClass]="{'is-invalid': roleForm.get('codeControl')?.invalid && roleForm.get('codeControl')?.touched, 
-                  'is-valid': roleForm.get('codeControl')?.valid && roleForm.get('codeControl')?.touched}"/>
-                @if (roleForm.get('codeControl')?.invalid && 
-                roleForm.get('codeControl')?.touched) {
-                    @if(roleForm.get('codeControl')?.errors?.['required']){
-                        <p class="text-danger">Debe especificar el código del rol</p>
-                    }@else if (roleForm.get('codeControl')?.errors?.['maxlength']) {
-                        <p class="text-danger">Máximo 4 caracteres</p>
-                    }      
-                }      
-            </div>
-        </div> 
-             
-    </div>
-    <div class="row">
-        <div class="col-6">  
-            <div class="mb-3">
-                <label for="nameControl" class="form-label">Nombre<label class="text-danger">*</label></label>
-                <input type="text" class="form-control" id="nameControl" formControlName="nameControl"
-                [ngClass]="{'is-invalid': roleForm.get('nameControl')?.invalid && roleForm.get('nameControl')?.touched, 
-                  'is-valid': roleForm.get('nameControl')?.valid && roleForm.get('nameControl')?.touched}"/>
-                @if (roleForm.get('nameControl')?.invalid && 
-                roleForm.get('nameControl')?.touched) {
-                    @if(roleForm.get('nameControl')?.errors?.['required']){
-                        <p class="text-danger">Debe especificar el nombre del rol</p>
-                    }@else if (roleForm.get('nameControl')?.errors?.['maxlength']) {
-                        <p class="text-danger">Máximo 10 caracteres</p>
-                    }      
-                }      
-            </div>
-        </div> 
-        <div class="col-6">  
-            <div class="mb-3">
-                <label for="prettyNameControl" class="form-label">Nombre detallado<label class="text-danger">*</label></label>
-                <input type="text" class="form-control" id="prettyNameControl" formControlName="prettyNameControl"
-                [ngClass]="{'is-invalid': roleForm.get('prettyNameControl')?.invalid && roleForm.get('prettyNameControl')?.touched, 
-                  'is-valid': roleForm.get('prettyNameControl')?.valid && roleForm.get('prettyNameControl')?.touched}"/>
-                @if (roleForm.get('prettyNameControl')?.invalid && 
-                roleForm.get('prettyNameControl')?.touched) {
-                    @if (roleForm.get('prettyNameControl')?.errors?.['maxlength']) {
-                        <p class="text-danger">Máximo 25 caracteres</p>
-                    }      
-                }      
-            </div>
-        </div>         
-    </div>
-    <div class="row">
-        <div class="col-6">  
-            <div class="mb-3">
-                <label for="descriptionControl" class="form-label">Descripción</label>
-                <textarea name="descriptionControl" rows="3" cols="50" class="form-control" id="descriptionControl" formControlName="descriptionControl"
-                [ngClass]="{'is-invalid': roleForm.get('descriptionControl')?.invalid && roleForm.get('descriptionControl')?.touched, 
-                  'is-valid': roleForm.get('descriptionControl')?.valid && roleForm.get('descriptionControl')?.touched}"></textarea>
-                @if (roleForm.get('descriptionControl')?.invalid && 
-                roleForm.get('descriptionControl')?.touched) {
-                    @if(roleForm.get('descriptionControl')?.errors?.['required']){
-                        <p class="text-danger">Debe especificar el nombre del rol</p>
-                    }@else if (roleForm.get('descriptionControl')?.errors?.['maxlength']) {
-                        <p class="text-danger">Máximo 50 caracteres</p>
-                    }      
-                }      
-            </div>
-        </div> 
-    </div>      
-    <div class="col-12 d-flex justify-content-end">
+    <form [formGroup]="roleForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
+      <div class="row">
+        <div class="col-2">
+          <div class="mb-3">
+            <label for="codeControl" class="form-label">Código<label class="text-danger">*</label></label>
+            <input type="number" class="form-control" id="codeControl" formControlName="codeControl"
+                   [ngClass]="{'is-invalid': roleForm.get('codeControl')?.invalid && roleForm.get('codeControl')?.touched,
+                    'is-valid': roleForm.get('codeControl')?.valid && roleForm.get('codeControl')?.touched}"/>
+            @if (roleForm.get('codeControl')?.invalid &&
+            roleForm.get('codeControl')?.touched) {
+              @if(roleForm.get('codeControl')?.errors?.['required']){
+                <p class="text-danger">Debe especificar el código del rol</p>
+              }@else if (roleForm.get('codeControl')?.errors?.['maxlength']) {
+                <p class="text-danger">Máximo 4 caracteres</p>
+              }
+            }
+          </div>
+        </div>
+  
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <div class="mb-3">
+            <label for="nameControl" class="form-label">Nombre<label class="text-danger">*</label></label>
+            <input type="text" class="form-control" id="nameControl" formControlName="nameControl"
+                   [ngClass]="{'is-invalid': roleForm.get('nameControl')?.invalid && roleForm.get('nameControl')?.touched,
+                    'is-valid': roleForm.get('nameControl')?.valid && roleForm.get('nameControl')?.touched}"/>
+            @if (roleForm.get('nameControl')?.invalid &&
+            roleForm.get('nameControl')?.touched) {
+              @if(roleForm.get('nameControl')?.errors?.['required']){
+                <p class="text-danger">Debe especificar el nombre del rol</p>
+              }@else if (roleForm.get('nameControl')?.errors?.['maxlength']) {
+                <p class="text-danger">Máximo 10 caracteres</p>
+              }
+            }
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="mb-3">
+            <label for="prettyNameControl" class="form-label">Nombre detallado<label class="text-danger">*</label></label>
+            <input type="text" class="form-control" id="prettyNameControl" formControlName="prettyNameControl"
+                   [ngClass]="{'is-invalid': roleForm.get('prettyNameControl')?.invalid && roleForm.get('prettyNameControl')?.touched,
+                    'is-valid': roleForm.get('prettyNameControl')?.valid && roleForm.get('prettyNameControl')?.touched}"/>
+            @if (roleForm.get('prettyNameControl')?.invalid &&
+            roleForm.get('prettyNameControl')?.touched) {
+              @if (roleForm.get('prettyNameControl')?.errors?.['maxlength']) {
+                <p class="text-danger">Máximo 25 caracteres</p>
+              }
+            }
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <div class="mb-3">
+            <label for="descriptionControl" class="form-label">Descripción</label>
+            <textarea name="descriptionControl" rows="3" cols="50" class="form-control" id="descriptionControl" formControlName="descriptionControl"
+                      [ngClass]="{'is-invalid': roleForm.get('descriptionControl')?.invalid && roleForm.get('descriptionControl')?.touched,
+                    'is-valid': roleForm.get('descriptionControl')?.valid && roleForm.get('descriptionControl')?.touched}"></textarea>
+            @if (roleForm.get('descriptionControl')?.invalid &&
+            roleForm.get('descriptionControl')?.touched) {
+              @if(roleForm.get('descriptionControl')?.errors?.['required']){
+                <p class="text-danger">Debe especificar el nombre del rol</p>
+              }@else if (roleForm.get('descriptionControl')?.errors?.['maxlength']) {
+                <p class="text-danger">Máximo 50 caracteres</p>
+              }
+            }
+          </div>
+        </div>
+      </div>
+      <div class="col-12 d-flex justify-content-end">
         <div class="mx-2">
-            <button (click)="navigateToList()" class="btn btn-danger" id="btnCancel" type="button">Cancelar</button>
+          <button (click)="navigateToList()" class="btn btn-danger" id="btnCancel" type="button">Cancelar</button>
         </div>
         <div>
-            <button type="submit" class="btn btn-primary ms-1" id="btnCreate">Guardar</button>
+          <button type="submit" class="btn btn-primary ms-1" id="btnCreate">Guardar</button>
         </div>
-    </div>
-</form>
-</app-main-container>
+      </div>
+    </form>
+  </app-main-container>
+  

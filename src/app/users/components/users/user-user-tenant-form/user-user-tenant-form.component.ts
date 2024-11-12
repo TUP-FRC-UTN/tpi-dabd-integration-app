@@ -15,6 +15,10 @@ import { Country, Provinces } from '../../../models/generics';
 import { User } from '../../../models/user';
 import { NgClass } from '@angular/common';
 import {OwnerPlotService} from "../../../services/owner-plot.service";
+import { InfoComponent } from '../../commons/info/info.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {SessionService} from '../../../services/session.service';
+import {birthdateValidation} from '../../../validators/birthdate.validations';
 
 
 @Component({
@@ -30,9 +34,11 @@ export class UserUserTenantFormComponent {
   private roleService = inject(RoleService)
   private plotService = inject(PlotService)
   private ownerPlotService = inject(OwnerPlotService)
+  private sessionService = inject(SessionService)
   private activatedRoute = inject(ActivatedRoute)
   private router = inject(Router)
   private toastService = inject(ToastService)
+  private modalService = inject(NgbModal)
   //#endregion
 
   //#region ATT
@@ -51,6 +57,8 @@ export class UserUserTenantFormComponent {
   provinceOptions!: any;
   countryOptions!: any;
   actualPlotOfOwner!: Plot[]
+  actualUserId!: any
+  actualOwnerId!: any
   minDate :any
   //#endregion
 
@@ -62,6 +70,9 @@ export class UserUserTenantFormComponent {
     firstName: new FormControl('', [Validators.required, Validators.maxLength(50)]), // Cambiado
     lastName: new FormControl('', [Validators.required, Validators.maxLength(50)]), // Cambiado
     userName: new FormControl('', [Validators.required, Validators.maxLength(50)]), // Cambiado
+    documentType: new FormControl('', [Validators.required]),
+    documentNumber: new FormControl('', [Validators.required, Validators.maxLength(10)]),
+    birthdate: new FormControl('', [Validators.required, birthdateValidation]),
 
     rolesForm: new FormGroup({
       rol: new FormControl('', []),
@@ -76,10 +87,10 @@ export class UserUserTenantFormComponent {
       number: new FormControl(0, [Validators.required, Validators.min(0)]),
       floor: new FormControl(0),
       apartment: new FormControl(''),
-      city: new FormControl('', [Validators.required]),
-      province: new FormControl('', [Validators.required]),
-      country: new FormControl('', [Validators.required]),
-      postalCode: new FormControl('', [Validators.required]),
+      city: new FormControl('Córdoba', [Validators.required]),
+      province: new FormControl('CORDOBA', [Validators.required]),
+      country: new FormControl('ARGENTINA', [Validators.required]),
+      postalCode: new FormControl(5000, [Validators.required]),
     }),
 
     plotForm: new FormGroup({
@@ -90,20 +101,55 @@ export class UserUserTenantFormComponent {
 
   //#region ON SUBMIT
   onSubmit(): void {
-    // TODO: Cambiar a valid :)
-    if (true) {
-      if (this.id === null) {
-        this.createUser()
-      }
-      else {
-        this.updateUser()
+    // debe tener al menos una direccion
+    if(this.addresses.length <= 0) {
+      this.toastService.sendError("Debes cargar al menos una dirección")
+    } else {
+      
+      if (this.isFormValid()) {
+        this.id === null ? this.createUser() : this.updateUser()
+        
+      } else {
+        this.toastService.sendError("Tienes errores en el formulario");
+        this.userForm.controls['email'].markAsTouched();
+        this.userForm.controls['firstName'].markAsTouched();
+        this.userForm.controls['lastName'].markAsTouched();
+        this.userForm.controls['userName'].markAsTouched();
+        this.userForm.controls['documentType'].markAsTouched();
+        this.userForm.controls['documentNumber'].markAsTouched();
+        this.userForm.controls['birthdate'].markAsTouched();
+        
       }
     }
   }
+
+  isFormValid(){
+    if(this.userForm.controls['email'].errors ||  
+    this.userForm.controls['firstName'].errors ||  
+    this.userForm.controls['lastName'].errors ||  
+    this.userForm.controls['userName'].errors ||  
+    this.userForm.controls['documentType'].errors ||  
+    this.userForm.controls['documentNumber'].errors ||  
+    this.userForm.controls['birthdate'].errors) {
+      return false
+    } else {
+      return true
+    }
+  }
+
+
   //#endregion
 
   //#region ngOnInit
   ngOnInit(): void {
+    this.actualUserId = sessionStorage.getItem("user");
+    this.actualUserId = 1
+    this.userService.getUserById(this.actualUserId).subscribe({
+      next : response => {
+        this.actualOwnerId = response.ownerId
+        this.getPlotsOfOwner();
+      }
+    })
     this.id = this.activatedRoute.snapshot.paramMap.get('id');
     if (this.id !== null) {
       this.setEditValues();
@@ -112,7 +158,6 @@ export class UserUserTenantFormComponent {
     }
     this.setEnums()
     this.getAllRoles()
-    this.getPlotsOfOwner();
 
     const tomorrow = new Date();
     tomorrow.setDate(new Date().getDate() + 7);
@@ -140,30 +185,33 @@ export class UserUserTenantFormComponent {
           console.log(response)
           this.user = response;
 
+          const [day, month, year] = this.user.birthdate.split('/');
+          const formattedDate = `${year}-${month}-${day}`;
           this.userForm.patchValue({
             email: this.user.email,
             firstName: this.user.firstName,
             lastName: this.user.lastName,
             userName: this.user.userName,
+            documentType: this.user.documentType,
+            documentNumber: this.user.documentNumber,
+            birthdate: formattedDate
           });
+
+          console.log(this.user.plotId)
+          if (this.user.plotId) {
+            this.setPlotValue(this.user.plotId)
+          }
 
           if (this.user.addresses) {
             this.addresses = [...this.user.addresses];
-            if (this.addresses.length > 0) {
-              this.setAddressValue(0);
-            }
           }
 
           if (this.user.contacts) {
             this.contacts = [...this.user.contacts];
-            if (this.contacts.length > 0) {
-              this.setContactValue(0);
-            }
           }
 
           if (this.user.roles) {
             this.roles = [...this.user.roles];
-            this.userForm.get('rolesForm.rol')?.setValue(this.roles[0]?.id || null);
           }
         },
         error => {
@@ -176,7 +224,7 @@ export class UserUserTenantFormComponent {
 
   //#region RUTEO | CANCELAR
   cancel() {
-    this.router.navigate(["/user/list"])
+    this.router.navigate(["/users/user/list"])
   }
   //#endregion
 
@@ -205,19 +253,22 @@ export class UserUserTenantFormComponent {
   }
 
   addContact(): void {
-    if (this.userForm.get('contactsForm')?.valid) {
-      const contactValues = this.getContactsValues();
-      if (this.contactIndex == undefined && contactValues) {
-        this.contacts.push(contactValues);
-      } else if (contactValues && this.contactIndex !== undefined) {
-        this.contacts[this.contactIndex] = contactValues;
-        this.contactIndex = undefined;
+    if (this.userForm.controls['contactsForm'].controls['contactValue'].value
+        && !this.userForm.controls['contactsForm'].controls['contactValue'].hasError('email')
+        && this.userForm.controls['contactsForm'].controls['contactType'].value) {
+
+        const contactValues = this.getContactsValues();
+        if (this.contactIndex == undefined && contactValues) {
+          this.contacts.push(contactValues);
+        } else if (contactValues && this.contactIndex !== undefined) {
+          this.contacts[this.contactIndex] = contactValues;
+          this.contactIndex = undefined;
+        }
+        this.userForm.get('contactsForm')?.reset();
+      } else {
+        this.toastService.sendError("Contacto no valido.")
       }
-      this.userForm.get('contactsForm')?.reset();
-    } else {
-      this.toastService.sendError("Contacto no valido.")
     }
-  }
 
   cancelEditContact() {
     this.userForm.get('contactsForm')?.reset();
@@ -227,6 +278,24 @@ export class UserUserTenantFormComponent {
   removeContact(index: number): void {
     this.contacts.splice(index, 1);
   }
+  
+
+  changeContactType(event: any) {
+    
+    const type = event.target.value;
+    if(type) {
+      this.userForm.controls['contactsForm'].controls['contactValue'].addValidators(Validators.required);
+      if(type === "EMAIL") {
+        this.userForm.controls['contactsForm'].controls['contactValue'].addValidators(Validators.email)
+      } else {
+        this.userForm.controls['contactsForm'].controls['contactValue'].removeValidators(Validators.email)
+      }
+    }  else {
+      this.userForm.controls['contactsForm'].controls['contactValue'].removeValidators(Validators.required)
+    }
+  }
+
+
   //#endregion
 
   //#region FUNCION ROLES
@@ -260,7 +329,7 @@ export class UserUserTenantFormComponent {
   }
 
   transformRoles(user: User): number[] | undefined {
-    return user.roles?.map(role => role.id);
+    return user.roles?.map(role => role.code);
   }
 
 
@@ -270,26 +339,28 @@ export class UserUserTenantFormComponent {
   fillUser() {
     this.user.id = this.id ? parseInt(this.id) : undefined;
     (this.user.firstName = this.userForm.get('firstName')?.value || ''),
-      (this.user.lastName = this.userForm.get('lastName')?.value || ''),
-      (this.user.userName = this.userForm.get('userName')?.value || ''),
-      (this.user.email = this.userForm.get('email')?.value || ''),
-      (this.user.isActive = this.userForm.get('isActive')?.value || undefined),
-      (this.user.contacts = [...this.contacts]),
-      (this.user.addresses = [...this.addresses]);
-    (this.user.roles = [...this.roles]),
-      (this.user.plotId = this.userForm.get('plotForm.plotAssign')?.value || undefined)
+    (this.user.lastName = this.userForm.get('lastName')?.value || ''),
+    (this.user.userName = this.userForm.get('userName')?.value || ''),
+    (this.user.email = this.userForm.get('email')?.value || ''),
+    (this.user.documentType = this.userForm.get('documentType')?.value || ''),
+    (this.user.documentNumber = this.userForm.get('documentNumber')?.value || ''),
+    (this.user.birthdate = this.userForm.get('birthdate')?.value || ''),
+    (this.user.isActive = this.userForm.get('isActive')?.value || undefined),
+    (this.user.contacts = [...this.contacts]),
+    (this.user.addresses = [...this.addresses]);
+    (this.user.plotId = this.userForm.get('plotForm.plotAssign')?.value || undefined)
   }
 
   createUser() {
     this.fillUser();
     this.user.isActive = true;
-    this.user = toSnakeCase(this.user);
-    this.user.roles = this.transformRoles(this.user)
-    this.userService.addUser(this.user, 1).subscribe({
+    this.user.roleCodeList = [103]
+    delete this.user.roles
+    this.userService.addUser(toSnakeCase(this.user)).subscribe({
       // '1' is x-user-id
       next: (response) => {
         this.toastService.sendSuccess("Usuario creado con exito.")
-        this.router.navigate(['/user/list']);
+        this.router.navigate(['users/user/list']);
       },
       error: (error) => {
         console.error('Error creating owner:', error);
@@ -299,11 +370,15 @@ export class UserUserTenantFormComponent {
 
   updateUser() {
     this.fillUser();
+    this.user.roles = [103]
+    this.user.isActive = true;
+    this.user.plotId = parseInt(this.user.plotId)
+    delete this.user.createdDate
     if (this.user.id) {
-      this.userService.updateUser(this.user.id, this.user, 1).subscribe({
+      this.userService.updateUser(this.user.id, toSnakeCase(this.user)).subscribe({
         next: (response) => {
           this.toastService.sendSuccess("Usuario actualizado con exito.")
-          this.router.navigate(['/owner/list']);
+          this.router.navigate(['users/user/list']);
         },
         error: (error) => {
           this.toastService.sendError("Error actualizado el usuario.")
@@ -318,8 +393,7 @@ export class UserUserTenantFormComponent {
   //#region FUNCION PLOTS
 
   getPlotsOfOwner() {
-    // TODO: Ver como obtener el ownerId
-    this.ownerPlotService.giveAllPlotsByOwner(1, 0, 100000).subscribe(
+    this.ownerPlotService.giveAllPlotsByOwner(this.actualOwnerId, 0, 100000).subscribe(
       response => {
         this.actualPlotOfOwner = response.content;
       },
@@ -328,9 +402,27 @@ export class UserUserTenantFormComponent {
       }
     )
   }
+
+  setPlotValue(plotId:number) {
+    const plotFormGroup = this.userForm.get('plotForm') as FormGroup;
+    this.plotService.getPlotById(plotId).subscribe(
+      response => {
+        console.log(response);
+        plotFormGroup.patchValue({
+          plotAssign: response.id
+        })
+      })
+  }
   //#endregion
 
   //#region FUNCION ADDRESS
+  
+  // Acceder directamente al valor del país en el FormControl
+  get isArgentinaSelected(): boolean {
+    return this.userForm.get('addressForm')?.get('country')?.value === 'ARGENTINA';
+  }
+
+
   removeAddress(index: number): void {
     if (this.id === null) {
       this.addresses.splice(index, 1);
@@ -340,7 +432,7 @@ export class UserUserTenantFormComponent {
   }
 
   getAddressValue(): Address {
-    const postalCodeValue = this.userForm.get('addressForm.postalCode')?.value;
+
     const address: Address = {
       streetAddress:
         this.userForm.get('addressForm.streetAddress')?.value || '',
@@ -350,7 +442,7 @@ export class UserUserTenantFormComponent {
       city: this.userForm.get('addressForm.city')?.value || '',
       province: this.userForm.get('addressForm.province')?.value || '',
       country: this.userForm.get('addressForm.country')?.value || '',
-      postalCode: postalCodeValue ? parseInt(postalCodeValue, 10) : 0
+      postalCode: this.userForm.get('addressForm.postalCode')?.value || 0
     };
     return address;
   }
@@ -395,4 +487,128 @@ export class UserUserTenantFormComponent {
     this.userForm.get('addressForm')?.reset();
   }
   //#endregion
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
+
+    modalRef.componentInstance.title = 'Registrar usuario inquilino';
+    modalRef.componentInstance.description = 'En esta pantalla permite crear un usuario para un inquilino.';
+    modalRef.componentInstance.body = [
+      {
+        title: 'Datos del Usuario',
+        content: [
+          {
+            strong: 'Email:',
+            detail: 'Campo para ingresar el correo electrónico del usuario.'
+          },
+          {
+            strong: 'Nombre:',
+            detail: 'Campo para ingresar el nombre del usuario.'
+          },
+          {
+            strong: 'Nombre de usuario:',
+            detail: 'Campo para ingresar el nombre de usuario.'
+          },
+          {
+            strong: 'Apellido:',
+            detail: 'Campo para ingresar el apellido del usuario.'
+          }
+        ]
+      },
+      {
+        title: 'Añadir Roles',
+        content: [
+          {
+            strong: 'Roles:',
+            detail: 'Menú desplegable para seleccionar el rol del usuario.'
+          },
+          {
+            strong: 'Agregar Rol:',
+            detail: 'Botón con símbolo de "+" para agregar el rol seleccionado.'
+          }
+        ]
+      },
+      {
+        title: 'Asociar un lote',
+        content: [
+          {
+            strong: 'Número de Manzana:',
+            detail: 'Campo de texto para ingresar el número de manzana.'
+          },
+          {
+            strong: 'Número de Lote:',
+            detail: 'Campo de texto para ingresar el número de lote.'
+          }
+        ]
+      },
+      {
+        title: 'Añadir Dirección',
+        content: [
+          {
+            strong: 'Calle:',
+            detail: 'Campo para ingresar el nombre de la calle.'
+          },
+          {
+            strong: 'Número:',
+            detail: 'Campo para ingresar el número, con valor predeterminado 0.'
+          },
+          {
+            strong: 'Piso:',
+            detail: 'Campo para ingresar el piso, con valor predeterminado 0.'
+          },
+          {
+            strong: 'Depto:',
+            detail: 'Campo para ingresar el número de departamento.'
+          },
+          {
+            strong: 'País:',
+            detail: 'Menú desplegable para seleccionar el país.'
+          },
+          {
+            strong: 'Provincia:',
+            detail: 'Menú desplegable para seleccionar la provincia.'
+          },
+          {
+            strong: 'Ciudad:',
+            detail: 'Campo para ingresar la ciudad.'
+          },
+          {
+            strong: 'Código Postal:',
+            detail: 'Campo para ingresar el código postal.'
+          },
+          {
+            strong: 'Añadir Dirección:',
+            detail: 'Botón para agregar la dirección ingresada.'
+          }
+        ]
+      },
+      {
+        title: 'Añadir Contactos',
+        content: [
+          {
+            strong: 'Tipo Contacto:',
+            detail: 'Menú desplegable para seleccionar el tipo de contacto.'
+          },
+          {
+            strong: 'Contacto:',
+            detail: 'Campo para ingresar el contacto.'
+          },
+          {
+            strong: 'Agregar Contacto:',
+            detail: 'Botón con símbolo de "+" para agregar el contacto ingresado.'
+          }
+        ]
+      }
+    ];
+    modalRef.componentInstance.notes = [
+      'Campos obligatorios: Email, Nombre, Nombre de usuario, Apellido.'
+    ];
+
+  }
 }
