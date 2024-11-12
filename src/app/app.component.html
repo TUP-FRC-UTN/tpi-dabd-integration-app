@@ -3,10 +3,4 @@
   <app-main-layout [navbarMenu]="navbarMenu" (logoutButtonClick)="onLogoutButtonClick()"> 
     
   </app-main-layout>
-} @else {
-  @if ((currentUrl$ | async) === '/forgotpassword') {
-    <app-forgot-password></app-forgot-password>
-  } @else {
-    <app-login></app-login>
-  }
-}
+} 
