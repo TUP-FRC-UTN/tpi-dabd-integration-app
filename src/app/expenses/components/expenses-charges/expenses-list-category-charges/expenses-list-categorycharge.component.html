@@ -1,0 +1,127 @@
+<app-main-container title="Lista de Categorias " (infoButtonClick)="showInfo()">
+    <div class="d-flex justify-content-between align-items-center mb-3 mt-16">
+      <!-- Sección de búsqueda y filtros -->
+      <div class="btn-group me-5" role="group">
+        <div class=" col-md-8  col-xl-12 col-lg-10 col-sm-6">
+          <div class="input-group">
+            <span class="input-group-text" id="search-icon">
+              <i class="bi bi-search"></i>
+            </span>
+            <input
+
+              type="text"
+              class="form-control"
+              id="filter-text-box"
+              placeholder="Buscar..."
+              [(ngModel)]="searchTerm"
+            />
+            <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
+          </div>
+        </div>
+
+
+      </div>
+
+      <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
+      <div class="d-flex ">
+        <!-- Botón "+" -->
+        <button type="button" class="btn btn-outline-primary" (click)="addCategory()">+</button>
+
+        <!-- Línea vertical y botones de exportación -->
+        <div class="d-flex gap-2 ms-3 ps-3" style="border-left: 2px solid #e0e0e0;"></div>
+        <button class="btn btn-success me-2" (click)="downloadTable()">
+          <i class="bi bi-file-earmark-excel"></i>
+        </button>
+        <button class="btn btn-danger me-2" (click)="imprimirPDF()">
+          <i class="bi bi-file-earmark-pdf"></i>
+        </button>
+      </div>
+  </div>
+  <!-- TABLA DE CARGOS-->
+  <div class="table-container">
+    <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th scope="col" style="text-align: left;" >Nombre</th>
+          <th scope="col" style="text-align: left;" >Descripción</th>
+          <th scope="col" style="text-align: left;">Tipo de valor</th>
+          <th scope="col" style="text-align: left;">Estado</th>
+          <th scope="col" style="text-align: left;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (category of categories | filterBy: ['name', 'description','amountSign']: searchTerm; track $index) {
+            <tr>
+
+          <td>{{category.name}}</td>
+          <td>{{category.description}}</td>       
+          <td>{{category.amountSign}}</td>
+          <td><i [ngClass]="category.active ? 'bi bi-check2-circle text-success fs-3' : 'bi bi-x-circle text-danger fs-4'"></i></td>
+          <td  style="text-align: left; justify-content: center;" >
+            @if(isFine(category.name) ) {
+
+            } @else {
+              <div class="container" role="group">
+                <button
+                    class="btn btn-warning btn-sm m-1"
+                    (click)="openUpdateModal(category)"
+                    ><i class="bi bi-pencil"></i></button><!--aca modal editar cargo-->
+                <button
+                    class="btn btn-danger btn-sm m-1"
+                    data-bs-target="#exampleModal"
+                    data-bs-toggle="modal"
+                    (click)="openDeleteModal(category)"
+                    ><i class="bi bi-trash"></i></button>
+            </div>
+            }
+        </td>
+    </tr>
+        }@empty {
+        <td colspan="7" class="text-center">
+            <div class="text-center p-3">
+                <div class="alert alert-secondary">
+                    No hay categorias para mostrar
+                </div>
+            </div>
+        </td>
+    }
+    </tbody>
+    </table>
+  </div>
+
+    <div class="row d-flex justify-content-end " style="margin-right: 20px;">
+        <div class="col">
+        <!-- <label for="rowsPerPageSelect">Mostrar </label> -->
+        <select class="form-select m-lg-1 w-auto d-inline" [(ngModel)]="pageSize" (ngModelChange)="changesPageSize($event)">
+            <option value=10>10 Elementos</option>
+            <option value=25>25 Elementos</option>
+            <option value=50>50 Elementos</option>
+        </select>
+        <!-- <span> registros por página de {{this.totalItems}}</span> -->
+        </div>
+        <div class=" col">
+        <nav aria-label="Page navigation example" style="cursor: pointer;">
+            <ul class="pagination justify-content-end">
+            <li class="page-item" [class.disabled]="currentPage === 0">
+                <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+                [class.active]="i === currentPage">
+                <a class="page-link" (click)="onPageChange(i)">{{ i + 1 }}</a>
+            </li>
+
+            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+                <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            </ul>
+        </nav>
+        </div>
+    </div>
+
+
+</app-main-container>

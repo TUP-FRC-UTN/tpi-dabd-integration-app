@@ -19,6 +19,7 @@ import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 import { ChargeInfoComponent } from '../../modals/info/charge-info/charge-info.component';
 import { NgSelectComponent, NgOptionComponent } from '@ng-select/ng-select';
 import { map } from 'rxjs';
+import { NewCategoryChargeModalComponent } from '../../modals/charges/category/new-categoryCharge-modal/new-categoryCharge-modal.component';
 @Component({
   selector: 'app-expenses-add-charge',
   standalone: true,
@@ -28,7 +29,6 @@ import { map } from 'rxjs';
   styleUrl: './expenses-add-charge.component.css',
 })
 export class ExpensesAddChargeComponent implements OnInit{
-  // chargeForm: FormGroup;
   private fb: FormBuilder = inject(FormBuilder);
   private chargeService = inject(ChargeService);
   private modalService = inject(NgbModal);
@@ -48,7 +48,7 @@ export class ExpensesAddChargeComponent implements OnInit{
 
   onCancel() {
     this.chargeForm.reset();
-    this.router.navigate([`expenses/cargos`])
+    this.router.navigate([`expense/cargos`])
   }
 
   showInfo(){
@@ -60,21 +60,6 @@ export class ExpensesAddChargeComponent implements OnInit{
       scrollable: true,
     });
   }
-  // loadSelect() {
-  //   this.periodService.get().subscribe((data=>{
-  //     data.forEach((period) => {
-  //       if(period.state != 'CLOSE'){
-  //         this.listPeriodo.push(period);
-  //       }
-  //     });
-  //   }))
-  //   this.lotsService.get().subscribe((data: Lot[]) => {
-  //     this.lots = data;
-  //   })
-  //   this.chargeService.getCategoriesExcFines().subscribe((data: CategoryCharge[]) => {
-  //     this.categoriaCargos = data;
-  //   })
-  // }
   formattedPeriods: any[] = [];
 
   loadSelect() {
@@ -95,7 +80,7 @@ export class ExpensesAddChargeComponent implements OnInit{
       this.lots = data;
     });
 
-    this.chargeService.getCategoryCharges().subscribe((data: CategoryCharge[]) => {
+    this.chargeService.getCategoriesExcFines().subscribe((data: CategoryCharge[]) => {
       this.categoriaCargos = data;
     });
   }
@@ -112,7 +97,7 @@ export class ExpensesAddChargeComponent implements OnInit{
       date: ['', Validators.required],
       periodId: ['', Validators.required],
       amount: ['', Validators.required],
-      categoryId: ['', Validators.required],
+      categoryChargeId: ['', Validators.required],
       description:['']
     });
   }
@@ -122,13 +107,10 @@ export class ExpensesAddChargeComponent implements OnInit{
   }
 
   onBack() {
-    this.router.navigate([`cargos`]);
+    this.router.navigate([`expense/cargos`]);
   }
 
   onSubmit(): void {
-    console.log(this.chargeForm.value)
-    console.log(this.chargeForm.valid)
-
     if (this.chargeForm.valid) {
       const formValue = this.chargeForm.value;
       const charge: Charge = {
@@ -140,7 +122,6 @@ export class ExpensesAddChargeComponent implements OnInit{
       } else{
         charge.amountSign = ChargeType.NEGATIVE;
       }
-      console.log(charge);
       const charges = this.camelToSnake(charge) as Charge;
 
       this.chargeService.addCharge(charges).subscribe(
@@ -148,9 +129,9 @@ export class ExpensesAddChargeComponent implements OnInit{
           this.toastService.sendSuccess("El cargo se ha registrado correctamente");
 
           console.log('Cargo registrado exitosamente:', response);
-          //('Cargo registrado exitosamente');
+
           this.chargeForm.reset();
-          this.router.navigate([`cargos`]);
+          this.router.navigate([`expense/cargos`]);
         },
         (error) => {
           this.toastService.sendError("Error al registrar el cargo");
@@ -159,6 +140,24 @@ export class ExpensesAddChargeComponent implements OnInit{
       );
     }
   }
+
+    // #region Modal
+    openNewCategoryModal() {
+      const modalRef = this.modalService.open(NewCategoryChargeModalComponent, {
+        ariaLabelledBy: 'modal-basic-title',
+      });
+
+      modalRef.result.then((result) => {
+        if (result) {
+          if (result.success) {
+            this.toastService.sendSuccess(result.message);
+            this.loadSelect();
+          } else {
+            this.toastService.sendError(result.message);
+          }
+        }
+      });
+    }
 
   camelToSnake(obj: any): any {
     if (Array.isArray(obj)) {

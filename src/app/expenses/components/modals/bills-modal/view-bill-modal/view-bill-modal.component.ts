@@ -1,17 +1,8 @@
-import { Component, inject, Input, OnInit, ViewChild} from '@angular/core';
-import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component, inject, Input, OnInit } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Bill } from '../../../../models/bill';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ProviderService } from '../../../../services/provider.service';
-import { CategoryService } from '../../../../services/category.service';
-import { PeriodService } from '../../../../services/period.service';
-import Category from '../../../../models/category';
-import Period from '../../../../models/period';
-import { BillService } from '../../../../services/bill.service';
-import BillType from '../../../../models/billType';
-import { Provider } from '../../../../models/provider';
 import { CommonModule } from '@angular/common';
-import { NgModalComponent } from '../../ng-modal/ng-modal.component';
 
 @Component({
   selector: 'app-view-bill-modal',

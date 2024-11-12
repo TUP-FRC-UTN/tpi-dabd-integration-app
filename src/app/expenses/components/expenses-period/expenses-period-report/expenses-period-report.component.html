@@ -1,0 +1,154 @@
+<app-main-container title="Reporte de expensas">
+
+
+  <!-- Comment out this section to see if it causes the error -->
+  <div class="row" style="align-items: end">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <!-- Sección de búsqueda y filtros -->
+      <div class="col-1 d-flex align-items-center mb-2" role="group">
+        <div class="col-sm-12 col-md-8 col-xl-12">
+          <app-table-filters
+            [filters]="filterConfig"
+            (filterValueChange)="filterChange($event)"
+          >
+          </app-table-filters>
+        </div>
+      </div>
+      <div class="col-12 d-flex align-items-center mb-2" role="group">
+        @for (item of listPeriodFind; track $index) {
+        <div
+          class="card shadow-sm"
+          style="max-width: 300px; position: relative"
+        >
+          <button
+            type="button"
+            class="btn-close btn-close-sm position-absolute"
+            style="top: 4px; right: 4px; font-size: 0.5rem"
+            aria-label="Close"
+            (click)="deletePeriod($index)"
+          ></button>
+          <div class="card-body p-4 pt-3">
+            <div class="text-center">
+              <h5 class="mb-0 text-secondary">{{item.label}}</h5>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    <!-- Nueva sección de KPIs -->
+    <div class="row mb-4">
+      <div class="col-12 d-flex ">
+        <!-- KPI 1 -->
+        <div class="card flex-grow-1 shadow-sm">
+          <div class="card-body">
+            @if(typeFilter ==='Monto'){
+              <h6 class="card-subtitle mb-2 text-muted">Total gastos ordinarios</h6>
+              <h4 class="card-title mb-0">${{valueKPI1}} mill</h4>
+            } @else if (typeFilter === 'Porcentaje') {
+              <h6 class="card-subtitle mb-2 text-muted">Porcentaje de gastos ordinarios</h6>
+              <h4 class="card-title mb-0">{{valueKPI1  | number:'1.2-2' }}%</h4>
+            } @else if (typeFilter==='Promedio'){
+              <h6 class="card-subtitle mb-2 text-muted">Promedio de gastos ordinarios</h6>
+              <h4 class="card-title mb-0">${{valueKPI1}} mill</h4>
+            }
+
+
+          </div>
+        </div>
+
+        <!-- KPI 2 -->
+        <div class="card flex-grow-1 shadow-sm">
+          <div class="card-body">
+            @if(typeFilter ==='Monto'){
+              <h6 class="card-subtitle mb-2 text-muted">Total de gastos extraordinarios</h6>
+              <h4 class="card-title mb-0">${{valueKPI2 }} mill</h4>
+            } @else if (typeFilter === 'Porcentaje') {
+              <h6 class="card-subtitle mb-2 text-muted">Porcentaje de gastos extraordinarios</h6>
+              <h4 class="card-title mb-0">{{valueKPI2  | number:'1.2-2' }}%</h4>
+            } @else if (typeFilter==='Promedio'){
+              <h6 class="card-subtitle mb-2 text-muted">Promedio de gastos extraordinarios</h6>
+              <h4 class="card-title mb-0">${{valueKPI2 }} mill</h4>
+            }
+          </div>
+        </div>
+        <!-- KPI 3 -->
+        <div class="card flex-grow-1 shadow-sm">
+          <div class="card-body">
+            @if(typeFilter ==='Monto'){
+              <h6 class="card-subtitle mb-2 text-muted">Gastos totales</h6>
+              <h4 class="card-title mb-0">${{valueKPI3}} mill</h4>
+            } @else if (typeFilter === 'Promedio') {
+              <h6 class="card-subtitle mb-2 text-muted">Promedio de gastos totales</h6>
+              <h4 class="card-title mb-0">${{valueKPI3}} mill</h4>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-3">
+      <div class="justify-content-lg-start">
+        <div class="card-header">Gastos</div>
+        <div class="container mb-4">
+          <div class="col-12 d-flex">
+            <div class="col-4 p-2">
+            <div class="card shadow border-0 rounded-4 " style="height: 100%">
+              
+              <div class="d-flex justify-content-between align-items-center p-2">
+                <h6 class="mb-0">Top 5 proveedores</h6>
+                <button
+                  class="btn btn-success d-flex align-items-center justify-content-center"
+                  style="width: 32px; height: 32px;"
+                  (click)="exportToExcel()"
+                >
+                  <i class="bi bi-file-earmark-excel text-white"></i>
+                </button>
+              </div>
+              <div
+                id="supplier-ordinary"
+                style="max-width: 100%; height: 100%"
+              ></div>
+              <div id="supplier-extraordinary">
+
+              </div>
+            </div>
+          </div>
+          <div class="col-8 p-2">
+            <div class="card hadow border-0 rounded-4">
+              <div id="chart-container-ordinary" style="max-width: 100%"></div>
+            </div>
+          </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 d-flex">
+            <div class="col-6 p-2">
+              <div class="card  shadow border-0 rounded-4 p-3">
+                <h6 class="card-subtitle mb-2 text-muted">{{typeFilter}} de gastos en millones</h6>
+    
+                <div
+                  id="chart-container-periods-ordinary"
+                  style="max-width: 100%"
+                ></div>
+              </div>
+            </div>
+            <div class="col-6 p-2">
+              <div class="card shadow border-0 rounded-4 p-3">
+                <h6 class="card-subtitle mb-2 text-muted">{{typeFilter}} de gastos en millones</h6>
+    
+                <div
+                  id="chart-container-periods-extraordinary"
+                  style="max-width: 100%"
+                ></div>
+              </div>
+            </div>
+  
+            
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</app-main-container>

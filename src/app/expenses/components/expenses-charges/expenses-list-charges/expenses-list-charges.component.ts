@@ -1,8 +1,6 @@
 import {
   Component,
-  ElementRef,
   inject,
-  NgModule,
   OnInit,
   TemplateRef,
   ViewChild,
@@ -12,19 +10,14 @@ import { ChargeService } from '../../../services/charge.service';
 import { CategoryCharge } from '../../../models/charge';
 import { ExpensesUpdateChargeComponent } from '../../modals/charges/expenses-update-charge/expenses-update-charge.component';
 import { CommonModule, DatePipe } from '@angular/common';
-import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
-import Lot, { Lots } from '../../../models/lot';
+import { Lots } from '../../../models/lot';
 import { LotsService } from '../../../services/lots.service';
 import { PeriodService } from '../../../services/period.service';
 import { BorrarItemComponent } from '../../modals/borrar-item/borrar-item.component';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx'; // Para exportar a Excel
 import jsPDF from 'jspdf'; // Para exportar a PDF
 import moment from 'moment';
-//import { Subject } from 'rxjs';
-//import { debounceTime, distinctUntilChanged, switchMap, tap, finalize, takeUntil, max } from 'rxjs/operators';
-// import 'bootstrap';
-import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-modal.component';
 import Period from '../../../models/period';
 import { NgPipesModule } from 'ngx-pipes';
@@ -35,13 +28,12 @@ import {
   MainContainerComponent,
   SelectFilter,
   TableColumn,
-  TableComponent,
   TableFiltersComponent,
   ToastService,
 } from 'ngx-dabd-grupo01';
-import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
-import { debounceTime, forkJoin, Subject } from 'rxjs';
+import { forkJoin, Subject } from 'rxjs';
 import autoTable from 'jspdf-autotable';
 import { ListChargesInfoComponent } from '../../modals/info/list-charges-info/list-charges-info.component';
 import { ViewChargeModalComponent } from '../../modals/charges/view-charge-modal/view-charge-modal.component';
@@ -50,15 +42,10 @@ import { ViewChargeModalComponent } from '../../modals/charges/view-charge-modal
   selector: 'app-expenses-list-charges',
   standalone: true,
   imports: [
-    ExpensesUpdateChargeComponent,
     CommonModule,
-    PeriodSelectComponent,
     FormsModule,
-    ReactiveFormsModule,
     NgPipesModule,
-    TableComponent,
     ExpensesModalComponent,
-    NgbModule,
     MainContainerComponent,
     TableFiltersComponent
   ],
@@ -74,7 +61,7 @@ export class ExpensesListChargesComponent implements OnInit {
   @ViewChild('paidPdf', { static: true }) paidPdf!: TemplateRef<any>;
   @ViewChild('statusTemplate', { static: true }) statusTemplate!: TemplateRef<any>;
 addCharge() {
-  this.router.navigate(['expenses/cargos/nuevo'])
+  this.router.navigate(['/cargos/nuevo'])
 }
 
   // Variables de Filtros y Paginación
@@ -124,6 +111,7 @@ addCharge() {
   filter$ = this.filterSubject.asObservable();
   itemsList!: Charges[];
   filterConfig: Filter[] = [];
+
   filterChange(event: Record<string, any>) {
 
     // Actualizar las variables de filtro
@@ -131,7 +119,7 @@ addCharge() {
     this.selectedLotId = event['lot'] || null;
     this.selectedCategoryId = event['categoryCharge'] || null;
     this.TypeAmount = event['chargeType'] || undefined;
-    console.log('El tipo es' + this.TypeAmount)
+
     this.cargarPaginado();
   }
   categoriasCargos :FilterOption[] = [];
@@ -218,7 +206,7 @@ addCharge() {
     forkJoin({
       periodos: this.periodService.get(),
       lots: this.lotsService.get(),
-      categories: this.chargeService.getCategoryCharges(),
+      categories: this.chargeService.getCategoryCharges(false),
     }).subscribe({
       next: ({ periodos, lots, categories }) => {
         this.periodos = periodos;
@@ -256,7 +244,7 @@ addCharge() {
 
   loadCategoryCharge() {
     this.chargeService
-      .getCategoryCharges()
+      .getCategoryCharges(true)
       .subscribe((data: CategoryCharge[]) => {
         this.categorias = data;
         this.createFilters();
@@ -332,11 +320,11 @@ addCharge() {
         autoTable(doc, {
           startY: 30,
           head: [
-            ['Fecha', 'Periodo', 'Lote', 'Categoría', 'Descripción', 'Monto'],
+            [ 'Periodo','Fecha', 'Lote', 'Categoría', 'Descripción', 'Monto'],
           ],
           body: charges.content.map((charge) => [
-            moment(charge.date).format('DD/MM/YYYY'),
             `${charge.period.month}/${charge.period.year}`,
+            moment(charge.date).format('DD/MM/YYYY'),
             this.getPlotNumber(charge.lotId) || 'N/A',
             charge.categoryCharge.name,
             charge.description,
@@ -363,8 +351,8 @@ addCharge() {
       )
       .subscribe((charges) => {
         const data = charges.content.map((charge) => ({
-          'Fecha de Carga': moment(charge.date).format('DD/MM/YYYY'),
           Periodo: `${charge.period.month}/${charge.period.year}`,
+          'Fecha de Carga': moment(charge.date).format('DD/MM/YYYY'),
           'Número de lote': this.getPlotNumber(charge.lotId),
           Categoría: charge.categoryCharge.name,
           Descripción: charge.description,
@@ -527,31 +515,4 @@ addCharge() {
   }
 
   //#endregion
-
-
-
-
-  onFilterTextBoxChanged(event: Event){
-    // const target = event.target as HTMLInputElement;
-
-    // if (target.value?.length <= 2) {
-    //   this.filterSubject.next(this.itemsList);
-    // } else {
-    //   const filterValue = target.value.toLowerCase();
-
-    //   const filteredList = this.itemsList.filter(item => {
-    //     return Object.values(item).some(prop => {
-    //       const propString = prop ? prop.toString().toLowerCase() : '';
-
-    //       const translations = this.dictionaries && this.dictionaries.length
-    //         ? this.dictionaries.map(dict => this.translateDictionary(propString, dict)).filter(Boolean)
-    //         : [];
-
-    //       return propString.includes(filterValue) || translations.some(trans => trans?.toLowerCase().includes(filterValue));
-    //     });
-    //   });
-
-    //   this.filterSubject.next(filteredList.length > 0 ? filteredList : []);
-    // }
-  }
 }

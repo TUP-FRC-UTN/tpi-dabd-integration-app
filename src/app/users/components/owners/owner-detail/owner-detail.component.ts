@@ -2,10 +2,12 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Address, Contact, Owner, StateKYC } from '../../../models/owner';
 import { OwnerService } from '../../../services/owner.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { mapOwnerType } from '../../../utils/owner-helper';
 import { Country, Provinces } from '../../../models/generics';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
+import { InfoComponent } from '../../commons/info/info.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-owner-detail',
@@ -30,6 +32,7 @@ export class OwnerDetailComponent implements OnInit {
   constructor(private activatedRoute: ActivatedRoute, private router: Router) {}
 
   protected ownerService = inject(OwnerService);
+  private modalService = inject(NgbModal)
 
   ownerForm = new FormGroup({
     firstName: new FormControl({value:'', disabled: true}, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
@@ -43,10 +46,7 @@ export class OwnerDetailComponent implements OnInit {
     birthdate: new FormControl({value:'', disabled: true}, [Validators.required]), // falta valdiar que sea pasada
     kycStatus: new FormControl({value:StateKYC.INITIATED, disabled: true}),
     isActive: new FormControl({value:true, disabled: true}),
-    contactsForm: new FormGroup({
-      contact_type: new FormControl({value:'', disabled: true}, [Validators.required]),
-      contact_value: new FormControl({value:'', disabled: true}, [Validators.required]),
-    }),
+    contactsForm: new FormArray([]),
     addressForm: new FormGroup({
       street_address: new FormControl({value:'', disabled: true}, [Validators.required]),
       number: new FormControl({value:0, disabled: true}, [Validators.required, Validators.min(0)]),
@@ -72,8 +72,16 @@ export class OwnerDetailComponent implements OnInit {
         error: (error) => {
           console.error("Error al obtener propietarios:", error);
         }
-      });      
+      });
     }
+  }
+
+  createContactFormGroup(contactType: string = '', contactValue: string = ''): FormGroup {
+    const contact = new FormGroup({
+      contact_type: new FormControl({ value: contactType, disabled: true }, [Validators.required]),
+      contact_value: new FormControl({ value: contactValue, disabled: true }, [Validators.required]),
+    });
+    return contact;
   }
 
   fillFieldsToDetail(owner: any): void {
@@ -93,17 +101,27 @@ export class OwnerDetailComponent implements OnInit {
     });
     const address: Address | null =
       owner.addresses.length > 0 ? owner.addresses[0] : null;
-      this.ownerForm.get('addressForm')?.patchValue({
-        street_address: address?.streetAddress ? address.streetAddress : '',
-        number: address?.number ? address.number : null,
-        floor: address?.floor ? address.floor : null,
-        apartment: address?.apartment ? address.apartment : '',
-        city: address?.city ? address.city : '',
-        province: address?.province ? address.province : '',
-        country: address?.country ? address.country : '',
-        postal_code: address?.postalCode != null ? address.postalCode : null,
-      });
-    this.contacts = owner.contacts;
+    this.ownerForm.get('addressForm')?.patchValue({
+      street_address: address?.streetAddress ? address.streetAddress : '',
+      number: address?.number ? address.number : null,
+      floor: address?.floor ? address.floor : null,
+      apartment: address?.apartment ? address.apartment : '',
+      city: address?.city ? address.city : '',
+      province: address?.province ? address.province : '',
+      country: address?.country ? address.country : '',
+      postal_code: address?.postalCode != null ? address.postalCode : null,
+    });
+    this.setContactsValues(owner.contacts);
+  }
+
+  setContactsValues(contacts: Contact[]){
+    const contactFormArray = this.ownerForm.get('contactsForm') as FormArray;
+    contactFormArray.clear();
+    contacts?.forEach((contact: Contact) => {
+      const contactForm = this.createContactFormGroup(contact.contactType, contact.contactValue);
+      contactFormArray?.push(contactForm);
+    });
+    this.contacts = contactFormArray.value;
   }
 
   getContactsValues(): Contact {
@@ -115,7 +133,7 @@ export class OwnerDetailComponent implements OnInit {
   }
 
   onBack(): void {
-    this.router.navigate(['/owner/list']);
+    this.router.navigate(['/users/owner/list']);
   }
 
   mapType(type: string){
@@ -131,5 +149,103 @@ export class OwnerDetailComponent implements OnInit {
       value: key,
       display: value
     }));
+  }
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
+    
+    modalRef.componentInstance.title = 'Información del Propietario';
+    modalRef.componentInstance.description = 'Pantalla para consultar la información del propietario detallando datos personales, dirección y contactos.';
+    modalRef.componentInstance.body = [
+      { 
+        title: 'Datos del Propietario', 
+        content: [
+          {
+            strong: 'Nombre:',
+            detail: 'Nombre del propietario.'
+          },
+          {
+            strong: 'Segundo nombre:',
+            detail: 'Segundo nombre del propietario.'
+          },
+          {
+            strong: 'Apellido:',
+            detail: 'Apellido del propietario.'
+          },
+          {
+            strong: 'Tipo propietario:',
+            detail: 'Tipo de propietario.'
+          },
+          {
+            strong: 'Tipo documento:',
+            detail: 'Tipo de documento.'
+          },
+          {
+            strong: 'Número:',
+            detail: 'Número de documento.'
+          },
+          {
+            strong: 'CUIT:',
+            detail: 'CUIT del propietario.'
+          },
+          {
+            strong: 'Cuenta bancaria:',
+            detail: 'Cuenta bancaria del propietario.'
+          },
+          {
+            strong: 'Fecha de nacimiento:',
+            detail: 'Fecha de nacimiento en formato dd/mm/aaaa.'
+          }
+        ]
+      },
+      { 
+        title: 'Dirección del propietario', 
+        content: [
+          {
+            strong: 'Calle:',
+            detail: 'Nombre de la calle.'
+          },
+          {
+            strong: 'Número:',
+            detail: 'Número de la propiedad'
+          },
+          {
+            strong: 'Piso:',
+            detail: 'Piso de la propiedad'
+          },
+          {
+            strong: 'Depto:',
+            detail: 'Departamento.'
+          },
+          {
+            strong: 'País:',
+            detail: 'País.'
+          },
+          {
+            strong: 'Ciudad:',
+            detail: 'Ciudad.'
+          },
+          {
+            strong: 'Código postal:',
+            detail: 'Código postal de la propiedad'
+          }
+        ]
+      },
+      { 
+        title: 'Contactos', 
+        content: [
+          {
+            strong: 'Contactos:',
+            detail: 'Aquí se podrían listar los campos relacionados con los contactos.'
+          }
+        ]
+      }
+    ];
   }
 }

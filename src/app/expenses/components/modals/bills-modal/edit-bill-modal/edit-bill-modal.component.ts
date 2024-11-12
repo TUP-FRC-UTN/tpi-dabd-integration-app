@@ -96,8 +96,6 @@ export class EditBillModalComponent implements OnInit {
       billType: this.bill?.billType.bill_type_id,
       status: this.bill?.status
     });
-
-    console.log(this.bill?.period);
   }
 
   async loadLists() {
@@ -111,7 +109,7 @@ export class EditBillModalComponent implements OnInit {
       this.periodService.get().subscribe((periods) => {
         this.periodsList = periods.map(period => ({
           ...period,
-          displayPeriod: `${period.month}/${period.year}` 
+          displayPeriod: `${period.month}/${period.year}`
         }));
       });
       this.updateBill.patchValue({
@@ -210,12 +208,6 @@ export class EditBillModalComponent implements OnInit {
     this.activeModal.dismiss();
   }
 
-  // openNewCategoryModal() {
-  //   this.modalService.open(this.newCategoryModal, {
-  //     ariaLabelledBy: 'modal-basic-title',
-  //   });
-  // }
-
   openNewCategoryModal() {
     const modalRef = this.modalService.open(NewCategoryModalComponent, {
       ariaLabelledBy: 'modal-basic-title',
@@ -225,10 +217,8 @@ export class EditBillModalComponent implements OnInit {
       if (result) {
         if (result.success) {
           this.toastService.sendSuccess(result.message);
-          // this.loadSelectOptions();
         } else {
           this.toastService.sendError(result.message);
-          // this.showModal('Error', result.message);
         }
       }
     });
@@ -250,7 +240,6 @@ export class EditBillModalComponent implements OnInit {
       newCategory.name = newCategory.name?.trim();
       newCategory.description = newCategory.description?.trim();
       newCategory.is_delete = false;
-      console.log(newCategory);
 
       this.categoryService.addCategory(newCategory).subscribe({
         next: (response: any) => {

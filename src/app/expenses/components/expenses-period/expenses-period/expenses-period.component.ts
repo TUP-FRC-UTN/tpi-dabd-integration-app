@@ -2,17 +2,14 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ExpenseServiceService } from '../../../services/expense.service';
 import Expense from '../../../models/expense';
 import { ActivatedRoute } from '@angular/router';
-import { NgbActiveModal, NgbModal, NgbModule, NgbToast } from '@ng-bootstrap/ng-bootstrap';
-import { generateNumberArray } from '../../../utils/generateArrayNumber';
+import { NgbActiveModal, NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import {
   ToastService,
-  ConfirmAlertComponent,
   FilterConfigBuilder,
   MainContainerComponent,
   TableFiltersComponent,
   Filter,
-  TableComponent,
 } from 'ngx-dabd-grupo01';
 import { switchMap, tap } from 'rxjs';
 import { DatePipe } from '@angular/common';
@@ -112,9 +109,9 @@ export class ExpensesPeriodComponent implements OnInit {
       console.error('periodId is not defined');
       return;
     }
-  
+
     console.log("Period ID:", this.periodId);
-  
+
     this.expenseService
       .getByPeriod(Number(this.periodId))
       .pipe(
