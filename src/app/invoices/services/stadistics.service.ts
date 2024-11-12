@@ -9,7 +9,7 @@ import { OtherReport, PeriodRequest, TicketInfo, Top5, TopPayments } from '../mo
 export class StadisticsService {
 
   private readonly baseUrl = 'http://localhost:8087/report';
-  private readonly baseUrlpayments = 'http://localhost:8090/report/topPayments';
+  private readonly baseUrlpayments = 'http://localhost:8092/report/topPayments';
 
   // Endpoints específicos
   private readonly apiUrl = this.baseUrl;

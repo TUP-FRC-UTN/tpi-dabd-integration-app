@@ -15,6 +15,10 @@ export interface TicketInfo {
 export interface PeriodRequest  {
   firstDate: string;
   lastDate: string;
+  action: string;
+  group: string;
+  type: string;
+  dataType: string;
 }
 
 export interface OtherReport {
@@ -34,4 +38,10 @@ export interface TopPayments {
   percentageByMercadoPago: number;
   preferredMethod: string;
 }
+
+export enum DashboardStatus {
+  All = 'ALL',
+  Types = 'TYPES'
+}
+
 

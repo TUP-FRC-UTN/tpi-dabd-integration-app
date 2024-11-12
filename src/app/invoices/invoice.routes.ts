@@ -3,7 +3,7 @@ import { InvoiceHomeComponent } from "./invoice-home/invoice-home.component";
 import { AdminListExpensasComponent } from "./admin-list-expensas/admin-list-expensas.component";
 import { OwnerListExpensasComponent } from "./owner-list-expensas/owner-list-expensas.component";
 import { ReviewTicketsTransferComponent } from "./review-tickets-transfer/review-tickets-transfer.component";
-import { StadisticsComponent } from "./stadistics/stadistics.component";
+import { StadisticsComponent } from "./dashboard/stadistics/stadistics.component";
 
 export const INVOICE_ROUTES: Routes = [
     { path: '', component: InvoiceHomeComponent },
