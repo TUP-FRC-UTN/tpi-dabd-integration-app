@@ -65,7 +65,7 @@ export class ChangePasswordComponent {
       this.userService.changePassword(this.oldPassword, this.newPassword).subscribe({
         next: (response) => {
           this.toastService.sendSuccess("Contraseña actualizada con éxito.")
-          this.router.navigate(['']);
+          this.router.navigate(['/home']);
         },
         error: (error) => {
           if (error.status === 401) {

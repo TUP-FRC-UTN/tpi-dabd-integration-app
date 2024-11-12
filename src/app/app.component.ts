@@ -191,7 +191,7 @@ export class AppComponent implements OnInit {
       ]
     },
     {
-      label: 'Boletas - Cobros',
+      label: 'Boletas',
       routerLink: '/invoices',
       sidebarMenu: [
         {

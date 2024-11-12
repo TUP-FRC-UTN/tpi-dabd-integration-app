@@ -317,6 +317,7 @@ export class OwnerFilesViewComponent implements OnInit {
               console.log(response);
               this.toastService.sendSuccess('Propietario validado correctamente');
               this.getAllFiles(this.owner);
+              this.router.navigate(["/files/view"])
             },
             error: (error) => {
               console.error('Error al aprobar el KYC del owner:', error);
