@@ -172,7 +172,7 @@ export class PlotsListComponent {
   assignPlotToDelete(plot: Plot) {
     const modalRef = this.modalService.open(ConfirmAlertComponent);
     modalRef.componentInstance.alertTitle = 'Confirmacion';
-    modalRef.componentInstance.alertMessage = `Estas seguro que desea eliminar el lote nro ${plot.plotNumber} de la manzana ${plot.blockNumber}?`;
+    modalRef.componentInstance.alertMessage = `Estás seguro que desea eliminar el lote nro ${plot.plotNumber} de la manzana ${plot.blockNumber}?`;
     modalRef.componentInstance.alertVariant = 'delete';
 
     modalRef.result.then((result) => {

@@ -180,7 +180,7 @@ export class OwnerFormComponent implements OnInit {
         this.id ? this.updateOwner() : this.createOwner();
       } else {
         this.ownerForm.markAllAsTouched();
-      this.toastService.sendError("Debes agregar al menos una direccion");
+      this.toastService.sendError("Debes agregar al menos una dirección");
       }
     } else {
       this.ownerForm.markAllAsTouched();
@@ -261,7 +261,7 @@ export class OwnerFormComponent implements OnInit {
         },
       });
     } else {
-      this.toastService.sendError('Algo salio mal, intente nuevamente.');
+      this.toastService.sendError('Algo salió mal, intente nuevamente.');
     }
   }
 
@@ -433,7 +433,7 @@ export class OwnerFormComponent implements OnInit {
       }
       this.ownerForm.get('contactsForm')?.reset();
     } else {
-      this.toastService.sendError("Contacto no valido.")
+      this.toastService.sendError("Contacto no válido.")
     }
   }
 
@@ -523,7 +523,7 @@ export class OwnerFormComponent implements OnInit {
       }
       this.ownerForm.get('addressForm')?.reset();
     } else {
-      this.toastService.sendError("Direccion no valida.")
+      this.toastService.sendError("Direccion no válida.")
     }
   }
 

@@ -121,7 +121,7 @@ export class RolesListComponent implements OnInit {
   assignPlotToDelete(role: Role) {
     const modalRef = this.modalService.open(ConfirmAlertComponent);
     modalRef.componentInstance.alertTitle = 'Confirmacion';
-    modalRef.componentInstance.alertMessage = `Esta seguro que desea eliminar el rol: ${role.prettyName}?`;
+    modalRef.componentInstance.alertMessage = `Está seguro que desea eliminar el rol: ${role.prettyName}?`;
     modalRef.componentInstance.alertVariant = 'delete';
 
     modalRef.result.then((result) => {

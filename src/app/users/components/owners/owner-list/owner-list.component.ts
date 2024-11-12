@@ -115,7 +115,7 @@ export class OwnerListComponent implements OnInit {
   assignOwnerToDelete(owner: Owner) {
     const modalRef = this.modalService.open(ConfirmAlertComponent);
     modalRef.componentInstance.alertTitle = 'Eliminar Propietario';
-    modalRef.componentInstance.alertMessage = `Esta seguro que desea eliminar el propietario ${owner.firstName} ${owner.lastName} ?`;
+    modalRef.componentInstance.alertMessage = `Está seguro que desea eliminar el propietario ${owner.firstName} ${owner.lastName} ?`;
     modalRef.componentInstance.alertVariant = 'delete';
 
     modalRef.result.then((result) => {

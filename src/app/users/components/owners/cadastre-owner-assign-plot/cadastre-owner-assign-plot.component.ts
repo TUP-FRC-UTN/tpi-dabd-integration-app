@@ -147,7 +147,7 @@ export class CadastreOwnerAssignPlotComponent {
       const modalRef = this.modalService.open(ConfirmAlertComponent);
       modalRef.componentInstance.alertType = "info";
       modalRef.componentInstance.alertTitle = 'Confirmacion';
-      modalRef.componentInstance.alertMessage = `Estas seguro de que desea asociar a ${this.selectedOwner.firstName} ${this.selectedOwner.lastName} al lote nro ${plotNumber} en la manzana ${blockNumber} ?`;
+      modalRef.componentInstance.alertMessage = `Estás seguro de que desea asociar a ${this.selectedOwner.firstName} ${this.selectedOwner.lastName} al lote nro ${plotNumber} en la manzana ${blockNumber} ?`;
 
       modalRef.result.then((result) => {
         if (result && this.selectedOwner?.id) {

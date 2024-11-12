@@ -117,7 +117,7 @@ export class UserUserListComponent {
   assignUserToDelete(user: User) {
     const modalRef = this.modalService.open(ConfirmAlertComponent);
     modalRef.componentInstance.alertTitle = 'Confirmacion';
-    modalRef.componentInstance.alertMessage = `Estas seguro que desea eliminar el usuario?`;
+    modalRef.componentInstance.alertMessage = `Estás seguro que desea eliminar el usuario?`;
     modalRef.componentInstance.alertVariant = 'delete';
 
     modalRef.result.then((result) => {

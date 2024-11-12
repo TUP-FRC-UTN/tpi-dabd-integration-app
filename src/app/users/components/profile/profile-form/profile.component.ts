@@ -141,7 +141,7 @@ export class ProfileComponent {
       }
       this.userForm.get('contactsForm')?.reset();
     } else {
-      this.toastService.sendError("Contacto no valido.")
+      this.toastService.sendError("Contacto no válido.")
     }
   }
 
@@ -211,7 +211,7 @@ export class ProfileComponent {
       }
       this.userForm.get('addressForm')?.reset();
     } else {
-      this.toastService.sendError("Direccion no valida.")
+      this.toastService.sendError("Direccion no válida.")
     }
   }
 
