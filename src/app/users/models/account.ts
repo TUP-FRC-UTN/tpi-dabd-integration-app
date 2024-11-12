@@ -5,15 +5,16 @@ export interface Account {
 }
 
 export interface AccountingConcept {
-    id: number;
-    accountingDate: Date;
+    plotId: number;
+    accountingDate: number[];
     concept: string;
     comments: string;
     amount: number;
+    documentId: number;
 }
 
 export const ConceptTypes: { [key: string]: string } = {
     "Pago": "PAYMENT",
-    "Expensa Comun": "COMMON_EXPENSE",
+    "Expensa Común": "COMMON_EXPENSE",
     "Expensa Extraordinaria": "EXTRAORDINARY_EXPENSE"
 };

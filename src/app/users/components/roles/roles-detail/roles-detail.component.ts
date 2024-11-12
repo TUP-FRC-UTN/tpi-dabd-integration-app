@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RoleService } from '../../../services/role.service';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Location } from '@angular/common';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
+import { InfoComponent } from '../../commons/info/info.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-roles-detail',
@@ -15,10 +17,11 @@ import { MainContainerComponent } from 'ngx-dabd-grupo01';
 export class RolesDetailComponent implements OnInit{
   role: any;
   roleForm: FormGroup;
+  private modalService = inject(NgbModal)
 
-  constructor(private roleService: RoleService, 
-    private activatedRoute: ActivatedRoute, 
-    private location: Location)
+  constructor(private roleService: RoleService,
+              private activatedRoute: ActivatedRoute,
+              private location: Location)
   {
     this.roleForm = new FormGroup({
       codeControl: new FormControl(),
@@ -27,7 +30,7 @@ export class RolesDetailComponent implements OnInit{
       descriptionControl: new FormControl()
     })
   }
- 
+
   ngOnInit(): void {
     let id = this.activatedRoute.snapshot.paramMap.get('roleId');
     if(id != null){
@@ -43,14 +46,51 @@ export class RolesDetailComponent implements OnInit{
           this.roleForm.disable();
         },
         error: (error) => {
-          console.log(error);          
+          console.log(error);
         }
       })
-    }    
+    }
   }
 
   goBack() {
     this.location.back();
+  }
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });   
+    
+    modalRef.componentInstance.title = 'Detalles del rol';
+    modalRef.componentInstance.description = 'En esta pantalla se permite visualizar los datos del rol de manera detallada.';
+    modalRef.componentInstance.body = [
+      { 
+        title: 'Datos', 
+        content: [
+          {
+            strong: 'Código:',
+            detail: 'Código del rol.'
+          },
+          {
+            strong: 'Nombre:',
+            detail: 'Nombre corto del rol.'
+          },
+          {
+            strong: 'Nombre detallado:',
+            detail: 'Nombre detallado del rol.'
+          },
+          {
+            strong: 'Descripción:',
+            detail: 'Descripción breve de lo que define el rol.'
+          }
+        ]
+      }
+    ];
+    modalRef.componentInstance.notes = ['La interfaz está diseñada para ofrecer una administración eficiente, manteniendo la integridad y seguridad de los datos de los roles.'];
   }
 
 }

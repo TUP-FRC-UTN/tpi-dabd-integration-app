@@ -19,11 +19,11 @@ export class RolesFormComponent implements OnInit {
   role: Role | undefined;
   id: string | null = "";
 
-  constructor(private formBuilder: FormBuilder, 
-    private activatedRoute: ActivatedRoute, 
-    private router: Router, 
-    private toastService: ToastService,
-    private roleService: RoleService){
+  constructor(private formBuilder: FormBuilder,
+              private activatedRoute: ActivatedRoute,
+              private router: Router,
+              private toastService: ToastService,
+              private roleService: RoleService){
     this.roleForm = this.formBuilder.group({
       codeControl:['', [Validators.required, Validators.maxLength(4)]],
       nameControl:['', [Validators.required, Validators.maxLength(10)]],
@@ -33,7 +33,7 @@ export class RolesFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.id = this.activatedRoute.snapshot.paramMap.get('roleId');    
+    this.id = this.activatedRoute.snapshot.paramMap.get('roleId');
     if (this.id !== null) {
       this.roleService.getRole(Number.parseInt(this.id)).subscribe({
         next: (data) => {
@@ -47,22 +47,24 @@ export class RolesFormComponent implements OnInit {
           this.roleForm.controls['codeControl'].disable();
         },
         error: (error) => {
-          console.log(error);          
+          console.log(error);
         }
       })
-    }    
+    }
   }
 
   setFieldsEnabled() {
     this.roleForm.enable();
   }
-  
+
   setFieldsDisabled() {
     this.roleForm.disable();
   }
 
   navigateToList() {
-    this.router.navigate(['roles/list']);
+
+    this.router.navigate(['/users/roles/list']);
+
   }
 
   createRole(){
@@ -72,7 +74,7 @@ export class RolesFormComponent implements OnInit {
       pretty_name: this.roleForm.value.prettyNameControl,
       description: this.roleForm.value.descriptionControl
     }
-    this.roleService.createRole(newRole as Role, 1).subscribe({
+    this.roleService.createRole(newRole as Role).subscribe({
       next: () => {
         this.toastService.sendSuccess("Rol creado con exito.");
         this.navigateToList();
@@ -84,14 +86,14 @@ export class RolesFormComponent implements OnInit {
     });
   }
 
-  updateRole(id: number){   
+  updateRole(id: number){
     let updateRole: any = {
       code: this.role?.code,
       name: this.roleForm.value.nameControl,
       pretty_name: this.roleForm.value.prettyNameControl,
       description: this.roleForm.value.descriptionControl,
     }
-    this.roleService.updateRole(id, updateRole as Role, 1).subscribe({
+    this.roleService.updateRole(id, updateRole as Role).subscribe({
       next: () => {
         this.toastService.sendSuccess("Rol modificado con exito.");
         this.navigateToList();

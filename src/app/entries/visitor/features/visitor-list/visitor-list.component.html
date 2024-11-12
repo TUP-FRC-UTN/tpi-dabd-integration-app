@@ -26,6 +26,7 @@
     <a routerLink="/visitor/add" class="btn btn-success">Agregar Visitante</a>
 
     <app-table [items]="visitors" [columns]="columns" [isLoading]="isLoading"></app-table>
+<<<<<<< HEAD
 </div>-->
 <!--
 <div class="container mt-4">
@@ -69,3 +70,48 @@
 
     <!-- </app-table> -->
 <!-- </div> -->
+=======
+</div>                                                        -->
+
+<!--<div class="container mt-4">                                                                                                                                 -->
+<!--    <p class="h2 m-3">Lista de Visitantes</p>                                                                                                                -->
+
+<!--    <app-table [items]="visitors" [columns]="columns" [isLoading]="isLoading" [pagination]="{                                                                -->
+<!--      totalItems: totalItems,                                                                                                                                -->
+<!--      page: page,                                                                                                                                            -->
+<!--      size: size,                                                                                                                                            -->
+<!--      onPageChange: onPageChange,                                                                                                                            -->
+<!--      onPageSizeChange: onPageSizeChange                                                                                                                     -->
+<!--    }" [height]="'450px'" (searchValueChange)="onFilterChange($event)">                                                                                      -->
+<!--        &lt;!&ndash; Template para la columna de acciones &ndash;&gt;                                                                                        -->
+<!--        <ng-template #actionsTemplate let-item>                                                                                                              -->
+<!--            &lt;!&ndash; Botones visibles en pantallas medianas y grandes &ndash;&gt;                                                                        -->
+<!--            <div class="d-none d-md-flex">                                                                                                                   -->
+<!--                <button class="btn btn-warning btn-sm me-2" (click)="editVisitor(item.visitor_id)">                                                          -->
+<!--                    Editar                                                                                                                                   -->
+<!--                </button>                                                                                                                                    -->
+<!--                <button class="btn btn-danger btn-sm" (click)="deleteVisitor(item.visitor_id)">                                                              -->
+<!--                    Eliminar                                                                                                                                 -->
+<!--                </button>                                                                                                                                    -->
+<!--            </div>                                                                                                                                           -->
+
+<!--            &lt;!&ndash; Botones visibles solo en pantallas pequeñas &ndash;&gt;                                                                             -->
+<!--            <div class="d-md-none" ngbDropdown>                                                                                                              -->
+<!--                <button class="btn" type="button" id="dropdownMenuButton2"  aria-expanded="false">                                                           -->
+<!--                    <i class="bi bi-three-dots-vertical" ngbDropdownToggle aria-expanded="false"></i> &lt;!&ndash; Mantenemos solo el ícono &ndash;&gt;      -->
+<!--                </button>                                                                                                                                    -->
+
+<!--                <div ngbDropdownMenu class="dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">                                                       -->
+<!--                    <button class="dropdown-item" (click)="editVisitor(item.visitor_id)">                                                                    -->
+<!--                        Editar                                                                                                                               -->
+<!--                    </button>                                                                                                                                -->
+<!--                    <button class="dropdown-item text-white" (click)="deleteVisitor(item.visitor_id)">                                                       -->
+<!--                        Eliminar                                                                                                                             -->
+<!--                    </button>                                                                                                                                -->
+<!--                </div>                                                                                                                                       -->
+<!--            </div>                                                                                                                                           -->
+<!--        </ng-template>                                                                                                                                       -->
+
+<!--    </app-table>                                                                                                                                             -->
+<!--</div>                                                                                                                                                       -->
+>>>>>>> upstream/main
