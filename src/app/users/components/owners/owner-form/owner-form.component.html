@@ -15,13 +15,13 @@
       <div>
         @if (ownerForm.get('firstName')?.invalid && ownerForm.get('firstName')?.touched) {
           @if (ownerForm.get('firstName')?.errors?.['required']) {
-            <small class="text-danger ms-2">requerido </small>
+            <small class="text-danger ms-2">Requerido </small>
           }
           @if (ownerForm.get('firstName')?.errors?.['minlength']) {
-            <small class="text-danger ms-2">al menos 2 caracteres</small>
+            <small class="text-danger ms-2">Al menos 2 caracteres</small>
           }
           @if (ownerForm.get('firstName')?.errors?.['maxlength']) {
-            <small class="text-danger ms-2">máximo 50 caracteres</small>
+            <small class="text-danger ms-2">Máximo 50 caracteres</small>
           }
         }
       </div>
@@ -54,7 +54,7 @@
       <div>
         @if (ownerForm.get('lastName')?.invalid && ownerForm.get('lastName')?.touched) {
           @if (ownerForm.get('lastName')?.errors?.['required']) {
-            <small class="text-danger ms-2">requerido </small>
+            <small class="text-danger ms-2">Requerido </small>
           }
         }
       </div>
@@ -74,7 +74,7 @@
       <div>
         @if (ownerForm.get('ownerType')?.invalid && ownerForm.get('ownerType')?.touched) {
           @if (ownerForm.get('ownerType')?.errors?.['required']) {
-            <small class="text-danger">requerido </small>
+            <small class="text-danger">Requerido </small>
           }
         }
       </div>
@@ -102,7 +102,7 @@
 
     <div class="col-md-6">
       <div class="flex-row d-flex align-items-center">
-        <label for="doc-number" class="col-form-label col-md-2">Numero<label class="text-danger">*</label></label>
+        <label for="doc-number" class="col-form-label col-md-2">Número<label class="text-danger">*</label></label>
         <input
           type="text"
           class="form-control m-2"
@@ -114,13 +114,13 @@
       <div>
         @if (ownerForm.get('documentNumber')?.invalid && ownerForm.get('documentNumber')?.touched) {
           @if (ownerForm.get('documentNumber')?.errors?.['required']) {
-            <small class="text-danger">requerido </small>
+            <small class="text-danger">Requerido </small>
           }
           @if (ownerForm.get('documentNumber')?.errors?.['ownerExists']) {
             <small class="text-danger">Documento en uso</small>
           }
           @if (ownerForm.get('documentNumber')?.errors?.['serverError']) {
-            <small class="text-danger">error en la validacion</small>
+            <small class="text-danger">Error en la validacion</small>
           }
         }
       </div>
@@ -140,10 +140,10 @@
       <div>
         @if (ownerForm.get('cuit')?.invalid && ownerForm.get('cuit')?.touched) {
           @if (ownerForm.get('cuit')?.errors?.['required']) {
-            <small class="text-danger">requerido </small>
+            <small class="text-danger">Requerido </small>
           }
           @if (ownerForm.get('cuit')?.errors?.['pattern']) {
-            <small class="text-danger">solo número</small>
+            <small class="text-danger">Solo número</small>
           }
           @if (ownerForm.get('cuit')?.errors?.['invalidCuit']) {
             <small class="text-danger">CUIT no válido</small>
@@ -166,10 +166,10 @@
       <div>
         @if (ownerForm.get('bankAccount')?.invalid && ownerForm.get('bankAccount')?.touched) {
           @if (ownerForm.get('bankAccount')?.errors?.['required']) {
-            <small class="text-danger">requerido </small>
+            <small class="text-danger">Requerido </small>
           }
           @if (ownerForm.get('bankAccount')?.errors?.['pattern']) {
-            <small class="text-danger">solo número</small>
+            <small class="text-danger">Solo número</small>
           }
         }
       </div>
@@ -209,7 +209,7 @@
         <div class="row g-0 align-items-center">
           <div class="col-auto me-2">
             <label for="block-number" class="col-form-label"
-            >Numero de Manzana<label class="text-danger">*</label></label
+            >Número de Manzana<label class="text-danger">*</label></label
             >
           </div>
           <div class="col">
@@ -230,7 +230,7 @@
                 <small class="text-danger">Campo requerido. </small>
               }
               @if (ownerForm.get('plotForm.blockNumber')?.getError('min')) {
-              <small class="text-danger">El numero minimo es 1.</small>
+              <small class="text-danger">El número mínimo es 1.</small>
               }
             }
           </div>
@@ -264,7 +264,7 @@
                 <small class="text-danger">Error en el servidor, por favor intenta nuevamente.</small>
               }
               @if (ownerForm.get('plotForm.plotNumber')?.hasError('plotNotExists')) {
-                <small class="text-danger ms-2">No existe un lote con ese numero en esa manzana.</small>
+                <small class="text-danger ms-2">No existe un lote con ese número en esa manzana.</small>
               }
               @if (ownerForm.get('plotForm.plotNumber')?.hasError('plotHaveOwner')) {
                 <small class="text-danger ms-2">El lote ya tiene un dueño asociado.</small>
@@ -415,7 +415,7 @@
       <div class="col-md-6">
         <div class="row g-0 align-items-center">
           <label for="postal-code" class="col-form-label col-md-2"
-          >Codigo Postal<label class="text-danger">*</label></label
+          >Código Postal<label class="text-danger">*</label></label
           >
           <div class="col">
             <input
@@ -498,7 +498,7 @@
                 (change)="changeContactType($event)"
               >
                 <option disabled selected>Selecciona un tipo</option>
-                <option value="PHONE">Telefono</option>
+                <option value="PHONE">Teléfono</option>
                 <option value="EMAIL">Email</option>
                 <option value="SOCIAL_MEDIA_LINK">Link red social</option>
               </select>
