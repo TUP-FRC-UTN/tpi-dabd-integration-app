@@ -8,17 +8,23 @@ import { ListAuthComponent } from "./authorization/features/list-auth/list-auth.
 
 import { VisitorFormComponent } from "./visitor/features/visitor-form/visitor-form.component";
 import { QrComponent } from "./qr/qr.component";
+import { EntityFormComponent } from "./entities/features/entity-form/entity-form/entity-form.component";
+import { EntityListComponent } from "./entities/features/entity-list/entity-list/entity-list.component";
 
 export const ENTRY_ROUTES: Routes = [
     { path: '', component: EntryHomeComponent },
-      {
-        path: 'visitor/add',
-        component: VisitorFormComponent,
-      },
-      {
-        path: 'visitor/edit/:id',
-        component: VisitorFormComponent,
-      },
+    {
+      path: 'entity/form',
+      component: EntityFormComponent,
+    },
+    {
+      path: 'entity/edit/:id',
+      component: EntityFormComponent,
+    },
+    {
+      path: 'entity/list',
+      component: EntityListComponent,
+    },
       {
         path: 'qr',
         component: QrComponent,

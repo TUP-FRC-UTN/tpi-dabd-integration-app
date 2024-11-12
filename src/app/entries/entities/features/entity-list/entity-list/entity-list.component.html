@@ -1,173 +1,172 @@
-<app-main-container [title]="'Lista de Entidades'" (infoButtonClick)="onInfoButtonClick()">
+<app-main-container [title]="'Lista de Entidades'" (infoButtonClick)="onInfoButtonClick()" >
 
     <div class="card-body">
-        <!-- ESTE COMPONENTE LO VAN A TENER QUE MODIFICAR ES EL DEL BUSCAR, EXPORTAR, ETC -->
-        <!-- @param itemList => Mandan la lista con la cual hacen la tabla
-           @param tableName => Mandan el nombre de la tabla el que definen con #
-           @param tableName => Mandan el nombre de la tabla el que definen con #
-           @param formPath => Van a poner la ruta de su formulario para crear uno nuevo
-           @param dictionaries => En caso de usar diccionarios mandenlos, si no los mandan no pasa nada
-           @param objectName => Hace referencia al nombre de su objeto para guardar el archivo pdf o excel. Ej: 25/10/2024_LOTES
-           -->
-        <app-cadastre-plot-filter-buttons #filterComponent [itemsList]="completeList"
-            [tableName]="tableName.nativeElement" [dictionaries]="dictionaries"
-            (entityCreatedInModal)="updateEntityList()" (filterValueChange)="onFilterValueChange($event)"
-            objectName="ACCESOS"></app-cadastre-plot-filter-buttons>
-
-        <div class="table-container">
-            <table class="table table-striped fixed-table"
-                style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #table>
-                <thead>
-                    <tr>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Documento</th>
-                        @if (userType == "ADMIN"|| userType == "OWNER"){
-                        <th scope="col">Activo</th>
-                        <th scope="col">Acciones</th>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (item of (filteredList.length ? filteredList : list); track item) {
-
-                    <tr>
-                        <td>
-                            @for (type of item.visitorTypes; track $index){
-                            <i [class]="'bi ' + VisitorTypeIconDictionary[type]"
-                                [title]="translateTable(type, typeDictionary)">
-                            </i>
-                            }
-                            {{ item.name + ' ' + (item.lastName == null ? '' : item.lastName) }}
-                        </td>
-                        <td>
-                            {{ getDocumentAbbreviation(item.docType) + ' ' + item.docNumber }}
-                        </td>
-                        @if (userType == "ADMIN" || userType == "OWNER"){
-                        <td>
-                            @if (item.isActive) {
-                            <p class="mb-0">
-                                <i class="bi bi-check2-circle text-success" style="font-size: 1.5rem;"></i>
-                            </p>
-                            } @else {
-                            <p class="mb-0">
-                                <i class="bi bi-x-circle text-danger" style="font-size: 1.5rem;"></i>
-                            </p>
-                            }
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-warning"> <i class="bi bi-pencil"
-                                    (click)="edit(item.visitorId)"></i></button>
-                            @if (item.isActive) {
-                            <button class="btn btn-danger ms-1" (click)="disable(item.visitorId)"><i
-                                    class="bi bi-trash"></i></button>
-                            }@else {
-                            <button class="btn btn-success ms-1" (click)="enable(item.visitorId)"><i
-                                    class="bi bi-check"></i></button>
-                            }
-                        </td>
-                        }
-                    </tr>
-
+      <app-cadastre-plot-filter-buttons
+        #filterComponent
+        [itemsList]="completeList"
+        [tableName]="tableName.nativeElement"
+        [heads]="heads"
+        [props]="props"
+        [dictionaries]="dictionaries"
+        [tableFilters]="filterConfig"
+        [modalComponent]="EntityFormComponent"
+        (entityCreatedInModal)="updateEntityList()"
+        (filterValueChange)="onFilterValueChange($event)"
+        objectName="ACCESOS"></app-cadastre-plot-filter-buttons>
+  
+      <div class="table-container">
+        <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #table>
+          <thead>
+          <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Documento</th>
+            @if (userType == "ADMIN"|| userType == "OWNER"){
+              <th scope="col">Activo</th>
+              <th scope="col">Acciones</th>
+            }
+          </tr>
+          </thead>
+          <tbody>
+            @for (item of (filteredList.length ? filteredList : list); track item) {
+  
+              <tr>
+                <td>
+                  @for (type of item.visitorTypes; track $index){
+                    <i
+                      [class]="'bi ' + VisitorTypeIconDictionary[type]"
+                      [title]="translateTable(type, typeDictionary)">
+                    </i>
+                  }
+                  {{ item.name + ' ' + (item.lastName == null ? '' : item.lastName) }}
+                </td>
+                <td>
+                  {{ getDocumentAbbreviation(item.docType) + ' ' + item.docNumber }}
+                </td>
+                @if (userType == "ADMIN" || userType == "OWNER"){
+                  <td>
+                    @if (item.isActive) {
+                      <p class="mb-0">
+                        <i class="bi bi-check2-circle text-success" style="font-size: 1.5rem;"></i>
+                      </p>
+                    } @else {
+                      <p class="mb-0">
+                        <i class="bi bi-x-circle text-danger" style="font-size: 1.5rem;"></i>
+                      </p>
                     }
-                </tbody>
-            </table>
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-warning"> <i class="bi bi-pencil" (click)="edit(item.visitorId)"></i></button>
+                    @if (item.isActive) {
+                      <button class="btn btn-danger ms-1" (click)="disable(item.visitorId)"><i class="bi bi-trash"></i></button>
+                      }@else {
+                      <button class="btn btn-success ms-1" (click)="enable(item.visitorId)"><i class="bi bi-check"></i></button>
+                      }
+                    </td>
+                }
+              </tr>
+  
+            }
+          </tbody>
+        </table>
+      </div>
+  
+      <div class="d-flex justify-content-between align-items-center mt-3">
+  
+        <div class="form-group mb-3 me-2">
+          <select
+            id="itemsPerPage"
+            class="form-select"
+            [(ngModel)]="pageSize"
+            (change)="onItemsPerPageChange()"
+          >
+            @for(option of sizeOptions; track $index) {
+              <option [value]="option">{{ option }} Elementos</option>
+            }
+          </select>
         </div>
-
-        <div class="d-flex justify-content-between align-items-center mt-3">
-
-            <div class="form-group mb-3 me-2">
-                <select id="itemsPerPage" class="form-select" [(ngModel)]="pageSize" (change)="onItemsPerPageChange()">
-                    @for(option of sizeOptions; track $index) {
-                    <option [value]="option">{{ option }} Elementos</option>
-                    }
-                </select>
-            </div>
-
-            <div class="ms-auto">
-            </div>
-
-            <div class="d-flex">
-
-                <ngb-pagination [(page)]="currentPage" [pageSize]="pageSize" [collectionSize]="totalItems"
-                    (pageChange)="onPageChange($event)" [maxSize]="5" [boundaryLinks]="false"></ngb-pagination>
-
-            </div>
-
+  
+        <div class="ms-auto">
         </div>
+  
+        <div class="d-flex">
+  
+          <ngb-pagination
+            [(page)]="currentPage"
+            [pageSize]="pageSize"
+            [collectionSize]="totalItems"
+            (pageChange)="onPageChange($event)"
+            [maxSize]="5"
+            [boundaryLinks]="false"
+          ></ngb-pagination>
+  
+        </div>
+  
+      </div>
     </div>
-
+  
     <ng-template #infoModal let-modal>
-        <div class="modal-header fs-6 py-1">
-            <h4 class="modal-title">Información de la Lista de entidades</h4>
-            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
-        </div>
-        <div class="modal-body fs-6 py-2">
-            <div class="container-fluid">
-                <!-- Introducción -->
-                <div class="alert alert-info mb-2 py-2">
-                    <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
-                    <p class="mb-0 small">Esta pantalla permite visualizar y gestionar los registros de visitantes.
-                        Puedes ver los detalles de cada visitante, aplicar filtros, y realizar acciones específicas
-                        sobre cada registro.</p>
-                </div>
-
-                <!-- Campos Principales -->
-                <div class="card mb-2">
-                    <div class="card-header py-1">
-                        <h5 class="mb-0">Datos de Visitantes</h5>
-                    </div>
-                    <div class="card-body py-2">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item py-1">
-                                <strong>Lista de Visitantes:</strong> Muestra los detalles de cada visitante, incluyendo
-                                nombre, apellido, tipo y número de documento.
-                            </li>
-                            <li class="list-group-item py-1">
-                                <strong>Filtros:</strong> Permite aplicar filtros como el tipo de visitante para acceder
-                                de manera facil a los registros que coincidan con el tipo de visitante de manera rápida.
-                            </li>
-                            <li class="list-group-item py-1">
-                                <strong>Paginación:</strong> Control para navegar entre múltiples páginas de registros
-                                de visitantes.
-                            </li>
-                            <li class="list-group-item py-1">
-                                <strong>Exportar:</strong> Opción para exportar la lista de visitantes en formato PDF o
-                                Excel.
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Acciones -->
-                <div class="card mb-2">
-                    <div class="card-header py-1">
-                        <h5 class="mb-0">Acciones Disponibles</h5>
-                    </div>
-                    <div class="card-body py-2">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item py-1">
-                                <strong>Buscar:</strong> Filtra la lista de visitantes mediante campos de texto o
-                                selección para localizar registros específicos.
-                            </li>
-                            <li class="list-group-item py-1">
-                                <strong>Limpiar Filtros:</strong> Restablece los filtros aplicados para mostrar la lista
-                                completa de visitantes.
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Nota (OPCIONAL) -->
-                <div class="alert alert-warning py-2 mb-0">
-                    <h5 class="alert-heading">Nota:</h5>
-                    <p class="mb-0 small">Verifica la información antes de realizar cambios o eliminar registros de
-                        visitantes. Asegúrate de que los datos de los visitantes y autorizadores sean correctos.</p>
-                </div>
+      <div class="modal-header fs-6 py-1">
+        <h4 class="modal-title">Información de la Lista de entidades</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+      </div>
+      <div class="modal-body fs-6 py-2">
+        <div class="container-fluid">
+          <!-- Introducción -->
+          <div class="alert alert-info mb-2 py-2">
+            <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
+            <p class="mb-0 small">Esta pantalla permite visualizar y gestionar los registros de visitantes. Puedes ver los detalles de cada visitante, aplicar filtros, y realizar acciones específicas sobre cada registro.</p>
+          </div>
+  
+          <!-- Campos Principales -->
+          <div class="card mb-2">
+            <div class="card-header py-1">
+              <h5 class="mb-0">Datos de Visitantes</h5>
             </div>
+            <div class="card-body py-2">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item py-1">
+                  <strong>Lista de Visitantes:</strong> Muestra los detalles de cada visitante, incluyendo nombre, apellido, tipo y número de documento.
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>Filtros:</strong> Permite aplicar filtros como el tipo de visitante para acceder de manera facil a los registros que coincidan con el tipo de visitante de manera rápida.
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>Paginación:</strong> Control para navegar entre múltiples páginas de registros de visitantes.
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>Exportar:</strong> Opción para exportar la lista de visitantes en formato PDF o Excel.
+                </li>
+              </ul>
+            </div>
+          </div>
+  
+          <!-- Acciones -->
+          <div class="card mb-2">
+            <div class="card-header py-1">
+              <h5 class="mb-0">Acciones Disponibles</h5>
+            </div>
+            <div class="card-body py-2">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item py-1">
+                  <strong>Buscar:</strong> Filtra la lista de visitantes mediante campos de texto o selección para localizar registros específicos.
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>Limpiar Filtros:</strong> Restablece los filtros aplicados para mostrar la lista completa de visitantes.
+                </li>
+              </ul>
+            </div>
+          </div>
+  
+          <!-- Nota (OPCIONAL) -->
+          <div class="alert alert-warning py-2 mb-0">
+            <h5 class="alert-heading">Nota:</h5>
+            <p class="mb-0 small">Verifica la información antes de realizar cambios o eliminar registros de visitantes. Asegúrate de que los datos de los visitantes y autorizadores sean correctos.</p>
+          </div>
         </div>
-        <div class="modal-footer py-2">
-            <button type="button" class="btn btn-primary" (click)="modal.close()">Entendido</button>
-        </div>
+      </div>
+      <div class="modal-footer py-2">
+        <button type="button" class="btn btn-primary" (click)="modal.close()">Entendido</button>
+      </div>
     </ng-template>
-
-</app-main-container>
+  
+  </app-main-container>  

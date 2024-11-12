@@ -1,17 +1,33 @@
-import { Component, ElementRef, inject, TemplateRef, Type, ViewChild } from '@angular/core';
-import { Filter, FilterConfigBuilder, MainContainerComponent } from 'ngx-dabd-grupo01';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  inject,
+  OnInit,
+  TemplateRef,
+  Type,
+  ViewChild,
+} from '@angular/core';
+import {
+  Filter,
+  FilterConfigBuilder,
+  MainContainerComponent,
+  ToastService,
+} from 'ngx-dabd-grupo01';
 import { NgbModal, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+
+import { Router, RouterLink } from '@angular/router';
+import { TransformResponseService } from '../../../../services/transform-response.service';
+import { VisitorTypeAccessDictionary, VisitorTypeIconDictionary } from '../../../../models/authorization/authorize.model';
 import { Visitor } from '../../../../models/visitors/visitor.model';
 import { VisitorFilter, VisitorService } from '../../../../services/visitors/visitor.service';
-import { TransformResponseService } from '../../../../services/transform-response.service';
-import { AccessActionDictionary, AccessFilters } from '../../../../models/accesses/access.model';
-import { VisitorTypeAccessDictionary, VisitorTypeIconDictionary } from '../../../../models/authorization/authorize.model';
-import { EntityFormComponent } from '../../entity-form/entity-form/entity-form.component';
-import { LoginModel } from '../../../../models/login.model';
 import { UserTypeService } from '../../../../services/user-type.service';
-import { CadastrePlotFilterButtonsComponent } from '../../../../../users/components/plots/cadastre-plot-filter-buttons/cadastre-plot-filter-buttons.component';
+import { EntityFormComponent } from '../../entity-form/entity-form/entity-form.component';
+
+import { AccessActionDictionary, AccessFilters } from '../../../../models/accesses/access.model';
+import { LoginService } from '../../../../services/access/login.service';
+import { CadastrePlotFilterButtonsComponent } from '../../../../accesses/features/cadastre-access-filter-buttons/cadastre-plot-filter-buttons.component';
 
 @Component({
   selector: 'app-entity-list',
@@ -24,10 +40,10 @@ import { CadastrePlotFilterButtonsComponent } from '../../../../../users/compone
     FormsModule,
     RouterLink,
   ],
-  templateUrl: './entity-list.component.html',
-  styleUrl: './entity-list.component.scss',
+  templateUrl: './entity-list.component.html'
 })
-export class EntityListComponent {
+export class EntityListComponent implements OnInit, AfterViewInit {
+
   @ViewChild('filterComponent')
   filterComponent!: CadastrePlotFilterButtonsComponent<Visitor>;
   @ViewChild('table', { static: true })
@@ -35,10 +51,13 @@ export class EntityListComponent {
   @ViewChild('infoModal') infoModal!: TemplateRef<any>;
 
   //#region SERVICIOS
+  private router = inject(Router);
   private visitorService = inject(VisitorService);
   private transformResponseService = inject(TransformResponseService);
+  private toastService = inject(ToastService);
   private modalService = inject(NgbModal);
   private userTypeService = inject(UserTypeService);
+  private loginService = inject(LoginService);
 
   //#endregion
 
@@ -52,10 +71,10 @@ export class EntityListComponent {
   lastPage: boolean | undefined;
   totalItems: number = 0;
 
-  visitorFilter: VisitorFilter = {
+  visitorFilter : VisitorFilter ={
     active: true,
-    textFilter: '',
-  };
+    textFilter: ''
+  }
   //#endregion
   heads: string[] = ['Nombre', 'Documento', 'Tipos'];
   props: string[] = ['Nombre', 'Documento', 'Tipos'];
@@ -130,6 +149,7 @@ export class EntityListComponent {
     )
     .build();
 
+
   onFilterValueChange(filters: Record<string, any>) {
     this.searchParams = {
       ...filters,
@@ -146,16 +166,13 @@ export class EntityListComponent {
   //#region NgOnInit | BUSCAR
   ngOnInit() {
     this.confirmFilter();
-    this.getAll();
+    this.getAll()
   }
 
   ngAfterViewInit(): void {
-    this.filterComponent.filter$.subscribe((filteredItems: Visitor[]) => {
-      this.list = filteredItems;
-      this.filteredList = [...filteredItems];
-      this.totalItems = filteredItems.length;
+    this.filterComponent.filter$.subscribe((filter: string) => {
+      this.getAllFiltered(filter);
     });
-    
     this.userType = this.userTypeService.getType();
     this.userTypeService.userType$.subscribe((userType: string) => {
       this.userType = userType;
@@ -167,7 +184,7 @@ export class EntityListComponent {
   //#region GET_ALL
   getAll() {
     this.visitorService
-      .getAllPaginated(this.currentPage - 1, this.pageSize)
+      .getAllPaginated(this.currentPage-1, this.pageSize)
       .subscribe({
         next: (data) => {
           this.completeList = this.transformListToTableData(data.items);
@@ -177,12 +194,12 @@ export class EntityListComponent {
             this.pageSize,
             this.retrieveByActive
           );
-          console.log(data);
+          console.log(data)
           this.list = response.content;
           this.filteredList = [...this.list];
           this.lastPage = response.last;
           this.totalItems = data.totalElements;
-          console.log(this.totalItems);
+          console.log(this.totalItems)
         },
         error: (error) => {
           console.error('Error getting visitors:', error);
@@ -192,37 +209,39 @@ export class EntityListComponent {
 
   getAllFiltered(filter: string) {
     //this.visitorService.getAllPaginated(this.currentPage, this.pageSize, {active : undefined , textFilter : filter})
-    this.visitorService.getAllFiltered(filter).subscribe({
-      next: (data) => {
-        if (filter === '' || filter === null) {
-          this.getAll();
-        }
+    this.visitorService.getAllFiltered(filter)
+      .subscribe({
+        next: (data) => {
+  
+          if(filter === '' || filter=== null){
+            this.getAll();
+          }
 
-        const filteredItems = data.items.filter(
-          (x) =>
-            x.name.toLowerCase().includes(filter.toLowerCase()) ||
-            (x.lastName &&
-              x.lastName.toLowerCase().includes(filter.toLowerCase())) ||
-            x.docNumber.toString().includes(filter)
-        );
+          const filteredItems = data.items.filter(
+            (x) =>
+              x.name.toLowerCase().includes(filter.toLowerCase()) ||
+              (x.lastName &&
+                x.lastName.toLowerCase().includes(filter.toLowerCase())) ||
+              x.docNumber.toString().includes(filter)
+          );
 
-        let response = this.transformResponseService.transformResponse(
-          filteredItems,
-          this.currentPage,
-          this.pageSize,
-          this.retrieveByActive
-        );
+          let response = this.transformResponseService.transformResponse(
+            filteredItems,
+            this.currentPage,
+            this.pageSize,
+            this.retrieveByActive
+          );
 
-        this.completeList = this.transformListToTableData(filteredItems);
-        this.list = response.content;
-        this.filteredList = [...this.list];
-        this.lastPage = response.last;
-        this.totalItems = filteredItems.length;
-      },
-      error: (error) => {
-        console.error('Error getting visitors:', error);
-      },
-    });
+          this.completeList = this.transformListToTableData(filteredItems);
+          this.list = response.content;
+          this.filteredList = [...this.list];
+          this.lastPage = response.last;
+          this.totalItems = filteredItems.length;
+        },
+        error: (error) => {
+          console.error('Error getting visitors:', error);
+        },
+      });
   }
 
   getDocumentAbbreviation(docType: string): string {
@@ -269,6 +288,7 @@ export class EntityListComponent {
       });
   }
 
+
   //#endregion
 
   //#region USO DE DICCIONARIOS
@@ -300,16 +320,11 @@ export class EntityListComponent {
   //#region FUNCIONES PARA PAGINADO
 
   confirmFilter(): void {
-    this.visitorService
-      .getAllPaginated(this.currentPage - 1, this.pageSize, {
-        active: true,
-        textFilter: undefined,
-      })
-      .subscribe((response) => {
-        this.filteredList = response.items;
-        this.list = response.items;
-        this.totalItems = response.totalElements;
-      });
+    this.visitorService.getAllPaginated(this.currentPage - 1, this.pageSize, { active: true , textFilter: undefined}).subscribe(response => {
+      this.filteredList = response.items;
+      this.list = response.items
+      this.totalItems = response.totalElements;
+    });
   }
 
   onItemsPerPageChange() {
@@ -330,7 +345,7 @@ export class EntityListComponent {
         lastName: any;
         docType: any;
         docNumber: any;
-        visitorTypes: any[]; // Suponiendo que visitorTypes es un array
+        visitorTypes: any[]; 
       }) => ({
         Nombre: `${item.name} ${item.lastName}`,
         Documento: `${
@@ -348,43 +363,29 @@ export class EntityListComponent {
   }
 
   edit(id: any) {
-    const modalRef = this.modalService.open(EntityFormComponent, {
-      centered: true,
-      size: 'lg',
-    });
+    const modalRef = this.modalService.open(EntityFormComponent, { centered: true, size: 'lg' });
     modalRef.componentInstance.visitorId = id;
 
     // Suscribirse al evento 'entitySaved' del modal para recargar la lista
     modalRef.componentInstance.entitySaved.subscribe(() => {
-      this.ngOnInit();
+      this.ngOnInit()
     });
   }
   // aca escucho el evento de que una entidad fue creada en el modal y actualizo la lista
   updateEntityList() {
-    this.ngOnInit();
+    this.ngOnInit()
   }
 
   disable(visitorId: number) {
-    this.visitorService
-      .delete(visitorId, this.getLogin().id)
-      .subscribe((data) => {
-        this.getAll();
-      });
+    this.visitorService.delete(visitorId,this.loginService.getLogin().id).subscribe(data => {
+      this.getAll();
+    })
   }
 
   enable(visitorId: number) {
-    this.visitorService
-      .enable(visitorId, this.getLogin().id)
-      .subscribe((data) => {
-        this.getAll();
-      });
+    this.visitorService.enable(visitorId,this.loginService.getLogin().id).subscribe(data => {
+      this.getAll();
+    })
   }
-
   protected readonly VisitorTypeIconDictionary = VisitorTypeIconDictionary;
-
-  getLogin():LoginModel{
-    return {
-      birthDate: "", docNumber: 0, docType: "", id: 2, lastName: "R.", name: "Juan"
-    }
-  }
 }
