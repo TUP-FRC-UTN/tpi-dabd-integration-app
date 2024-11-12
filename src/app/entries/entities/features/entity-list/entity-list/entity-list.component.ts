@@ -19,7 +19,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { Router, RouterLink } from '@angular/router';
 import { TransformResponseService } from '../../../../services/transform-response.service';
-import { VisitorTypeAccessDictionary } from '../../../../models/authorization/authorize.model';
+import { VisitorTypeAccessDictionary, VisitorTypeIconDictionary } from '../../../../models/authorization/authorize.model';
 import { Visitor } from '../../../../models/visitors/visitor.model';
 import { VisitorFilter, VisitorService } from '../../../../services/visitors/visitor.service';
 import { UserTypeService } from '../../../../services/user-type.service';
@@ -345,7 +345,7 @@ export class EntityListComponent implements OnInit, AfterViewInit {
         lastName: any;
         docType: any;
         docNumber: any;
-        visitorTypes: any[]; // Suponiendo que visitorTypes es un array
+        visitorTypes: any[]; 
       }) => ({
         Nombre: `${item.name} ${item.lastName}`,
         Documento: `${
@@ -387,5 +387,5 @@ export class EntityListComponent implements OnInit, AfterViewInit {
       this.getAll();
     })
   }
-
+  protected readonly VisitorTypeIconDictionary = VisitorTypeIconDictionary;
 }

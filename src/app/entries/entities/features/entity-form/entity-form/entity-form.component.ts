@@ -5,8 +5,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastsContainer, ToastService } from 'ngx-dabd-grupo01';
 import { VisitorService } from '../../../../services/visitors/visitor.service';
-import { LoginService } from '../../../../../users/services/login.service';
+
 import { LoginModel } from '../../../../models/login.model';
+import { LoginService } from '../../../../services/access/login.service';
 
 @Component({
   selector: 'app-entity-form',
@@ -60,46 +61,38 @@ export class EntityFormComponent {
   onSubmit(): void {
     if (this.entityForm.valid) {
       const formData = this.entityForm.value;
-
+  
       if (formData.birthDate) {
         formData.birthDate = formatFormDate(formData.birthDate);
       }
-
-      this.visitorService
-        .upsertVisitor(
-          formData,
-          this.getLogin().id,
-          this.visitorId
-        )
-        .subscribe({
-          next: (response) => {
-            if (this.isUpdate) {
-              this.toastService.sendSuccess('Actualización exitosa!');
-            } else {
-              this.toastService.sendSuccess('Registro exitoso!');
-              this.entityCreated.emit();
-            }
-
-            this.entitySaved.emit(true);
-
-            // Aquí cerramos el modal después de mostrar el toast
-            setTimeout(() => {
-              this.activeModal.close();
-              this.toastService.remove(this.toastService.toasts[0]); // Cierra el modal
-              this.isUpdate = false;
-            }, 1500);
-          },
-          error: (error) => {
-            console.log(error);
-            if (error.status === 400) {
-              this.toastService.sendError('Error, Documento ya registrado.');
-            } else {
-              this.toastService.sendError(
-                'Ocurrió un error inesperado. Intente de nuevo más tarde.'
-              );
-            }
-          },
-        });
+  
+      this.visitorService.upsertVisitor(formData, this.loginService.getLogin().id, this.visitorId).subscribe({
+        next: (response) => {
+          if (this.isUpdate) {
+            this.toastService.sendSuccess("Actualización exitosa!");
+          } else {
+            this.toastService.sendSuccess("Registro exitoso!");
+            this.entityCreated.emit();
+          }
+  
+          this.entitySaved.emit(true);
+  
+          // aca cerramos el modal después de mostrar el toast
+          setTimeout(() => {
+            this.activeModal.close();
+            this.toastService.remove(this.toastService.toasts[0]);  
+            this.isUpdate = false; 
+          }, 1500); 
+        },
+        error: (error) => {
+          console.log(error);
+          if (error.status === 400) {
+            this.toastService.sendError("Error, Documento ya registrado.");
+          } else {
+            this.toastService.sendError("Ocurrió un error inesperado. Intente de nuevo más tarde.");
+          }
+        }
+      });
     } else {
       this.markAllAsTouched();
     }
