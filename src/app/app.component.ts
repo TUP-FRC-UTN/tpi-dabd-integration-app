@@ -67,6 +67,16 @@ export class AppComponent implements OnInit {
 
     },
     {
+      label: 'Empleados',
+      routerLink:'inventories',
+      sidebarMenu: [
+        {
+          label: 'Empleados',
+          routerLink: 'inventories/employees/list'
+        }
+      ]
+    },
+    {
       label: 'Gastos', //expensas
       routerLink:'expenses',
       sidebarMenu: [
@@ -94,8 +104,37 @@ export class AppComponent implements OnInit {
       ],
     },
     {
-      label: 'Plantillas',
-      routerLink: 'notifications/templates',
+      label: 'Inventarios',
+      routerLink:'inventories',
+      sidebarMenu: [
+        {
+          label: 'Inventarios',
+          subMenu: [
+            {label: 'Inventarios',routerLink:'inventories/inventories'},
+            {label: 'Nuevo Artículo',routerLink:'inventories/articles/article'},
+          ]
+        }
+      ]
+    },
+    {
+      label: 'Multas',
+      routerLink: 'penalties/sanctionType',
+      sidebarMenu: [
+
+        {
+          label: 'Multas',
+          subMenu: [
+            {label: 'Multas',routerLink:'penalties/fine'},
+            {label: 'Infracciones',routerLink:'penalties/infraction'},
+            {label: 'Reclamos',routerLink:'penalties/claim'},
+            {label: 'Tipos de Sanciones',routerLink:'penalties/sanctionType'}
+          ]
+        }
+      ]
+    },
+    {
+      label: 'Notificaciones',
+      routerLink:'notifications',
       sidebarMenu: [
         {
           label: 'Listar Plantillas',
@@ -162,36 +201,17 @@ export class AppComponent implements OnInit {
       ]
     },
     {
-      label: 'Inventarios',
-      routerLink:'inventories',
+      label: 'Obras',
+      routerLink: 'penalties',
       sidebarMenu: [
         {
-          label: 'Inventarios',
-          subMenu: [
-            {label: 'Inventarios',routerLink:'inventories/inventories'},
-            {label: 'Nuevo Artículo',routerLink:'inventories/articles/article'},
-          ]
+          label: 'Obras',
+          routerLink: 'penalties/constructions'
         }
       ]
     },
     {
-      label: 'Multas',
-      routerLink: 'penalties/sanctionType',
-      sidebarMenu: [
-
-        {
-          label: 'Multas',
-          subMenu: [
-            {label: 'Multas',routerLink:'penalties/fine'},
-            {label: 'Infracciones',routerLink:'penalties/infraction'},
-            {label: 'Reclamos',routerLink:'penalties/claim'},
-            {label: 'Tipos de Sanciones',routerLink:'penalties/sanctionType'}
-          ]
-        }
-      ]
-    },
-    {
-      label: 'Boletas - Cobros',
+      label: 'Boletas',
       routerLink: '/invoices',
       sidebarMenu: [
         {
@@ -227,6 +247,28 @@ export class AppComponent implements OnInit {
           label: 'Proveedores',
           routerLink: 'inventories/providers/list'
         },
+      ]
+    },
+    {
+      label: 'Tickets', //invoices
+      routerLink:'invoices',
+      sidebarMenu: [
+        {
+          label: 'Lista de Expensas (Propietario)',
+          routerLink: 'invoices/admin-list-expensas'
+        },
+        {
+          label: 'Lista de Expensas (Propietario)',
+          routerLink: 'invoices/owner-list-expensas'
+        },
+        {
+          label: 'Estadísticas',
+          routerLink: 'invoices/stadistics'
+        },
+        {
+          label: 'Review-Tickets-Transfer',
+          routerLink: 'invoices/review-tickets-transfer'
+        }
       ]
     },
     {

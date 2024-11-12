@@ -15,8 +15,8 @@ export class LoadFileService {
   
 
   private fileUploadUrl: string = environment.production
-    ? `${environment.apis.cadastre}files`
-    : 'http://localhost:8004/files';
+    ? `${environment.apis.cadastre}plots`
+    : 'http://localhost:8004/plots';
 
     private sessionService = inject(SessionService);
 

@@ -1,5 +1,5 @@
-<app-main-container title="Usuarios por Rol" (infoButtonClick)="openInfo()">
-
+<app-main-container title='Usuarios con rol de {{prettyNameRoleSelected}}' (infoButtonClick)="openInfo()">
+ 
   <div class="d-flex justify-content-between align-items-center mb-3">
     <!-- Sección de búsqueda y filtros -->
     <div class="btn-group me-5" role="group">
@@ -59,8 +59,8 @@
         </tr>
         </thead>
         <tbody>
-          @for (user of (filteredUsersList.length ? filteredUsersList : userList); track user) {
-
+          <!-- @for (user of (filteredUsersList.length ? filteredUsersList : userList); track user) { -->
+          @for (user of ((filter$ | async)); track user) {
             <tr>
               <td>
                 {{ user.firstName + " " + user.lastName }}

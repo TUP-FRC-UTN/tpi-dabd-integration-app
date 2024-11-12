@@ -1,9 +1,9 @@
-<app-main-container title="Informacion del perfil">
+<app-main-container title="Informacion del perfil" (infoButtonClick)="openInfo()">
   <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
     <div class="col-md-6">
       <div class="flex-row d-flex align-items-center">
         <label for="emailForm" class="col-form-label col-md-2"
-          >Email<label class="text-danger">*</label></label
+          >Email</label
         >
         <input
           type="email"
@@ -17,7 +17,7 @@
     <div class="col-md-6">
       <div class="flex-row d-flex align-items-center">
         <label for="firstNameForm" class="col-form-label col-md-2"
-          >Nombre<label class="text-danger">*</label></label
+          >Nombre</label
         >
         <input
           type="text"
@@ -31,7 +31,7 @@
     <div class="col-md-6">
       <div class="flex-row d-flex align-items-center">
         <label for="userNameForm" class="col-form-label col-md-2"
-          >Nombre de usuario<label class="text-danger">*</label></label
+          >Nombre de usuario</label
         >
         <input
           type="text"
@@ -45,7 +45,7 @@
     <div class="col-md-6">
       <div class="flex-row d-flex align-items-center">
         <label for="lastNameForm" class="col-form-label col-md-2"
-          >Apellido<label class="text-danger">*</label></label
+          >Apellido</label
         >
         <input
           type="text"
@@ -68,12 +68,12 @@
     <!-- Addresses -->
     <!-- Addresses -->
     <div formGroupName="addressForm" class="row g-3">
-      <h5 class="mt-2 p-2">Añadir Dirección</h5>
+      <h5 class="mt-2 p-2">Dirección</h5>
 
       <div class="col-md-6">
         <div class="d-flex flex-row align-items-center">
           <label for="street-address" class="col-form-label col-md-2"
-            >Calle<label class="text-danger">*</label></label
+            >Calle</label
           >
           <input
             type="text"
@@ -87,7 +87,7 @@
       <div class="col-md-6">
         <div class="d-flex flex-row align-items-center">
           <label for="number" class="col-form-label col-md-2"
-            >Número<label class="text-danger">*</label></label
+            >Número</label
           >
           <input
             type="number"
@@ -125,7 +125,7 @@
       <div class="col-md-6">
         <div class="d-flex flex-row align-items-center">
           <label for="country" class="col-form-label col-md-2"
-            >País<label class="text-danger">*</label></label
+            >País</label
           >
           <select id="country" class="form-select" formControlName="country">
           
@@ -136,7 +136,7 @@
       <div class="col-md-6">
         <div class="d-flex flex-row align-items-center">
           <label for="province" class="col-form-label col-md-2"
-            >Provincia<label class="text-danger">*</label></label
+            >Provincia</label
           >
           <select id="province" class="form-select" formControlName="province">
          
@@ -146,7 +146,7 @@
       <div class="col-md-6">
         <div class="d-flex flex-row align-items-center">
           <label for="city" class="col-form-label col-md-2"
-            >Ciudad<label class="text-danger">*</label></label
+            >Ciudad</label
           >
           <input
             type="text"
@@ -160,7 +160,7 @@
       <div class="col-md-6">
         <div class="row g-0 align-items-center">
           <label for="postal-code" class="col-form-label col-md-2"
-            >Código Postal<label class="text-danger">*</label></label
+            >Código Postal</label
           >
           <div class="col">
             <input
@@ -216,7 +216,7 @@
     <!-- Contactos -->
     <!-- Contactos -->
     <div formGroupName="contactsForm" class="row g-3 pb-5">
-      <h5 class="mt-2 p-2 pb-4">Añadir Contactos</h5>
+      <h5 class="mt-2 p-2 pb-4">Contactos</h5>
       <div class="row">
         <div class="col-md-4 mx-auto">
           <div class="row g-0 align-items-center">

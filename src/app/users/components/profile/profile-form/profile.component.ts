@@ -12,6 +12,8 @@ import { SessionService } from '../../../services/session.service';
 import { User } from '../../../models/user';
 import { Country, Provinces } from '../../../models/generics';
 import { toSnakeCase } from '../../../utils/owner-helper';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { InfoComponent } from '../../commons/info/info.component';
 
 @Component({
   selector: 'app-profile',
@@ -28,6 +30,7 @@ export class ProfileComponent {
   private router = inject(Router)
   private toastService = inject(ToastService)
   private sessionService = inject(SessionService)
+  private modalService = inject(NgbModal);
 
   id!: number;
   user: any = {};
@@ -298,5 +301,109 @@ export class ProfileComponent {
 
     return user.id!!
   }
+
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
+
+    modalRef.componentInstance.title = 'Editar información del perfil del usuario';
+    modalRef.componentInstance.description = 'Esta pantalla se utiliza para editar la infrmación de usuario.';
+    modalRef.componentInstance.body = [
+      {
+        title: 'Datos',
+        content: [
+          {
+            strong: 'Email:',
+            detail: 'Campo para modificar el email del usuario.'
+          },
+          /* {
+            strong: 'Nombre:',
+            detail: 'Nombre del usuario.'
+          }, */
+          {
+            strong: 'Nombre de Usuario:',
+            detail: 'Campo para modificar el nombre de usuario.'
+          },
+          /* {
+            strong: 'Apellido:',
+            detail: 'Apellido del usuario.'
+          }, */
+        ]
+      },
+      {
+        title: 'Dirección',
+        content: [
+          {
+            strong: 'Calle:',
+            detail: 'Campo para modificar el nombre de la calle.'
+          },
+          {
+            strong: 'Número:',
+            detail: 'Campo para modificar el número, con valor predeterminado 0.'
+          },
+          {
+            strong: 'Piso:',
+            detail: 'Campo para modificar el piso, con valor predeterminado 0.'
+          },
+          {
+            strong: 'Depto:',
+            detail: 'Campo para modificar el número de departamento.'
+          },
+          {
+            strong: 'País:',
+            detail: 'Menú desplegable para seleccionar el país.'
+          },
+          {
+            strong: 'Provincia:',
+            detail: 'Menú desplegable para seleccionar la provincia.'
+          },
+          {
+            strong: 'Ciudad:',
+            detail: 'Campo para modificar la ciudad.'
+          },
+          {
+            strong: 'Código Postal:',
+            detail: 'Campo para modificar el código postal.'
+          }
+        ]
+      },
+      {
+        title: 'Contactos',
+        content: [
+          {
+            strong: 'Tipo Contacto:',
+            detail: 'Menu desplegable para seleccionar el tipo de contacto.'
+          },
+          {
+            strong: 'Contacto:',
+            detail: 'Campo para ingresar el valor del contacto.'
+          }
+        ]
+      },
+      {
+        title: 'Funcionalidades de los botones',
+        content: [
+          {
+            strong: 'Guardar:',
+            detail: 'Botón azul para confirmar la edición de la información de perfil.'
+          },
+          {
+            strong: 'Cancelar:',
+            detail: 'Botón rojo para cancelar la edición de la información de perfil.'
+          },
+        ]
+      }
+    ];
+    modalRef.componentInstance.notes = [
+      'La interfaz está diseñada para ofrecer una administración eficiente de los procesos de validación de usuarios.'
+    ];
+  }
+
 
 }

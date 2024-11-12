@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
 import { SessionService } from '../../services/session.service';
 import { User } from '../../models/user';
-import { easingEffects } from 'chart.js/helpers';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { InfoComponent } from '../commons/info/info.component';
 
 @Component({
   selector: 'app-change-password',
@@ -16,11 +17,16 @@ import { easingEffects } from 'chart.js/helpers';
   styleUrl: './change-password.component.scss'
 })
 export class ChangePasswordComponent {
+  
+  
+  private modalService = inject(NgbModal);
+  
   changePassForm!: FormGroup
   oldPassword!: string;
   newPassword!: string;
 
   submitted = false;
+
 
   constructor(
     private formBuilder: FormBuilder,
@@ -59,7 +65,7 @@ export class ChangePasswordComponent {
       this.userService.changePassword(this.oldPassword, this.newPassword).subscribe({
         next: (response) => {
           this.toastService.sendSuccess("Contraseña actualizada con éxito.")
-          this.router.navigate(['']);
+          this.router.navigate(['/home']);
         },
         error: (error) => {
           if (error.status === 401) {
@@ -83,6 +89,78 @@ export class ChangePasswordComponent {
     this.router.navigate(['users/profile/detail'])
   }
 
-  openInfo() { }
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
+
+    modalRef.componentInstance.title = 'Cmabiar contraseña';
+    modalRef.componentInstance.description = 'Esta pantalla se utiliza para modificar la contraseña del usuario.';
+    modalRef.componentInstance.body = [
+      
+      {
+        title: 'Datos',
+        content: [
+          {
+            strong: 'Contraseña Actual:',
+            detail: 'Campo para ingresar la contraseña actual del usuario.'
+          },
+          {
+            strong: 'Repetir contraseña:',
+            detail: 'Campo para ingresar nuevamente la contraseña actual del usuario.'
+          },
+          {
+            strong: 'Nueva contraseña:',
+            detail: 'Campo para ingresar la nueva contraseña.'
+          },
+        ]
+      },
+      {
+        title: 'Formato de la contraseña',
+        content: [
+          {
+            strong: '-',
+            detail: 'Debe tener 8 o más caracteres.'
+          },
+          {
+            strong: '-',
+            detail: 'Debe contener al menos una letra minúscula.'
+          },
+          {
+            strong: '-',
+            detail: 'Debe contener al menos una letra mayúscula.'
+          },
+          {
+            strong: '-',
+            detail: 'Debe contener al menos un número.'
+          },
+          {
+            strong: '-',
+            detail: 'Debe contener al menos un símbolo (Ej: &, !, ?).'
+          },
+        ]
+      },
+      {
+        title: 'Funcionalidades de los botones',
+        content: [
+          {
+            strong: 'Guardar:',
+            detail: 'Botón azul para confirmar el cambio de contraseña.'
+          },
+          {
+            strong: 'Cancelar:',
+            detail: 'Botón rojo para cancelar el cambio de contraseña.'
+          },
+        ]
+      }
+    ];
+    modalRef.componentInstance.notes = [
+      'La interfaz está diseñada para ofrecer una administración eficiente de los procesos de validación de usuarios.'
+    ];
+  }
 
 }

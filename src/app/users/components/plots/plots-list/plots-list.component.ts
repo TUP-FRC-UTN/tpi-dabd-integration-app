@@ -347,7 +347,7 @@ export class PlotsListComponent {
       next: (data) => {
         autoTable(doc, {
           startY: 30,
-          head: [['Nro. de Manzana', 'Nro. de Lote', 'Area Total', 'Area Construida', 'Tipo de Lote', 'Estado del Lote', 'Activo']],
+          head: [['Nro. de Manzana', 'Nro. de Lote', 'Area Total', 'Area Construida', 'Tipo de Lote', 'Estado del Lote', 'Balance', 'Activo']],
           body: data.content.map(plot => [
             plot.blockNumber,
             plot.plotNumber,
@@ -355,6 +355,7 @@ export class PlotsListComponent {
             plot.builtArea,
             this.translateDictionary(plot.plotType, this.dictionaries[1]) || plot.plotType,
             this.translateDictionary(plot.plotStatus, this.dictionaries[0]) || plot.plotStatus,
+            this.formatCurrency(plot.balance),
             plot.isActive? 'Activo' : 'Inactivo'
           ])
         });
@@ -374,6 +375,7 @@ export class PlotsListComponent {
           'Area Construida': plot.builtArea,
           'Tipo de Lote': this.translateDictionary(plot.plotType, this.dictionaries[1]) || plot.plotType,
           'Estado del Lote': this.translateDictionary(plot.plotStatus, this.dictionaries[0]) || plot.plotStatus,
+          'Balance': this.formatCurrency(plot.balance),
           'Activo': plot.isActive? 'Activo' : 'Inactivo',
         }));
         const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);

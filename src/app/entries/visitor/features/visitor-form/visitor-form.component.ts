@@ -13,47 +13,47 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './visitor-form.component.html',
 })
 export class VisitorFormComponent {
-  visitor: SendVisitor = {
-    name: '',
-    last_name: '',
-    doc_number: '',
-    birth_date: new Date(),
-    is_active: true,
-  };
+  // visitor: SendVisitor = {
+  //   name: '',
+  //   last_name: '',
+  //   doc_number: '',
+  //   birth_date: new Date(),
+  //   is_active: true,
+  // };
 
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-  private readonly visitorService = inject(VisitorService);
+  // private readonly route = inject(ActivatedRoute);
+  // private readonly router = inject(Router);
+  // private readonly visitorService = inject(VisitorService);
 
-  ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.visitorService.getVisitor(+id).subscribe((response) => {
-        this.visitor = {
-          name: response.name,
-          last_name: response.last_name,
-          doc_number: response.doc_number,
-          is_active: response.is_active,
-          birth_date: moment(response.birth_date, 'DD-MM-YYYY').toDate(),
-        };
-      });
-    }
-  }
+  // ngOnInit(): void {
+  //   const id = this.route.snapshot.paramMap.get('id');
+  //   if (id) {
+  //     this.visitorService.getVisitor(+id).subscribe((response) => {
+  //       this.visitor = {
+  //         name: response.name,
+  //         last_name: response.last_name,
+  //         doc_number: response.doc_number,
+  //         is_active: response.is_active,
+  //         birth_date: moment(response.birth_date, 'DD-MM-YYYY').toDate(),
+  //       };
+  //     });
+  //   }
+  // }
 
-  saveVisitor(): void {
-    const formattedVisitor = {
-      ...this.visitor,
-      birth_date: moment(this.visitor.birth_date).format('DD-MM-YYYY'),
-    };
+  // saveVisitor(): void {
+  //   const formattedVisitor = {
+  //     ...this.visitor,
+  //     birth_date: moment(this.visitor.birth_date).format('DD-MM-YYYY'),
+  //   };
 
-    console.log(formattedVisitor);
-    this.visitorService.upsertVisitor(formattedVisitor).subscribe(() => {
-      this.router.navigate(['/qr'], {
-        queryParams: {
-          docNumber: this.visitor.doc_number,
-          fromVisitorForm: true,
-        },
-      });
-    });
-  }
+  //   console.log(formattedVisitor);
+  //   this.visitorService.upsertVisitor(formattedVisitor).subscribe(() => {
+  //     this.router.navigate(['/qr'], {
+  //       queryParams: {
+  //         docNumber: this.visitor.doc_number,
+  //         fromVisitorForm: true,
+  //       },
+  //     });
+  //   });
+  //}
 }

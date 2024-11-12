@@ -2,7 +2,6 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { PaginatedResponse } from '../models/api-response';
 import { toCamelCase } from '../utils/owner-helper';
 
 export interface Notice {
@@ -10,7 +9,7 @@ export interface Notice {
   title: string;
   content: string;
   priority: 'HIGH' | 'MEDIUM' | 'LOW';
-  isActive: boolean;
+  is_active: boolean;
   date: string;
 }
 
@@ -28,6 +27,15 @@ interface Announcement {
   content: string;
   priority: 'high' | 'medium' | 'low';
   date?: string;
+  isVisible: boolean;
+}
+
+export interface PaginatedResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
 }
 
 @Injectable({
@@ -44,25 +52,26 @@ export class NoticeService {
       content: notice.content,
       priority: notice.priority.toLowerCase() as 'high' | 'medium' | 'low',
       date: notice.date,
+      isVisible: notice.is_active
     };
   }
 
   getAllNotices(
     page: number = 0, 
-    size: number = 10, 
+    size: number = 5,
     isActive?: boolean
   ): Observable<PaginatedResponse<Announcement>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
-      
+
     if (isActive !== undefined) {
-      params = params.set('isActive', isActive.toString());
+      params = params.set('is_active', isActive.toString());
     }
-  
-    return this.http.get<PaginatedResponse<Notice>>(this.host, { params }).pipe(
-      map((response: PaginatedResponse<Notice>) => {
-        const transformedNotices = response.content.map((notice: Notice) =>
+
+    return this.http.get<PaginatedResponse<any>>(this.host, { params }).pipe(
+      map((response) => {
+        const transformedNotices = response.content.map((notice: any) =>
           this.transformNoticeToAnnouncement(notice)
         );
         return {
@@ -84,7 +93,7 @@ export class NoticeService {
       title: notice.title,
       content: notice.content,
       priority: notice.priority,
-      is_active: notice.isActive
+      is_active: notice.is_active
     };
 
     return this.http.post<Notice>(this.host, backendNotice, { headers }).pipe(
@@ -104,7 +113,7 @@ export class NoticeService {
       title: notice.title,
       content: notice.content,
       priority: notice.priority,
-      is_active: notice.isActive
+      is_active: notice.is_active
     };
 
     return this.http.put<Notice>(this.host, backendNotice, { headers }).pipe(

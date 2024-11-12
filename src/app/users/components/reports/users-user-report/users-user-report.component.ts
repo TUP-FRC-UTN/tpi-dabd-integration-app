@@ -54,12 +54,24 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
   activeUsersCount = 0;
   mostFrequentUserRole = '';
 
-  filterConfig: Filter[] = new FilterConfigBuilder()
+  userFilterConfig: Filter[] = new FilterConfigBuilder()
     .textFilter('Nombre', 'firstName', 'Nombre')
     .textFilter('Apellido', 'lastName', 'Apellido')
     .textFilter('Nombre de Usuario', 'userName', 'Nombre de Usuario')
     .textFilter('Correo Electrónico', 'email', 'Correo Electrónico')
     .selectFilter('Activo', 'isActive', '', [
+      { value: 'true', label: 'Activo' },
+      { value: 'false', label: 'Inactivo' },
+      { value: '', label: 'Todo' },
+    ])
+    .build();
+
+  roleFilterConfig: Filter[] = new FilterConfigBuilder()
+    .textFilter('Código', 'code', 'Código')
+    .textFilter('Nombre Técnico', 'name', 'Nombre Técnico')
+    .textFilter('Nombre Visible', 'prettyName', 'Nombre Visible')
+    .textFilter('Descripción', 'description', 'Descripción')
+    .selectFilter('Activo', 'active', '', [
       { value: 'true', label: 'Activo' },
       { value: 'false', label: 'Inactivo' },
       { value: '', label: 'Todo' },
@@ -85,7 +97,7 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
       catchError(() => of([]))
     );
 
-    const roles$ = this.roleService.getAllRoles(0, 1000).pipe(
+    const roles$ = this.roleService.dinamicFilters(0, 1000, filters).pipe(
       map((response: PaginatedResponse<Role>) => response.content),
       catchError(() => of([]))
     );
@@ -142,7 +154,7 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
 
     const roleCounts = this.users.reduce((acc, user) => {
       user.roles?.forEach(
-        (role: Role) => (acc[role.name] = (acc[role.name] || 0) + 1)
+        (role: Role) => (acc[role.prettyName] = (acc[role.prettyName] || 0) + 1)
       );
       return acc;
     }, {} as Record<string, number>);
@@ -190,10 +202,10 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
     const userCategoryDistribution = this.users.reduce((acc, user) => {
       const category =
         user.ownerId && user.plotId
-          ? 'Owner'
+          ? 'Propietario'
           : !user.ownerId && user.plotId
-          ? 'Tenant'
-          : 'Other';
+          ? 'Inquilino'
+          : 'Empleados';
 
       acc[category] = (acc[category] || 0) + 1;
       return acc;
@@ -220,7 +232,7 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
     );
 
     const roleDistribution = this.roles.reduce((acc, role) => {
-      acc[role.name] = (acc[role.name] || 0) + 1;
+      acc[role.prettyName] = (acc[role.prettyName] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
@@ -229,7 +241,7 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
 
     const userByRoleDistribution = this.users?.reduce((acc, user) => {
       user.roles?.forEach((role: Role) => {
-        acc[role.name] = (acc[role.name] || 0) + 1;
+        acc[role.prettyName] = (acc[role.prettyName] || 0) + 1;
       });
 
       return acc;
@@ -439,8 +451,7 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
       scrollable: true,
     });
 
-    modalRef.componentInstance.title =
-      'Información de Usuarios y roles';
+    modalRef.componentInstance.title = 'Información de Usuarios y roles';
     modalRef.componentInstance.description =
       'En esta pantalla se podrán visualizar reportes de los usuario y los roles cargados en el consorcio.';
     modalRef.componentInstance.body = [
@@ -449,8 +460,9 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
         content: [
           {
             strong: '',
-            detail: 'Métricas relevantes que muestra estadísticas claves para evaluar rápidamente el estado y desempeño de los usuarios y los roles del consorcio.',
-          }
+            detail:
+              'Métricas relevantes que muestra estadísticas claves para evaluar rápidamente el estado y desempeño de los usuarios y los roles del consorcio.',
+          },
         ],
       },
       {
@@ -458,10 +470,11 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
         content: [
           {
             strong: '',
-            detail: 'Gráficos de barra o torta que permite visualizar de forma rápida y detallada el estado y desempeño de los usuarios y los roles del consorcio..',
-          }
+            detail:
+              'Gráficos de barra o torta que permite visualizar de forma rápida y detallada el estado y desempeño de los usuarios y los roles del consorcio..',
+          },
         ],
-      },      
+      },
       {
         title: 'Filtros',
         content: [
@@ -477,16 +490,19 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
           },
           {
             strong: 'Nombre de usuario:',
-            detail: 'Filtra los gráficos y kpis correspondientes a usuarios por el nombre del usuario.',
+            detail:
+              'Filtra los gráficos y kpis correspondientes a usuarios por el nombre del usuario.',
           },
           {
             strong: 'Correo electrónico:',
-            detail: 'Filtra los gráficos y kpis correspondientes a usuarios por el correo electrónico del usuario',
+            detail:
+              'Filtra los gráficos y kpis correspondientes a usuarios por el correo electrónico del usuario',
           },
           {
             strong: 'Activo:',
-            detail: 'Filtra los gráficos y kpis correspondientes a usuarios por el estado de activo o inactivo del usuario',
-          }
+            detail:
+              'Filtra los gráficos y kpis correspondientes a usuarios por el estado de activo o inactivo del usuario',
+          },
         ],
       },
       {
@@ -496,7 +512,7 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
             strong: 'Filtros:',
             detail:
               'Botón que despliega los filtros avanzados para los gráficos y KPIs.',
-          }
+          },
         ],
       },
     ];
@@ -505,4 +521,23 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
     ];
   }
   //#end region
+
+
+  /**
+   * Translates a value using the provided dictionary.
+   *
+   * @param value - The value to translate.
+   * @param dictionary - The dictionary used for translation.
+   * @returns The key that matches the value in the dictionary, or undefined if no match is found.
+   */
+  translateDictionary(value: any, dictionary?: { [key: string]: any }) {
+    if (value !== undefined && value !== null && dictionary) {
+      for (const key in dictionary) {
+        if (dictionary[key].toString().toLowerCase() === value.toLowerCase()) {
+          return key;
+        }
+      }
+    }
+    return;
+  }
 }
