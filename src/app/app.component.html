@@ -4,6 +4,7 @@
 
   </app-main-layout>
 } @else {
+  <!-- Faltaba agreagar la variable current url -->
   @if ((currentUrl$ | async) === '/forgotpassword') {
     <app-forgot-password></app-forgot-password>
   } @else {
