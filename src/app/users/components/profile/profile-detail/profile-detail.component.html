@@ -1,0 +1,307 @@
+<app-main-container title="Informacion del perfil" (infoButtonClick)="openInfo()">
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="emailForm" class="col-form-label col-md-2"
+          >Email</label
+        >
+        <input
+          type="email"
+          class="form-control m-2"
+          id="emailForm"
+          formControlName="email"
+        />
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="firstNameForm" class="col-form-label col-md-2"
+          >Nombre</label
+        >
+        <input
+          type="text"
+          class="form-control m-2"
+          id="firstNameForm"
+          formControlName="firstName"
+        />
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="userNameForm" class="col-form-label col-md-2"
+          >Nombre de usuario</label
+        >
+        <input
+          type="text"
+          class="form-control m-2"
+          id="userNameForm"
+          formControlName="userName"
+        />
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="lastNameForm" class="col-form-label col-md-2"
+          >Apellido</label
+        >
+        <input
+          type="text"
+          class="form-control m-2"
+          id="lastNameForm"
+          formControlName="lastName"
+        />
+      </div>
+    </div>
+
+    <div class="mb-3"></div>
+    <hr />
+
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <div formGroupName="addressForm" class="row g-3">
+      <h5 class="mt-2 p-2">Dirección</h5>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="street-address" class="col-form-label col-md-2"
+            >Calle</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            id="street-address"
+            formControlName="streetAddress"
+          />
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="number" class="col-form-label col-md-2"
+            >Número</label
+          >
+          <input
+            type="number"
+            class="form-control"
+            id="number"
+            formControlName="number"
+          />
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="floor" class="col-form-label col-md-2">Piso</label>
+          <input
+            type="number"
+            class="form-control"
+            id="floor"
+            formControlName="floor"
+          />
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="apartment" class="col-form-label col-md-2">Depto</label>
+          <input
+            type="text"
+            class="form-control"
+            id="apartment"
+            formControlName="apartment"
+          />
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="country" class="col-form-label col-md-2"
+            >País</label
+          >
+          <select id="country" class="form-select" formControlName="country">
+          
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="province" class="col-form-label col-md-2"
+            >Provincia</label
+          >
+          <select id="province" class="form-select" formControlName="province">
+         
+          </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="city" class="col-form-label col-md-2"
+            >Ciudad</label
+          >
+          <input
+            type="text"
+            class="form-control w-100"
+            id="city"
+            formControlName="city"
+          />
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="row g-0 align-items-center">
+          <label for="postal-code" class="col-form-label col-md-2"
+            >Codigo Postal</label
+          >
+          <div class="col">
+            <input
+              type="number"
+              class="form-control"
+              id="postal-code"
+              formControlName="postalCode"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 d-flex justify-content-end align-items-center">
+
+      
+    </div>
+    @if (addresses.length !== 0) {
+
+    <div class="col-12">
+      <h5 class="mb-3">Lista de Direcciones</h5>
+      <div class="list-group">
+        @for (address of addresses; track $index) {
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <button
+            type="button"
+            class="list-group-item list-group-item-action btn btn-primary btn-sm me-2"
+            (click)="setAddressValue($index)"
+          >
+            {{ address.streetAddress }} {{ address.number }}
+          </button>
+          @if (!id) {
+          <button
+            type="button"
+            class="btn btn-danger btn-sm"
+          >
+            <i class="bi bi-trash-fill"></i>
+          </button>
+          }
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <div class="mb-3"></div>
+    <hr />
+
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <div formGroupName="contactsForm" class="row g-3 pb-5">
+      <h5 class="mt-2 p-2 pb-4">Contactos</h5>
+      <div class="row">
+        <div class="col-md-4 mx-auto">
+          <div class="row g-0 align-items-center">
+            <div class="col-auto">
+              <label for="contact-type" class="col-form-label me-2"
+                >Tipo Contacto</label
+              >
+            </div>
+            <div class="col">
+              <select
+                id="contact-type"
+                class="form-select"
+                formControlName="contactType"
+              >
+                <option disabled selected>Selecciona un tipo</option>
+                <option value="PHONE">Telefono</option>
+                <option value="EMAIL">Email</option>
+                <option value="SOCIAL_MEDIA_LINK">Otro</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 mx-auto">
+          <div class="row g-0 align-items-center">
+            <div class="col-auto">
+              <label for="contact-info" class="col-form-label me-2"
+                >Contacto</label
+              >
+            </div>
+            <div class="col">
+              <input
+                type="text"
+                class="form-control"
+                id="contact-info"
+                formControlName="contactValue"
+              />
+            </div>
+          </div>
+        </div>
+
+         
+      </div>
+      @if (contacts.length !== 0) {
+
+      <div class="col-12">
+        <h5 class="mb-3">Lista de Contactos</h5>
+        <div class="list-group">
+          @for (contact of contacts; track $index) {
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <button
+              type="button"
+              class="list-group-item list-group-item-action btn btn-primary btn-sm me-2"
+              (click)="setContactValue($index)"
+            >
+              {{ contact.contactType }} - {{ contact.contactValue }}
+            </button>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Botones -->
+    <!-- Botones -->
+    <!-- Botones -->
+    <!-- Botones -->
+    <!-- Botones -->
+    <!-- Botones -->
+    <!-- Botones -->
+    <div class="col-12 d-flex justify-content-end">
+             <!-- <div class="mx-2">
+        <button type="button" class="btn btn-danger" (click)="cancel()">
+          Volver
+        </button>
+      </div> -->
+
+      
+      <div>
+        <button (click)="navigateToPassword()" class="btn btn-primary me-2">Cambiar contraseña</button>
+      </div>
+      <div>
+        <button type="submit" class="btn btn-primary">Editar</button>
+      </div>
+    </div>
+  </form>
+</app-main-container>

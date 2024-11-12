@@ -1,4 +1,4 @@
-<app-main-container title="Usuarios Creados por {{userName}}">
+<app-main-container title="Usuarios Creados por {{userName}}" (infoButtonClick)="openInfo()">
 
   <div class="d-flex justify-content-between align-items-center mb-3">
     <!-- Sección de búsqueda y filtros -->
@@ -15,7 +15,6 @@
             (input)="onFilterTextBoxChanged($event)"
             placeholder="Buscar..."
           />
-          <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
         </div>
       </div>
     </div>

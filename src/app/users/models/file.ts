@@ -10,9 +10,9 @@ export interface FileUploadData {
  * of files that can be used, such as documentation or sale files.
  */
 export enum BatchFileType {
-    PURCHASE_SALE = 'Escritura',
-    ID_DOCUMENT_FRONT = 'Frente Documento',
-    ID_DOCUMENT_BACK = 'Dorso Documento',
+    PURCHASE_SALE = 'PURCHASE_SALE',
+    ID_DOCUMENT_FRONT = 'ID_DOCUMENT_FRONT',
+    ID_DOCUMENT_BACK = 'ID_DOCUMENT_BACK',
   }
 
   // ver de aca cuales tienen que quedar
@@ -35,7 +35,7 @@ export interface FileTypeMap {
 }
 
 export interface FileWithTypes {
-  id?: string,
+  id: string,
   file: File,
   type: BatchFileType
 }

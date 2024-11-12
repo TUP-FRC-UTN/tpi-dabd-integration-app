@@ -1,120 +1,117 @@
-<app-main-container title="" >
-  <div class="container-fluid row">
 
-    <div class="col-md-6 d-flex justify-content-center">
-      <div class="card shadow" style="min-height: 450px; width: 100%; min-width: 450px" >
-        <div class="card-body d-flex flex-column justify-content-center">
-          <h3 class="card-title text-center mb-4">Iniciar sesión</h3>
-          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-            <div class="mb-3">
-              <label for="email" class="form-label">Correo Electrónico</label>
-              <input
-                type="text"
-                id="email"
-                class="form-control"
-                formControlName="email"
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <label for="password" class="form-label">Contraseña</label>
-              <input
-                type="password"
-                id="password"
-                class="form-control"
-                formControlName="password"
-                required
-              />
-            </div>
-            <div class="d-grid">
-              <button
-                type="submit"
-                class="btn btn-primary"
-                [disabled]="loginForm.invalid"
-              >
-                Ingresar
-              </button>
-            </div>
-          </form>
-          <div class="text-center mt-3">
-            <a href="#">Olvidó su contraseña?</a>
-          </div>
-
-          <div class="row m-4 aling-items-center">
-            <button mat-raised-button (click)="signInWithGoogle()">
-              <img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"
-                alt="Google"          
-                class="google-icon"
-                width="30px"
-              />          
-              Ingresar con Google          
-            </button>          
-          </div>
-
+<app-toasts aria-live="polite" aria-atomic="true" ></app-toasts>
+<div class="w-100 h-100 mt-3">
+  <div>
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center p-3">
+        <div class="row">
+          <h2>Villa del Cóndor</h2>
         </div>
       </div>
-    </div>
-
-    <div class="col-md-6 d-flex align-items-center justify-content-center">
-      <img
-        src="assets\portada.JPG"
-        alt="Login Image"
-        class="img-fluid shadow"
-        style="
-          min-height: 450px;
-          width: 100%;
-          min-width: 450px;
-          object-fit: cover;
-          border-radius: 8px;
-        "
-      /><!-- 
-      <img
-        src="assets\villa_del_condor_desarrollo_1.jpg"
-        alt="Login Image"
-        class="img-fluid shadow"
-        style="
-          max-height: 100%;
-          width: 100%;
-          max-width: 450vw;
-          object-fit: cover;
-          border-radius: 8px;
-        "
-      /> -->
+      <main class="justify-content-center">
+        <div class="container-fluid justify-content-center row mx-0">
+          <div class="col-12 col-md-6 d-flex justify-content-center p-3">
+            <div class="card shadow w-100" style="min-height: 400px">
+              <div class="card-body d-flex flex-column justify-content-center p-4">
+                <h3 class="card-title text-center mb-4">Iniciar sesión</h3>
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                  <div class="mb-3">
+                    <label for="email" class="form-label">Correo Electrónico</label>
+                    <input
+                      type="text"
+                      id="email"
+                      class="form-control"
+                      formControlName="email"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input
+                      type="password"
+                      id="password"
+                      class="form-control"
+                      formControlName="password"
+                      required
+                    />
+                  </div>
+                  <div class="d-grid">
+                    <button
+                      type="submit"
+                      class="btn btn-primary"
+                      [disabled]="loginForm.invalid"
+                    >
+                      Ingresar
+                    </button>
+                  </div>
+                </form>
+                <div class="text-center mt-3">
+                  <a href="/forgotpassword">Olvidó su contraseña?</a>
+                </div>
+                <!-- <div class="row mt-4">
+                  <div class="col-12 d-grid">
+                    <button mat-raised-button (click)="signInWithGoogle()" class="btn d-flex align-items-center justify-content-center gap-2">
+                      <img 
+                        src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"
+                        alt="Google"          
+                        class="google-icon"
+                        width="24px"
+                      />          
+                      Ingresar con Google          
+                    </button>
+                  </div>
+                </div> -->
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 d-flex align-items-center justify-content-center p-3">
+            <img
+              src="../../assets/portada.JPG"
+              alt="Login Image"
+              class="img-fluid shadow rounded-3"
+              style="
+                height: 75vh;
+                width: 100%;
+                object-fit: fill;
+              "
+              [ngClass]="{
+                'd-none d-md-block': (!meetsMinimunSize)
+              }"
+            />
+          </div>
+        </div>
+        <div class="row mt-5 mx-0 border-top">
+          <div class="col-12 col-md-6 mt-2">
+            <img
+              src="../../assets/villa_del_condor.png"
+              alt="Login Image"
+              class="img-fluid"
+              style="object-fit: cover; border-radius: 2px; margin-left: 0vw;"
+            />
+          </div>
+          <div class="col-12 col-md-3 mt-2">
+            <div>
+              <p class="fs-5">Oficina comercial</p>
+              <p class="mb-1">Ruta 271 Km 10,5 - Camino a San Clemente</p>
+              <p class="mb-1">Potrero de Garay - Valle de Calamuchita</p>
+              <p class="mb-1">Córdoba - Argentina</p>
+              <p class="mb-1"><i class="bi bi-phone"></i> (03546) 15 51 19 55</p>
+              <p class="mb-1"><i class="bi bi-phone"></i> (03546) 15 51 19 54</p>
+            </div>
+          </div>
+          <div class="col-12 col-md-3 mt-2">
+            <div>
+              <a class="fs-5 d-block mb-2" href="https://www.villadelcondor.com" target="blank">VILLA DEL CÓNDOR</a>
+              <a class="d-block mb-2" href="https://www.villadelcondor.com/geo" target="blank">Geo</a>
+              <a class="d-block mb-2" href="https://www.villadelcondor.com/quehacer" target="blank">¿Qué hacer?</a>
+              <a class="d-block mb-2" href="https://www.villadelcondor.com/desarrollo" target="blank">Desarrollo</a>
+              <a class="d-block mb-2" href="https://www.villadelcondor.com/loteo" target="blank">Loteo</a>
+              <a class="d-block mb-2" href="https://www.villadelcondor.com/ubicacion" target="blank">Ubicación</a>
+              <a class="d-block mb-2" href="https://www.villadelcondor.com/comercializacion" target="blank">Comercialización</a>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   </div>
-  <div class="row mt-4 mx-auto">
-    <div class="col-md-6">
-      <img
-        src="assets\villa_del_condor.png"
-        alt="Login Image"
-        class="img-fluid"
-        style="
-          object-fit: cover;
-          border-radius: 2px;
-        "
-      />
-    </div>
-    <div class="col-md-3 mt-2">
-      <p>
-        COMERCIALIZACIÓN <br>
-        Oficina comercial <br>
-        Ruta 271 Km 10,5 - Camino a San Clemente <br>
-        Potrero de Garay - Valle de Calamuchita <br>
-        Córdoba - Argentina <br>
-        (03546) 15 51 19 55 <br>
-        (03546) 15 51 19 54 <br>
-      </p>
-    </div>
-    <div class="col-md-3 mt-2">
-      <p>
-        VILLA DEL CÓNDOR <br>
-        Geo <br>
-        ¿Qué hacer? <br>
-        Desarrollo <br>
-        Loteo <br>
-        Ubicación <br>
-        Comercialización <br>
-      </p>
-    </div>
-  </div>
-</app-main-container>
+</div>

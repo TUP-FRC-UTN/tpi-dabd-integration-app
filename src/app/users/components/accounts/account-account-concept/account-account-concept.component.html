@@ -1,123 +1,138 @@
-<app-main-container title="Lista de Gastos">
-      
-  <!-- <app-cadastre-plot-filter-buttons
-  #filterComponent
-  [plotsList]="accountList"
-  [tableName]="tableName.nativeElement"></app-cadastre-plot-filter-buttons> -->
+<app-main-container title="Lista de Movimientos Lote:{{plot.plotNumber}} Manzana:{{plot.blockNumber}}" (infoButtonClick)="openInfo()">
 
-  <!-- <div class="d-flex justify-content-between align-items-center mb-3">
-    <div class="btn-group me-5" role="group">
-      <div class="me-5">
-        <button type="button" class="btn btn-outline-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          Filtros
-        </button>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item btn btn-primary" (click)="changeFilterMode(filterTypes.NOTHING)">Quitar Filtro</a></li>
-          <li><a class="dropdown-item btn btn-primary" (click)="changeFilterMode(filterTypes.BLOCK_NUMBER)">Manzana</a></li>
-          <li><a class="dropdown-item btn btn-primary" (click)="changeFilterMode(filterTypes.PLOT_STATUS)">Estado de Lote</a></li>
-          <li><a class="dropdown-item btn btn-primary" (click)="changeFilterMode(filterTypes.PLOT_TYPE)">Tipo de Lote</a></li>
-        </ul>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <!-- Sección de búsqueda y filtros -->
+    <!-- <div class="btn-group me-5" role="group">
+      <div class="col-sm-12 col-md-8 col-xl-8">
+        <div class="input-group">
+          <span class="input-group-text" id="search-icon">
+            <i class="bi bi-search"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control"
+            id="filter-text-box"
+            (input)="onFilterTextBoxChanged($event)"
+            placeholder="Buscar..."
+          />
+          <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
+
+        </div>
       </div>
+
+
+    </div> -->
+
+    <div class="d-flex align-items-center">
+      <h3 class="me-1">Balance: </h3>
   
-      @if (applyFilterWithNumber === true || applyFilterWithCombo === true) {
-        @if (applyFilterWithNumber === true) {
-          <input type="number" class="form-control" id="filter-number" [(ngModel)]="filterInput" name="ngModel">
-        } @else if (applyFilterWithCombo === true) {
-          <select id="content-filter" class="form-select" [(ngModel)]="filterInput" name="ngModel">
-            <option disabled selected>Selecciona un filtro</option>
-            @for (content of contentForFilterCombo; track content) {
-              <option value="{{content}}">{{content}}</option>
-            }
-          </select>
-        }
-        <button class="btn-dark btn" type="button" (click)="confirmFilterPlot()">Buscar</button>
-      }
+      <h3 [ngClass]="[plot.balance < 0 ? 'text-success' : 'text-danger']">
+        <!-- {{plot.balance | currency:'ARS':"symbol-narrow"}} -->
+        {{plot.balance.toLocaleString('es-AR', {
+          style: 'currency',
+          currency: 'ARS',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+            })}}
+      </h3>
     </div>
-  
-    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-      <input type="radio" class="btn-check" 
-      name="btnradio" id="btnradio1" 
-      autocomplete="off" (change)="changeActiveFilter(true)" checked>
-      <label class="btn btn-outline-primary" for="btnradio1">Lotes Activos</label>
-  
-      <input type="radio" class="btn-check" 
-      name="btnradio" id="btnradio2" 
-      autocomplete="off" (change)="changeActiveFilter(false)">
-      <label class="btn btn-outline-primary" for="btnradio2">Lotes Inactivos</label>
-  
-      <input type="radio" class="btn-check" 
-      name="btnradio" id="btnradio3" 
-      autocomplete="off" (change)="changeActiveFilter()">
-      <label class="btn btn-outline-primary" for="btnradio3">Todos</label>
+    
+    <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
+    <div class="d-flex align-items-center">
+
+      <!-- Línea vertical y botones de exportación -->
+      <div class="vertical-line mx-3"></div>
+      <button class="btn btn-success me-2" (click)="exportToExcel()">
+        <i class="bi bi-file-earmark-excel"></i>
+      </button>
+      <button class="btn btn-danger me-2" (click)="exportToPdf()">
+        <i class="bi bi-file-earmark-pdf"></i>
+      </button>
     </div>
-  </div> -->
-  
-  
-  <table class="table" #plotsTable>
-    <thead>
-      <tr>
-        <th scope="col">Fecha</th>
-        <th scope="col">Tipo de Gasto</th>
-        <th scope="col">Comentarios</th>
-        <th scope="col">Balance</th>
-      </tr>
-    </thead>
-    <tbody>
-        @for (concept of (conceptList); track concept) {
-
-        <tr>
-          <td>
-            {{ formatDate(concept.accountingDate) }}
-          </td>
-          <td>
-            {{ translateTable(concept.concept, conceptTypesDictionary) }}
-          </td>
-           <td>
-            {{ concept.comments }} 
-          </td>
-          
-          <td>
-            <p [ngClass]="{
-                'bg-danger text-white d-inline': concept.amount < 0,
-                'bg-success text-white d-inline': concept.amount >= 0
-              }" style="display: inline;">
-              {{ concept.amount }}
-            </p>
-          </td>
-          <!--
-          <td>
-            {{ translateTable(plot.plotStatus, plotStatusDictionary) }}
-          </td> -->
-          <!-- @if (retrievePlotsByActive === undefined) {
-            <td>
-              @if (plot.isActive) {
-                <p class="bg-success text-white d-inline">ACTIVO</p>
-              } @else {
-                <p class="bg-danger text-white d-inline">INACTIVO</p>
-              }
-            </td>
-          } -->
-      </tr>
-
-        }
-    </tbody>
-  </table>
-    <nav>
-      <ul class="pagination justify-content-center">
-        <li class="page-item" [class.disabled]="currentPage === 0">
-          <button class="page-link font-company" (click)="changePage(false)">
-            Anterior
-          </button>
-        </li>
-        <li class="page-item" [class.disabled]="lastPage === true">
-          <button class="page-link font-company" (click)="changePage(true)">
-            Siguiente
-          </button>
-        </li>
-      </ul>
-    </nav>
-
-    <div class="col-12 d-flex justify-content-end">
-      <button type="submit" class="btn btn-primary" (click)="goBack()">Volver</button>
   </div>
+
+  <!--- TABLE --->
+  <div class="table-container">
+    <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #conceptsTable>
+      @if (conceptList.length === 0) {
+        <thead>
+          <td colspan="7">
+            <div class="text-center p-2">
+              <div class="alert alert-secondary text-center" role="alert">
+                No hay elementos para mostrar
+              </div>
+            </div>
+          </td>
+          </thead>
+      } @else {
+        <thead>
+          <tr>
+            <th scope="col">Fecha</th>
+            <th scope="col">Concepto</th>
+            <th scope="col">Detalle</th>
+            <th scope="col">Monto</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (concept of conceptList; track $index) {
+            <tr>
+              <td>
+                {{ formatDate(concept.accountingDate) | date:'dd/MM/yyyy HH:mm' }}
+              </td>
+              <td>
+                {{ translateTable(concept.concept, conceptTypesDictionary) }}
+              </td>
+              <td>
+                {{ concept.comments }}
+              </td>
+              <td [ngClass]="[concept.concept === 'PAYMENT' ? 'text-success' : 'text-danger']" class="text-end">
+                <!-- {{ concept.amount | currency:'ARS':"symbol-narrow" }} -->
+                {{concept.amount.toLocaleString('es-AR', {
+                  style: 'currency',
+                  currency: 'ARS',
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,})}}
+              </td>
+            </tr>
+          }
+        </tbody>
+      }
+    </table>
+  </div>
+  <!--- TABLE --->
+
+  <!-- BOTONERA -->
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <div class="form-group mb-3 me-2">
+      <select
+        id="itemsPerPage"
+        class="form-select"
+        [(ngModel)]="pageSize"
+        (change)="onItemsPerPageChange()"
+      >
+        @for(option of sizeOptions; track $index) {
+          <option [value]="option">{{ option }} Elementos</option>
+        }
+      </select>
+    </div>
+
+    <ngb-pagination
+      [(page)]="currentPage"
+      [pageSize]="pageSize"
+      [collectionSize]="totalItems"
+      (pageChange)="onPageChange($event)"
+      [maxSize]="5"
+      [boundaryLinks]="false"
+    ></ngb-pagination>
+  </div>
+
+  <div class="col-12 d-flex justify-content-start">
+    <div class="mx-2">
+      <button type="button" class="btn btn-secondary" (click)="goBack()">
+        Volver
+      </button>
+    </div>
+  </div>
+  <!-- BOTONERA -->
+
 </app-main-container>

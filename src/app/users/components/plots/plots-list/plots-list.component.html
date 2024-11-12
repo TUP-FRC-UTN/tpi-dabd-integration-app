@@ -1,4 +1,4 @@
-<app-main-container title="Lista de Lotes" (infoButtonClick)="redirectToForm()">
+<app-main-container title="Lista de Lotes" (infoButtonClick)="openInfo()">
 
   <div class="d-flex justify-content-between align-items-center mb-3">
     <!-- Sección de búsqueda y filtros -->
@@ -15,7 +15,7 @@
             (input)="onFilterTextBoxChanged($event)"
             placeholder="Buscar..."
           />
-          <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
+          <app-table-filters style="z-index: 1;" [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
 
         </div>
       </div>
@@ -47,7 +47,7 @@
 
 <div class="table-container">
   <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #plotsTable>
-    @if (filteredPlotsList.length === 0) {
+    @if ((filter$ | async )?.length === 0) {
       <thead>
       <td colspan="7">
         <div class="text-center p-2">
@@ -69,11 +69,12 @@
         @if (retrievePlotsByActive === undefined) {
           <th scope="col">Estado</th>
         }
+        <th scope="col">Balance</th>
         <th scope="col">Acciones</th>
       </tr>
       </thead>
       <tbody>
-        @for (plot of (filteredPlotsList.length ? filteredPlotsList : plotsList); track plot) {
+        @for (plot of ((filter$ | async )); track plot) {
 
           <tr>
             <td>
@@ -107,6 +108,10 @@
                 }
               </td>
             }
+            <td [ngClass]="{'text-danger': plot.balance > 0, 'text-success': !(plot.balance > 0)}" class="text-end">
+              <!-- {{ plot.balance | currency:'ARS':"symbol-narrow" }} -->
+                {{formatCurrency(plot.balance)}}
+            </td>
             <td>
               <div class="btn-group" role="group">
                 <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -121,6 +126,7 @@
                     <li><a class="dropdown-item btn btn-danger" (click)="assignPlotToDelete(plot)">Eliminar</a></li>
                   }
                   <li><a class="dropdown-item btn btn-primary" (click)="plotDetail(plot.id)">Detalle</a></li>
+                  <li><a class="dropdown-item btn btn-primary" (click)="currentAccount(plot.id)">Cuenta Corriente</a></li>
                 </ul>
               </div>
             </td>
@@ -132,17 +138,6 @@
 </div>
 
 <div class="d-flex justify-content-between align-items-center mt-3">
-  <ngb-pagination
-    [(page)]="currentPage"
-    [pageSize]="pageSize"
-    [collectionSize]="totalItems"
-    (pageChange)="onPageChange($event)"
-    [maxSize]="5"
-    [boundaryLinks]="false"
-  ></ngb-pagination>
-  <div class="ms-auto">
-  </div>
-
   <div class="form-group mb-3 me-2">
     <select
       id="itemsPerPage"
@@ -155,5 +150,14 @@
       }
     </select>
   </div>
+
+  <ngb-pagination
+    [(page)]="currentPage"
+    [pageSize]="pageSize"
+    [collectionSize]="totalItems"
+    (pageChange)="onPageChange($event)"
+    [maxSize]="5"
+    [boundaryLinks]="false"
+  ></ngb-pagination>
 </div>
 </app-main-container>

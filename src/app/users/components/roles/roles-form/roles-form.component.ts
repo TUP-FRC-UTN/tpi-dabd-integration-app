@@ -62,7 +62,9 @@ export class RolesFormComponent implements OnInit {
   }
 
   navigateToList() {
-    this.router.navigate(['roles/list']);
+
+    this.router.navigate(['/users/roles/list']);
+
   }
 
   createRole(){
@@ -72,7 +74,7 @@ export class RolesFormComponent implements OnInit {
       pretty_name: this.roleForm.value.prettyNameControl,
       description: this.roleForm.value.descriptionControl
     }
-    this.roleService.createRole(newRole as Role, 1).subscribe({
+    this.roleService.createRole(newRole as Role).subscribe({
       next: () => {
         this.toastService.sendSuccess("Rol creado con exito.");
         this.navigateToList();
@@ -91,7 +93,7 @@ export class RolesFormComponent implements OnInit {
       pretty_name: this.roleForm.value.prettyNameControl,
       description: this.roleForm.value.descriptionControl,
     }
-    this.roleService.updateRole(id, updateRole as Role, 1).subscribe({
+    this.roleService.updateRole(id, updateRole as Role).subscribe({
       next: () => {
         this.toastService.sendSuccess("Rol modificado con exito.");
         this.navigateToList();

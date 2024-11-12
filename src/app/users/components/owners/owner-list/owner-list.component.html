@@ -1,4 +1,4 @@
-<app-main-container title="Lista de Propietarios">
+<app-main-container title="Lista de Propietarios" (infoButtonClick)="openInfo()">
 
   <div class="d-flex justify-content-between align-items-center mb-3">
     <!-- Sección de búsqueda y filtros -->
@@ -15,7 +15,7 @@
             (input)="onFilterTextBoxChanged($event)"
             placeholder="Buscar..."
           />
-          <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
+          <app-table-filters style="z-index: 1;" [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
         </div>
       </div>
     </div>
@@ -39,7 +39,7 @@
 
     <div class="table-container">
       <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #ownersTable>
-        @if (filteredOwnersList.length === 0) {
+        @if (( filter$ | async)?.length === 0) {
           <thead>
           <td colspan="7">
             <div class="text-center p-2">
@@ -61,7 +61,7 @@
           </tr>
           </thead>
           <tbody>
-            @for(owner of (filteredOwnersList.length ? filteredOwnersList : owners); track owner)
+            @for(owner of (filter$ | async); track owner)
             {
               <tr>
                 <td>
@@ -71,7 +71,7 @@
                   {{ owner.lastName }}
                 </td>
                 <td>
-                  {{ translateTable(owner.documentType, documentTypeDictionary) }}
+                  {{ translateTable(owner.documentType , documentTypeDictionary) }}
                 </td>
                 <td>
                   {{ owner.documentNumber }}

@@ -1,113 +1,100 @@
-<app-main-container title="Propietarios en proceso de Validación">
-  <div class="card-body">
-    
-    <!-- Filtros y acciones -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <div class="btn-group me-5" role="group">
-        <div class="d-flex align-items-center">
-          <div class="btn-group me-2">
-            <button type="button" class="btn btn-outline-danger" (click)="clearFilters()">
-              <i class="bi bi-x-octagon-fill"></i> Limpiar
-            </button>
-            
-            <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-funnel-fill"></i> Filtros
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" (click)="applyFilter('kycStatus')">Estado de KYC</a></li>
-            </ul>
-          </div>
-      
-          @if (applyFilterWithInput === true) {
-            <div class="d-flex">
-              <input type="text" class="form-control me-2" [(ngModel)]="filterInput" placeholder="Filtro">
-              <button class="btn btn-dark" type="button" (click)="confirmFilter()">Buscar</button>
-            </div>
-          }
-        </div>
-      </div>
-      
-      <!-- Alternar entre tipos de visualización -->
-      <div class="btn-group" role="group">
-        <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" (change)="toggleView('all')" checked>
-        <label class="btn btn-outline-primary" for="btnradio1">Todos</label>
+<app-main-container title="Propietarios en proceso de Validación" (infoButtonClick)="openInfo()">
 
-        <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" (change)="toggleView('approved')">
-        <label class="btn btn-outline-primary" for="btnradio2">Activos</label>
-
-        <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off" (change)="toggleView('pending')">
-        <label class="btn btn-outline-primary" for="btnradio3">Inactivos</label>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <!-- Sección de búsqueda y filtros -->
+  <div class="btn-group me-5" role="group">
+    <div class="col-sm-12 col-md-8 col-xl-8">
+      <div class="input-group" >
+            <span class="input-group-text" id="search-icon">
+              <i class="bi bi-search"></i>
+            </span>
+        <input
+          type="text"
+          class="form-control flex-grow-1"
+          id="filter-text-box"
+          (input)="onFilterTextBoxChanged($event)"
+          placeholder="Buscar..."
+        />
       </div>
     </div>
+  </div>
 
-    <!-- Tabla de archivos para validar -->
-    <div class="table-container">
-      <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;">
-        
-        @if (filteredOwnersList.length === 0 || owners.length === 0) {
-          <thead>
-            <td colspan="7"> 
-              <div class="text-center p-2">
-                <div class="alert alert-secondary text-center" role="alert">
-                  No se encontraron propietarios
-                </div>
+  <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
+  <div class="d-flex align-items-center">
+    <!-- Botón "+" -->
+   <!--  <button type="button" class="btn btn-outline-primary" (click)="redirectToForm()">+</button> -->
+
+    <!-- Línea vertical y botones de exportación -->
+    <div class="vertical-line mx-3"></div>
+    <button class="btn btn-success me-2" (click)="exportToExcel()">
+      <i class="bi bi-file-earmark-excel"></i>
+    </button>
+    <button class="btn btn-danger me-2" (click)="exportToPdf()">
+      <i class="bi bi-file-earmark-pdf"></i>
+    </button>
+  </div>
+  </div>
+    
+  <!-- Tabla de archivos para validar -->
+  <div class="table-container">
+    <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;">
+      
+      @if (( filter$ | async)?.length === 0) {
+        <thead>
+          <td colspan="7"> 
+            <div class="text-center p-2">
+              <div class="alert alert-secondary text-center" role="alert">
+                No se encontraron propietarios
               </div>
-            </td>
-          </thead>
-        } @else {
-          
-          <thead>
+            </div>
+          </td>
+        </thead>
+      } @else {
+        
+        <thead>
+          <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Apellido</th>
+            <th scope="col">Tipo Doc</th>
+            <th scope="col">Doc N°</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for(owner of (filter$ | async); track owner) {
             <tr>
-              <th scope="col">Nombre y Apellido</th>
-              <th scope="col">Documento</th>
-              <th scope="col">Estado</th>
-              <th scope="col">Acciones</th>
+              <td>{{ owner.firstName }}</td>
+              <td>{{ owner.lastName }}</td>
+              <td>{{ translateTable(owner.documentType , documentTypeDictionary) }}</td>
+              <td>{{ owner.documentNumber }}</td>
+              <td>{{ translateTable(owner.kycStatus, ownerStatusDictionary) }}</td>
+              <td>
+                
+                <a class="btn btn-info" (click)="ownerFilesDetail(owner.id)"><i class="bi bi-eye-fill"></i>  Detalle</a>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            @for(owner of (filteredOwnersList.length ? filteredOwnersList : owners); track owner) {
-              <tr>
-                <td>{{ owner.firstName + " " + owner.lastName }}</td>
-                <td>{{ translateTable(owner.documentType, documentTypeDictionary) }}  {{ owner.documentNumber }}</td>
-                <td>{{ translateTable(owner.kycStatus, ownerStatusDictionary) }}</td>
-                <td>
-                  <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="bi bi-three-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu">
-                      <li><a class="dropdown-item btn btn-info" (click)="ownerFilesDetail(owner.id)">Ver Detalle</a></li>
-                      <li><a class="dropdown-item btn btn-success" (click)="approbeOwnerFiles(owner.id)">Aprobar</a></li>
-                      <li><a class="dropdown-item btn btn-danger" (click)="rejectOwnerFiles(owner.id)">Rechazar</a></li>
-                    </ul>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        }
-      </table>
-    </div>
-    
-    <!-- Paginación y elementos por página -->
-    <div class="d-flex justify-content-between align-items-center mt-3">
-      <ngb-pagination
-        [(page)]="currentPage"                   
-        [pageSize]="pageSize"                    
-        [collectionSize]="totalItems"            
-        (pageChange)="onPageChange($event)"      
-        [maxSize]="5"                            
-        [boundaryLinks]="false">
-      </ngb-pagination>
-      
-      <div class="form-group mb-3 me-2">
-        <select id="itemsPerPage" class="form-select" [(ngModel)]="pageSize" (change)="onItemsPerPageChange()">
-          @for(option of sizeOptions; track $index) {
-            <option [value]="option">{{ option }} Elementos</option>
           }
-        </select>
-      </div>
-    </div>
+        </tbody>
+      }
+    </table>
+  </div>
+  
+  <!-- Paginación y elementos por página -->
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <ngb-pagination
+        [(page)]="currentPage"
+        [pageSize]="pageSize"
+        [collectionSize]="totalItems"
+        (pageChange)="onPageChange($event)"
+        [maxSize]="5"
+        [boundaryLinks]="false"
+      ></ngb-pagination>
+  </div>
+
+  
+  <div class="col-12 d-flex justify-content-end">
+    <button type="submit" class="btn btn-secondary" (click)="goBack()">Volver</button>
   </div>
 </app-main-container>
 

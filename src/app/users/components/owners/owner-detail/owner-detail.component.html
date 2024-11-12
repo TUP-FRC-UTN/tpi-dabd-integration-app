@@ -1,4 +1,4 @@
-<app-main-container title="Consultar Propietario">
+<app-main-container title="Consultar Propietario" (infoButtonClick)="openInfo()">
   <form [formGroup]="ownerForm" class="row g-3 m-2">
     <div class="col-md-6">
       <div class="d-flex flex-row align-items-center">
@@ -65,9 +65,9 @@
           formControlName="documentType"
         >
           <option selected>Selecciona un tipo</option>
-          <option value="P">DNI</option>
-          <option value="I">Cédula</option>
-          <option value="T">Pasaporte</option>
+          <option value="DNI">DNI</option>
+          <option value="ID">Cédula</option>
+          <option value="PASSPORT">Pasaporte</option>
         </select>
       </div>
     </div>
@@ -234,7 +234,7 @@
 
     <h5 class="mt-2 p-2">Contactos</h5>
 
-    <div class="row">
+    <div class="row" formArrayName="contactsForm">
       @for(contact of contacts; track $index) {
         <div class="row">
           <div class="col-9">
@@ -243,6 +243,7 @@
         </div>
       }
     </div>
+
 
     <div class="col-12 d-flex justify-content-end">
       <div class="mx-2">

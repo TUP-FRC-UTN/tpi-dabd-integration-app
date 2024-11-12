@@ -1,16 +1,17 @@
-<app-main-container title="Registrar Usuario">
+<app-main-container title="Registrar Usuario" (infoButtonClick)="openInfo()">
   <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
 
       <div class="col-md-6">
           <div class="flex-row d-flex align-items-center">
               <label for="emailForm" class="col-form-label col-md-2">Email<label class="text-danger">*</label></label>
               <input type="email" class="form-control m-2" id="emailForm" formControlName="email"
-              [ngClass]="{'is-invalid': userForm.get('email')?.invalid && userForm.get('email')?.touched, 'is-valid': userForm.get('email')?.valid && userForm.get('email')?.touched}">
+              [ngClass]="{'is-invalid': userForm.get('email')?.invalid && userForm.get('email')?.touched, 'is-valid': userForm.get('email')?.valid && userForm.get('email')?.touched}"
+              [(ngModel)]="emailInput" (ngModelChange)="onEmailChange($event)">
           </div>
           <div>
               @if (userForm.get('email')?.invalid && userForm.get('email')?.touched) {
                   @if (userForm.get('email')?.getError('required')) {
-                      <small class="text-danger ms-2">El email es obligatorio</small>
+                      <small class="text-danger ms-2">Campo obligatorio </small>
                   }
                   @if (userForm.get('email')?.getError('email')) {
                     <small class="text-danger ms-2">El email tiene que ser valido</small>
@@ -38,7 +39,7 @@
           <div>
               @if (userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched) {
                   @if (userForm.get('firstName')?.getError('required')) {
-                      <small class="text-danger ms-2">El nombre es obligatorio</small>
+                      <small class="text-danger ms-2">El nombre es obligatorio </small>
                   }
                   @if (userForm.get('firstName')?.getError('maxlength')) {
                       <small class="text-danger ms-2">Máximo 50 caracteres</small>
@@ -56,7 +57,7 @@
           <div>
               @if (userForm.get('userName')?.invalid && userForm.get('userName')?.touched) {
                   @if (userForm.get('userName')?.getError('required')) {
-                      <small class="text-danger ms-2">El nombre de usuario es obligatorio</small>
+                      <small class="text-danger ms-2">El nombre de usuario es obligatorio </small>
                   }
                   @if (userForm.get('userName')?.getError('maxlength')) {
                       <small class="text-danger ms-2">Máximo 50 caracteres</small>
@@ -74,7 +75,7 @@
           <div>
               @if (userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched) {
                   @if (userForm.get('lastName')?.getError('required')) {
-                      <small class="text-danger ms-2">El apellido es obligatorio</small>
+                      <small class="text-danger ms-2">El apellido es obligatorio </small>
                   }
                   @if (userForm.get('lastName')?.getError('maxlength')) {
                       <small class="text-danger ms-2">Máximo 50 caracteres</small>
@@ -82,6 +83,80 @@
               }
           </div>
       </div>
+
+      <!-- NUEVOOO --->
+
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="doc-type" class="col-form-label col-md-2">Tipo Documento<label class="text-danger">*</label></label>
+        <select id="doc-type" class="form-select m-2" formControlName="documentType"
+                [ngClass]="{'is-invalid': userForm.get('documentType')?.invalid && userForm.get('documentType')?.touched, 'is-valid': userForm.get('documentType')?.valid && userForm.get('documentType')?.touched}">
+          <option disabled selected>Selecciona un tipo</option>
+          <option value="DNI">DNI</option>
+          <option value="ID">Cédula</option>
+          <option value="PASSPORT">Pasaporte</option>
+        </select>
+      </div>
+      <div>
+        @if (userForm.get('documentType')?.invalid && userForm.get('documentType')?.touched) {
+          @if (userForm.get('documentType')?.errors?.['required']) {
+            <small class="text-danger">Campo obligatorio </small>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="doc-number" class="col-form-label col-md-2">Numero<label class="text-danger">*</label></label>
+        <input
+          type="text"
+          class="form-control m-2"
+          id="doc-number"
+          formControlName="documentNumber"
+          [ngClass]="{'is-invalid': userForm.get('documentNumber')?.invalid && userForm.get('documentNumber')?.touched, 'is-valid': userForm.get('documentNumber')?.valid && userForm.get('documentNumber')?.touched}"
+        />
+      </div>
+      <div>
+        @if (userForm.get('documentNumber')?.invalid && userForm.get('documentNumber')?.touched) {
+          @if (userForm.get('documentNumber')?.errors?.['required']) {
+            <small class="text-danger">Campo obligatorio </small>
+          }
+          @if (userForm.get('documentNumber')?.errors?.['ownerExists']) {
+            <small class="text-danger">Documento en uso</small>
+          }
+          @if (userForm.get('documentNumber')?.errors?.['serverError']) {
+            <small class="text-danger">Error en el servidor</small>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="col-md-12">
+      <div class="flex-row d-flex align-items-center">
+        <label for="birth-date" class="col-form-label col-md-2">Fecha de Nacimiento<label class="text-danger">*</label></label>
+        <input
+          type="date"
+          class="form-control m-2"
+          id="birth-date"
+          formControlName="birthdate"
+          [ngClass]="{'is-invalid': userForm.get('birthdate')?.invalid && userForm.get('birthdate')?.touched,
+             'is-valid': userForm.get('birthdate')?.valid && userForm.get('birthdate')?.touched}"
+        />
+      </div>
+      <div>
+        @if (userForm.get('birthdate')?.invalid && userForm.get('birthdate')?.touched) {
+          @if (userForm.get('birthdate')?.errors?.['required']) {
+            <small class="text-danger">Campo obligatorio </small>
+          }
+          @if (userForm.get('birthdate')?.errors) {
+            <small class="text-danger">Fecha inválida</small>
+          }
+        }
+      </div>
+    </div>
+
+      <!-- NUEVOOO --->
 
       <div class="mb-3"></div>
   <hr>
@@ -137,14 +212,13 @@
                       <div class="d-flex justify-content-between align-items-center mb-2">
                           <button type="button"
                           class="list-group-item list-group-item-action btn btn-primary btn-sm me-2" disabled>
-                          {{ rol.prettyName }}
+                            {{ rol.prettyName }}
                           </button>
-                          @if (!id) {
-                            <button type="button" class="btn btn-danger btn-sm" (click)="removeRol($index)">
-                                <i class="bi bi-trash-fill"></i>
-                            </button>
-                          }
+                          <button type="button" class="btn btn-danger btn-sm" (click)="removeRol($index)">
+                              <i class="bi bi-trash-fill"></i>
+                          </button>
                       </div>
+
                   }
               </div>
           </div>
@@ -155,75 +229,7 @@
         <div class="mb-3"></div>
         <hr />
 
-        <!-- Asignar un lote -->
-        <!-- Asignar un lote -->
-        <!-- Asignar un lote -->
-        <!-- Asignar un lote -->
-        <!-- Asignar un lote -->
-        <!-- Asignar un lote -->
-        <!-- Asignar un lote -->
-        <!-- Asignar un lote -->
-        <div formGroupName="plotForm" class="row g-3">
-          <h5 class="mt-2 p-2">Asociar un lote</h5>
-          <div class="col-md-6">
-            <div class="row g-0 align-items-center">
-              <label for="block-number" class="col-form-label col-md-3"
-                >Numero de Manzana</label>
-              <div class="col">
-                <input
-                  type="number"
-                  class="form-control"
-                  id="block-number"
-                  formControlName="blockNumber"
-                  [ngClass]="{'is-invalid': userForm.get('plotForm')?.get('blockNumber')?.invalid && userForm.get('plotForm')?.get('blockNumber')?.touched,
-                   'is-valid': userForm.get('plotForm')?.get('blockNumber')?.valid && userForm.get('plotForm')?.get('blockNumber')?.touched}"
-                >
-              </div>
-              <div class="col-12">
-              @if (userForm.get('plotForm.blockNumber')?.touched &&
-                userForm.get('plotForm.blockNumber')?.invalid) {
-                 @if (userForm.get('plotForm.blockNumber')?.getError('min')) {
-                <small class="text-danger">El numero minimo es 1.</small>
-                }
-              }
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-6">
-            <div class="row g-0 align-items-center">
-              <label for="plot-number" class="col-form-label col-md-2">Número de Lote</label>
-              <div class="col">
-                <input
-                  type="number"
-                  class="form-control"
-                  id="plot-number"
-                  formControlName="plotNumber"
-                  [ngClass]="{'is-invalid': userForm.get('plotForm')?.get('plotNumber')?.invalid && userForm.get('plotForm')?.get('plotNumber')?.touched,
-                   'is-valid': userForm.get('plotForm')?.get('plotNumber')?.valid && userForm.get('plotForm')?.get('plotNumber')?.touched}"
-                  >
-              </div>
-              <div class="col-12">
-                @if (userForm.get('plotForm.plotNumber')?.touched &&
-                userForm.get('plotForm.plotNumber')?.invalid) {
-                 @if (userForm.get('plotForm.plotNumber')?.getError('min')) {
-                <small class="text-danger">El número mínimo es 1.</small>
-                } @if (userForm.get('plotForm.plotNumber')?.getError('serverError')) {
-                <small class="text-danger"
-                  >Error en el servidor, por favor intenta nuevamente.</small
-                >
-                }  @if (userForm.get('plotForm.plotNumber')?.getError('plotExists')) { <small class="text-danger ms-2">
-                  No existe un lote con ese numero en esa manzana.
-                </small> }}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="mb-3"></div>
-      <hr />
-
-
+        
       <!-- Addresses -->
       <!-- Addresses -->
       <!-- Addresses -->
@@ -246,7 +252,7 @@
               <div>
                   @if(userForm.get('addressForm.streetAddress')?.invalid && userForm.get('addressForm.streetAddress')?.touched) {
                       @if(userForm.get('addressForm.streetAddress')?.errors?.['required']) {
-                          <small class="text-danger ms-2">Campo obligatorio.</small>
+                          <small class="text-danger ms-2">Campo obligatorio. </small>
                       }
                   }
               </div>
@@ -263,7 +269,7 @@
               <div>
                   @if(userForm.get('addressForm.number')?.invalid && userForm.get('addressForm.number')?.touched) {
                       @if(userForm.get('addressForm.number')?.errors?.['required']) {
-                          <small class="text-danger ms-2">Campo obligatorio.</small>
+                          <small class="text-danger ms-2">Campo obligatorio. </small>
                       }
                   }
               </div>
@@ -293,8 +299,8 @@
               <div class="d-flex flex-row align-items-center">
                   <label for="country" class="col-form-label col-md-2">País<label class="text-danger">*</label></label>
                   <select id="country" class="form-select" formControlName="country"
-                  [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('country')?.invalid && userForm.get('addressForm')?.get('country')?.touched,
-                   'is-valid': userForm.get('addressForm')?.get('country')?.valid && userForm.get('addressForm')?.get('country')?.touched}"
+                      [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('country')?.invalid && userForm.get('addressForm')?.get('country')?.touched,
+                      'is-valid': userForm.get('addressForm')?.get('country')?.valid && userForm.get('addressForm')?.get('country')?.touched}"
                   >
                       @for(country of countryOptions; track $index) {
                           <option [value]="country.value">{{ country.display }}</option>
@@ -304,7 +310,7 @@
               <div>
                   @if(userForm.get('addressForm.country')?.invalid && userForm.get('addressForm.country')?.touched) {
                       @if(userForm.get('addressForm.country')?.errors?.['required']) {
-                          <small class="text-danger ms-2">Campo obligatorio.</small>
+                          <small class="text-danger ms-2">Campo obligatorio. </small>
                       }
                   }
               </div>
@@ -313,19 +319,29 @@
           <div class="col-md-6">
               <div class="d-flex flex-row align-items-center">
                   <label for="province" class="col-form-label col-md-2">Provincia<label class="text-danger">*</label></label>
-                  <select id="province" class="form-select" formControlName="province"
-                  [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('province')?.invalid && userForm.get('addressForm')?.get('province')?.touched,
-                  'is-valid': userForm.get('addressForm')?.get('province')?.valid && userForm.get('addressForm')?.get('province')?.touched}"
-                  >
+
+                  @if(isArgentinaSelected) {
+                    <select id="province" class="form-select" formControlName="province"
+                      [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('province')?.invalid && userForm.get('addressForm')?.get('province')?.touched,
+                      'is-valid': userForm.get('addressForm')?.get('province')?.valid && userForm.get('addressForm')?.get('province')?.touched}"
+                    >
                       @for(province of provinceOptions; track $index) {
                           <option [value]="province.value">{{ province.display }}</option>
                       }
                   </select>
+                  } @else {
+                    <select id="province" class="form-select" formControlName="province"
+                      [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('province')?.invalid && userForm.get('addressForm')?.get('province')?.touched,
+                      'is-valid': userForm.get('addressForm')?.get('province')?.valid && userForm.get('addressForm')?.get('province')?.touched}"
+                    >
+                    <option [value]="provinceOptions.OTHER" selected >Otra</option>
+                    </select>
+                  }
               </div>
               <div>
                   @if(userForm.get('addressForm.province')?.invalid && userForm.get('addressForm.province')?.touched) {
                       @if(userForm.get('addressForm.province')?.errors?.['required']) {
-                          <small class="text-danger ms-2">Campo obligatorio.</small>
+                          <small class="text-danger ms-2">Campo obligatorio. </small>
                       }
                   }
               </div>
@@ -346,7 +362,7 @@
               @if(userForm.get('addressForm.city')?.invalid &&
               userForm.get('addressForm.city')?.touched ) {
               @if(userForm.get('addressForm.city')?.errors?.['required']){
-              <small class="text-danger ms-2">Campo obligatorio.</small> } }
+              <small class="text-danger ms-2">Campo obligatorio. </small> } }
             </div>
           </div>
 
@@ -369,7 +385,7 @@
                 @if(userForm.get('addressForm.postalCode')?.invalid &&
                 userForm.get('addressForm.postalCode')?.touched ) {
                 @if(userForm.get('addressForm.postalCode')?.errors?.['required']){
-                <small class="text-danger">Campo obligatorio.</small>
+                <small class="text-danger">Campo obligatorio. </small>
                 } }
               </div>
             </div>
@@ -397,11 +413,11 @@
                       (click)="setAddressValue($index)">
                           {{address.streetAddress}} {{address.number}}
                       </button>
-                      @if (!id) {
+<!--                      @if (!id) {-->
                         <button type="button" class="btn btn-danger btn-sm" (click)="removeAddress($index)">
                             <i class="bi bi-trash-fill"></i>
                         </button>
-                      }
+<!--                      }-->
                   </div>
               }
           </div>
@@ -432,11 +448,12 @@
                     id="contact-type"
                     class="form-select"
                     formControlName="contactType"
+                    (change)="changeContactType($event)"
                   >
                     <option disabled selected>Selecciona un tipo</option>
                     <option value="PHONE">Telefono</option>
                     <option value="EMAIL">Email</option>
-                    <option value="SOCIAL_MEDIA_LINK">Otro</option>
+                    <option value="SOCIAL_MEDIA_LINK">Link red social</option>
                   </select>
                 </div>
               </div>
@@ -455,6 +472,13 @@
                     formControlName="contactValue"
                   />
                 </div>
+              </div>
+              <div class="col">
+                @if(userForm.get('contactsForm.contactValue')?.invalid &&
+                userForm.get('contactsForm.contactValue')?.touched ) {
+                  @if(userForm.get('contactsForm.contactValue')?.errors?.['email']){
+                    <small class="text-danger">Email inválido</small>
+                  } }
               </div>
             </div>
 

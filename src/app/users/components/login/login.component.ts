@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -12,19 +12,21 @@ import { catchError, of, switchMap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../services/user.service';
 import { SessionService } from '../../services/session.service';
-import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
+import { MainContainerComponent, ToastsContainer, ToastService } from 'ngx-dabd-grupo01';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MainContainerComponent, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, ToastsContainer],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
 export class LoginComponent implements OnInit {
+  @ViewChild('imageElement') imageElement!: ElementRef<HTMLImageElement>
   loginForm!: FormGroup;
   userId!: number;
+  meetsMinimunSize = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -35,10 +37,28 @@ export class LoginComponent implements OnInit {
     private router: Router
   ) {}
 
+  @HostListener('window:resize')
+  onResize() {
+    this.checkImageSize();
+  }
+
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
       email: ['', Validators.required],
       password: ['', Validators.required],
+    });
+  }
+
+  private checkImageSize() {
+    setTimeout(() => {
+      if (this.imageElement && this.imageElement.nativeElement) {
+        const img = this.imageElement.nativeElement;
+        const rect = img.getBoundingClientRect();
+
+        this.meetsMinimunSize = 
+          rect.width >= 450 && 
+          rect.height >= 450;
+      }
     });
   }
 
@@ -49,7 +69,7 @@ export class LoginComponent implements OnInit {
         .login(this.loginForm.value)
         .pipe(
           catchError((error: HttpErrorResponse) => {
-            if (error.status === 400) {
+            if (error.status === 401) {
               this.toastService.sendError("La contraseña o el email son invalidos, por favor vuelva a intentar");
             } else {
               console.log('An unexpected error occurred:', error);
@@ -83,5 +103,8 @@ export class LoginComponent implements OnInit {
     
   }
 
+  forgotPassword(){
+    this.router.navigate(['/forgotpassword'])
+  }
 
 }

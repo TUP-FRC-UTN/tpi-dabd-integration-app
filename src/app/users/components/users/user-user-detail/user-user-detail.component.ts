@@ -13,6 +13,10 @@ import { Plot } from '../../../models/plot';
 import { Country, Provinces } from '../../../models/generics';
 import { User } from '../../../models/user';
 import { toSnakeCase } from '../../../utils/owner-helper';
+import { InfoComponent } from '../../commons/info/info.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { birthdateValidation } from '../../../validators/birthdate.validations';
+import { plotForUserValidator } from '../../../validators/cadastre-plot-for-users';
 
 @Component({
   selector: 'app-user-user-detail',
@@ -31,25 +35,26 @@ export class UserUserDetailComponent {
   private router = inject(Router)
   private toastService = inject(ToastService)
   private location = inject(Location)
+  private modalService = inject(NgbModal)
   //#endregion
 
   //#region ATT
   id: string | null = null;
-  user : any = {};
+  user: any = {};
   address!: Address;
   addresses: Address[] = [];
-  addressIndex:number | undefined = undefined;
+  addressIndex: number | undefined = undefined;
   contact!: Contact;
   contacts: Contact[] = [];
-  contactIndex:number | undefined = undefined;
+  contactIndex: number | undefined = undefined;
   rol!: Role;
-  plot! : Plot;
+  plot!: Plot;
   roles: any[] = []
-  rolesForCombo : Role[] = []
+  rolesForCombo: Role[] = []
   provinceOptions!: any;
   countryOptions!: any;
   actualPlotOfOwner!: Plot[]
-  minDate :any
+  minDate: any
   //#endregion
 
   //#region FORMULARIO REACTIVO
@@ -60,6 +65,9 @@ export class UserUserDetailComponent {
     firstName: new FormControl('', [Validators.required, Validators.maxLength(50)]), // Cambiado
     lastName: new FormControl('', [Validators.required, Validators.maxLength(50)]), // Cambiado
     userName: new FormControl('', [Validators.required, Validators.maxLength(50)]), // Cambiado
+    documentType: new FormControl('', [Validators.required]),
+    documentNumber: new FormControl('', [Validators.required, Validators.maxLength(10)]),
+    birthdate: new FormControl('', [Validators.required, birthdateValidation]),
 
     rolesForm: new FormGroup({
       rol: new FormControl('', []),
@@ -81,7 +89,14 @@ export class UserUserDetailComponent {
     }),
 
     plotForm: new FormGroup({
-      plotAssign: new FormControl('', [Validators.required])
+      plotNumber: new FormControl(
+        '',
+        [Validators.min(1)],
+        [plotForUserValidator(this.plotService)]
+      ),
+      blockNumber: new FormControl('', [
+        Validators.min(1),
+      ]),
     }),
   });
   //#endregion
@@ -102,7 +117,7 @@ export class UserUserDetailComponent {
     this.minDate = tomorrow.toISOString().split('T')[0];
   }
 
-  setEnums(){
+  setEnums() {
     this.provinceOptions = Object.entries(Provinces).map(([key, value]) => ({
       value: key,
       display: value
@@ -120,37 +135,36 @@ export class UserUserDetailComponent {
     if (this.id) {
       this.userService.getUserById(Number(this.id)).subscribe(
         response => {
-          console.log(response)
           this.user = response;
-
+          let formattedDate: any
+          if (this.user.birthdate) {
+            const [day, month, year] = this.user.birthdate?.split('/');
+            formattedDate = `${year}-${month}-${day}`;
+          }
           this.userForm.patchValue({
             email: this.user.email,
             firstName: this.user.firstName,
             lastName: this.user.lastName,
             userName: this.user.userName,
+            documentType: this.user.documentType,
+            documentNumber: this.user.documentNumber,
+            birthdate: formattedDate
           });
 
-          if (this.user.plotId) {
-            this.setPlotValue(this.user.plotId)
+          if (response.plotId !== undefined) {
+            this.setPlotValue(response.plotId);
           }
 
           if (this.user.addresses) {
             this.addresses = [...this.user.addresses];
-            if (this.addresses.length > 0) {
-              this.setAddressValue(0);
-            }
           }
 
           if (this.user.contacts) {
             this.contacts = [...this.user.contacts];
-            if (this.contacts.length > 0) {
-              this.setContactValue(0);
-            }
           }
-
+          console.log(this.user.roles)
           if (this.user.roles) {
             this.roles = [...this.user.roles];
-            this.userForm.get('rolesForm.rol')?.setValue(this.roles[0]?.id || null);
           }
         },
         error => {
@@ -163,7 +177,8 @@ export class UserUserDetailComponent {
 
   //#region RUTEO | CANCELAR
   cancel() {
-    this.router.navigate(["/user/list"])
+    this.router.navigate(["/users/user/list"])
+
   }
   //#endregion
 
@@ -238,11 +253,11 @@ export class UserUserDetailComponent {
     this.user.isActive = true;
     this.user = toSnakeCase(this.user);
     this.user.roles = this.transformRoles(this.user)
-    this.userService.addUser(this.user, 1).subscribe({
+    this.userService.addUser(this.user).subscribe({
       // '1' is x-user-id
       next: (response) => {
         this.toastService.sendSuccess("Usuario creado con exito.")
-        this.router.navigate(['/user/list']);
+        this.router.navigate(['users/user/list']);
       },
       error: (error) => {
         console.error('Error creating owner:', error);
@@ -253,10 +268,10 @@ export class UserUserDetailComponent {
   updateUser() {
     this.fillUser();
     if (this.user.id) {
-      this.userService.updateUser(this.user.id, this.user, 1).subscribe({
+      this.userService.updateUser(this.user.id, this.user).subscribe({
         next: (response) => {
           this.toastService.sendSuccess("Usuario actualizado con exito.")
-          this.router.navigate(['/owner/list']);
+          this.router.navigate(['users/owner/list']);
         },
         error: (error) => {
           this.toastService.sendError("Error actualizado el usuario.")
@@ -272,23 +287,26 @@ export class UserUserDetailComponent {
 
   getPlotsOfOwner() {
     // TODO: Ver como obtener el ownerId
-    this.plotService.getPlotById(this.user.plotId).subscribe(
-      response => {
-        this.actualPlotOfOwner = [response];
-      },
-      error => {
-        this.toastService.sendError("Error recuperando los lotes. Reinicie la pagina.")
-      }
-    )
+    if (this.user.plotId) {
+      this.plotService.getPlotById(this.user.plotId).subscribe(
+        response => {
+          this.actualPlotOfOwner = [response];
+        },
+        error => {
+          this.toastService.sendError("Error recuperando los datos del usuario. Reinicie la pagina.")
+        }
+      )
+    }
   }
 
-  setPlotValue(plotId:number) {
+  setPlotValue(plotId: number) {
     const plotFormGroup = this.userForm.get('plotForm') as FormGroup;
     this.plotService.getPlotById(plotId).subscribe(
       response => {
         console.log(response);
         plotFormGroup.patchValue({
-          plotAssign: response.id
+          plotNumber: response.plotNumber,
+          blockNumber: response.blockNumber
         })
       })
   }
@@ -361,5 +379,114 @@ export class UserUserDetailComponent {
   //#endregion
   goBack() {
     this.location.back()
+  }
+
+  openInfo() {
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
+
+    modalRef.componentInstance.title = 'Detalle de Usuario';
+    modalRef.componentInstance.description = 'Pantalla para la gestión integral de usuarios, permitiendo la visualización, edición y administración de datos personales, roles, lotes asociados, direcciones y contactos.';
+    modalRef.componentInstance.body = [
+      {
+        title: 'Datos del Usuario',
+        content: [
+          {
+            strong: 'Email:',
+            detail: 'Correo electrónico del usuario.'
+          },
+          {
+            strong: 'Nombre:',
+            detail: 'Nombre del usuario.'
+          },
+          {
+            strong: 'Nombre de usuario:',
+            detail: 'Nombre de usuario.'
+          },
+          {
+            strong: 'Apellido:',
+            detail: 'Apellido del usuario.'
+          }
+        ]
+      },
+      {
+        title: 'Lista de Roles',
+        content: [
+          {
+            strong: 'Roles:',
+            detail: 'Lista de roles del usuario.'
+          }
+        ]
+      },
+      {
+        title: 'Asociar un lote',
+        content: [
+          {
+            strong: 'Lotes en tenencia:',
+            detail: 'Lotes en tenencia.'
+          },
+          {
+            strong: 'Fecha:',
+            detail: 'Fecha en formato dd/mm/aaaa.'
+          }
+        ]
+      },
+      {
+        title: 'Añadir Dirección',
+        content: [
+          {
+            strong: 'Calle:',
+            detail: 'Nombre de la calle.'
+          },
+          {
+            strong: 'Número:',
+            detail: 'Número de la propiedad'
+          },
+          {
+            strong: 'Piso:',
+            detail: 'Piso de la propiedad'
+          },
+          {
+            strong: 'Depto:',
+            detail: 'Departamento.'
+          },
+          {
+            strong: 'País:',
+            detail: 'País.'
+          },
+          {
+            strong: 'Provincia:',
+            detail: 'Provincia.'
+          },
+          {
+            strong: 'Ciudad:',
+            detail: 'Ciudad.'
+          },
+          {
+            strong: 'Código Postal:',
+            detail: 'Código postal.'
+          }
+        ]
+      },
+      {
+        title: 'Añadir Contactos',
+        content: [
+          {
+            strong: 'Tipo Contacto:',
+            detail: 'Tipo del contacto.'
+          },
+          {
+            strong: 'Contacto:',
+            detail: 'Información del contacto'
+          }
+        ]
+      }
+    ];
+
   }
 }
