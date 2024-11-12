@@ -30,22 +30,10 @@ import {RoleSelectorComponent} from './penalties/shared/components/role-selector
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent implements OnInit {
-  private loginService = inject(LoginService);
-  private router = inject(Router);
-  private activatedRouter = inject(ActivatedRoute);
-  
-  
-  private currentUrlSubject = new BehaviorSubject<string>('');
-  currentUrl$: Observable<string> = this.currentUrlSubject.asObservable();
-  
-  ngOnInit(){
-    this.router.events
-    .pipe(filter(event => event instanceof NavigationEnd))
-    .subscribe(event => {
-      this.currentUrlSubject.next(event.url);
-    });  }
+export class AppComponent {
+  // title = 'AppName';
 
+  //variables
   navbarMenu: NavbarItem[] = [
     {
       label: 'Accesos',
@@ -83,20 +71,22 @@ export class AppComponent implements OnInit {
         {
           label: 'Gastos',
           subMenu: [
-            { label: 'Lista', routerLink: 'expenses/gastos' },
+            { label: 'Lista de gastos', routerLink: 'expenses/gastos' },
             { label: 'Categorias', routerLink: 'expenses/gastos/categorias' },
             { label: 'Reporte de gastos', routerLink: 'expenses/gastos/report' },
-
           ],
         },
         {
           label: 'Cargos',
-          routerLink: 'expenses/cargos'
+          subMenu: [
+            { label: 'Lista de cargos', routerLink: 'expenses/cargos' },
+            { label: 'Categorias', routerLink: 'expenses/cargos/categorias' }
+          ],
         },
         {
           label: 'Periodo',
           subMenu: [
-            { label: 'Lista', routerLink: 'expenses/periodo' },
+            { label: 'Lista de periodos', routerLink: 'expenses/periodo' },
             { label: 'Historico de expensas', routerLink: 'expenses/expenses' },
             { label: 'Reporte de expensas', routerLink: 'expenses/expenses/report' },
           ]
@@ -351,6 +341,7 @@ export class AppComponent implements OnInit {
    * Service responsible for managing user session and authentication state.
    */
   private sessionService = inject(SessionService);
+  private router = inject(Router)
 
   /**
    * Observable that emits the current authentication status.
@@ -368,7 +359,7 @@ export class AppComponent implements OnInit {
    * y redirigir al usuario a una vista de inicio de sesión o pantalla principal.
    */
   onLogoutButtonClick() {
-    this.loginService.logout();
+    this.sessionService.logout();
     this.router.navigate([""]);
   }
   //#endregion

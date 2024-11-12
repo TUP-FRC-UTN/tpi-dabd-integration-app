@@ -14,22 +14,21 @@
             id="newCategoryName"
             formControlName="name"
             [ngClass]="{
-              'is-invalid': newCategoryForm.get('name')?.invalid &&
-                          (newCategoryForm.get('name')?.dirty || newCategoryForm.get('name')?.touched),
+              'is-invalid': newCategoryForm.get('name')?.invalid && (newCategoryForm.get('name')?.dirty || newCategoryForm.get('name')?.touched),
               'is-valid': newCategoryForm.get('name')?.valid && !newCategoryForm.get('name')?.pending
-            }">
+            }"
+          >
 
           <!-- Mensajes de error -->
-          @if (newCategoryForm.get('name')?.errors?.['required'] &&
-          newCategoryForm.get('name')?.touched) {
+          @if(newCategoryForm.get('name')?.errors?.['required'] && newCategoryForm.get('name')?.touched){
             <div class="invalid-feedback">
               Por favor, ingrese un nombre para la categoría.
             </div>
           }
 
-          @if (newCategoryForm.get('name')?.errors?.['nameExists']) {
+          @if(newCategoryForm.get('name')?.errors?.['nameExists']){
             <div class="invalid-feedback">
-              Este nombre de categoría ya está en uso.
+              Este nombre de categoría ya existe.
             </div>
           }
         </div>
@@ -44,10 +43,10 @@
             id="newCategoryDescription"
             formControlName="description"
             [ngClass]="{
-              'is-invalid': newCategoryForm.get('description')?.invalid &&
-                          (newCategoryForm.get('description')?.dirty || newCategoryForm.get('description')?.touched),
+              'is-invalid': newCategoryForm.get('description')?.invalid && (newCategoryForm.get('description')?.dirty || newCategoryForm.get('description')?.touched),
               'is-valid': newCategoryForm.get('description')?.valid
-            }">
+            }"
+          >
 
           @if (newCategoryForm.get('description')?.errors?.['required'] &&
           newCategoryForm.get('description')?.touched) {
@@ -69,10 +68,8 @@
     [ngClass]="{
       'btn-success': !newCategoryForm.pending,
       'btn-secondary': newCategoryForm.pending
-    }">
-    @if (newCategoryForm.pending) {
-      <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-    }
+    }"
+  >
     Confirmar
   </button>
   <button type="button" class="btn btn-danger" (click)="activeModal.dismiss()">Cancelar</button>

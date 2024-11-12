@@ -1,4 +1,4 @@
-import { CategoryCharge, Charge, ChargeType } from './../models/charge';
+import { CategoryCharge, Charge, ChargeType, ReportCharge } from './../models/charge';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
@@ -19,6 +19,7 @@ export class ChargeService {
   private http = inject(HttpClient);
   private categoryChargeUrl = `${PORT}category-charges`;
   private apiUrl = `${PORT}charges`
+  private urlReport = `${PORT}report/charge`;
   constructor() {}
 
   addCharge(charge: Charge): Observable<Charge> {
@@ -39,25 +40,22 @@ export class ChargeService {
 
     if (periodId != undefined || periodId != null ) {
       if(periodId != 0){
-        console.log('periodo = '+periodId);
         params = params.set('period', periodId.toString());
-      }      
+      }
     }
     if(plotId != undefined || plotId != null ){
       if (plotId) {
-        console.log('lote= '+plotId)
         params = params.set('lot', plotId);
       }
     }
-    
+
     if (categoryId != undefined || categoryId != null) {
       if(categoryId != 0){
-        console.log('categoria = '+categoryId);
         params = params.set('category', categoryId.toString());
       }
     }
-    
-    if (type != undefined || type != null) {     
+
+    if (type != undefined || type != null) {
       let tipo = '';
       switch(type){
         case 'Positivo': tipo = 'ABSOLUTE'; break;
@@ -65,25 +63,12 @@ export class ChargeService {
         case 'Negativo': tipo = 'NEGATIVE'; break;
         default : tipo = 'ABSOLUTE'; break;
 
-      } 
-      console.log('tipo SIGN ES '+tipo);
+      }
       params = params.set('type', tipo);
-      
+
     }
     console.log(params);
     return this.http.get<Page<Charge>>(this.apiUrl, { params });
-    /*
-    .pipe(
-      map(page => {
-        // Accede a `content` y asigna valores predeterminados si es necesario
-        page.content = page.content.map(charge => ({
-          ...charge,
-          period: charge.period || { month: 0, year: 0, state: 'UNKNOWN', id: 0 }
-        }));
-        return page;
-      })
-    )
-    */
   }
 
   updateCharge(charge: Charge): Observable<Charge> {
@@ -91,11 +76,10 @@ export class ChargeService {
       'x-user-id': '1'
     });
     return this.http.put<Charge>(`${this.apiUrl}/${charge.chargeId}`, charge, {headers});
-  }  
+  }
 
   deleteCharge(charge: number): Observable<Boolean> {
     return this.http.delete<Boolean>(this.apiUrl + '/' + charge);
-    //return this.http.put<Charge>(`${this.apiUrl}/${charge.charge_id}`, charge);
   }
 
   deleteCharge2(charge: number): Observable<Charge> {
@@ -109,13 +93,75 @@ export class ChargeService {
     return this.http.post<Charge>(this.apiUrl, charge);
   }
 
-  getCategoryCharges(): Observable<CategoryCharge[]> {
-    return this.http.get<CategoryCharge[]>(this.categoryChargeUrl);
+  getCategoryCharges(excluingFines : boolean |true): Observable<CategoryCharge[]> {
+    let params = new HttpParams;
+    params = params.set('status', true);
+    params = params.set('excluingFines', excluingFines);
+    return this.http.get<CategoryCharge[]>(`${this.categoryChargeUrl}/all`, { params });
+
   }
 
   getCategoriesExcFines() : Observable<CategoryCharge[]> {
-    return this.http.get<CategoryCharge[]>(`${this.categoryChargeUrl}/exceptFines`);
+    return this.getCategoryCharges(true);
   }
 
+  addCategory(categoryCharge : CategoryCharge) : Observable<CategoryCharge> {
+    const headers = new HttpHeaders({
+      'x-user-id': '1'
+    });
 
+    return this.http.post<CategoryCharge>(this.categoryChargeUrl, categoryCharge, { headers });
+  }
+
+  updateCategory(categoryCharge : CategoryCharge) : Observable<CategoryCharge> {
+    const headers = new HttpHeaders({
+      'x-user-id': '1'
+    });
+    return this.http.put<CategoryCharge>(`${this.categoryChargeUrl}/${categoryCharge.categoryChargeId}`, categoryCharge, { headers });
+  }
+
+  deleteCategoryCharge(category: number): Observable<Boolean> {
+    return this.http.delete<Boolean>(`${this.categoryChargeUrl}/${category}`);
+  }
+
+  validateCategoryName(name: string): Observable<boolean> {
+    return this.getCategoryCharges(false).pipe(
+      map(categories => categories.some(category => category.name.toLowerCase() === name.toLowerCase() ))
+    );
+  }
+
+  getCategoryChargesPagination(page: number, size: number, type?: ChargeType, status? : boolean, excluingFines? : boolean): Observable<Page<CategoryCharge>> {
+    debugger
+    let params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+
+    if(excluingFines != undefined && excluingFines != null) {
+
+      params = params.set('excluingFines', excluingFines!);
+    }
+    if(status != undefined && status != null) {
+      debugger
+      params = params.set('status', status!);
+    }
+    if (type != undefined && type != null) {
+      debugger
+      let tipo = '';
+      switch(type){
+        case 'Positivo': tipo = 'ABSOLUTE'; break;
+        case 'Porcentaje': tipo ='PERCENTAGE'; break;
+        case 'Negativo': tipo = 'NEGATIVE'; break;
+        default : tipo = 'ABSOLUTE'; break;
+
+      }
+      params = params.set('type', tipo);
+    }
+
+    return this.http.get<Page<CategoryCharge>>(this.categoryChargeUrl, { params });
+  }
+
+  /****ACA VIENE LO DE  REPORTE */
+  getReport(periodId : number) : Observable<ReportCharge> {
+    return this.http.get<ReportCharge>(`${this.urlReport}?periodId=${periodId}`);
+  }
 }

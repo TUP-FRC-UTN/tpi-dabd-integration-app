@@ -1,7 +1,7 @@
-import { Component, inject, input, Input, OnInit, SimpleChanges } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ExpenseServiceService } from '../../../services/expense.service';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import Expense, { ExpenseFilters } from '../../../models/expense';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import Expense from '../../../models/expense';
 import { FormsModule } from '@angular/forms';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import Period from '../../../models/period';
@@ -16,12 +16,12 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import {NgPipesModule} from "ngx-pipes";
 import {
-  TableColumn, TableComponent, ConfirmAlertComponent,
-
+  TableComponent,
   MainContainerComponent,
-  ToastService, TableFiltersComponent, Filter, FilterConfigBuilder, FilterOption, SelectFilter
+  TableFiltersComponent, Filter, FilterOption, SelectFilter
 } from "ngx-dabd-grupo01" ;
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {InfoExpensesListComponent} from "../../modals/info-expenses-list/info-expenses-list.component";
 
 
 @Component({
@@ -35,6 +35,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 export class ExpensesListComponent implements OnInit{
 
 
+  modalService = inject(NgbModal);
   private route = inject(ActivatedRoute);
   private readonly periodService = inject(PeriodService)
   private readonly lotsService = inject(LotsService)
@@ -99,7 +100,6 @@ export class ExpensesListComponent implements OnInit{
 
   onPageSizeChange() {
     this.currentPage = 0; // Reinicia a la primera página
-    console.log(this.pageSize)
     this.loadExpenses(0,this.pageSize);
   }
   applyFilters() {
@@ -124,7 +124,6 @@ export class ExpensesListComponent implements OnInit{
   }
 
   onPageChange(page: number): void {
-    console.log(this.totalPages)
     if (page >= 0 && page < this.totalPages) {
 
       console.log('Cargando página ' + page);
@@ -174,7 +173,6 @@ export class ExpensesListComponent implements OnInit{
   loadSelect() {
 
     if (this.periodPath != null) {
-      console.log('Path: ' + this.periodPath);
       this.filterConfig.pop();
     } else {
     this.periodService.get().subscribe((data) => {
@@ -210,9 +208,26 @@ export class ExpensesListComponent implements OnInit{
     ];
     return monthNames[month - 1];
   }
+
+
+  /**
+   * boton info
+   */
   showInfo() {
-    throw new Error('Method not implemented.');
+    this.modalService.open(InfoExpensesListComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
   }
+
+
+
+
+
+
   imprimir() {
     console.log('Imprimiendo')
     const doc = new jsPDF();

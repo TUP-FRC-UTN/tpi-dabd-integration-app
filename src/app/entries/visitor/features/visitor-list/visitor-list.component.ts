@@ -14,17 +14,17 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
   templateUrl: './visitor-list.component.html',
 })
 export class VisitorListComponent {
-  
+
 //   private visitorService = inject(VisitorService);
 //   private router = inject(Router);
-  
+
 //   visitors: Visitor[] = [];
 //   isLoading = true;
-//   searchFilter: string = ''; 
+//   searchFilter: string = '';
 
 //   @ViewChild('actionsTemplate') actionsTemplate!: TemplateRef<any>; // Accedemos al ng-template
 //   columns: TableColumn[] = [];
-  
+
 //   ngAfterViewInit(): void {
 //     setTimeout(() => {
 //       // Configuramos las columnas, incluyendo la de acciones
@@ -45,7 +45,7 @@ export class VisitorListComponent {
 //   page: number = 1;
 //   size: number = 10;
 //   totalItems: number = 0;
- 
+
 
 //   ngOnInit(): void {
 //     this.loadVisitors();
@@ -66,7 +66,7 @@ export class VisitorListComponent {
 //     });
 //   }
 
- 
+
 //   onPageChange = (page: number): void => {
 //     this.page = page;
 //     this.loadVisitors();
@@ -79,7 +79,7 @@ export class VisitorListComponent {
 
 //  onFilterChange = (filter: string): void => {
 //     console.log(filter);
-    
+
 //     if(filter === '') {
 //       this.loadVisitors();
 //     }else{
@@ -89,7 +89,7 @@ export class VisitorListComponent {
 
 
 //   editVisitor(idVisitor: number): void {
-   
+
 //     this.router.navigate(['visitor/edit/'+ idVisitor]);
 //   }
 
