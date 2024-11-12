@@ -31,14 +31,12 @@ export class EntityFormComponent {
   @Input() visitorId?: number;
   @Output() entitySaved = new EventEmitter<boolean>();
   @Output() entityCreated = new EventEmitter<void>();
+  fb = inject(FormBuilder);
+  router = inject(Router);
+  loginService = inject(LoginService);
+  visitorService = inject(VisitorService);
 
-  constructor(
-    private fb: FormBuilder,
-    private loginService: LoginService,
-    private router: Router,
-    private visitorService: VisitorService,
-    private route: ActivatedRoute
-  ) {}
+ 
 
   ngOnInit(): void {
     if (this.visitorId) {

@@ -20,8 +20,8 @@ export class AppComponent {
       routerLink:'entries',
       sidebarMenu: [
         {
-          label: 'Visitantes',
-          routerLink: 'entries/visitors'
+          label: 'Entidades',
+          routerLink: 'entries/entity/list'
         },
         {
           label: 'Consulta de Accesos',
