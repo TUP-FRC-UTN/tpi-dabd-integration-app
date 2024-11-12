@@ -31,7 +31,7 @@ export class UserService {
   validateEmail(email: string): Observable<boolean> {
     const params = new HttpParams().set('email', email.toString());
 
-    return this.http.get<boolean>(this.host + `validEmail`, { params });
+    return this.http.get<boolean>(this.host + `/validEmail`, { params });
   }
 
   updateUser(id: number, user: User): Observable<User> {
@@ -40,7 +40,7 @@ export class UserService {
     });
     delete user.id;
 
-    return this.http.put<User>(`${this.host}${id}`, user, { headers });
+    return this.http.put<User>(`${this.host}/${id}`, user, { headers });
   }
 
   deleteUser(id: number) {
@@ -48,7 +48,7 @@ export class UserService {
       'x-user-id': this.sessionService.getItem('user').id.toString()
     });
 
-    return this.http.delete<any>(`${this.host}${id}`, { headers });
+    return this.http.delete<any>(`${this.host}/${id}`, { headers });
   }
 
   addUser(user: User): Observable<User> {
@@ -62,7 +62,7 @@ export class UserService {
 
 
   forgotPassword(forgotRequest: ForgotPasswordRequest): Observable<any> {
-    return this.http.post<any>(`${this.host}password/reset`, forgotRequest)
+    return this.http.post<any>(`${this.host}/password/reset`, forgotRequest)
 
   }
 
@@ -79,7 +79,7 @@ export class UserService {
     });
 
 
-    return this.http.put<any>(`${this.host}password/change`, changePasswordRequest, {headers})
+    return this.http.put<any>(`${this.host}/password/change`, changePasswordRequest, {headers})
 
   }
 
@@ -110,7 +110,7 @@ export class UserService {
   }
 
   getUserById(id: number): Observable<User> {
-    return this.http.get<User>(`${this.host}${id}`).pipe(
+    return this.http.get<User>(`${this.host}/${id}`).pipe(
       map((data: any) => {
         return toCamelCase(data);
       })
@@ -125,7 +125,7 @@ export class UserService {
    * @returns Observable con los datos del usuario.
    */
   getUserById2(id: number): Observable<User> {
-    return this.http.get<User>(`${this.host}${id}`).pipe(
+    return this.http.get<User>(`${this.host}/${id}`).pipe(
       map((response) => response),
       catchError(this.handleError)
     );
@@ -136,7 +136,7 @@ export class UserService {
       .set('page', page >= 0 ? page.toString() : '0')
       .set('size', size.toString());
 
-    return this.http.get<User[]>(`${this.host}created_by/${id}`).pipe(
+    return this.http.get<User[]>(`${this.host}/created_by/${id}`).pipe(
       map((data: any) => {
         return toCamelCase(data);
       })
@@ -148,7 +148,7 @@ export class UserService {
       .set('page', page >= 0 ? page.toString() : '0')
       .set('size', size.toString());
 
-    return this.http.get<User[]>(`${this.host}rol/${role}`).pipe(
+    return this.http.get<User[]>(`${this.host}/rol/${role}`).pipe(
       map((data: any) => {
         return toCamelCase(data);
       })
@@ -171,7 +171,7 @@ export class UserService {
     }
 
     return this.http
-      .get<PaginatedResponse<User>>(`${this.host}filters`, {
+      .get<PaginatedResponse<User>>(`${this.host}/filters`, {
         params: httpParams,
       })
       .pipe(
