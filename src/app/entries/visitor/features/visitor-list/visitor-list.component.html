@@ -28,7 +28,7 @@
     <app-table [items]="visitors" [columns]="columns" [isLoading]="isLoading"></app-table>
 </div>-->
 
-<div class="container mt-4">
+<!-- <div class="container mt-4">
     <p class="h2 m-3">Lista de Visitantes</p>
 
     <app-table [items]="visitors" [columns]="columns" [isLoading]="isLoading" [pagination]="{
@@ -38,9 +38,7 @@
       onPageChange: onPageChange,
       onPageSizeChange: onPageSizeChange
     }" [height]="'450px'" (searchValueChange)="onFilterChange($event)">
-        <!-- Template para la columna de acciones -->
         <ng-template #actionsTemplate let-item>
-            <!-- Botones visibles en pantallas medianas y grandes -->
             <div class="d-none d-md-flex">
                 <button class="btn btn-warning btn-sm me-2" (click)="editVisitor(item.visitor_id)">
                     Editar
@@ -50,10 +48,9 @@
                 </button>
             </div>
 
-            <!-- Botones visibles solo en pantallas pequeñas -->
             <div class="d-md-none" ngbDropdown>
                 <button class="btn" type="button" id="dropdownMenuButton2"  aria-expanded="false">
-                    <i class="bi bi-three-dots-vertical" ngbDropdownToggle aria-expanded="false"></i> <!-- Mantenemos solo el ícono -->
+                    <i class="bi bi-three-dots-vertical" ngbDropdownToggle aria-expanded="false"></i> 
                 </button>
 
                 <div ngbDropdownMenu class="dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">
@@ -68,4 +65,4 @@
         </ng-template>
 
     </app-table>
-</div>
+</div> -->

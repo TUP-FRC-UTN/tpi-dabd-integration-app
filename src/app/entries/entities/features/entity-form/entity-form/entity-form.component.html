@@ -1,0 +1,60 @@
+<p class="mt-2 p-4 h1">{{isUpdate ? 'Actualizar' : 'Nueva'}} Entidad</p>
+<form [formGroup]="entityForm" (ngSubmit)="onSubmit()" class="row g-3 m-2 mx-4 mb-3">
+
+    <div class="col-md-6">
+        <label for="name" class="form-label">Nombre <span class="text-danger">*</span></label>
+        <input type="text" id="name" class="form-control" formControlName="name" [ngClass]="{
+             'is-invalid': entityForm.get('name')?.invalid && entityForm.get('name')?.touched
+           }" />
+        <small class="text-danger ms-2" *ngIf="entityForm.get('name')?.invalid && entityForm.get('name')?.touched">
+            Por favor, ingrese el nombre del visitante
+        </small>
+    </div>
+
+    <div class="col-md-6">
+        <label for="last-name" class="form-label">Apellido <span class="text-danger">*</span></label>
+        <input type="text" id="last-name" class="form-control" formControlName="lastName" [ngClass]="{
+             'is-invalid': entityForm.get('lastName')?.invalid && entityForm.get('lastName')?.touched
+           }" />
+        <small class="text-danger ms-2"
+            *ngIf="entityForm.get('lastName')?.invalid && entityForm.get('lastName')?.touched">
+            Por favor, ingrese el apellido del visitante
+        </small>
+    </div>
+
+    <div class="col-md-6 mt-3">
+        <label for="doc-type" class="form-label">Tipo de Documento <span class="text-danger">*</span></label>
+        <select id="doc-type" class="form-select" formControlName="docType">
+            <option value="DNI">DNI</option>
+            <option value="PASSPORT">Pasaporte</option>
+            <option value="CUIT">CUIT</option>
+            <option value="CUIL">CUIL</option>
+        </select>
+    </div>
+
+    <div class="col-md-6 mt-3">
+        <label for="doc-number" class="form-label">Número de Documento <span class="text-danger">*</span></label>
+        <input type="number" id="doc-number" class="form-control" formControlName="docNumber" [ngClass]="{
+             'is-invalid': entityForm.get('docNumber')?.invalid && entityForm.get('docNumber')?.touched
+           }" />
+        <small class="text-danger ms-2"
+            *ngIf="entityForm.get('docNumber')?.invalid && entityForm.get('docNumber')?.touched">
+            Por favor, ingrese el número de documento del visitante
+        </small>
+    </div>
+
+    <div class="col-md-6 mt-3">
+        <label for="birth-date" class="form-label">Fecha de Nacimiento</label>
+        <input type="date" id="birth-date" class="form-control" formControlName="birthDate" />
+        <small class="text-danger ms-2"
+            *ngIf="entityForm.get('birthDate')?.invalid && entityForm.get('birthDate')?.touched">
+            Por favor, ingrese la fecha de nacimiento del visitante
+        </small>
+    </div>
+
+    <div class="col-12 d-flex justify-content-end mt-5">
+        <button type="button" class="btn btn-danger me-2" (click)="onCancel()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+    <app-toasts></app-toasts>
+</form>
