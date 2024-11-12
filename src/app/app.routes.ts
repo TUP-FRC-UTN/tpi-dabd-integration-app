@@ -8,6 +8,9 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'forgotpassword', component: ForgotPasswordComponent },
   { path: 'home', component: HomeComponent, canActivate: [authGuard] },
+
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+
   {
     path: 'entries',
     loadChildren: () =>
