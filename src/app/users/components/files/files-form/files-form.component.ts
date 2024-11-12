@@ -226,12 +226,12 @@ export class FilesFormComponent implements OnInit {
     } else {
       const modalRef = this.modalService.open(ConfirmAlertComponent);
       modalRef.componentInstance.alertType = "info";
-      modalRef.componentInstance.alertTitle = 'Confirmacion';
+      modalRef.componentInstance.alertTitle = 'Confirmación';
       modalRef.componentInstance.alertMessage = `Seguro que desea cargar ${this.ownerFiles.length} archivos de DNI y ${this.plotFiles.length} Escrituras?`;
 
       modalRef.result.then(result => {        
         if (result) {
-          console.log("llamar a los metodos del service");
+          console.log("llamar a los métodos del service");
 
           if(this.owner.id) {
             // archivos del owner (dniFront, dniBack)
@@ -339,7 +339,7 @@ export class FilesFormComponent implements OnInit {
 
 
         } else {
-          this.toastService.sendError('operacion cancelada'); // aca no entra nunca
+          this.toastService.sendError('Operación cancelada'); // aca no entra nunca
         }
       })
     }

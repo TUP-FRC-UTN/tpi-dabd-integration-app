@@ -76,7 +76,7 @@ export class RolesFormComponent implements OnInit {
     }
     this.roleService.createRole(newRole as Role).subscribe({
       next: () => {
-        this.toastService.sendSuccess("Rol creado con exito.");
+        this.toastService.sendSuccess("Rol creado con éxito.");
         this.navigateToList();
       },
       error: (error) => {
@@ -95,7 +95,7 @@ export class RolesFormComponent implements OnInit {
     }
     this.roleService.updateRole(id, updateRole as Role).subscribe({
       next: () => {
-        this.toastService.sendSuccess("Rol modificado con exito.");
+        this.toastService.sendSuccess("Rol modificado con éxito.");
         this.navigateToList();
       },
       error: (error) => {
