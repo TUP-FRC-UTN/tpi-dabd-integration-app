@@ -650,6 +650,10 @@ export class OwnerFormComponent implements OnInit {
           {
             strong: 'Agregar Contacto:',
             detail: 'Botón con símbolo de "+" para agregar el contacto ingresado.'
+          },
+          {
+            strong: '(Aclaración):',
+            detail: 'Se debe ingresar mínimo un contacto de tipo Email para poder enviar el formulario'
           }
         ]
       }
