@@ -15,89 +15,89 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 })
 export class VisitorListComponent {
   
-  private visitorService = inject(VisitorService);
-  private router = inject(Router);
+//   private visitorService = inject(VisitorService);
+//   private router = inject(Router);
   
-  visitors: Visitor[] = [];
-  isLoading = true;
-  searchFilter: string = ''; 
+//   visitors: Visitor[] = [];
+//   isLoading = true;
+//   searchFilter: string = ''; 
 
-  @ViewChild('actionsTemplate') actionsTemplate!: TemplateRef<any>; // Accedemos al ng-template
-  columns: TableColumn[] = [];
+//   @ViewChild('actionsTemplate') actionsTemplate!: TemplateRef<any>; // Accedemos al ng-template
+//   columns: TableColumn[] = [];
   
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      // Configuramos las columnas, incluyendo la de acciones
-      this.columns = [
-        { headerName: 'Tipo de documento', accessorKey: 'doc_type' },
-        { headerName: 'Numero de documento', accessorKey: 'doc_number' },
-        { headerName: 'Nombre', accessorKey: 'name' },
-        { headerName: 'Apellido', accessorKey: 'last_name' },
-        {
-          headerName: 'Acciones',
-          accessorKey: 'actions',
-          cellRenderer: this.actionsTemplate, // Renderizamos la plantilla de acciones
-        },
-      ];
-    });
-  }
+//   ngAfterViewInit(): void {
+//     setTimeout(() => {
+//       // Configuramos las columnas, incluyendo la de acciones
+//       this.columns = [
+//         { headerName: 'Tipo de documento', accessorKey: 'doc_type' },
+//         { headerName: 'Numero de documento', accessorKey: 'doc_number' },
+//         { headerName: 'Nombre', accessorKey: 'name' },
+//         { headerName: 'Apellido', accessorKey: 'last_name' },
+//         {
+//           headerName: 'Acciones',
+//           accessorKey: 'actions',
+//           cellRenderer: this.actionsTemplate, // Renderizamos la plantilla de acciones
+//         },
+//       ];
+//     });
+//   }
 
-  page: number = 1;
-  size: number = 10;
-  totalItems: number = 0;
+//   page: number = 1;
+//   size: number = 10;
+//   totalItems: number = 0;
  
 
-  ngOnInit(): void {
-    this.loadVisitors();
-  }
+//   ngOnInit(): void {
+//     this.loadVisitors();
+//   }
 
-  loadVisitors(filter?: string): void {
-    this.isLoading = true;
-    this.visitorService.getVisitors(this.page -1, this.size , filter).subscribe({
-    next: (data) => {
-      console.log(data)
-      this.visitors = data.items;
-      this.totalItems = data.total_elements;
-      this.isLoading = false;
-    },
-    error : (error) => {
-      console.log(error);
-    }
-    });
-  }
+//   loadVisitors(filter?: string): void {
+//     this.isLoading = true;
+//     this.visitorService.getVisitors(this.page -1, this.size , filter).subscribe({
+//     next: (data) => {
+//       console.log(data)
+//       this.visitors = data.items;
+//       this.totalItems = data.total_elements;
+//       this.isLoading = false;
+//     },
+//     error : (error) => {
+//       console.log(error);
+//     }
+//     });
+//   }
 
  
-  onPageChange = (page: number): void => {
-    this.page = page;
-    this.loadVisitors();
-  };
+//   onPageChange = (page: number): void => {
+//     this.page = page;
+//     this.loadVisitors();
+//   };
 
-  onPageSizeChange = (size: number): void => {
-    this.size = size;
-    this.loadVisitors();
-  };
+//   onPageSizeChange = (size: number): void => {
+//     this.size = size;
+//     this.loadVisitors();
+//   };
 
- onFilterChange = (filter: string): void => {
-    console.log(filter);
+//  onFilterChange = (filter: string): void => {
+//     console.log(filter);
     
-    if(filter === '') {
-      this.loadVisitors();
-    }else{
-      this.loadVisitors(filter);
-    }
-  };
+//     if(filter === '') {
+//       this.loadVisitors();
+//     }else{
+//       this.loadVisitors(filter);
+//     }
+//   };
 
 
-  editVisitor(idVisitor: number): void {
+//   editVisitor(idVisitor: number): void {
    
-    this.router.navigate(['visitor/edit/'+ idVisitor]);
-  }
+//     this.router.navigate(['visitor/edit/'+ idVisitor]);
+//   }
 
-  deleteVisitor(id: number): void {
-    if (confirm('¿Está seguro que quiere eliminar este visitante?')) {
-      this.visitorService.deleteVisitor(id).subscribe(() => {
-        this.visitors = this.visitors.filter((v) => v.visitor_id !== id);
-      });
-    }
-  }
+//   deleteVisitor(id: number): void {
+//     if (confirm('¿Está seguro que quiere eliminar este visitante?')) {
+//       this.visitorService.deleteVisitor(id).subscribe(() => {
+//         this.visitors = this.visitors.filter((v) => v.visitor_id !== id);
+//       });
+//     }
+//   }
 }
