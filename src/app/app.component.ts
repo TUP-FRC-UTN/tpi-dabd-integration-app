@@ -12,7 +12,8 @@ import { LoginService } from './users/services/login.service';
 import { ForgotPasswordComponent } from './users/components/forgot-password/forgot-password.component';
 import { BehaviorSubject, filter, Observable } from 'rxjs';
 import {RoleSelectorComponent} from './penalties/shared/components/role-selector/role-selector.component';
-
+import { filter, map } from 'rxjs/operators';
+import { NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -363,5 +364,11 @@ export class AppComponent {
     this.router.navigate([""]);
   }
   //#endregion
+
+  currentUrl$ = this.router.events.pipe(
+    filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+    map((event: NavigationEnd) => event.urlAfterRedirects)
+  );
+
 
 }
