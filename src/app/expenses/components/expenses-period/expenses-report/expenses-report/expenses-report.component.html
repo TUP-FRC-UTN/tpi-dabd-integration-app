@@ -1,65 +1,133 @@
-<app-main-container title="Reporte de expensas">
+<app-main-container
+  title="Reporte de montos totales por lote"
+  (infoButtonClick)="showInfo()"
+>
+  <div
+    class="select-container"
+    style="display: flex; gap: 10px; flex-wrap: wrap; padding-bottom: 20px"
+  >
+    <div class="col-auto">
+      <app-table-filters
+        [filters]="filterConfig"
+        (filterValueChange)="filterChange($event)"
+      ></app-table-filters>
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-success me-2" (click)="downloadTable()">
+        <i class="bi bi-file-earmark-excel"></i>
+      </button>
+    </div>
+  </div>
 
-  <div class="row" style="align-items:end" >
+  <div class="row mb-4 h-100">
+    <div
+      class="col-6"
+      style="
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      "
+    >
+      <div class="row my-4">
+        <div class="col-6">
+          <div class="card flex-grow-1 shadow-sm h-100">
+            <div class="card-body">
+              <h6 class="card-subtitle text-muted mb-2 ms-2">
+                Monto Total {{ periodo }}
+              </h6>
+              @if (total) {
+              <h3 class="card-title mb-0">{{ "$" + total }} mill</h3>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <!-- Sección de búsqueda y filtros -->
-      <div class="d-flex align-items-center mb-2" role="group">
-        <div class="col-sm-12 col-md-8 col-xl-12">
-          <div class="input-group">
-            <span class="input-group-text" id="search-icon">
-              <i class="bi bi-search"></i>
-            </span>
-            <input
-              type="text"
-              class="form-control"
-              id="filter-text-box"
-              (input)="onFilterTextBoxChanged($event)"
-              placeholder="Buscar..."
-            />
-            <app-table-filters></app-table-filters>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="card flex-grow-1 shadow-sm h-100">
+            <div class="card-body">
+              <h6 class="card-subtitle text-muted mb-2 ms-2">
+                Promedio por Lote {{ periodo }}
+              </h6>
+              @if (averageAmount) {
+              <h3 class="card-title mb-0">{{ "$" + averageAmount }} mill</h3>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row my-4">
+        <div class="col-6">
+          <div class="card flex-grow-1 shadow-sm h-100">
+            <div class="card-body">
+              <h6 class="card-subtitle text-muted mb-2 ms-2">Total Lotes</h6>
+              @if (totalLotes) {
+              <h3 class="card-title mb-0">{{ totalLotes }}</h3>
+
+              }
+            </div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="card flex-grow-1 shadow-sm h-100">
+            <div class="card-body">
+              <h6 class="card-subtitle text-muted mb-2 ms-2">Tipos de Lote</h6>
+              @if(typesPlots){
+              <h3 class="card-title mb-0">{{ typesPlots }}</h3>
+              }
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div style="height: 500px; overflow-y: auto;">
-      <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;max-width: 550px" id="table-data">
-        <thead class="justify-content-end">
-        <tr>
-          <th scope="col" style="width: 10%;">Número de Lote</th>
-          <th scope="col" style="width: 10%;">Tipo de lote</th>
-          <th scope="col" style="width: 15%;">Periodo</th>
-          <th scope="col" style="width: 15%;">Tipo de expensa</th>
-          <th scope="col" style="text-align: right; width: 20%;">Monto Total</th>
+    <div class="col-6 d-flex">
+      <div class="card shadow border-0 rounded-4 p-3 w-100">
+        <h4 class="mb-3">Montos por Tipo de Lote {{ periodo }}</h4>
+        <div class="col-12">
+          <canvas
+            baseChart
+            [data]="kpiChart2Data"
+            [type]="kpiChartTpe"
+            [options]="kpiChartOptions"
+          >
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        </tr>
-        </thead>
-        <tbody>
-
-          @for (expense of expenses | filterBy: ['lotId', 'month','totalAmount','liquidationDate','state','plotNumber','typePlot','percentage','billType']: searchTerm; track $index) {
-            <tr>
-              <td>{{expense.plotNumber}} </td>
-              <td>{{expense.typePlot}}</td>
-              <td>{{expense.month }}-{{ expense.period.year }} </td>
-              <td>{{expense.billType}}</td>
-              <td style="text-align:  right">{{expense.totalAmount.toLocaleString("es-AR", {
-                style: "currency",
-                currency: "ARS",
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-              }) }}</td>
-            </tr>
-          }@empty {
-            <td colspan="7" class="text-center">
-              <div class="text-center p-3">
-                <div class="alert alert-secondary">
-                  No hay expensas para mostrar
-                </div>
-              </div>
-            </td>}
-
-        </tbody>
-      </table>
+  <!-- Contenedor de gráficos -->
+  <div class="row d-flex">
+    <div class="col-12 d-flex">
+      <!-- Añadimos h-100 para asegurar altura completa -->
+      <div class="col-6 card shadow border-0 rounded-4 p-3 my-3 me-4">
+        <!-- Cambiamos mb-5 por mb-4 para consistencia -->
+        <h4 class="mb-3">
+          Los {{ cantidad }} lotes que {{ titulo }} {{ periodo }}
+        </h4>
+        <div class="chart-container">
+          <canvas
+            baseChart
+            [data]="barChartData"
+            [type]="barChartType"
+            [options]="barChartOptions"
+          >
+          </canvas>
+        </div>
+      </div>
+      <div class="col-6 card shadow border-0 rounded-4 p-3 my-3">
+        <h4 class="mb-3">Tendencia últimos 4 periodos</h4>
+        <div class="chart-container">
+          <canvas
+            baseChart
+            [data]="kpiChart1Data"
+            [type]="kpiChart1Tpe"
+            [options]="kpiChart1Options"
+          >
+          </canvas>
+        </div>
+      </div>
     </div>
   </div>
 </app-main-container>

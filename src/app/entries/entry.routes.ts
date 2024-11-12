@@ -7,15 +7,10 @@ import { AuthorizedRangeFormComponent } from "./authorization/features/authorize
 import { ListAuthComponent } from "./authorization/features/list-auth/list-auth.component";
 
 import { VisitorFormComponent } from "./visitor/features/visitor-form/visitor-form.component";
-import { VisitorListComponent } from "./visitor/features/visitor-list/visitor-list.component";
 import { QrComponent } from "./qr/qr.component";
 
 export const ENTRY_ROUTES: Routes = [
     { path: '', component: EntryHomeComponent },
-    {
-        path: 'visitors',
-        component: VisitorListComponent,//
-      },
       {
         path: 'visitor/add',
         component: VisitorFormComponent,

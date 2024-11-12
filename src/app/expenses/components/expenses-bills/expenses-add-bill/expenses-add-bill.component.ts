@@ -20,8 +20,7 @@ import { BillService } from '../../../services/bill.service';
 import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
 import BillType from '../../../models/billType';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { BillInfoComponent } from '../../modals/info/bill-info/bill-info.component';
 import { NewCategoryModalComponent } from '../../modals/bills/new-category-modal/new-category-modal.component';
 import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
@@ -70,6 +69,8 @@ export class ExpensesAddBillComponent implements OnInit {
   providers: Observable<Provider[]> | undefined;
   periods: Observable<Period[]> | undefined;
   types: Observable<BillType[]> | undefined;
+
+  private readonly router = inject(Router);
   // #endregion
 
   constructor() {
@@ -153,7 +154,6 @@ export class ExpensesAddBillComponent implements OnInit {
             billRequest.description = formValue.description;
             billRequest.amount = Number(formValue.amount);
             billRequest.date = `${formValue.date}T00:00:00Z`;
-            //billRequest.status = 'Nuevo';
             billRequest.supplierId = Number(formValue.supplierId);
             billRequest.supplierEmployeeType = 'SUPPLIER';
             billRequest.typeId = Number(formValue.typeId);
@@ -191,10 +191,15 @@ export class ExpensesAddBillComponent implements OnInit {
   }
   // #endregion
 
+  onBack() {
+    this.router.navigate([`expenses/gastos`]);
+  }
+
   // #region Form Utilities
   resetForm() {
     this.billForm.reset();
     this.loadSelectOptions();
+    this.onBack()
   }
   // #endregion
 
