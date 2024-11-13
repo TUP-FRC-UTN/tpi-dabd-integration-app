@@ -2,3 +2,31 @@
 
 /* Importing Bootstrap SCSS file. */
 @import 'bootstrap/scss/bootstrap';
+/* You can add global styles to this file, and also import other style files */
+@import '@ng-select/ng-select/themes/default.theme.css';
+
+
+.hover-scale{
+  transition: all 0.3s ease;
+}
+.hover-scale:hover{
+  transform: scale(1.01);
+  cursor: pointer;
+}
+
+.clickable{
+  cursor: pointer;
+}
+
+.icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-circle i {
+  font-size: 1.25rem;
+}

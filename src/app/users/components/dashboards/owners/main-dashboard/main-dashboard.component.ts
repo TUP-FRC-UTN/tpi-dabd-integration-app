@@ -45,9 +45,9 @@ export class MainDashboardComponent implements AfterViewInit{
   //init
   constructor() {
     this.kpi1 = {title: "Nuevos en Último Año", desc: "", value: "0", icon: "bi bi-check-circle", color: "bg-success"}
-    this.kpi2 = {title: "Propietarios Activos", desc: "Diferencias porcentuales respecto al periodo anterior", value: "0%", icon: "bi bi-graph-up", color: "bg-info"}
-    this.kpi3 = {title: "Tipo de Ingreso/Egreso Más Frecuente", desc: "Tipo más frecuente en el periodo", value: "0", icon: "bi bi-person-circle", color: "bg-warning"}
-    this.kpi4 = {title: "Total de Ingresos/Egresos Inconsistentes", desc: "Cantidad total de inconsistencias en el periodo", value: "0", icon: "bi-exclamation-circle", color: "bg-danger"}
+    this.kpi2 = {title: "Propietarios Activos", desc: "", value: "0%", icon: "bi bi-graph-up", color: "bg-info"}
+    this.kpi3 = {title: "Tipo de Ingreso/Egreso Más Frecuente", desc: "", value: "0", icon: "bi bi-person-circle", color: "bg-warning"}
+    this.kpi4 = {title: "Total de Ingresos/Egresos Inconsistentes", desc: "", value: "0", icon: "bi-exclamation-circle", color: "bg-danger"}
 
     this.graph1 = {title: "Totales de Ingresos/Egresos por Periodo", subtitle: "", data: [], options: null}
     this.graph2 = {title: "Empleados con Egreso Tardío", subtitle: "", data: [], options: null}
