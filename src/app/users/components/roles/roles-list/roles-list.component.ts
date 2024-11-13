@@ -121,7 +121,7 @@ export class RolesListComponent implements OnInit {
   assignPlotToDelete(role: Role) {
     const modalRef = this.modalService.open(ConfirmAlertComponent);
     modalRef.componentInstance.alertTitle = 'Confirmacion';
-    modalRef.componentInstance.alertMessage = `Esta seguro que desea eliminar el rol: ${role.prettyName}?`;
+    modalRef.componentInstance.alertMessage = `Está seguro que desea eliminar el rol: ${role.prettyName}?`;
     modalRef.componentInstance.alertVariant = 'delete';
 
     modalRef.result.then((result) => {
@@ -274,7 +274,7 @@ export class RolesListComponent implements OnInit {
         }));
         const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);
         const wb: XLSX.WorkBook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Users');
+        XLSX.utils.book_append_sheet(wb, ws, 'Roles');
         XLSX.writeFile(wb, `${this.getActualDayFormat()}_Roles.xlsx`);
       },
       error: () => { console.log("Error retrieved all, on export component.") }
