@@ -347,7 +347,7 @@ export class PlotsListComponent {
       next: (data) => {
         autoTable(doc, {
           startY: 30,
-          head: [['Nro. de Manzana', 'Nro. de Lote', 'Area Total', 'Area Construida', 'Tipo de Lote', 'Estado del Lote', 'Balance', 'Activo']],
+          head: [['Nro. de Manzana', 'Nro. de Lote', 'Área Total', 'Área Construida', 'Tipo de Lote', 'Estado del Lote', 'Balance', 'Activo']],
           body: data.content.map(plot => [
             plot.blockNumber,
             plot.plotNumber,
@@ -371,8 +371,8 @@ export class PlotsListComponent {
         const toExcel = data.content.map(plot => ({
           'Nro. de Manzana': plot.blockNumber,
           'Nro. de Lote': plot.plotNumber,
-          'Area Total': plot.totalArea,
-          'Area Construida': plot.builtArea,
+          'Área Total': plot.totalArea,
+          'Área Construida': plot.builtArea,
           'Tipo de Lote': this.translateDictionary(plot.plotType, this.dictionaries[1]) || plot.plotType,
           'Estado del Lote': this.translateDictionary(plot.plotStatus, this.dictionaries[0]) || plot.plotStatus,
           'Balance': this.formatCurrency(plot.balance),

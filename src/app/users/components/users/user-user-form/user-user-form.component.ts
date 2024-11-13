@@ -211,7 +211,7 @@ export class UserUserFormComponent {
             }
           },
           error => {
-            this.toastService.sendError('Error al obtener el usuario.')
+            this.toastService.sendError('Error al obtener el usuario')
           }
         );
       }
@@ -261,7 +261,7 @@ export class UserUserFormComponent {
         }
         this.userForm.get('contactsForm')?.reset();
       } else {
-        this.toastService.sendError("Contacto no valido.")
+        this.toastService.sendError("Contacto no válido")
       }
     }
 
@@ -308,7 +308,7 @@ export class UserUserFormComponent {
         console.log(this.roles)
         this.userForm.get('rolesForm')?.reset();
       } else {
-        this.toastService.sendError("Rol no valido.")
+        this.toastService.sendError("Rol no válido")
       }
     }
 
@@ -453,7 +453,7 @@ export class UserUserFormComponent {
       }
       this.userForm.get('addressForm')?.reset();
     } else {
-      this.toastService.sendError("Direccion no valida.")
+      this.toastService.sendError("Direccion no válida")
     }
   }
 

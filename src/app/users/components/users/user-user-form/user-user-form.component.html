@@ -14,7 +14,7 @@
                       <small class="text-danger ms-2">Requerido</small>
                   }
                   @if (userForm.get('email')?.getError('email')) {
-                    <small class="text-danger ms-2">El email tiene que ser valido</small>
+                    <small class="text-danger ms-2">El email tiene que ser válido</small>
                 }
                 @if (userForm.get('email')?.getError('maxlength')) {
                     <small class="text-danger ms-2">Máximo 50 caracteres</small>
@@ -100,7 +100,7 @@
       <div>
         @if (userForm.get('documentType')?.invalid && userForm.get('documentType')?.touched) {
           @if (userForm.get('documentType')?.errors?.['required']) {
-            <small class="text-danger">Campo obligatorio </small>
+            <small class="text-danger">Requerido</small>
           }
         }
       </div>
@@ -120,7 +120,7 @@
       <div>
         @if (userForm.get('documentNumber')?.invalid && userForm.get('documentNumber')?.touched) {
           @if (userForm.get('documentNumber')?.errors?.['required']) {
-            <small class="text-danger">Campo obligatorio </small>
+            <small class="text-danger">Requerido</small>
           }
           @if (userForm.get('documentNumber')?.errors?.['ownerExists']) {
             <small class="text-danger">Documento en uso</small>
@@ -147,7 +147,7 @@
       <div>
         @if (userForm.get('birthdate')?.invalid && userForm.get('birthdate')?.touched) {
           @if (userForm.get('birthdate')?.errors?.['required']) {
-            <small class="text-danger">Campo obligatorio </small>
+            <small class="text-danger">Requerido</small>
           }
           @if (userForm.get('birthdate')?.errors) {
             <small class="text-danger">Fecha inválida</small>
