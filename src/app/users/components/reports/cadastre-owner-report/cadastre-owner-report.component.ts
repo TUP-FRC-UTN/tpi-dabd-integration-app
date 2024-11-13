@@ -63,6 +63,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
   owners: Owner[] = [];
   plots: Plot[] = [];
   accounts: Account[] = [];
+  dateFilter: any;
 
   newOwnersLastYear: number = 0;
   activeOwnersCount: number = 0;
@@ -175,7 +176,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
   //#region Load Data
   loadOwners(filters: Record<string, any> = {}) {
     this.ownerService
-      .dinamicFilters(0, 1000, filters)
+      .dinamicFilters(0, 2147483647, filters)
       .pipe(
         map((response: PaginatedResponse<Owner>) => {
           this.owners = response.content;
@@ -376,7 +377,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     const mostFrequentTypeKey = Object.keys(ownerTypeCounts).reduce((a, b) =>
       ownerTypeCounts[a] > ownerTypeCounts[b] ? a : b
     );
-    
+
     switch (mostFrequentTypeKey) {
       case OwnerTypeDictionary['Persona']:
         this.mostFrequentOwnerType = 'Persona';
@@ -414,7 +415,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     const mostFrequentPlotTypeKey = Object.keys(plotTypeCounts).reduce((a, b) =>
       plotTypeCounts[a] > plotTypeCounts[b] ? a : b
     );
-    
+
     switch (mostFrequentPlotTypeKey) {
       case PlotTypeDictionary['Comercial']:
         this.mostFrequentPlotType = 'Comercial';
@@ -689,7 +690,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
             detail: 'Gráficos de barra o torta que permite visualizar de forma rápida y detallada el estado y desempeño de los lotes y propietarios del consorcio.',
           }
         ],
-      },      
+      },
       {
         title: 'Filtros',
         content: [

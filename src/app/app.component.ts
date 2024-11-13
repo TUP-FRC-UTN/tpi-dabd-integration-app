@@ -35,6 +35,9 @@ export class AppComponent {
 
   //variables
   navbarMenu: NavbarItem[] = [
+
+
+    // Accesos
     {
       label: 'Accesos',
       routerLink: 'entries',
@@ -55,12 +58,15 @@ export class AppComponent {
     },
 
 
+
+
+    // Boletas
     {
       label: 'Boletas',
       routerLink: '/invoices',
       sidebarMenu: [
         {
-          label: 'Lista de Expensas (Admin)',
+          label: 'Lista de Expensas (Administrador)',
           routerLink: '/invoices/admin-list-expensas',
         },
         {
@@ -68,13 +74,13 @@ export class AppComponent {
           routerLink: '/invoices/owner-list-expensas',
         },
         { label: 'Estadísticas', routerLink: '/invoices/stadistics' },
-        {
-          label: 'Revisar Transferencias de Tickets',
-          routerLink: '/invoices/review-tickets-transfer',
-        },
       ],
     },
 
+
+
+
+    // Construcciones
     {
       label: 'Construcciones',
       sidebarMenu: [
@@ -99,6 +105,10 @@ export class AppComponent {
       ],
     },
 
+
+
+
+    // Contactos
     {
       label: 'Contactos',
       routerLink: 'notifications/contacts',
@@ -118,6 +128,10 @@ export class AppComponent {
       ],
     },
 
+
+
+
+    // Empleados
     {
       label: 'Empleados',
       routerLink:'inventories',
@@ -129,6 +143,10 @@ export class AppComponent {
       ]
     },
 
+
+
+
+    // Gastos
     {
       label: 'Gastos',
       sidebarMenu: [
@@ -157,6 +175,10 @@ export class AppComponent {
       ],
     },
 
+
+
+
+    // Inventarios
     {
       label: 'Inventarios',
       routerLink:'inventories',
@@ -171,6 +193,10 @@ export class AppComponent {
       ]
     },
 
+
+
+
+    // Normas
     {
       label: 'Normas',
       sidebarMenu: [
@@ -181,6 +207,10 @@ export class AppComponent {
       ]
     },
 
+
+
+
+    // Notificaciones
     {
       label: 'Notificaciones',
       routerLink: 'notifications/send-email',
@@ -208,6 +238,10 @@ export class AppComponent {
       ],
     },
 
+
+
+
+    // Moderacion
     {
       label: 'Moderación',
       sidebarMenu: [
@@ -232,6 +266,9 @@ export class AppComponent {
     },
 
 
+
+
+    // Plantillas
     {
       label: 'Plantillas',
       routerLink: 'notifications/templates',
@@ -247,6 +284,10 @@ export class AppComponent {
       ],
     },
 
+
+
+
+    // Proveedores
     {
       label: 'Proveedores',
       routerLink:'inventories',
@@ -258,8 +299,12 @@ export class AppComponent {
       ]
     },
 
+
+
+
+    // Tickets
     {
-      label: 'Tickets', //invoices
+      label: 'Tickets',
       routerLink:'invoices',
       sidebarMenu: [
         {
@@ -282,6 +327,9 @@ export class AppComponent {
     },
 
 
+
+
+    // Usuarios
     {
       label: 'Usuarios',
       routerLink: 'users',
