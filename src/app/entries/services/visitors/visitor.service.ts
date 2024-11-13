@@ -1,11 +1,19 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { SendVisitor, Visitor } from '../../models/visitors/visitor.model';
+import { CaseTransformerService } from '../case-transformer.service';
+import { environment } from '../../../../environments/environment.prod';
+
+
+export interface VisitorFilter {
+  active? : boolean,
+  textFilter?: string
+}
 
 interface PaginatedResponse<T> {
   items: T[];
-  total_elements: number;
+  totalElements: number;
 }
 
 @Injectable({
@@ -15,35 +23,183 @@ export class VisitorService {
   private apiUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/visitors';
   private baseUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/';
 
-  constructor(private http: HttpClient) {}
+  private urlEnvironment = environment.apis.accesses; //8080
 
-  getVisitors(page: number = 0, size: number = 10 , filter?: string): Observable<PaginatedResponse<Visitor>> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString());
+  constructor(
+    private http: HttpClient,
+    private caseTransformer: CaseTransformerService
+  ) {}
 
-    // if (name) {
-    //   params = params.set('name', name);
-    // }
-    // if (lastName) {
-    //   params = params.set('lastName', lastName);
-    // }
-    if (filter) {
-      params = params.set('filter', filter);
+  getAll(
+    page: number,
+    size: number,
+    filter?: boolean
+  ): Observable<{ items: Visitor[] }> {
+    const params = this.caseTransformer.toSnakeCase({
+      page,
+      size,
+      filter,
+    });
+
+    return this.http
+      .get<{ items: Visitor[] }>(this.urlEnvironment+'visitors', {
+        params: params as any,
+      })
+      .pipe(
+        map((response) => ({
+          items: response.items.map((item) =>
+            this.caseTransformer.toCamelCase(item)
+          ),
+        }))
+      );
+  }
+
+  getAllPaginated(
+    page?: number,
+    size?: number,
+    filter?: VisitorFilter
+  ): Observable<PaginatedResponse<Visitor>> {
+    let snakeCaseParams = this.caseTransformer.toSnakeCase({
+      page: page?.toString(),
+      size: size?.toString(),
+      filter,
+    });
+  
+    
+    return this.http.get<{ items: Visitor[], total_elements: number }>(this.urlEnvironment + 'visitors', {params: snakeCaseParams as any,})
+      .pipe(
+        map((response) => {
+          return {
+            items: response.items.map((item) =>
+              this.caseTransformer.toCamelCase(item)
+            ),
+            totalElements: response.total_elements, 
+          };
+        })
+      );
+  }
+
+
+  getAllFiltered(filter: string): Observable<PaginatedResponse<Visitor>> {
+    // Definir un objeto de parámetros solo con el filtro de texto
+    const filterParams = { textFilter: filter };
+  
+    // Llamada al backend con los parámetros de filtro y sin la paginación
+    return this.http.get<{ items: Visitor[], total_elements: number }>(this.urlEnvironment + 'visitors', { params: filterParams })
+      .pipe(
+        map((response) => {
+          return {
+            items: response.items.map((item) =>
+              this.caseTransformer.toCamelCase(item) // Convertir a camelCase si es necesario
+            ),
+            totalElements: response.total_elements,
+          };
+        })
+      );
+  }
+
+  getVisitor(docNumber: number): Observable<HttpResponse<Visitor>> {
+    return this.http
+      .get<Visitor>(`${this.urlEnvironment}visitors/by-doc-number/${docNumber}`, {
+        observe: 'response',
+      })
+      .pipe(
+        map(
+          (response) =>
+            new HttpResponse({
+              body: response.body
+                ? this.caseTransformer.toCamelCase(response.body)
+                : null,
+              headers: response.headers,
+              status: response.status,
+              statusText: response.statusText,
+              url: response.url || undefined,
+            })
+        )
+      );
+  }
+
+  getVisitorById(visitorId: number): Observable<HttpResponse<Visitor>> {
+    
+    return this.http.get<Visitor>(`${this.urlEnvironment}visitors/${visitorId}`, {
+        observe: 'response',
+      })
+      .pipe(
+        map(
+          (response) =>
+            new HttpResponse({
+              body: response.body
+                ? this.caseTransformer.toCamelCase(response.body)
+                : null,
+              headers: response.headers,
+              status: response.status,
+              statusText: response.statusText,
+              url: response.url || undefined,
+            })
+        )
+      );
+  }
+
+  upsertVisitor(visitor: SendVisitor,userId: number, visitorId?: number): Observable<HttpResponse<Visitor>> {
+    const headers = new HttpHeaders({
+      'x-user-id': userId.toString(),
+    });
+  
+    const snakeCaseVisitor = this.caseTransformer.toSnakeCase(visitor);
+    let params = new HttpParams();
+  
+    if (visitorId) {
+      params = params.set('visitorId', visitorId.toString()); // Asignar el resultado de `set` a `params`
     }
+    
+    console.log('params: ', params.toString()); // Verificar qué parámetros se están enviando
+  
+    return this.http
+      .put<Visitor>(this.urlEnvironment + 'visitors', snakeCaseVisitor, {observe: 'response',headers,params,})
+      .pipe(
+        map(
+          (response) =>
+            new HttpResponse({
+              body: response.body
+                ? this.caseTransformer.toCamelCase(response.body)
+                : null,
+              headers: response.headers,
+              status: response.status,
+              statusText: response.statusText,
+              url: response.url || undefined,
+            })
+        )
+      );
+  }
+  
+  checkAccess(plate: string, action: string): Observable<Boolean> {
+    const params = new HttpParams()
+      .set('carPlate', plate)
+      .set('action', action);
 
-    return this.http.get<PaginatedResponse<Visitor>>(this.apiUrl, { params });
+    return this.http.get<Boolean>(`${this.urlEnvironment}access/check-access`, {
+      params,
+    });
+  }
+  
+  
+  enable(visitorId: number, userId: number): Observable<any> {
+    const headers = new HttpHeaders({
+      'x-user-id': userId.toString()
+    });
+
+    return this.http
+      .put<any>(`${this.urlEnvironment}visitors/${visitorId}/activate`, null, { headers })
+      .pipe(map((response) => this.caseTransformer.toCamelCase(response)));
   }
 
-  getVisitor(visitorId: number): Observable<Visitor> {
-    return this.http.get<Visitor>(`${this.apiUrl}/${visitorId}`);
-  }
+  delete(visitorId: number, userId: number): Observable<any> {
+    const headers = new HttpHeaders({
+      'x-user-id': userId.toString()
+    });
 
-  deleteVisitor(visitorId: number): Observable<Visitor> {
-    return this.http.delete<Visitor>(`${this.apiUrl}/${visitorId}`);
-  }
-
-  upsertVisitor(visitor: SendVisitor): Observable<Visitor> {
-    return this.http.put<Visitor>(this.apiUrl, visitor);
+    return this.http
+      .delete<any>(`${this.urlEnvironment}visitors/${visitorId}`, { headers })
+      .pipe(map((response) => response));
   }
 }
