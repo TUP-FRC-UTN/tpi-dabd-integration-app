@@ -63,9 +63,28 @@ export class PeriodService {
 
   }
 
-  new():Observable<void>{
-      return this.http.post<void>(this.apiUrl, null)
+  new(body: {end_date: string}):Observable<void>{
+    const headers = new HttpHeaders({
+      'x-user-id': '1'
+    });
 
+    console.log(body);
+
+
+    return this.http.post<void>(this.apiUrl, body, { headers })
+
+  }
+
+  updatePeriod(id:number, body: {end_date: string}):Observable<void>{
+    const headers = new HttpHeaders({
+      'x-user-id': '1'
+    });
+
+    return this.http.put<void>(`${this.apiUrl}/update/${id}`, body, { headers });
+  }
+
+  getFuture(): Observable<{period: string}>{
+    return this.http.get<{period: string}>(`${this.apiUrl}/future`)
   }
 
   closePeriod(id:number):Observable<void>{

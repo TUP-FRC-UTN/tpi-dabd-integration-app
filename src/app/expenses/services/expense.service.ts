@@ -4,6 +4,7 @@ import Period from '../models/period';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { PORT } from '../const';
+import {expenseReport} from "../models/expenseReport";
 
 export interface Page<T> {
   content: T[];
@@ -17,6 +18,9 @@ export interface Page<T> {
 })
 export class ExpenseServiceService {
 
+
+
+
   constructor() { }
   private readonly http = inject(HttpClient)
   private apiUrl = `${PORT}expense/`
@@ -24,7 +28,6 @@ export class ExpenseServiceService {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
-    // Parámetros adicionales
     if (periodId !== undefined && periodId !== 0 && periodId != null ) {
       params = params.set('periodId', periodId.toString());
     }
@@ -47,7 +50,7 @@ export class ExpenseServiceService {
     if (sortField) {
       params = params.set('sort', `${sortField},${sortOrder}`);
     }
-    return this.http.get<Page<Expense>>('http://localhost:8080/expense/all/pageable', { params });
+    return this.http.get<Page<Expense>>(`${this.apiUrl}all/pageable`, { params });
 
   }
   getByPeriod(periodId:number):Observable<Expense[]>{
@@ -76,5 +79,24 @@ export class ExpenseServiceService {
       params = params.delete('typeId')
     }
     return this.http.get<Expense[]>(this.apiUrl + 'all', { params })
+  }
+
+  getExpensesByLot(top : boolean, periodId:number, quantity: number) : Observable<expenseReport> {
+    let params = new HttpParams()
+    if (periodId !== undefined && periodId !== 0 && periodId !== null) {
+      params = params.set('periodId', periodId.toString());
+    }
+    if(quantity == 0) {
+      console.log('Aca deberia')
+      quantity = 10
+    }
+    if (quantity !== undefined && quantity !== 0 && quantity !== null) {
+      params = params.set('quantity', quantity.toString());
+    }
+
+    return this.http.get<expenseReport>(`${PORT}report/expense?top=` + top.toString(), {params});
+  }
+  getLotPercentage() : Observable<number[]> {
+    return this.http.get<number[]>(`${PORT}report/lot`)
   }
 }

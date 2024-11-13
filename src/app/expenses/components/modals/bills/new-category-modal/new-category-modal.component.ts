@@ -11,7 +11,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {NgClass} from "@angular/common";
 import Category from "../../../../models/category";
 import {CategoryService} from "../../../../services/category.service";
-import {map, Observable} from "rxjs";
+import {debounceTime, map, Observable, of, switchMap} from "rxjs";
 
 @Component({
   selector: 'app-new-category-modal',
@@ -34,8 +34,7 @@ export class NewCategoryModalComponent {
     this.newCategoryForm = this.formBuilder.group({
       name: ['', {
         validators: [Validators.required],
-        asyncValidators: [this.nameValidator()],
-        updateOn: 'blur'
+        asyncValidators: [this.nameValidator()]
       }],
       description: ['', Validators.required]
     });
@@ -45,14 +44,17 @@ export class NewCategoryModalComponent {
     return (control: AbstractControl): Observable<any> => {
       const name = control.value?.trim();
       if (!name) {
-        return new Observable(observer => {
-          observer.next(null);
-          observer.complete();
-        });
+        return of(null);
       }
 
-      return this.categoryService.validateCategoryName(name).pipe(
-        map(isValid => !isValid ? { nameExists: true } : null)
+      return of(name).pipe(
+        debounceTime(500),
+        switchMap(value =>
+          this.categoryService.validateCategoryName(value)
+            .pipe(
+              map(exists => exists ? { nameExists: true } : null)
+            )
+        )
       );
     };
   }

@@ -1,0 +1,54 @@
+<div class="modal-header">
+  <h4 class="modal-title">Nuevo Periodo</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body d-flex justify-content-center">
+  <div class="col-10">
+    <form [formGroup]="period">
+      <div class="row mb-3">
+        <p><b>Periodo: {{nextDate}}</b></p>
+        <p>La Fecha mínima de cierre es después del 15 de este mes y antes que el primero del próximo.</p>
+        <label for="endDate" class="text-start">Fecha de fin</label>
+        <div class="col">
+          <input type="date" class="form-control" id="endDate" formControlName="endDate" [ngClass]="{
+              'is-invalid': period.get('endDate')?.invalid &&
+                          (period.get('endDate')?.dirty || period.get('endDate')?.touched),
+              'is-valid': period.get('endDate')?.valid && !period.get('endDate')?.pending
+            }">
+
+          <!-- Mensajes de error -->
+          @if(period.get('endDate')?.errors?.['required'] && period.get('endDate')?.touched){
+          <div class="invalid-feedback">
+            Por favor, ingrese una fecha final para el periodo.
+          </div>
+          }
+
+          @if(period.get('endDate')?.errors?.['fechaInvalida']){
+          <div class="invalid-feedback">
+            La fecha es invalida.
+          </div>
+          }
+
+          @if(period.get('endDate')?.errors?.['periodValidatorError']){
+          <div class="invalid-feedback">
+            La fecha no corresponde con el intervalo propuesto.
+          </div>
+          }
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn" (click)="savePeriod()"
+    [disabled]="period.invalid || period.pending" [ngClass]="{
+      'btn-success': !period.pending,
+      'btn-secondary': period.pending
+    }">
+    @if (period.pending) {
+    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+    }
+    Confirmar
+  </button>
+  <button type="button" class="btn btn-danger" (click)="activeModal.dismiss()">Cancelar</button>
+</div>

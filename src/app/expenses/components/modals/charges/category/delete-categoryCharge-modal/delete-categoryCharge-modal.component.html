@@ -1,0 +1,14 @@
+<div class="modal-header">
+  <h4 class="modal-title">Confirmar Eliminación</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body">
+  <p>¿Está seguro que desea eliminar la categoría <strong>{{ category.name }}</strong>?</p>
+  <p class="text-danger"><small>Esta acción no se puede deshacer.</small></p>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Cancelar</button>
+  <button type="button" class="btn btn-danger" (click)="confirmDelete()">Eliminar</button>
+</div>

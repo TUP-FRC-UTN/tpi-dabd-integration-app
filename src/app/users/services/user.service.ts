@@ -25,7 +25,7 @@ export class UserService {
   private sessionService = inject(SessionService);
 
   host: string = environment.production
-    ? environment.apis.users
+    ? `${environment.apis.users}users/`
     : 'http://localhost:8015/users';
 
   validateEmail(email: string): Observable<boolean> {
@@ -63,7 +63,7 @@ export class UserService {
 
   forgotPassword(forgotRequest: ForgotPasswordRequest): Observable<any> {
     return this.http.post<any>(`${this.host}/password/reset`, forgotRequest)
-      
+
   }
 
   changePassword(oldPassword: string, newPassword: string):Observable<any> {

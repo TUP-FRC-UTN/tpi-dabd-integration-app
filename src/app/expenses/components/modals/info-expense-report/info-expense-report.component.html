@@ -1,0 +1,76 @@
+<div class="modal-header fs-6 py-1">
+    <h4 class="modal-title">Información del Reporte de Montos Totales por Lote</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body fs-6 py-2">
+    <div class="container-fluid">
+        <!-- Introducción -->
+        <div class="alert alert-info mb-2 py-2">
+            <h5 class="alert-heading">Descripción de la Pantalla</h5>
+            <p class="mb-0 small">
+                Esta pantalla presenta un reporte de los montos totales y promedios de los lotes durante el periodo seleccionado. También incluye gráficos para visualizar la distribución de los montos por tipo de lote y la tendencia de los montos a lo largo del tiempo.
+            </p>
+        </div>
+
+        <!-- Funcionalidades Principales -->
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-light py-2">
+                <h5 class="mb-0 fw-bold">Funcionalidades Principales</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex align-items-start py-2">
+                        <div>
+                            <strong>Exportación de Datos:</strong>
+                            <p class="mb-0 text-muted small">
+                                Puedes exportar los datos de montos por lote en formato Excel utilizando el botón de exportación disponible en la página.
+                            </p>
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex align-items-start py-2">
+                        <div>
+                            <strong>Filtrar por Periodo:</strong>
+                            <p class="mb-0 text-muted small">
+                                Utiliza el filtro para seleccionar el periodo de tiempo que deseas analizar, lo cual afectará los datos y gráficos.
+                            </p>
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex align-items-start py-2">
+                        <div>
+                            <strong>Visualización Gráfica:</strong>
+                            <p class="mb-0 text-muted small">
+                                Se incluyen gráficos de barras y líneas para visualizar la distribución de los montos por lote y la tendencia de los montos a lo largo del tiempo.
+                            </p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Acciones Disponibles -->
+        <div class="card mb-2">
+            <div class="card-header py-1">
+                <h5 class="mb-0">Acciones Disponibles</h5>
+            </div>
+            <div class="card-body py-2">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item py-1">
+                        <strong>Montos Totales:</strong> Muestra el monto total de todos los lotes para el periodo seleccionado.
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Promedio por Lote:</strong> Muestra el monto promedio por lote en el periodo seleccionado.
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Gráfico de Montos por Lote:</strong> Muestra un gráfico de barras con la distribución de los montos por tipo de lote para el periodo seleccionado.
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Gráfico de Tendencia:</strong> Muestra un gráfico de líneas que refleja la tendencia de los montos a lo largo del tiempo para el periodo seleccionado.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer py-2">
+    <button type="button" class="btn btn-primary" (click)="activeModal.close()">Entendido</button>
+</div>
