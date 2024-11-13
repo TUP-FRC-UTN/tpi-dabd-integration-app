@@ -313,7 +313,7 @@ export class ProfileComponent {
     });
 
     modalRef.componentInstance.title = 'Editar información del perfil del usuario';
-    modalRef.componentInstance.description = 'Esta pantalla se utiliza para editar la infrmación de usuario.';
+    modalRef.componentInstance.description = 'Esta pantalla se utiliza para editar la información de usuario.';
     modalRef.componentInstance.body = [
       {
         title: 'Datos',

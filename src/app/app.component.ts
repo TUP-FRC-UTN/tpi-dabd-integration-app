@@ -132,7 +132,9 @@ export class AppComponent implements OnInit {
         }
       ]
     },
-    {
+
+    // este no va de notificaciones, hay otro
+    /* {
       label: 'Notificaciones',
       routerLink:'notifications',
       sidebarMenu: [
@@ -145,7 +147,7 @@ export class AppComponent implements OnInit {
           routerLink: 'notifications/templates/new',
         }
       ],
-    },
+    }, */
     {
       label: 'Contactos',
       routerLink: 'notifications/contacts',
@@ -228,16 +230,6 @@ export class AppComponent implements OnInit {
           routerLink: '/invoices/review-tickets-transfer',
         },
       ],
-    },
-    {
-      label: 'Obras',
-      routerLink: 'penalties',
-      sidebarMenu: [
-        {
-          label: 'Obras',
-          routerLink: 'penalties/constructions'
-        }
-      ]
     },
     {
       label: 'Proveedores',
