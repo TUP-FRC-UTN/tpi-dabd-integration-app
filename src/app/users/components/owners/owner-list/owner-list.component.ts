@@ -14,7 +14,6 @@ import {
 } from '../../../models/owner';
 import * as XLSX from 'xlsx';
 import { Router } from '@angular/router';
-import { CadastreFilterButtonsComponent } from '../../commons/cadastre-filter-buttons/cadastre-filter-buttons.component';
 import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -38,7 +37,6 @@ import autoTable from 'jspdf-autotable';
   standalone: true,
   imports: [
     CommonModule,
-    CadastreFilterButtonsComponent,
     FormsModule,
     MainContainerComponent,
     NgbPagination,
@@ -92,7 +90,7 @@ export class OwnerListComponent implements OnInit {
   ngOnInit(): void {
     this.getAllOwners();
     this.filteredOwnersList.subscribe(ow => console.log(ow));
-    
+
   }
 
   ngAfterViewInit(): void {}
@@ -230,7 +228,7 @@ export class OwnerListComponent implements OnInit {
     const filterValue = target.value.toLowerCase();
 
 
-    
+
 
     let filteredList = this.ownersList.filter((owner) => {
       return Object.values(owner).some((prop) => {
@@ -337,10 +335,10 @@ export class OwnerListComponent implements OnInit {
 
   exportToPdf() {
     const doc = new jsPDF();
-  
+
     doc.setFontSize(18);
     doc.text('Propietarios', 14, 20);
-    
+
     this.ownerService.getOwners(0, this.LIMIT_32BITS_MAX, true).subscribe({
       next: (data) => {
         autoTable(doc, {

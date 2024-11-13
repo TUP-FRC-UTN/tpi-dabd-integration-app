@@ -31,6 +31,9 @@ import {UsersRoleListComponent} from './components/users/users-role-list/users-r
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
 import { ProfileDetailComponent } from './components/profile/profile-detail/profile-detail.component';
 import { ProfileComponent } from './components/profile/profile-form/profile.component';
+import {
+  GeneralOwnerDashboardsComponent
+} from './components/dashboards/owners/general-owner-dashboards/general-owner-dashboards.component';
 
 export const USER_ROUTES: Routes = [
   /* { path: 'login', component: LoginComponent },
@@ -267,11 +270,14 @@ export const USER_ROUTES: Routes = [
     data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC, URLTargetType.OWNER] }
 
   },
+  {
+    path:"newDashboards",
+    component: GeneralOwnerDashboardsComponent
+  },
   { path: '**',
     component: NotFoundComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
     data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC, URLTargetType.OWNER] }
   },
-
 ];

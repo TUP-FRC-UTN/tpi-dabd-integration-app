@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {ChartType, GoogleChartsModule} from "angular-google-charts";
-import {graphModel} from "../../../../models/dashboard.model";
+import {GraphModel} from "../../../../models/dashboard.model";
 
 @Component({
   selector: 'app-piechart',
@@ -12,7 +12,7 @@ import {graphModel} from "../../../../models/dashboard.model";
   styleUrl: './piechart.component.css'
 })
 export class PiechartComponent {
-  @Input() graphModel: graphModel = {} as graphModel
+  @Input() graphModel: GraphModel = {} as GraphModel
 
   pieChartType = ChartType.PieChart;
   pieChartOptions = {

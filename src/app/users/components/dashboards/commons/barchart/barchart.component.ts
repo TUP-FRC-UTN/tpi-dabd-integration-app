@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {ChartType, GoogleChartsModule} from "angular-google-charts";
-import {graphModel} from "../../../../models/dashboard.model";
+import {GraphModel} from '../../../../models/dashboard.model';
 
 @Component({
   selector: 'app-barchart',
@@ -12,7 +12,7 @@ import {graphModel} from "../../../../models/dashboard.model";
   styleUrl: './barchart.component.css'
 })
 export class BarchartComponent {
-  @Input() graphModel: graphModel = {} as graphModel
+  @Input() graphModel: GraphModel = {} as GraphModel
 
   columnChartOptions = {
     backgroundColor: 'transparent',

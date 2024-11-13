@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {kpiModel} from "../../../../models/dashboard.model";
+import {KpiModel} from "../../../../models/dashboard.model";
 
 @Component({
   selector: 'app-kpi',
@@ -9,5 +9,5 @@ import {kpiModel} from "../../../../models/dashboard.model";
   styleUrl: './kpi.component.css'
 })
 export class KpiComponent {
-  @Input() kpi:kpiModel = {} as kpiModel
+  @Input() kpi:KpiModel = {} as KpiModel
 }

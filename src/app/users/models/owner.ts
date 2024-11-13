@@ -129,9 +129,9 @@ export interface Owner {
  * Enumeration representing types of owners.
  */
 export enum OwnerType {
-  PERSON,
-  COMPANY,
-  OTHER,
+  PERSON = 'PERSON',
+  COMPANY = 'COMPANY',
+  OTHER = 'OTHER',
 }
 
 /**
