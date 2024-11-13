@@ -13,7 +13,7 @@ import { SessionService } from './session.service';
 })
 export class RoleService {
   host: string = `${
-    environment.production ? environment.apis.users : 'https://f81hvhvc-8080.brs.devtunnels.ms'
+    environment.production ? environment.apis.users : 'http://localhost:8015'
   }/roles`;
   private sessionService = inject(SessionService);
 

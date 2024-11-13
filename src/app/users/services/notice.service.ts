@@ -43,7 +43,7 @@ export interface PaginatedResponse<T> {
 })
 export class NoticeService {
   private http = inject(HttpClient);
-  private host: string = 'https://f81hvhvc-8080.brs.devtunnels.ms/notices';
+  private host: string = 'http://localhost:8015/notices';
 
   private transformNoticeToAnnouncement(notice: Notice): Announcement {
     return {

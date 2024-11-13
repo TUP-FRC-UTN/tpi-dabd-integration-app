@@ -1,6 +1,6 @@
 
 // environment.prod.ts producción con nginx segun backend 
-const API_URL = 'https://f81hvhvc-8080.brs.devtunnels.ms/';
+const API_URL = 'http://localhost:8080/';
 
 export const environment = {
   production: true,

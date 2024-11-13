@@ -3,7 +3,7 @@ export const environment = {
   production: false,
   apis: {
     // URLs directas a los servicios de cada grupo con su docker-compose
-    accesses: 'https://f81hvhvc-8080.brs.devtunnels.ms/',
+    accesses: 'http://localhost:8001/',
     accounts: 'http://localhost:8002/',
     addresses: 'http://localhost:8003/',
     cadastre: 'http://localhost:8004/',
@@ -17,6 +17,6 @@ export const environment = {
     payments: 'http://localhost:8012/',
     suppliers: 'http://localhost:8013/',
     tickets: 'http://localhost:8014/',
-    users: 'https://f81hvhvc-8080.brs.devtunnels.ms/'
+    users: 'http://localhost:8015/'
   }
 };
