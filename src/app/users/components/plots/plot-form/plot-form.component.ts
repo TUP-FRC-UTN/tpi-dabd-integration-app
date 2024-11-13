@@ -90,7 +90,7 @@ export class PlotFormComponent {
           response => {
             console.log('Plot created successfully:', response);
             this.router.navigate(["/users/plot/list"])
-            this.toastService.sendSuccess("Lote creado con exito.")
+            this.toastService.sendSuccess("Lote creado con éxito.")
           },
           error => {
             console.error('Error creating plot:', error);
@@ -109,7 +109,7 @@ export class PlotFormComponent {
         this.plotService.updatePlot(Number.parseInt(this.id), plotForUpdate).subscribe(
           response => {
             console.log('Plot updated successfully:', response);
-            this.toastService.sendSuccess("Lote actualizado con exito.")
+            this.toastService.sendSuccess("Lote actualizado con éxito.")
             this.router.navigate(["/users/plot/list"])
           },
           error => {
