@@ -141,7 +141,7 @@ export class ProfileComponent {
       }
       this.userForm.get('contactsForm')?.reset();
     } else {
-      this.toastService.sendError("Contacto no valido.")
+      this.toastService.sendError("Contacto no válido.")
     }
   }
 
@@ -211,7 +211,7 @@ export class ProfileComponent {
       }
       this.userForm.get('addressForm')?.reset();
     } else {
-      this.toastService.sendError("Direccion no valida.")
+      this.toastService.sendError("Direccion no válida.")
     }
   }
 
@@ -264,16 +264,16 @@ export class ProfileComponent {
       this.user.birthdate = formattedDate
       this.userService.updateUser(this.id, toSnakeCase(this.user)).subscribe({
         next: (response) => {
-          this.toastService.sendSuccess("Usuario actualizado con éxito.")
+          this.toastService.sendSuccess("Usuario actualizado con éxito")
           //todo navigate to profile
           this.router.navigate(['']);
         },
         error: (error) => {
-          this.toastService.sendError("Error actualizado el usuario.")
+          this.toastService.sendError("Error actualizado el usuario")
         },
       });
     } else {
-      this.toastService.sendError("Algo salió mal.")
+      this.toastService.sendError("Algo salió mal")
     }
   }
   //#endregion
@@ -313,7 +313,7 @@ export class ProfileComponent {
     });
 
     modalRef.componentInstance.title = 'Editar información del perfil del usuario';
-    modalRef.componentInstance.description = 'Esta pantalla se utiliza para editar la infrmación de usuario.';
+    modalRef.componentInstance.description = 'Esta pantalla se utiliza para editar la información de usuario.';
     modalRef.componentInstance.body = [
       {
         title: 'Datos',

@@ -89,8 +89,8 @@ export class PlotsListComponent {
   headers: string[] = [
     'Nro. de Manzana',
     'Nro. de Lote',
-    'Area Total',
-    'Area Construida',
+    'Área Total',
+    'Área Construida',
     'Tipo de Lote',
     'Estado del Lote',
     'Activo',
@@ -110,7 +110,7 @@ export class PlotsListComponent {
       { value: 'SALE', label: 'Venta' },
       { value: 'SALE_PROCESS', label: 'Proceso de Venta' },
       { value: 'CONSTRUCTION_PROCESS', label: 'En construcciones' },
-      { value: 'EMPTY', label: 'Vacio' },
+      { value: 'EMPTY', label: 'Vacío' },
     ])
     .selectFilter('Activo', 'isActive', '', [
       { value: 'true', label: 'Activo' },
@@ -171,8 +171,8 @@ export class PlotsListComponent {
 
   assignPlotToDelete(plot: Plot) {
     const modalRef = this.modalService.open(ConfirmAlertComponent);
-    modalRef.componentInstance.alertTitle = 'Confirmacion';
-    modalRef.componentInstance.alertMessage = `Estas seguro que desea eliminar el lote nro ${plot.plotNumber} de la manzana ${plot.blockNumber}?`;
+    modalRef.componentInstance.alertTitle = 'Confirmación';
+    modalRef.componentInstance.alertMessage = `Estás seguro que desea eliminar el lote nro ${plot.plotNumber} de la manzana ${plot.blockNumber}?`;
     modalRef.componentInstance.alertVariant = 'delete';
 
     modalRef.result.then((result) => {
@@ -347,7 +347,7 @@ export class PlotsListComponent {
       next: (data) => {
         autoTable(doc, {
           startY: 30,
-          head: [['Nro. de Manzana', 'Nro. de Lote', 'Area Total', 'Area Construida', 'Tipo de Lote', 'Estado del Lote', 'Balance', 'Activo']],
+          head: [['Nro. de Manzana', 'Nro. de Lote', 'Área Total', 'Área Construida', 'Tipo de Lote', 'Estado del Lote', 'Balance', 'Activo']],
           body: data.content.map(plot => [
             plot.blockNumber,
             plot.plotNumber,
@@ -371,8 +371,8 @@ export class PlotsListComponent {
         const toExcel = data.content.map(plot => ({
           'Nro. de Manzana': plot.blockNumber,
           'Nro. de Lote': plot.plotNumber,
-          'Area Total': plot.totalArea,
-          'Area Construida': plot.builtArea,
+          'Área Total': plot.totalArea,
+          'Área Construida': plot.builtArea,
           'Tipo de Lote': this.translateDictionary(plot.plotType, this.dictionaries[1]) || plot.plotType,
           'Estado del Lote': this.translateDictionary(plot.plotStatus, this.dictionaries[0]) || plot.plotStatus,
           'Balance': this.formatCurrency(plot.balance),
