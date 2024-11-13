@@ -27,7 +27,7 @@ import {
 } from '@angular/forms';
 import { NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { ConstructionDocumentationListComponent } from '../../../construction-documentation/components/construction-documentation-list/construction-documentation-list.component';
-import { NotesListComponent } from '../../../../shared/components/notes-list/notes-list.component';
+import { NotesListComponent } from '../../../notes/notes-list/notes-list.component';
 import { WorkerService } from '../../../workers/services/worker.service';
 import {
   ConfirmAlertComponent,
@@ -36,7 +36,6 @@ import {
   ToastService,
 } from 'ngx-dabd-grupo01';
 import { GetValueByKeyForEnumPipe } from '../../../../shared/pipes/get-value-by-key-for-status.pipe';
-import { RoleService } from '../../../../shared/services/role.service';
 
 @Component({
   selector: 'app-construction-detail',
@@ -64,7 +63,6 @@ export class ConstructionDetailComponent implements OnInit {
   private workerService = inject(WorkerService);
   private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
-  private roleService = inject(RoleService);
 
   // Properties:
   editConstruction!: ConstructionUpdateRequestDto;

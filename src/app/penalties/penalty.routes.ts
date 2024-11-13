@@ -10,6 +10,7 @@ import { InfractionDetailComponent } from './domain/moderations/infraction/compo
 import { InfractionListComponent } from './domain/moderations/infraction/components/infraction-list/infraction-list.component';
 import { SanctionTypeDetailComponent } from './domain/moderations/sanction-type/components/sanction-type-detail/sanction-type-detail.component';
 import { SanctionTypeListComponent } from './domain/moderations/sanction-type/components/sanction-type-list/sanction-type-list.component';
+import { RulesComponent } from './domain/rules/rules.component';
 
 export const PENALTY_ROUTES: Routes = [
   {
@@ -43,4 +44,5 @@ export const PENALTY_ROUTES: Routes = [
     component: ClaimListComponent,
   },
   { path: 'claim/:id/:mode', component: ClaimDetailComponent },
+  { path: 'rules', component: RulesComponent}
 ];

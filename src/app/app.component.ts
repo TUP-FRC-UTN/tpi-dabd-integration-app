@@ -11,7 +11,6 @@ import { SessionService } from './users/services/session.service';
 import { LoginService } from './users/services/login.service';
 import { ForgotPasswordComponent } from './users/components/forgot-password/forgot-password.component';
 import { BehaviorSubject, Observable } from 'rxjs';
-import {RoleSelectorComponent} from './penalties/shared/components/role-selector/role-selector.component';
 import { filter, map } from 'rxjs/operators';
 
 @Component({
@@ -25,7 +24,6 @@ import { filter, map } from 'rxjs/operators';
     AsyncPipe,
     LoginComponent,
 	ForgotPasswordComponent,
-	RoleSelectorComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',

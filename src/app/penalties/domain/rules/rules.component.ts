@@ -1,5 +1,4 @@
 import { Component, inject, ViewEncapsulation } from '@angular/core';
-import { MainContainerComponent } from '../../../projects/ngx-dabd-grupo01/src/lib/main-container/main-container.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
@@ -15,6 +14,7 @@ import {
   Indent,
 } from 'ckeditor5';
 import { RoleService } from '../shared/services/role.service';
+import { MainContainerComponent } from 'ngx-dabd-grupo01';
 
 @Component({
   selector: 'app-rules',
@@ -32,7 +32,6 @@ export class RulesComponent {
   rulesContent: string = '';
   editMode: boolean = false;
   isAdmin: boolean = true;
-  
 
   public config = {
     toolbar: [

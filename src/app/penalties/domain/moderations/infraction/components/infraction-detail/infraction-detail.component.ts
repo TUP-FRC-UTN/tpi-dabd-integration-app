@@ -14,7 +14,7 @@ import { RoleService } from '../../../../../shared/services/role.service';
 import { firstValueFrom } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { InfractionProofListComponent } from '../infraction-proof-list/infraction-proof-list.component';
-import { NotesListComponent } from '../../../../../shared/components/notes-list/notes-list.component';
+import { NotesListComponent } from '../../../../notes/notes-list/notes-list.component';
 import { AppealInfractionModalComponent } from '../appeal-infraction-modal/appeal-infraction-modal.component';
 import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 import { RejectInfractionModalComponent } from '../reject-infraction-modal/reject-infraction-modal.component';
