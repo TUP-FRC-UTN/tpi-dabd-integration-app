@@ -5,7 +5,6 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
-import { TableColumn, TableComponent } from 'ngx-dabd-grupo01';
 import { InfractionClaimListComponent } from '../../../infraction/components/infraction-claim-list/infraction-claim-list.component';
 import {
   InfractionDto,
@@ -13,6 +12,7 @@ import {
 } from '../../../infraction/models/infraction.model';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { TableColumn, TableComponent } from 'ngx-dabd-grupo01';
 
 @Component({
   selector: 'app-fine-infractions-list',

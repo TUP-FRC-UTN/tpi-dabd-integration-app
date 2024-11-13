@@ -1,42 +1,25 @@
 <ng-template #actionsTemplate let-item>
-  <div class="col">
-    <div ngbDropdown class="d-inline-block">
-      <button
-        type="button"
-        class="btn btn-sm btn-secondary"
-        id="dropdownBasic1"
-        ngbDropdownToggle
-      >
-        <i class="bi bi-three-dots-vertical"></i>
-      </button>
-      <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-        <button ngbDropdownItem (click)="goToDetails(item.id)">
-          Ver detalle
-        </button>
-        @if((this.role === 'ADMIN' ) && (item.infraction_state === 'CREATED' ||
-        item.infraction_state === 'ON_APPEALING')) {
-        <button ngbDropdownItem (click)="rejectInfraction(item.id)">Desestimar</button>
-        }
-      </div>
-    </div>
-  </div>
+  <button class="btn btn-primary btn-sm me-2" (click)="goToDetails(item.id)">
+    <i class="bi bi-eye"></i>
+  </button>
 </ng-template>
 
 <ng-template #statusTemplate let-item>
   <span
-    class="badge p-2 border"
+    class="badge p-2 border w-100"
+    style="max-width: 160px"
     [ngClass]="{
-      'text-secondary': item.infraction_state === 'CREATED',
-      'border-secondary': item.infraction_state === 'CREATED',
-      'text-success': item.infraction_state === 'APPROVED',
-      'border-success': item.infraction_state === 'APPROVED',
-      'text-danger': item.infraction_state === 'REJECTED',
-      'border-danger': item.infraction_state === 'REJECTED',
-      'border-warning': item.infraction_state === 'ON_APPEALING',
-      'text-warning': item.infraction_state === 'ON_APPEALING'
+      'text-secondary': item.infraction_status === 'CREATED',
+      'border-secondary': item.infraction_status === 'CREATED',
+      'text-success': item.infraction_status === 'APPROVED',
+      'border-success': item.infraction_status === 'APPROVED',
+      'text-danger': item.infraction_status === 'REJECTED',
+      'border-danger': item.infraction_status === 'REJECTED',
+      'border-warning': item.infraction_status === 'APPEALED',
+      'text-warning': item.infraction_status === 'APPEALED'
     }"
     >{{
-      item.infraction_state | getValueByKeyForEnum : InfractionStatusEnum
+      item.infraction_status | getValueByKeyForEnum : InfractionStatusEnum
     }}</span
   >
 </ng-template>
@@ -50,10 +33,16 @@
   <a [href]="['/fine/' + item.fine_id]">
     {{ item.fine_id }}
   </a>
-  }@else { N/A } </ng-template
->
+  }@else { N/A }
+</ng-template>
+<ng-template #sanctionType let-item>
+  {{ item.sanction_type.name }}
+</ng-template>
 
-<app-main-container title="Infracciones">
+<app-main-container
+  title="Infracciones"
+  (infoButtonClick)="onInfoButtonClick()"
+>
   <app-table
     [items]="(items$ | async) || []"
     [columns]="columns"
@@ -68,80 +57,13 @@
     (searchValueChange)="onSearchValueChange($event)"
     (headerButtonClick)="openFormModal()"
     (infoButtonClick)="onInfoButtonClick()"
-    [showExportOptions]="false"
+    [showExportPdfButton]="false"
     [showHeaderButton]="role === 'ADMIN'"
+    [headerButtonIcon]="'bi bi-plus'"
+    [headerButtonText]="''"
+    [tableFilters]="filterConfig"
+    (filterValueChange)="onFilterValueChange($event)"
+    [getAllItems]="getAllItems"
   >
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <div class="btn-group me-5" role="group">
-        <div class="d-flex align-items-center">
-          <div class="btn-group me-2">
-            <button
-              type="button"
-              class="btn btn-outline-danger"
-              (click)="clearFilters()"
-            >
-              <i class="bi bi-trash-fill"></i> Limpiar
-            </button>
-            <div
-              class="btn-group"
-              ngbDropdown
-              role="group"
-              aria-label="Button group with nested dropdown"
-            >
-              <button
-                type="button"
-                class="btn btn-outline-info dropdown-toggle"
-                ngbDropdownToggle
-              >
-                <i class="bi bi-funnel-fill"></i> Filtros
-              </button>
-              <div class="dropdown-menu" ngbDropdownMenu>
-                <button ngbDropdownItem (click)="setFilterType('fecha')">
-                  Por fecha
-                </button>
-                <button ngbDropdownItem (click)="setFilterType('estado')">
-                  Por estado
-                </button>
-              </div>
-            </div>
-          </div>
-          <!-- Fecha -->
-          @if(filterType === 'fecha'){
-          <div class="d-flex">
-            <input
-              type="date"
-              class="form-control me-2"
-              [(ngModel)]="startDate"
-              placeholder="Fecha de inicio"
-            />
-            <input
-              type="date"
-              class="form-control me-2"
-              [(ngModel)]="endDate"
-              placeholder="Fecha de fin"
-            />
-            <button class="btn btn-dark" type="button" (click)="applyFilters()">
-              Buscar
-            </button>
-          </div>
-          }
-          <!-- Estado -->
-          @if(filterType === 'estado'){
-          <div class="d-flex">
-            <select class="form-select me-2" [(ngModel)]="status">
-              <option value="">Selecciona estado</option>
-              <option value="APPROVED">Aprobado</option>
-              <option value="REJECTED">Desestimado</option>
-              <option value="ON_APPEALING">En apelación</option>
-              <option value="CREATED">Creado</option>
-            </select>
-            <button class="btn btn-dark" type="button" (click)="applyFilters()">
-              Buscar
-            </button>
-          </div>
-          }
-        </div>
-      </div>
-    </div>
   </app-table>
 </app-main-container>

@@ -10,14 +10,14 @@ import {
   throwError,
 } from 'rxjs';
 import { ClaimDTO, ClaimNew, UpdateClaimDTO } from '../models/claim.model';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ClaimService {
   private http = inject(HttpClient);
-  private apiUrl = environment.moderationApiUrl; // URL de la API
+  private apiUrl = environment.apis.moderations; // URL de la API
 
   // private oneClaim = new BehaviorSubject<OneConstruction>(undefined);
   // oneClaim$ = this.oneClaim.asObservable();
@@ -78,6 +78,23 @@ export class ClaimService {
         })
       );
   }
+
+
+  getAllItems(page: number, limit: number) {
+    let params = new HttpParams()
+      .set('page', (page - 1).toString())
+      .set('size', limit.toString());
+
+    return this.http
+      .get<any>(`${this.apiUrl}/claims/pageable`, { params })
+      .pipe(
+        map((data) => {
+          return data.content;
+        }),
+        finalize(() => this.isLoadingSubject.next(false))
+      );
+  }
+
   getPaginatedClaims(
     page: number,
     limit: number,

@@ -8,6 +8,10 @@
   </button>
 </ng-template>
 
+<ng-template #docType let-item>
+  {{ item.doc_type | getValueByKeyForEnum : WorkerDocTypeEnum }}
+</ng-template>
+
 <div class="px-5 py-4 border border-top-0">
   <app-table
     [height]="'200px'"
@@ -17,7 +21,7 @@
     [headerButtonText]="'Nuevo'"
     (headerButtonClick)="openFormModal()"
     [showSearchBar]="false"
-    [showHeaderButton]="role === 'OWNER'"
+    [showHeaderButton]="role === 'OWNER' && constructionStatus !== 'COMPLETED'"
   >
   </app-table>
 </div>

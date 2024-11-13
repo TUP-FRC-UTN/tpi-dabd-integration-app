@@ -1,22 +1,17 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Fine } from '../../models/fine.model';
 import { FineStatusEnum } from '../../models/fine-status.enum';
 import { FineService } from '../../services/fine.service';
 import { UpdateFineStateDTO } from '../../models/update-fine-status-dto';
-import {
-  ConfirmAlertComponent,
-  MainContainerComponent,
-  ToastService,
-} from 'ngx-dabd-grupo01';
-import { PdfService } from '../../../../../shared/services/pdf.service';
 import { RoleService } from '../../../../../shared/services/role.service';
 import { FineInfractionsListComponent } from '../fine-infractions-list/fine-infractions-list.component';
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
 import { firstValueFrom } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmAlertComponent, MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 
 @Component({
   selector: 'app-fine-detail',
@@ -24,9 +19,10 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
   imports: [
     CommonModule,
     FormsModule,
-    MainContainerComponent,
+    NgClass,
     FineInfractionsListComponent,
     GetValueByKeyForEnumPipe,
+    MainContainerComponent,
   ],
   templateUrl: './fine-detail.component.html',
   styleUrl: './fine-detail.component.scss',
@@ -117,7 +113,7 @@ export class FineDetailComponent {
   changeFineStatus(fineStatus: string) {
     const modalRef = this.modalService.open(ConfirmAlertComponent);
     modalRef.componentInstance.alertTitle = 'Confirmación';
-    modalRef.componentInstance.alertMessage = `¿Estás seguro de que desea modificar la multa?`;
+    modalRef.componentInstance.alertMessage = `¿Estás seguro de que desea modificar la multa?. Esta accion es irreversible`;
 
     modalRef.result.then((result) => {
       if (result) {

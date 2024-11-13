@@ -1,88 +1,97 @@
-<app-main-container title="Detalle Multa">
-  @if(fine == undefined){
+<app-main-container title="Detalle de Multa">
+  @if (fine == undefined) {
   <div class="spinner-border" role="status">
     <span class="visually-hidden">Cargando</span>
   </div>
-  }@else {
-  <form #form="ngForm" class="row g-3 needs-validation" novalidate>
-    <div class="row justify-content-around align-items-center g-2">
-      <div class="col-4 d-flex align-items-center gap-3">
-        <label for="inputModel" class="form-label">Lote</label>
-        <input
-          type="text"
-          class="form-control"
-          id="inputModel"
-          [(ngModel)]="fine.plot_id"
-          #plot="ngModel"
-          name="plotId"
-          readonly
-        />
-      </div>
-      <div class="col-4 d-flex align-items-center gap-3">
-        <label for="inputModel" class="form-label">Tipo</label>
-        <input
-          type="text"
-          class="form-control"
-          id="inputModel"
-          [(ngModel)]="fine.sanction_type.name"
-          #sanctionType="ngModel"
-          name="sanctionTypeName"
-          readonly
-        />
-      </div>
+  } @else {
+  <div class="row">
+    <div class="mb-3 col-6 d-flex align-items-center gap-3">
+      <label for="name" class="form-label text-nowrap mb-0" style="width: 15%"
+        >Lote</label
+      >
+      <input
+        id="name"
+        name="name"
+        class="form-control"
+        value="{{ fine.plot_id }}"
+        disabled
+      />
     </div>
 
-    <div class="row d-flex justify-content-around align-items-center g-2">
-      <div class="col-4 d-flex align-items-center gap-3">
-        <label for="inputModel" class="form-label">Alta</label>
-        <input
-          type="text"
-          class="form-control"
-          [value]="fine.created_date | date : 'dd/MM/yyyy'"
-          readonly
-        />
-      </div>
-      <div class="mb-3 col-4 d-flex align-items-center gap-3">
-        <label for="status" class="form-label">Estado</label>
-        <input
-          id="status"
-          name="status"
-          class="form-control"
-          [ngClass]="{}"
-          value="{{ fine.fine_state! | getValueByKeyForEnum : FineStatusEnum }}"
-          readonly
-        />
-      </div>
+    <div class="mb-3 col-6 d-flex align-items-center gap-3">
+      <label
+        for="sanctionTypeId"
+        class="form-label text-nowrap mb-0"
+        style="width: 15%"
+        >Tipo:</label
+      >
+      <input
+        id="sanctionTypeId"
+        name="name"
+        class="form-control"
+        value="{{ fine.sanction_type.name }}"
+        disabled
+      />
     </div>
-  </form>
-  <div class="row justify-content-end align-items-center g-2 mt-3">
-    @if(isAdminAndOnAssembly){
 
-    <div class="col-3">
-      <button class="btn btn-primary me-2" (click)="changeFineStatus('APPROVED')">
-        <i class="bi bi-clipboard-check"></i>
-        Aprobar
-      </button>
-      <button class="btn btn-danger me-2" (click)="changeFineStatus('REJECTED')">
-        <i class="bi bi-clipboard-x"></i> Rechazar
-      </button>
+    <div class="mb-3 col-6 d-flex align-items-center gap-3">
+      <label for="date" class="form-label text-nowrap mb-0" style="width: 15%"
+        >Alta</label
+      >
+      <input
+        id="date"
+        name="name"
+        class="form-control"
+        value="{{ fine.created_date | date : 'dd/MM/yyyy' }}"
+        disabled
+      />
     </div>
+
+    <div class="mb-3 col-6 d-flex align-items-center gap-3">
+      <label for="state" class="form-label text-nowrap mb-0" style="width: 15%"
+        >Estado</label
+      >
+      <input
+        id="state"
+        name="name"
+        class="form-control"
+        value="{{ fine.fine_state! | getValueByKeyForEnum : FineStatusEnum }}"
+        [ngClass]="{
+          'border-success bg-success-subtle text-success':
+            fine.fine_state.toString() === 'APPROVED',
+          'border-warning bg-warning-subtle text-warning':
+            fine.fine_state.toString() === 'ON_ASSEMBLY',
+          'border-danger bg-danger-subtle text-danger':
+            fine.fine_state.toString() === 'REJECTED'
+        }"
+        disabled
+      />
+    </div>
+  </div>
+  <hr style="color: #808080" />
+  <div class="d-grid gap-2 d-md-flex justify-content-end">
+    @if (isAdminAndOnAssembly) {
+    <button class="btn btn-primary me-2" (click)="changeFineStatus('APPROVED')">
+      <i class="bi bi-clipboard-check"></i>
+      Aprobar
+    </button>
+
+    <button class="btn btn-danger me-2" (click)="changeFineStatus('REJECTED')">
+      <i class="bi bi-clipboard-x"></i> Rechazar
+    </button>
     }
 
-    <button class="btn btn-secondary me-2 col-1" (click)="goBack()">
-      Volver
-    </button>
+    <button class="btn btn-secondary me-2" (click)="goBack()">Volver</button>
   </div>
-
-  <div class="row justify-content-center align-items-center g-2 mt-3">
-    <div class="col">
-      <h5>Infracciones</h5>
-
-      <app-fine-infractions-list
-        [infractions]="fine.infractions"
-      ></app-fine-infractions-list>
-    </div>
-  </div>
+  <hr style="color: #808080" />
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <button class="nav-link active">Infracciones</button>
+    </li>
+  </ul>
+  <app-fine-infractions-list
+    [infractions]="fine.infractions || []"
+  ></app-fine-infractions-list>
   }
 </app-main-container>
 
@@ -95,92 +104,3 @@
   {{ error }}
 </div>
 }
-
-<div id="pdfTemplate" style="display: none">
-  <div style="height: 500px"></div>
-  <!-- Espacio adicional -->
-
-  <app-main-container title="Detalle Multa">
-    @if(fine != undefined) {
-    <form #form="ngForm" class="row g-3 needs-validation" novalidate>
-      <div class="row justify-content-around align-items-center g-2">
-        <div class="col-4">
-          <label for="inputModel" class="form-label">Lote</label>
-          <input
-            type="text"
-            class="form-control"
-            id="inputModel"
-            [(ngModel)]="fine.plot_id"
-            #plot="ngModel"
-            name="plotId"
-            readonly
-          />
-        </div>
-        <div class="col-4">
-          <label for="inputModel" class="form-label">Tipo</label>
-          <input
-            type="text"
-            class="form-control"
-            id="inputModel"
-            [(ngModel)]="fine.sanction_type.name"
-            #sanctionType="ngModel"
-            name="sanctionTypeName"
-            readonly
-          />
-        </div>
-      </div>
-
-      <div class="row justify-content-around align-items-center g-2">
-        <div class="col-4">
-          <label for="inputModel" class="form-label">Alta</label>
-          <input
-            type="text"
-            class="form-control"
-            [value]="fine.created_date | date : 'dd/MM/yyyy'"
-            readonly
-          />
-        </div>
-        <div class="col-4">
-          <label for="fineStateSelect" class="form-label">Estado</label>
-          <input
-            class="form-control"
-            id="fineStateSelect"
-            [(ngModel)]="fine.fine_state"
-            name="fine_state"
-            #fine_state="ngModel"
-            (value)="fineService.getValueByKeyForStatusEnum(fine.fine_state)"
-          />
-        </div>
-      </div>
-    </form>
-
-    <div class="row justify-content-center align-items-center g-2 mt-3">
-      <div class="col">
-        <h5>Infracciones</h5>
-
-        <table class="table table-striped justify-content-around">
-          <thead>
-            <tr>
-              <th scope="col">Infracción</th>
-              <th scope="col">Usuario</th>
-              <th scope="col">Alta</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (infraction of fine.infractions; track infraction.id; let i =
-            $index) {
-            <tr>
-              <th scope="row">{{ infraction.id }}</th>
-              <td>{{ infraction.created_by | number }}</td>
-              <td>
-                {{ infraction.created_date | date : "dd/MM/yyyy" }}
-              </td>
-            </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    </div>
-    }
-  </app-main-container>
-</div>

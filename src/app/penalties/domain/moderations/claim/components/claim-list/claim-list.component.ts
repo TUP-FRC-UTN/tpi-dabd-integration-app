@@ -151,7 +151,6 @@ export class ClaimListComponent {
         },
         {
           headerName: 'Acciones',
-          accessorKey: 'actions',
           cellRenderer: this.actionsTemplate,
         },
       ];
@@ -204,6 +203,14 @@ export class ClaimListComponent {
   };
 
   openFormModal(sanctionTypeToEdit: number | null = null): void {
+    if (this.checkedClaims.length !== 0) {
+      this.openCreateInfractionModal();
+    } else {
+      this.openNewCaimModal();
+    }
+  }
+
+  openNewCaimModal() {
     const modalRef = this.modalService.open(NewClaimModalComponent);
     modalRef.result
       .then((result) => {
@@ -310,4 +317,8 @@ export class ClaimListComponent {
       }
     });
   }
+
+  getAllItems = (): Observable<any> => {
+    return this.claimService.getAllItems(1, 1000);
+  };
 }

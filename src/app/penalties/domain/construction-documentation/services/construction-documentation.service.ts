@@ -14,13 +14,13 @@ import {
   ConstructionDocResponseDto,
   ConstructionDocUpdateStatusRequestDto,
 } from '../models/construction-doc.model';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConstructionDocumentationService {
-  private apiUrl = environment.constructionApiUrl;
+  private apiUrl = environment.apis.constructions;
 
   private documentationTypesSubject = new BehaviorSubject<
     ConstructionDocumentationTypeResponseDTO[]

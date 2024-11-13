@@ -22,14 +22,22 @@ export interface InfractionResponseDTO {
   createdBy: number;
   created_date: Date;
   description: string;
-  infraction_state: InfractionStatusEnum;
+  infraction_status: InfractionStatusEnum;
   plot_id: number;
   claims: ClaimDTO[];
+  proofs: Proof[];
+  notes: any[];
 }
 
 export enum InfractionStatusEnum {
-  ON_APPEALING = 'En apelación',
+  APPEALED = 'Apelada',
   APPROVED = 'Aprobado',
   REJECTED = 'Desestimado',
   CREATED = 'Creado',
+}
+
+export type InfractionTab = 'claims' | 'proofs' | 'notes';
+
+export interface Proof extends EntityBase {
+  document_identifier: string;
 }

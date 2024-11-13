@@ -10,6 +10,7 @@ import { SanctionTypeFormComponent } from '../sanction-type-form/sanction-type-f
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
 import { TruncatePipe } from '../../../../../shared/pipes/truncate.pipe';
 import { ConfirmAlertComponent, MainContainerComponent, TableColumn, TableComponent } from 'ngx-dabd-grupo01';
+import { RoleService } from '../../../../../shared/services/role.service';
 
 @Component({
   selector: 'app-sanction-type-list',
@@ -29,6 +30,7 @@ export class SanctionTypeListComponent {
   private readonly router = inject(Router);
   private sanctionTypeService = inject(SanctionTypeService);
   private modalService = inject(NgbModal);
+  private roleService = inject(RoleService);
   ChargeTypeEnum = ChargeTypeEnum;
 
   // Properties:
@@ -47,6 +49,8 @@ export class SanctionTypeListComponent {
 
   columns: TableColumn[] = [];
 
+  role: string = '';
+
   // Methods:
   ngOnInit(): void {
     this.searchSubject
@@ -60,13 +64,17 @@ export class SanctionTypeListComponent {
         this.loadItems();
       });
 
+    this.roleService.currentRole$.subscribe((role) => {
+      this.role = role;
+    });
+
     this.loadItems();
   }
 
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.columns = [
-        { headerName: 'N°', accessorKey: 'id' },
+        { headerName: 'N.°', accessorKey: 'id' },
         { headerName: 'Nombre', accessorKey: 'name' },
         {
           headerName: 'Descripción',
@@ -111,8 +119,8 @@ export class SanctionTypeListComponent {
     this.searchSubject.next({ key, value: searchValue });
   };
 
-  goToDetails = (id: number): void => {
-    this.router.navigate(['sanctionType', id]);
+  goToDetails = (id: number, mode: string): void => {
+    this.router.navigate(['sanctionType', id, mode]);
   };
 
   openFormModal(sanctionTypeToEdit: number | null = null): void {
@@ -125,8 +133,5 @@ export class SanctionTypeListComponent {
 
     modalRef.componentInstance.alertTitle = 'Ayuda';
     modalRef.componentInstance.alertMessage = `Aquí podrás consultar los tipos de sanciones y sus criterios para ser aplicados. \n Considerá que los costos pueden ser fijos o variables y la cantidad de infracciones que generan una multa dependen del tipo. `;
-
-
   }
-  
 }

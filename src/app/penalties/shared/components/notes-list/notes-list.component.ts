@@ -7,18 +7,18 @@ import {
   ViewChild,
 } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ConstructionNotesFormComponent } from '../construction-notes-form/construction-notes-form.component';
 import { TableColumn, TableComponent } from 'ngx-dabd-grupo01';
-import { RoleService } from '../../../../shared/services/role.service';
+import { RoleService } from '../../services/role.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-construction-notes-list',
+  selector: 'app-notes-list',
   standalone: true,
-  imports: [TableComponent],
-  templateUrl: './construction-notes-list.component.html',
-  styleUrl: './construction-notes-list.component.scss',
+  imports: [TableComponent, CommonModule],
+  templateUrl: './notes-list.component.html',
+  styleUrl: './notes-list.component.scss',
 })
-export class ConstructionNotesListComponent implements OnInit {
+export class NotesListComponent implements OnInit {
   // Inputs:
   @Input() notes: any[] = [];
 
@@ -27,6 +27,7 @@ export class ConstructionNotesListComponent implements OnInit {
 
   // Properties:
   @ViewChild('actionsTemplate') actionsTemplate!: TemplateRef<any>;
+  @ViewChild('date') dateTemplate!: TemplateRef<any>;
 
   columns: TableColumn[] = [];
 
@@ -44,16 +45,15 @@ export class ConstructionNotesListComponent implements OnInit {
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.columns = [
-        { headerName: 'N° de Nota', accessorKey: 'id' },
+        { headerName: 'Usuario', accessorKey: 'created_by' },
+        { headerName: 'Fecha', accessorKey: 'created_date' },
         { headerName: 'Nota', accessorKey: 'description' },
-        /*         { headerName: 'Usuario', accessorKey: 'createdBy' },
-        { headerName: 'Fecha', accessorKey: 'createdDate' }, */
       ];
     });
   }
 
   openFormModal(itemId: number | null = null): void {
-    const modalRef = this.modalService.open(ConstructionNotesFormComponent);
-    modalRef.componentInstance.itemId = itemId;
+    // const modalRef = this.modalService.open(ConstructionNotesFormComponent);
+    // modalRef.componentInstance.itemId = itemId;
   }
 }

@@ -10,14 +10,14 @@ import {
   InfractionStatusEnum,
 } from '../../models/infraction.model';
 import { InfractionServiceService } from '../../services/infraction-service.service';
-
-import { MainContainerComponent, TableColumn, TableComponent } from 'ngx-dabd-grupo01';
+import { Filter, FilterConfigBuilder, MainContainerComponent, TableColumn, TableComponent } from 'ngx-dabd-grupo01';
 import { InfractionListInfoComponent } from '../infraction-list-info/infraction-list-info.component';
 import { FormsModule } from '@angular/forms';
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
 import { RoleService } from '../../../../../shared/services/role.service';
 import { Router } from '@angular/router';
 import { ConfirmAlertComponent } from 'ngx-dabd-grupo01';
+import { InfractionBadgeService } from '../../services/infraction-badge.service';
 
 @Component({
   selector: 'app-infraction-list',
@@ -40,6 +40,7 @@ export class InfractionListComponent {
   private modalService = inject(NgbModal);
   private router = inject(Router);
   private roleService = inject(RoleService);
+  private infractionBadgeService = inject(InfractionBadgeService);
 
   // Properties:
   items$: Observable<InfractionResponseDTO[]> = this.infractionService.items$;
@@ -50,7 +51,7 @@ export class InfractionListComponent {
 
   page: number = 1;
   size: number = 10;
-  searchParams: { [key: string]: string | string[] } = {};
+  searchParams: { [key: string]: any | any[] } = {};
 
   // Role
   role: string = '';
@@ -67,6 +68,7 @@ export class InfractionListComponent {
   @ViewChild('statusTemplate') statusTemplate!: TemplateRef<any>;
   @ViewChild('dateTemplate') dateTemplate!: TemplateRef<any>;
   @ViewChild('fineTemplate') fineTemplate!: TemplateRef<any>;
+  @ViewChild('sanctionType') sanctionType!: TemplateRef<any>;
 
   columns: TableColumn[] = [];
 
@@ -99,6 +101,11 @@ export class InfractionListComponent {
           accessorKey: 'created_date',
           cellRenderer: this.dateTemplate,
         },
+        {
+          headerName: 'Tipo',
+          accessorKey: 'sanction_type.name',
+          cellRenderer: this.sanctionType,
+        },
         { headerName: 'Descripción', accessorKey: 'description' },
         {
           headerName: 'N.° Multa',
@@ -113,7 +120,6 @@ export class InfractionListComponent {
         { headerName: 'Lote', accessorKey: 'plot_id' },
         {
           headerName: 'Acciones',
-          accessorKey: 'actions',
           cellRenderer: this.actionsTemplate,
         },
       ];
@@ -121,11 +127,18 @@ export class InfractionListComponent {
   }
 
   loadItems(): void {
+    this.updateFiltersAccordingToUser();
     this.infractionService
       .getAllInfractions(this.page, this.size, this.searchParams)
       .subscribe((response) => {
         this.infractionService.setItems(response.items);
         this.infractionService.setTotalItems(response.total);
+
+        const infractionsToSolve = response.items.filter(
+          (item) => item.infraction_status.toString() === 'CREATED'
+        ).length;
+
+        this.infractionBadgeService.updateInfractionsCount(infractionsToSolve);
       });
   }
 
@@ -161,15 +174,11 @@ export class InfractionListComponent {
     this.filterType = type;
   }
 
-  applyFilters(): void {
-    if (this.filterType === 'fecha') {
-      this.searchParams = {
-        startDate: this.startDate,
-        endDate: this.endDate,
-      };
-    } else if (this.filterType === 'estado') {
-      this.searchParams = { infractionState: [this.status] };
-    }
+  onFilterValueChange(filters: Record<string, any>) {
+    this.searchParams = {
+      ...filters,
+    };
+
     this.page = 1;
     this.loadItems();
   }
@@ -191,25 +200,51 @@ export class InfractionListComponent {
     modalRef.componentInstance.alertMessage = `Esta pantalla te permite consultar tus infracciones recibidos, y al administrador gestionarlo para generar multas. \n Considerá que de tener mas multas que las configuradas para cada tipo, entonces serás multado, podes ver mas en "Tipos de sanciones"`;
   }
 
-  rejectInfraction(id: number) {
-    const modalRef = this.modalService.open(ConfirmAlertComponent);
-    modalRef.componentInstance.alertTitle = 'Confirmación';
-    modalRef.componentInstance.alertMessage = `¿Está seguro de que desea desestimar esta infracción?`;
-
-    modalRef.result
-      .then((result) => {
-        if (result) {
-          this.infractionService
-            .rejectInfraction(id, this.userId)
-            .subscribe(() => {
-              this.loadItems();
-            });
-        }
-      })
-      .catch(() => {});
-  }
+  filterConfig: Filter[] = new FilterConfigBuilder()
+    // .selectFilter('Estado', 'constructionStatuses', 'Seleccione el Estado', [
+    //   { value: 'LOADING', label: 'En proceso de carga' },
+    //   { value: 'REJECTED', label: 'Rechazado' },
+    //   { value: 'APPROVED', label: 'Aprobado' },
+    //   { value: 'COMPLETED', label: 'Finalizadas' },
+    //   { value: 'IN_PROGRESS', label: 'En progreso' },
+    //   { value: 'ON_REVISION', label: 'En revisión' },
+    // ])
+    .dateFilter(
+      'Fecha desde',
+      'startDate',
+      'Placeholder',
+      "yyyy-MM-dd'T'HH:mm:ss"
+    )
+    .dateFilter(
+      'Fecha hasta',
+      'endDate',
+      'Placeholder',
+      "yyyy-MM-dd'T'HH:mm:ss"
+    )
+    .build();
 
   goToDetails(id: number) {
     this.router.navigate(['/infraction', id]);
   }
+
+  updateFiltersAccordingToUser() {
+    if (this.role !== 'ADMIN') {
+      this.searchParams = {
+        ...this.searchParams,
+        plotsIds: this.userPlotsIds,
+        userId: this.userId!,
+      };
+    } else {
+      if (this.searchParams['userId']) {
+        delete this.searchParams['userId'];
+      }
+      if (this.searchParams['plotsIds']) {
+        delete this.searchParams['plotsIds'];
+      }
+    }
+  }
+
+  getAllItems = (): Observable<any> => {
+    return this.infractionService.getAllItems(1, 1000);
+  };
 }

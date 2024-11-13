@@ -17,10 +17,25 @@
   </form>
 </ng-template>
 
-<app-main-container title="Construcción {{ construction?.construction_id }}">
+<app-main-container
+  title="Construcción {{ construction?.construction_id }}"
+  (infoButtonClick)="infoModal()"
+>
   <form #editForm="ngForm" class="row">
     <div class="mb-3 col-6 d-flex align-items-center">
-      <label for="name" class="form-label me-3" style="width: 150px"
+      <label for="plot_id" class="form-label me-3" style="width: 15%"
+        >Lote</label
+      >
+      <input
+        id="plot_id"
+        name="plot_id"
+        class="form-control flex-grow-1"
+        value="{{ construction?.plot_id }}"
+        disabled
+      />
+    </div>
+    <div class="mb-3 col-6 d-flex align-items-center">
+      <label for="name" class="form-label me-3" style="width: 15%"
         >Nombre</label
       >
       <input
@@ -43,7 +58,7 @@
       } } -->
     </div>
     <div class="mb-3 col-6 d-flex align-items-center">
-      <label for="description" class="form-label me-3" style="width: 150px"
+      <label for="description" class="form-label me-3" style="width: 15%"
         >Descripción</label
       >
       <input
@@ -68,7 +83,7 @@
       } } -->
     </div>
     <div class="mb-3 col-6 d-flex align-items-center">
-      <label for="status" class="form-label me-3" style="width: 150px"
+      <label for="status" class="form-label me-3" style="width: 15%"
         >Estado</label
       >
       <input
@@ -76,6 +91,8 @@
         name="status"
         class="form-control flex-grow-1"
         [ngClass]="{
+          'border-primary': construction?.construction_status === 'IN_PROGRESS',
+          'bg-primary-subtle': construction?.construction_status === 'IN_PROGRESS',
           'border-success': construction?.construction_status === 'APPROVED',
           'bg-success-subtle': construction?.construction_status === 'APPROVED',
           'text-success': construction?.construction_status === 'APPROVED',
@@ -84,13 +101,16 @@
           'text-danger': construction?.construction_status === 'REJECTED',
           'border-info':
             construction?.construction_status !== 'APPROVED' &&
-            construction?.construction_status !== 'REJECTED',
+            construction?.construction_status !== 'REJECTED' &&
+            construction?.construction_status !== 'IN_PROGRESS',
           'bg-info-subtle':
             construction?.construction_status !== 'APPROVED' &&
-            construction?.construction_status !== 'REJECTED',
+            construction?.construction_status !== 'REJECTED' &&
+            construction?.construction_status !== 'IN_PROGRESS',
           'text-dark':
             construction?.construction_status !== 'APPROVED' &&
-            construction?.construction_status !== 'REJECTED'
+            construction?.construction_status !== 'REJECTED' &&
+            construction?.construction_status !== 'IN_PROGRESS',
         }"
         value="{{
           construction?.construction_status!
@@ -100,7 +120,7 @@
       />
     </div>
     <div class="mb-3 col-6 d-flex align-items-center">
-      <label for="start_date" class="form-label me-3" style="width: 150px"
+      <label for="start_date" class="form-label me-3" style="width: 15%"
         >Fecha estimada de inicio</label
       >
       <input
@@ -125,7 +145,7 @@
       } } -->
     </div>
     <div class="mb-3 col-6 d-flex align-items-center">
-      <label for="end_date" class="form-label me-3" style="width: 150px"
+      <label for="end_date" class="form-label me-3" style="width: 15%"
         >Fecha estimada de finalización</label
       >
       <input
@@ -144,21 +164,53 @@
         [disabled]="mode === 'detail'"
         required
       />
+
       <!--       @if (endDateControl.invalid && (endDateControl.dirty ||
       endDateControl.touched)) { @if (endDateControl.getError('required')) {
       <div class="invalid-feedback">Este campo es obligatorio</div>
       } } -->
     </div>
+
     <div class="mb-3 col-6 d-flex align-items-center">
-      <label for="plot_id" class="form-label me-3" style="width: 150px"
-        >Lote</label
+      <label for="start_time" class="form-label me-3" style="width: 15%"
+        >Hora de inicio</label
       >
       <input
-        id="plot_id"
-        name="plot_id"
+        #startTimeControl="ngModel"
+        id="start_time"
+        name="start_time"
         class="form-control flex-grow-1"
-        value="{{ construction?.plot_id }}"
-        disabled
+        value="{{ construction?.start_time }}"
+        [(ngModel)]="editConstruction.start_time"
+        [ngClass]="{
+          'is-invalid':
+            startTimeControl.invalid &&
+            (startTimeControl.dirty || startTimeControl.touched)
+        }"
+        type="time"
+        [disabled]="mode === 'detail'"
+        required
+      />
+    </div>
+    <div class="mb-3 col-6 d-flex align-items-center">
+      <label for="end_time" class="form-label me-3" style="width: 15%"
+        >Hora finalización</label
+      >
+      <input
+        #startTimeControl="ngModel"
+        id="end_time"
+        name="end_time"
+        class="form-control flex-grow-1"
+        value="{{ construction?.end_time }}"
+        [(ngModel)]="editConstruction.end_time"
+        [ngClass]="{
+          'is-invalid':
+            startTimeControl.invalid &&
+            (startTimeControl.dirty || startTimeControl.touched)
+        }"
+        type="time"
+        [disabled]="mode === 'detail'"
+        required
       />
     </div>
   </form>
@@ -169,15 +221,34 @@
       class="alert m-0 me-2 py-1"
       role="alert"
       [ngClass]="{
+        'alert-primary': construction?.construction_status === 'IN_PROGRESS',
         'alert-success':
           isConstructionAbleToApprove() &&
-          construction?.construction_status !== 'REJECTED',
-        'alert-danger': construction?.construction_status === 'REJECTED',
-        'alert-warning': !isConstructionAbleToApprove()
+          construction?.construction_status !== 'REJECTED' &&
+          construction?.construction_status !== 'IN_PROGRESS' &&
+          construction?.construction_status !== 'COMPLETED',
+        'alert-danger':
+          construction?.construction_status === 'REJECTED' &&
+          construction?.construction_status !== 'IN_PROGRESS' &&
+          construction?.construction_status !== 'COMPLETED',
+        'alert-warning':
+          !isConstructionAbleToApprove() &&
+          construction?.construction_status !== 'REJECTED' &&
+          construction?.construction_status !== 'IN_PROGRESS' &&
+          construction?.construction_status !== 'COMPLETED',
+        'alert-info': construction?.construction_status === 'COMPLETED'
       }"
     >
+      <!-- STARTED -->
+      @if(construction?.construction_status === 'IN_PROGRESS') {
+      <i class="bi bi-check-circle"></i>
+      Obra en progreso }
+      <!-- COMPLETED -->
+      @else if(construction?.construction_status === 'COMPLETED') {
+      <i class="bi bi-exclamation-circle"></i>
+      Obra finalizada }
       <!-- APPROVED -->
-      @if(construction?.construction_status === 'APPROVED') {
+      @else if(construction?.construction_status === 'APPROVED') {
       <i class="bi bi-check-circle"></i>
       La obra ya está aprobada }
       <!-- REJECTED -->
@@ -202,7 +273,11 @@
     <div></div>
     }
     <div>
-      @if(mode === "detail") { @if(role === "OWNER") {
+      @if(mode === "detail") {
+      <!-- OWNER -->
+      @if(role === "OWNER" && construction?.construction_status !== "APPROVED"
+      && construction?.construction_status !== "IN_PROGRESS" &&
+      construction?.construction_status !== "COMPLETED" ) {
       <button
         class="btn btn-success me-2"
         (click)="onReviewConstruction()"
@@ -210,6 +285,25 @@
       >
         <i class="bi bi-clipboard-check"></i>
         Enviar a revisión
+      </button>
+      }
+      <!--  -->
+      @if(role === "OWNER" && construction?.construction_status === "APPROVED")
+      {
+      <button class="btn btn-primary me-2" (click)="onStartConstruction()">
+        <i class="bi bi-tools"></i>
+        Iniciar obra
+      </button>
+      }
+      <!--  -->
+      @if(role === "OWNER" && construction?.construction_status ===
+      "IN_PROGRESS") {
+      <button
+        class="btn btn-info me-2 text-white"
+        (click)="onFinishConstruction()"
+      >
+        <i class="bi bi-check-circle"></i>
+        Finalizar obra
       </button>
       }
       <!-- ADMIN -->
@@ -297,19 +391,12 @@
   <app-construction-workers
     [workers]="construction?.workers || []"
     [constructionId]="construction?.construction_id"
+    [constructionStatus]="construction?.construction_status"
   >
   </app-construction-workers>
   }
   <!-- Notes -->
   @case ('notes') {
-  <app-construction-notes-list
-    [notes]="construction?.notes || []"
-  ></app-construction-notes-list>
-  } }
-  <!-- Message -->
-  @if (successMessage) {
-  <div class="alert alert-success" role="alert">
-    {{ successMessage }}
-  </div>
-  } }
+  <app-notes-list [notes]="construction?.notes || []"></app-notes-list>
+  } } }
 </app-main-container>

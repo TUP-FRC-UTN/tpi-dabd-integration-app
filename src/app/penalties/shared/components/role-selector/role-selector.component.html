@@ -1,55 +1,38 @@
-<form>
-  <div class="container">
-    <div class="row">
-<!--      @if (!changeService.getBlack()){-->
-        <div class="">
-          <label for="rolesB" class="text-light">Selección Rol:</label>
-          <select id="rolesB" class="form-select text-light bg-dark" [(ngModel)]="selectedRole"
-                  (change)="onRoleChange($event)">
-            <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
-          </select>
-        </div>
+<div class="">
+  <label for="rolesB" class="text-light">Selección Rol:</label>
+  <select
+    id="rolesB"
+    class="form-select text-light bg-dark"
+    [(ngModel)]="selectedRole"
+    (change)="onRoleChange($event)"
+  >
+    <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+  </select>
+</div>
 
-        <div class="">
-          <label for="lotesB" class="text-light">Selección Lotes:</label>
-          <select id="lotesB" class="form-select text-light bg-dark" multiple [(ngModel)]="selectedLotes"
-                  (change)="onLotesChange($event)">
-            <option *ngFor="let lote of lotes" [value]="lote">Lote {{ lote }}</option>
-          </select>
-        </div>
+<div class="">
+  <label for="lotesB" class="text-light">Selección Lotes:</label>
+  <select
+    id="lotesB"
+    class="form-select text-light bg-dark"
+    multiple
+    [(ngModel)]="selectedLotes"
+    (change)="onLotesChange($event)"
+  >
+    <option *ngFor="let lote of lotes" [value]="lote">Lote {{ lote }}</option>
+  </select>
+</div>
 
-        <div class="">
-          <label for="userIdB" class="text-light">Selección UserID:</label>
-          <select id="userIdB" class="form-select text-light bg-dark" [(ngModel)]="selectedUserId"
-                  (change)="onUserIdChange($event)">
-            <option *ngFor="let user of userIds" [value]="user">UserID {{ user }}</option>
-          </select>
-        </div>
-<!--      } @else {-->
-        <div class="col-md-4">
-          <label for="roles" >Selección Rol:</label>
-          <select id="roles" class="form-select " [(ngModel)]="selectedRole"
-                  (change)="onRoleChange($event)">
-            <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
-          </select>
-        </div>
-
-        <div class="col-md-4">
-          <label for="lotes" >Selección Lotes:</label>
-          <select id="lotes" class="form-select " multiple [(ngModel)]="selectedLotes"
-                  (change)="onLotesChange($event)">
-            <option *ngFor="let lote of lotes" [value]="lote">Lote {{ lote }}</option>
-          </select>
-        </div>
-
-        <div class="col-md-4">
-          <label for="userId" >Selección UserID:</label>
-          <select id="userId" class="form-select " [(ngModel)]="selectedUserId"
-                  (change)="onUserIdChange($event)">
-            <option *ngFor="let user of userIds" [value]="user">UserID {{ user }}</option>
-          </select>
-        </div>
-<!--      }-->
-    </div>
-  </div>
-</form>
+<div class="">
+  <label for="userIdB" class="text-light">Selección UserID:</label>
+  <select
+    id="userIdB"
+    class="form-select text-light bg-dark"
+    [(ngModel)]="selectedUserId"
+    (change)="onUserIdChange($event)"
+  >
+    <option *ngFor="let user of userIds" [value]="user">
+      UserID {{ user }}
+    </option>
+  </select>
+</div>

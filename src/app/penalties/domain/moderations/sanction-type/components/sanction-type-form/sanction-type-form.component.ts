@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { SanctionTypeService } from '../../services/sanction-type.service';
 import { FormConfig, FormFieldsComponent, ToastService } from 'ngx-dabd-grupo01';
+import { ChargeTypeEnum } from '../../models/sanction-type.model';
+import { SanctionTypeService } from '../../services/sanction-type.service';
 @Component({
   selector: 'app-sanction-type-form',
   standalone: true,
@@ -38,8 +39,7 @@ export class SanctionTypeFormComponent {
         type: 'select',
         fieldSpan: 1,
         options: this.sanctionTypeService.getChargeTypeKeys().map((key) => ({
-          // name:  this.getValueByKeyForEnumPipe.transform(key, ChargeTypeEnum) || key,
-          name: key,
+          name: ChargeTypeEnum[key as keyof typeof ChargeTypeEnum] || key,
           value: key,
         })),
 

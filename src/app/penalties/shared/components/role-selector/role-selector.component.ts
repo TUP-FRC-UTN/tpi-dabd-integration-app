@@ -1,8 +1,7 @@
-import {Component, inject} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RoleService } from '../../services/role.service';
-// import {DeleteLaterService} from "../../../delete-later.service";
 
 @Component({
   selector: 'app-role-selector',
@@ -24,8 +23,6 @@ export class RoleSelectorComponent {
 
   constructor(private roleService: RoleService) {}
 
-  // protected changeService = inject(DeleteLaterService)
-
   onRoleChange(event: Event) {
     const target = event.target as HTMLSelectElement;
     const selectedValue = target.value;
@@ -36,7 +33,6 @@ export class RoleSelectorComponent {
   }
 
   onLotesChange(event: any) {
-    // Convertir a un array de números extrayendo solo el segundo valor de cada opción
     this.selectedLotes = Array.from(
       event.target.selectedOptions,
       (option: any) => {

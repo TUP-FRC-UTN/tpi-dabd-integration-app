@@ -18,9 +18,9 @@ import { ConstructionDocumentationFormComponent } from '../construction-document
 import { CommonModule } from '@angular/common';
 import {
   TableColumn,
-  TableComponent,
   ConfirmAlertComponent,
   ToastService,
+  TableComponent,
 } from 'ngx-dabd-grupo01';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ConstructionDocumentationService } from '../../services/construction-documentation.service';

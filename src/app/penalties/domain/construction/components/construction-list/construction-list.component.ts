@@ -9,12 +9,7 @@ import {
 import { ConstructionFormComponent } from '../construction-form/construction-form.component';
 import { ConstructionService } from '../../services/construction.service';
 import { Router } from '@angular/router';
-import {
-  ConfirmAlertComponent,
-  MainContainerComponent,
-  TableColumn,
-  TableComponent,
-} from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, Filter, FilterConfigBuilder, MainContainerComponent, SidebarComponent, TableColumn, TableComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
 import { FormsModule } from '@angular/forms';
 import { GetValueByKeyForEnumPipe } from '../../../../shared/pipes/get-value-by-key-for-status.pipe';
 import { RoleService } from '../../../../shared/services/role.service';
@@ -29,6 +24,8 @@ import { RoleService } from '../../../../shared/services/role.service';
     MainContainerComponent,
     NgbDropdownModule,
     GetValueByKeyForEnumPipe,
+    SidebarComponent,
+    TableFiltersComponent,
   ],
   templateUrl: './construction-list.component.html',
   styleUrl: './construction-list.component.css',
@@ -122,7 +119,6 @@ export class ConstructionListComponent {
         },
         {
           headerName: 'Acciones',
-          accessorKey: 'actions',
           cellRenderer: this.actionsTemplate,
         },
       ];
@@ -194,6 +190,43 @@ export class ConstructionListComponent {
     modalRef.componentInstance.alertType = 'info';
 
     modalRef.componentInstance.alertTitle = 'Ayuda';
-    modalRef.componentInstance.alertMessage = `Aquí podrás consultar y gestionar tus obras en curso. \n Recordá que se debe subir documentacion obligatoria y ser aprobada por el administrador. `;
+    modalRef.componentInstance.alertMessage = `Esta pantalla presenta un listado completo de tus obras en curso. 
+    La pantalla está diseñada para ayudarle a visualizar de manera organizada y estructurada toda la información relevante y, al mismo tiempo, ofrece herramientas que le permiten interactuar con los datos de forma más efectiva, lo cual incluye opciones de filtrado, búsqueda y exportación.`;
   }
+
+  filterConfig: Filter[] = new FilterConfigBuilder()
+    .selectFilter('Estado', 'constructionStatuses', 'Seleccione el Estado', [
+      { value: 'LOADING', label: 'En proceso de carga' },
+      { value: 'REJECTED', label: 'Rechazado' },
+      { value: 'APPROVED', label: 'Aprobado' },
+      { value: 'COMPLETED', label: 'Finalizadas' },
+      { value: 'IN_PROGRESS', label: 'En progreso' },
+      { value: 'ON_REVISION', label: 'En revisión' },
+    ])
+    .dateFilter(
+      'Fecha desde',
+      'startDate',
+      'Placeholder',
+      "yyyy-MM-dd'T'HH:mm:ss"
+    )
+    .dateFilter(
+      'Fecha hasta',
+      'endDate',
+      'Placeholder',
+      "yyyy-MM-dd'T'HH:mm:ss"
+    )
+    .build();
+
+  onFilterValueChange(filters: Record<string, any>) {
+    this.searchParams = {
+      ...filters,
+    };
+
+    this.page = 1;
+    this.loadItems();
+  }
+
+  getAllItems = (): Observable<any> => {
+    return this.constructionService.getAllItems();
+  };
 }

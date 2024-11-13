@@ -13,7 +13,7 @@ import {
   Observable,
   throwError,
 } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../../../../environments/environment';
 
 type OneSanctionType = SanctionType | undefined;
 @Injectable({
@@ -22,7 +22,7 @@ type OneSanctionType = SanctionType | undefined;
 export class SanctionTypeService {
   private http = inject(HttpClient);
 
-  private apiUrl = environment.moderationApiUrl;
+  private apiUrl = environment.apis.moderations;
 
   private oneSanctionType = new BehaviorSubject<OneSanctionType>(undefined);
   oneSanctionType$ = this.oneSanctionType.asObservable();
@@ -41,7 +41,7 @@ export class SanctionTypeService {
   getSanctionTypes(name: string ='') {
     let params = new HttpParams();
     if (name && name !== '') {
-      params = params.set('partialName', name);
+      params = params.set('searchValue', name);
     }
 
     return this.http.get<Array<SanctionType>>(`${this.apiUrl}/sanction-type`, {

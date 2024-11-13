@@ -15,22 +15,25 @@ import {
   ConfirmAlertComponent,
   TableColumn,
   TableComponent,
-  ToastsContainer,
   ToastService,
 } from 'ngx-dabd-grupo01';
 import { WorkerService } from '../../services/worker.service';
 import { RoleService } from '../../../../shared/services/role.service';
+import { GetValueByKeyForEnumPipe } from '../../../../shared/pipes/get-value-by-key-for-status.pipe';
+import { DocTypeEnum } from '../../models/worker.model';
+import { isReactive } from '@angular/core/primitives/signals';
 
 @Component({
   selector: 'app-construction-workers',
   standalone: true,
-  imports: [CommonModule, TableComponent, ToastsContainer],
+  imports: [CommonModule, TableComponent, GetValueByKeyForEnumPipe],
   templateUrl: './construction-workers.component.html',
   styleUrl: './construction-workers.component.css',
 })
 export class ConstructionWorkersComponent implements AfterViewInit {
   // Inputs:
   @Input() workers: any[] = [];
+  @Input() constructionStatus: string | undefined;
   @Input() constructionId: number | undefined;
 
   // Services:
@@ -39,25 +42,31 @@ export class ConstructionWorkersComponent implements AfterViewInit {
   private constructionService = inject(ConstructionService);
   toastService = inject(ToastService);
   roleService = inject(RoleService);
+  WorkerDocTypeEnum = DocTypeEnum;
 
   // Properties:
   @ViewChild('actionsTemplate') actionsTemplate!: TemplateRef<any>;
+  @ViewChild('docType') docTypeTemplate!: TemplateRef<any>;
 
   columns: TableColumn[] = [];
 
   role = '';
+  userId = 0;
 
   // Methods:
 
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.columns = [
-        { headerName: 'N° de Trabajador', accessorKey: 'id' },
         { headerName: 'Dirección', accessorKey: 'address' },
         { headerName: 'Nombre', accessorKey: 'name' },
         { headerName: 'Apellido', accessorKey: 'last_name' },
-        { headerName: 'Cuil', accessorKey: 'cuil' },
-        { headerName: 'DNI', accessorKey: 'document' },
+        {
+          headerName: 'Tipo Doc.',
+          accessorKey: 'doc_type',
+          cellRenderer: this.docTypeTemplate,
+        },
+        { headerName: 'Documento', accessorKey: 'document' },
         {
           headerName: 'Acciones',
           accessorKey: 'actions',
@@ -87,7 +96,7 @@ export class ConstructionWorkersComponent implements AfterViewInit {
     modalRef.result
       .then((result) => {
         if (result) {
-          this.workerService.unAssignWorker(worker.id).subscribe({
+          this.workerService.unAssignWorker(worker.id, this.userId).subscribe({
             next: () => {
               this.workers = this.workers.filter((w) => w.id !== worker.id);
               this.toastService.sendSuccess(
@@ -108,6 +117,10 @@ export class ConstructionWorkersComponent implements AfterViewInit {
   ngOnInit() {
     this.roleService.currentRole$.subscribe((role) => {
       this.role = role;
+    });
+
+    this.roleService.currentUserId$.subscribe((user) => {
+      this.userId = user;
     });
   }
 }

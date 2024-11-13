@@ -1,5 +1,17 @@
 <ng-template #fineState let-item>
-  {{ item.fine_state | getValueByKeyForEnum : FineStatusEnum }}
+  <span
+    class="badge p-2 border w-100"
+    style="max-width: 160px"
+    [ngClass]="{
+      'text-success': item.fine_state === 'APPROVED',
+      'border-success': item.fine_state === 'APPROVED',
+      'text-danger': item.fine_state === 'REJECTED',
+      'border-danger': item.fine_state === 'REJECTED',
+      'border-warning': item.fine_state === 'ON_ASSEMBLY',
+      'text-warning': item.fine_state === 'ON_ASSEMBLY'
+    }"
+    >{{ item.fine_state | getValueByKeyForEnum : FineStatusEnum }}</span
+  >
 </ng-template>
 
 <ng-template #fineDate let-item>
@@ -12,7 +24,15 @@
   </button>
 </ng-template>
 
-<app-main-container title="Multas" id="pdf-template">
+<ng-template #sanctionType let-item>
+  {{ item.sanction_type.name }}
+</ng-template>
+
+<app-main-container
+  title="Multas"
+  id="pdf-template"
+  (infoButtonClick)="infoModal()"
+>
   <app-table
     [items]="(items$ | async) || []"
     [columns]="columns"
@@ -25,11 +45,11 @@
     }"
     [isLoading]="(isLoading$ | async) || false"
     (searchValueChange)="onSearchValueChange('partialName', $event)"
-    searchPlaceHolder="Lote..."
-    (excelButtonClick)="onExportToExcel()"
     [showHeaderButton]="false"
     [showSearchBar]="false"
     (infoButtonClick)="infoModal()"
+    [getAllItems]="getAllFines"
+    [showExportPdfButton]="false"
   >
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div class="btn-group me-5" role="group">
@@ -66,43 +86,43 @@
             </div>
           </div>
           <!-- Fecha -->
-          @if (filterType === 'fecha') {
-            <div class="d-flex">
-              <input
-                type="date"
-                class="form-control me-2"
-                placeholder="Fecha de inicio"
-                [(ngModel)]="startDate"
-                [max]="endDate"
-              />
-              <input
-                type="date"
-                class="form-control me-2"
-                placeholder="Fecha de fin"
-                [(ngModel)]="endDate"
-                [min]="startDate"
-              />
-              <button class="btn btn-dark" type="button" (click)="applyFilters()">
-                Buscar
-              </button>
-            </div>
+          @if(filterType === 'fecha'){
+          <div class="d-flex">
+            <input
+              type="date"
+              class="form-control me-2"
+              placeholder="Fecha de inicio"
+              [(ngModel)]="startDate"
+              [max]="endDate"
+            />
+            <input
+              type="date"
+              class="form-control me-2"
+              placeholder="Fecha de fin"
+              [(ngModel)]="endDate"
+              [min]="startDate"
+            />
+            <button class="btn btn-dark" type="button" (click)="applyFilters()">
+              Buscar
+            </button>
+          </div>
 
           }
           <!-- Estado -->
-          @if (filterType === 'estado') {
-            <div class="d-flex">
-              <select class="form-select me-2" [(ngModel)]="status">
-                <option [ngValue]="''">Todos</option>
-                @for (key of fineService.fineStatusKeys; track $index) {
-                  <option [value]="key">
-                    {{ key | getValueByKeyForEnum : FineStatusEnum }}
-                  </option>
-                }
-              </select>
-              <button class="btn btn-dark" type="button" (click)="applyFilters()">
-                Buscar
-              </button>
-            </div>
+          @if(filterType === 'estado'){
+          <div class="d-flex">
+            <select class="form-select me-2" [(ngModel)]="status">
+              <option [ngValue]="''">Todos</option>
+              @for (key of fineService.fineStatusKeys; track $index) {
+              <option [value]="key">
+                {{ key | getValueByKeyForEnum : FineStatusEnum }}
+              </option>
+              }
+            </select>
+            <button class="btn btn-dark" type="button" (click)="applyFilters()">
+              Buscar
+            </button>
+          </div>
           }
         </div>
       </div>

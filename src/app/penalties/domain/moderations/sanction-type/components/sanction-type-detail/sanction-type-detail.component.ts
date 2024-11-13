@@ -44,7 +44,9 @@ export class SanctionTypeDetailComponent {
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((params) => {
       const id = params['id'];
+      const mode = params['mode'];
       this.getSanctionTypeById(id);
+      this.editing = mode === 'edit';
     });
   }
 
@@ -55,6 +57,14 @@ export class SanctionTypeDetailComponent {
         this.sanctionType = sanctionType;
         this.initialSanctionType = JSON.parse(JSON.stringify(sanctionType));
       });
+  }
+
+  onInfoButtonClick() {
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+    modalRef.componentInstance.alertType = 'info';
+
+    modalRef.componentInstance.alertTitle = 'Ayuda';
+    modalRef.componentInstance.alertMessage = `Esta pantalla te permite observar los detalles específicos de un tipo de sanción. \n Considera que los costos pueden ser fijos o variables y la cantidad de infracciones que generan una multa dependen del tipo.`;
   }
 
   goBack = (): void => {
