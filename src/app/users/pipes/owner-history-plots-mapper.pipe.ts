@@ -18,9 +18,10 @@ export class TransformOwnerPlotHistoryPipe implements PipeTransform {
       ownerType: ownerPlot.owner_type,
       documentNumber: ownerPlot.document_number,
       documentType: ownerPlot.document_type,
-      startDate: startDateArray ? new Date(...startDateArray) : null,
-      dueDate: dueDateArray ? new Date(...dueDateArray) : null
+      startDate: ownerPlot.start_date,
+      dueDate: ownerPlot.due_date
     };
   }
 }
+
 

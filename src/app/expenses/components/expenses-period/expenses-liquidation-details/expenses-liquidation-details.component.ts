@@ -3,9 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, DatePipe } from '@angular/common';
 import { CurrencyPipe } from '@angular/common';
 import { NgbActiveModal, NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
-import LiquidationExpense from '../../../models/liquidationExpense';
-import { FormsModule, NgControl, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { InfoModalComponent } from '../../modals/info-modal/info-modal.component';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { BillService } from '../../../services/bill.service';
@@ -16,10 +14,12 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import moment from 'moment';
-import { ConfirmAlertComponent, MainContainerComponent, TableFiltersComponent, TableComponent, Filter, SelectFilter, FilterOption, TableColumn} from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, MainContainerComponent, TableFiltersComponent, TableComponent, Filter, SelectFilter, FilterOption, TableColumn, ToastService} from 'ngx-dabd-grupo01';
 import { ProviderService } from '../../../services/provider.service';
 import Period from '../../../models/period';
 import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal/edit-bill-modal.component';
+import { ViewBillModalComponent } from '../../modals/bills-modal/view-bill-modal/view-bill-modal.component';
+import { DeleteBillModalComponent } from '../../modals/bills/delete-bill-modal/delete-bill-modal.component';
 
 @Component({
   selector: 'app-expenses-liquidation-details',
@@ -52,6 +52,8 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   private readonly supplierService = inject(ProviderService);
   private readonly billTypeService = inject(BillService);
 
+  private readonly toastService = inject(ToastService)
+
   private modalService = inject(NgbModal);
 
   //
@@ -59,7 +61,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   //
 
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
 
 
   //
@@ -103,7 +104,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   // pagination
   originalTotalItems = 0;
   totalItems = 0;
-  page = 0;
+  page = 1;
   size = 10;
 
   // other variables
@@ -132,7 +133,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
       {headerName: 'Proveedor', accessorKey: 'supplier.name'},
       {headerName: 'Descripción', accessorKey: 'description'},
       {headerName: 'Estado', accessorKey: 'status', cellRenderer: this.statusTemplate},
-      {headerName: 'Monto', accessorKey: 'amount', cellRenderer: this.amountTemplate},
+      {headerName: 'Monto', accessorKey: 'amount', cellRenderer: this.amountTemplate, align:'right'},
       {headerName: 'Acciones', accessorKey: 'actions', cellRenderer: this.actionsTemplate},
     ];
   }
@@ -282,7 +283,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
   onPageSizeChange = (size: number) => {
     this.size = size;
-    this.page = 0;
+    this.page = 1;
     if (this.isFiltering) return;
 
     this.loadLiquidationExpenseDetails();
@@ -369,23 +370,37 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   }
 
   showPaidModal(item: Bill) {
-    const modalRef = this.modalService.open(ConfirmAlertComponent);
-
-    modalRef.componentInstance.alertTitle = 'Pago'
-    modalRef.componentInstance.content = this.paidPdf;
-    modalRef.componentInstance.alertMessage = `${item.category.name} ${item.billType.name} - ${item.supplier.name} (${item.amount?.toLocaleString("es-AR", {
-      style: "currency",
-      currency: "ARS",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })})`;
-    modalRef.componentInstance.alertType = 'info';
+    this.openViewModal(item);
   }
 
+  openViewModal(bill: Bill) {
+    const modalRef = this.modalService.open(ViewBillModalComponent, {
+      size: 'lg',
+    });
+    modalRef.componentInstance.bill = bill;
+  }
 
   //  Pther buttons
   edit(bill: Bill) {
     this.openEditModal(bill);
+  }
+
+  deleteBill(bill: Bill) {
+    const modalRef = this.modalService.open(DeleteBillModalComponent, {
+      backdrop: 'static',
+      keyboard: false
+    });
+    modalRef.componentInstance.bill = bill;
+    modalRef.result.then(
+      (result) => {
+        if (result.success) {
+          this.toastService.sendSuccess(result.message)
+          window.location.reload();
+        } else {
+          this.toastService.sendError(result.message)
+        }
+      }
+    );
   }
 
   openEditModal(bill: Bill) {

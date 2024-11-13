@@ -1,0 +1,32 @@
+
+<app-main-container title="Reporte de cargos de lotes por periodo">
+    <div class="select-container" style="display: flex; gap: 10px; flex-wrap: wrap; padding-bottom: 20px">
+      <div class="col-auto">
+        <label>Periodo</label>
+        <select class="form-select" aria-label="Default select example" >
+          <option selected>Open this select menu</option>
+          <option value="1">One</option>
+          <option value="2">Two</option>
+          <option value="3">Three</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col"  style="display: block; height: 500px">
+        <h3>Montos Totales por lote</h3>
+        <canvas baseChart
+                [data]="barChartData"
+                [type]="barChartType">
+  
+        </canvas>
+      </div>
+      <div class="col"  style="display: block; height: 700px; padding-left: 100px">
+        <h3>Porcentaje de contribución de cada lote</h3>
+        <canvas baseChart
+                [data]="pieChartData"
+                [type]="pieChartType">
+        </canvas>
+      </div>
+    </div>
+  </app-main-container>
+  

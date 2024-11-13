@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, inject, Input} from '@angular/core';
 import Category from "../../../../models/category";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CategoryService} from "../../../../services/category.service";
@@ -13,9 +13,10 @@ import {CategoryService} from "../../../../services/category.service";
 export class DeleteCategoryModalComponent {
   @Input() category!: Category;
 
+  private readonly categoryService = inject(CategoryService);
+
   constructor(
     public activeModal: NgbActiveModal,
-    private categoryService: CategoryService
   ) {}
 
   confirmDelete() {

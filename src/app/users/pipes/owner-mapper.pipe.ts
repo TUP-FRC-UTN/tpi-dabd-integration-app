@@ -11,6 +11,7 @@ export class OwnerMapperPipe implements PipeTransform {
   transform(item: any): Owner {
     return {
       id: item.id,
+      plotId: item.plot_id,
       firstName: item.first_name,
       secondName: item.second_name,
       lastName: item.last_name,

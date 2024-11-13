@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, inject, Input, OnInit} from '@angular/core';
 import Category from "../../../../models/category";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CategoryService} from "../../../../services/category.service";
@@ -19,10 +19,11 @@ export class EditCategoryModalComponent implements OnInit{
   @Input() category!: Category;
   editCategoryForm: FormGroup;
 
+  private readonly categoryService = inject(CategoryService)
+
   constructor(
     private formBuilder: FormBuilder,
     public activeModal: NgbActiveModal,
-    private categoryService: CategoryService
   ) {
     this.editCategoryForm = this.formBuilder.group({
       name: ['', Validators.required],

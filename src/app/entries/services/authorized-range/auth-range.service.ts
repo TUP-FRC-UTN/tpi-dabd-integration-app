@@ -16,7 +16,7 @@ export class AuthRangeService {
     const params = new HttpParams().set('docNumber', docNumber.toString());
     return this.http.get<AuthDTO[]>(this.url, { params });
   }
-  
+
   getAllAuths() {
     return this.http.get<AuthDTO[]>(this.url);
   }

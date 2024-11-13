@@ -4,55 +4,62 @@ import { Plot } from '../models/plot';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import { PaginatedResponse } from '../models/api-response';
 import { TransformPlotPipe } from '../pipes/plot-mapper.pipe';
+import { OwnerMapperPipe } from '../pipes/owner-mapper.pipe';
+import { Document } from '../models/file';
+import { environment } from '../../../environments/environment'
+import { SessionService } from './session.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PlotService {
   private http = inject(HttpClient)
+  private sessionService = inject(SessionService);
 
-  host: string = "http://localhost:8282/plots"
+  host: string = `${environment.production 
+  ? environment.apis.cadastre 
+  : 'http://localhost:8004'}/plots`;
 
   getAllPlots(page : number, size : number, isActive? : boolean): Observable<PaginatedResponse<Plot>> {
     let params = new HttpParams()
-    .set('page', page.toString())
+    .set('page', page >= 0 ? page.toString() : "0")
     .set('size', size.toString());
-  
+
     if (isActive !== undefined) {
       params = params.append('isActive', isActive.toString());
     }
-    
+
     return this.http.get<PaginatedResponse<Plot>>(this.host, { params }).pipe(
       map((response: PaginatedResponse<any>) => {
         const transformPipe = new TransformPlotPipe();
         const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
         return {
           ...response,
-          content: transformedPlots 
+          content: transformedPlots
         };
       })
     );
   }
 
-  createPlot(plotData: any, userId: number): Observable<Plot> {
+  createPlot(plotData: any): Observable<Plot> {
     const headers = new HttpHeaders({
-      'x-user-id': userId
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
 
     return this.http.post<Plot>(this.host, plotData, { headers });
   }
 
-  updatePlot(id: number, plotData: any, userId: number): Observable<Plot> {
+  updatePlot(id: number, plotData: any): Observable<Plot> {
     const headers = new HttpHeaders({
-      'x-user-id': userId
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
-    
+
     return this.http.put<Plot>(`${this.host}/${id}`, plotData, { headers });
   }
 
-  deletePlot(id: number, userId: number) {
+  deletePlot(id: number) {
     const headers = new HttpHeaders({
-      'x-user-id': userId
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
 
     return this.http.delete<any>(`${this.host}/${id}`, {headers});
@@ -61,8 +68,8 @@ export class PlotService {
   getPlotById(id: number): Observable<Plot> {
     return this.http.get<any>(`${this.host}/${id}`).pipe(
       map((data: any) => {
-        const transformPipe = new TransformPlotPipe(); 
-        return transformPipe.transform(data); 
+        const transformPipe = new TransformPlotPipe();
+        return transformPipe.transform(data);
       })
     );
   }
@@ -77,20 +84,20 @@ export class PlotService {
 
   filterPlotByBlock(page : number, size : number, blockNumber : string, isActive? : boolean) {
     let params = new HttpParams()
-    .set('page', page.toString())
+    .set('page', page >= 0 ? page.toString() : "0")
     .set('size', size.toString());
-  
+
     if (isActive !== undefined) {
       params = params.append('isActive', isActive.toString());
     }
-    
+
     return this.http.get<PaginatedResponse<Plot>>(`${this.host}/blockNumber/${blockNumber}`, { params }).pipe(
       map((response: PaginatedResponse<any>) => {
         const transformPipe = new TransformPlotPipe();
         const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
         return {
           ...response,
-          content: transformedPlots 
+          content: transformedPlots
         };
       })
     );
@@ -98,20 +105,20 @@ export class PlotService {
 
   filterPlotByStatus(page : number, size : number, plotStatus : string, isActive? : boolean) {
     let params = new HttpParams()
-    .set('page', page.toString())
+    .set('page', page >= 0 ? page.toString() : "0")
     .set('size', size.toString());
-  
+
     if (isActive !== undefined) {
       params = params.append('isActive', isActive.toString());
     }
-    
+
     return this.http.get<PaginatedResponse<Plot>>(`${this.host}/plotStatus/${plotStatus}`, { params }).pipe(
       map((response: PaginatedResponse<any>) => {
         const transformPipe = new TransformPlotPipe();
         const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
         return {
           ...response,
-          content: transformedPlots 
+          content: transformedPlots
         };
       })
     );
@@ -119,30 +126,71 @@ export class PlotService {
 
   filterPlotByType(page : number, size : number, plotType : string, isActive? : boolean) {
     let params = new HttpParams()
-    .set('page', page.toString())
+    .set('page', page >= 0 ? page.toString() : "0")
     .set('size', size.toString());
-  
+
     if (isActive !== undefined) {
       params = params.append('isActive', isActive.toString());
     }
-    
+
     return this.http.get<PaginatedResponse<Plot>>(`${this.host}/plotType/${plotType}`, { params }).pipe(
       map((response: PaginatedResponse<any>) => {
         const transformPipe = new TransformPlotPipe();
         const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
         return {
           ...response,
-          content: transformedPlots 
+          content: transformedPlots
         };
       })
     );
   }
 
-  reactivatePlot(id: number, userId: number) {
+  reactivatePlot(id: number) {
     const headers = new HttpHeaders({
-      'x-user-id': userId.toString()
+      'x-user-id': this.sessionService.getItem('user').id.toString()
     });
 
     return this.http.patch<Plot>(`${this.host}/reactivate/${id}`, {}, {headers});
+  }
+
+
+  // metodo para traer los archivos del plot por id de plot
+  getPlotFilesById(plotId: number): Observable<Document[]> {
+
+    let params = new HttpParams().set('is-active', true);
+
+    return this.http.get<any>(this.host + `/${plotId}/files`, {params} ).pipe(
+      map((response: any) => {
+
+        const transformPipe = new OwnerMapperPipe();
+        return response.map((file: any) =>
+          transformPipe.transformFile(file)
+        );
+      })
+    );
+  }
+
+
+  dinamicFilters(page: number, size: number, params: any) {
+    let httpParams = new HttpParams()
+      .set('page', page >= 0 ? page.toString() : "0")
+      .set('size', size.toString());
+
+    for (const key in params) {
+      if (params.hasOwnProperty(key) && params[key] !== undefined && params[key] !== '') {
+        httpParams = httpParams.set(key, params[key].toString());
+      }
+    }
+
+    return this.http.get<PaginatedResponse<Plot>>(`${this.host}/filters`, { params: httpParams }).pipe(
+      map((response: PaginatedResponse<any>) => {
+        const transformPipe = new TransformPlotPipe();
+        const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
+        return {
+          ...response,
+          content: transformedPlots
+        };
+      })
+    );
   }
 }

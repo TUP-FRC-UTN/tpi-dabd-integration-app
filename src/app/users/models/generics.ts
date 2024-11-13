@@ -23,7 +23,7 @@ export enum Provinces {
   SANTIAGO_DEL_ESTERO = 'Santiago del Estero',
   TIERRA_DEL_FUEGO = 'Tierra del Fuego',
   TUCUMAN = 'Tucuman',
-  OTHER = 'Otro',
+  OTHER = 'Otra',
 }
 
 export enum Country {

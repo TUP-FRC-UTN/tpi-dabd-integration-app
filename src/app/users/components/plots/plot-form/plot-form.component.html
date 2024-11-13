@@ -1,116 +1,117 @@
-<app-main-container title="Registrar Lotes">
-  <form [formGroup]="plotForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
-
+<app-main-container title="Registrar Lotes" (infoButtonClick)="openInfo()">
+    <form [formGroup]="plotForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
+  
       <div class="col-md-6">
-          <div class="d-flex align-items-center">
-              <label for="block-number" class="col-form-label col-md-3">Numero de Manzana<label class="text-danger">*</label></label>
-              <input type="number" class="form-control" id="block-number" formControlName="blockNumber"
-              [ngClass]="{'is-invalid': plotForm.get('blockNumber')?.invalid && plotForm.get('blockNumber')?.touched, 
-                'is-valid': plotForm.get('blockNumber')?.valid && plotForm.get('blockNumber')?.touched}">
-          </div>
-          <div>
-              @if (plotForm.get('blockNumber')?.touched && plotForm.get('blockNumber')?.invalid) {
-                  @if (plotForm.get('blockNumber')?.getError('required')) {<small class="text-danger ms-2">Campo requerido.</small>}
-                  @if (plotForm.get('blockNumber')?.getError('min')) {<small class="text-danger ms-2">El numero minimo es 1.</small>}
-              }
-          </div>
+        <div class="d-flex align-items-center">
+          <label for="block-number" class="col-form-label col-md-3">Numero de Manzana<label class="text-danger">*</label></label>
+          <input type="number" class="form-control" id="block-number" formControlName="blockNumber"
+                 [ngClass]="{'is-invalid': plotForm.get('blockNumber')?.invalid && plotForm.get('blockNumber')?.touched,
+                  'is-valid': plotForm.get('blockNumber')?.valid && plotForm.get('blockNumber')?.touched}">
+        </div>
+        <div>
+          @if (plotForm.get('blockNumber')?.touched && plotForm.get('blockNumber')?.invalid) {
+            @if (plotForm.get('blockNumber')?.getError('required')) {<small class="text-danger ms-2">Campo requerido.</small>}
+            @if (plotForm.get('blockNumber')?.getError('min')) {<small class="text-danger ms-2">El numero minimo es 1.</small>}
+          }
+        </div>
       </div>
-
+  
       <div class="col-md-6">
-          <div class="d-flex align-items-center">
-              <label for="plot-number" class="col-form-label col-md-3">Número de Lote<label class="text-danger">*</label></label>
-              <input type="number" class="form-control" id="plot-number" formControlName="plotNumber"
-              [ngClass]="{'is-invalid': plotForm.get('plotNumber')?.invalid && plotForm.get('plotNumber')?.touched, 
-                'is-valid': plotForm.get('plotNumber')?.valid && plotForm.get('plotNumber')?.touched}">
-          </div>
-          <div>
-              @if (plotForm.get('plotNumber')?.touched && plotForm.get('plotNumber')?.invalid) {
-                  @if (plotForm.get('plotNumber')?.getError('required')) { <small class="text-danger ms-2">Campo requerido.</small> }
-                  @if (plotForm.get('plotNumber')?.getError('min')) { <small class="text-danger ms-2">El número mínimo es 1.</small> }
-              }
-              @if (plotForm.get('plotNumber')?.dirty && plotForm.get('plotNumber')?.invalid &&
-                  plotForm.get('blockNumber')?.dirty) {
-                  @if (plotForm.get('plotNumber')?.getError('plotExists')) { <small class="text-danger ms-2">Ya existe ese numero de lote en la manzana.</small> }
-                  @else if (plotForm.get('plotNumber')?.getError('serverError')) { <small class="text-danger ms-2">Error en el servidor, por favor intenta nuevamente.</small> }
-              }
-          </div>
+        <div class="d-flex align-items-center">
+          <label for="plot-number" class="col-form-label col-md-3">Número de Lote<label class="text-danger">*</label></label>
+          <input type="number" class="form-control" id="plot-number" formControlName="plotNumber"
+                 [ngClass]="{'is-invalid': plotForm.get('plotNumber')?.invalid && plotForm.get('plotNumber')?.touched,
+                  'is-valid': plotForm.get('plotNumber')?.valid && plotForm.get('plotNumber')?.touched}">
+        </div>
+        <div>
+          @if (plotForm.get('plotNumber')?.touched && plotForm.get('plotNumber')?.invalid) {
+            @if (plotForm.get('plotNumber')?.getError('required')) { <small class="text-danger ms-2">Campo requerido.</small> }
+            @if (plotForm.get('plotNumber')?.getError('min')) { <small class="text-danger ms-2">El número mínimo es 1.</small> }
+          }
+          @if (plotForm.get('plotNumber')?.dirty && plotForm.get('plotNumber')?.invalid &&
+          plotForm.get('blockNumber')?.dirty) {
+            @if (plotForm.get('plotNumber')?.getError('plotExists')) { <small class="text-danger ms-2">Ya existe ese numero de lote en la manzana.</small> }
+            @else if (plotForm.get('plotNumber')?.getError('serverError')) { <small class="text-danger ms-2">Error en el servidor, por favor intenta nuevamente.</small> }
+          }
+        </div>
       </div>
-
+  
       <div class="col-md-6">
-          <div class="d-flex align-items-center">
-              <label for="total-area" class="col-form-label col-md-3">Area Total<label class="text-danger">*</label></label>
-              <input type="number" class="form-control" id="total-area" formControlName="totalArea"
-              [ngClass]="{'is-invalid': plotForm.get('totalArea')?.invalid && plotForm.get('totalArea')?.touched, 
-                'is-valid': plotForm.get('totalArea')?.valid && plotForm.get('totalArea')?.touched}">
-          </div>
-          <div>
-              @if (plotForm.get('totalArea')?.touched && plotForm.get('totalArea')?.invalid) {
-                  @if (plotForm.get('totalArea')?.getError('required')) {<small class="text-danger ms-2">Campo requerido.</small>}
-                  @if (plotForm.get('totalArea')?.getError('min')) {<small class="text-danger ms-2">El numero minimo es 1.</small>}
-              }
-          </div>
+        <div class="d-flex align-items-center">
+          <label for="total-area" class="col-form-label col-md-3">Area Total<label class="text-danger">*</label></label>
+          <input type="number" class="form-control" id="total-area" formControlName="totalArea"
+                 [ngClass]="{'is-invalid': plotForm.get('totalArea')?.invalid && plotForm.get('totalArea')?.touched,
+                  'is-valid': plotForm.get('totalArea')?.valid && plotForm.get('totalArea')?.touched}">
+        </div>
+        <div>
+          @if (plotForm.get('totalArea')?.touched && plotForm.get('totalArea')?.invalid) {
+            @if (plotForm.get('totalArea')?.getError('required')) {<small class="text-danger ms-2">Campo requerido.</small>}
+            @if (plotForm.get('totalArea')?.getError('min')) {<small class="text-danger ms-2">El numero minimo es 1.</small>}
+          }
+        </div>
       </div>
-
+  
       <div class="col-md-6">
-          <div class="d-flex align-items-center">
-              <label for="built-area" class="col-form-label col-md-3">Area Construida<label class="text-danger">*</label></label>
-              <input type="number" class="form-control" id="built-area" formControlName="builtArea"
-              [ngClass]="{'is-invalid': plotForm.get('builtArea')?.invalid && plotForm.get('builtArea')?.touched, 
-                'is-valid': plotForm.get('builtArea')?.valid && plotForm.get('builtArea')?.touched}">
-          </div>
-          <div>
-              @if (plotForm.get('builtArea')?.touched && plotForm.get('builtArea')?.invalid) {
-                  @if (plotForm.get('builtArea')?.getError('required')) {<small class="text-danger ms-2">Campo requerido.</small>}
-                  @if (plotForm.get('builtArea')?.getError('min')) {<small class="text-danger ms-2">El numero minimo es 1.</small>}
-              }
-          </div>
+        <div class="d-flex align-items-center">
+          <label for="built-area" class="col-form-label col-md-3">Area Construida<label class="text-danger">*</label></label>
+          <input type="number" class="form-control" id="built-area" formControlName="builtArea"
+                 [ngClass]="{'is-invalid': plotForm.get('builtArea')?.invalid && plotForm.get('builtArea')?.touched,
+                  'is-valid': plotForm.get('builtArea')?.valid && plotForm.get('builtArea')?.touched}">
+        </div>
+        <div>
+          @if (plotForm.get('builtArea')?.touched && plotForm.get('builtArea')?.invalid) {
+            @if (plotForm.get('builtArea')?.getError('required')) {<small class="text-danger ms-2">Campo requerido.</small>}
+            @if (plotForm.get('builtArea')?.getError('min')) {<small class="text-danger ms-2">El numero minimo es 1.</small>}
+          }
+        </div>
       </div>
-
+  
       <div class="col-md-6">
-          <div class="d-flex align-items-center">
-              <label for="plot-type" class="col-form-label col-md-3">Tipo de Lote<label class="text-danger">*</label></label>
-              <select id="plot-type" class="form-select" formControlName="plotType"
-              [ngClass]="{'is-invalid': plotForm.get('plotType')?.invalid && plotForm.get('plotType')?.touched, 
-                'is-valid': plotForm.get('plotType')?.valid && plotForm.get('plotType')?.touched}">
-                  <option disabled selected>Selecciona un tipo</option>
-                  @for (type of getKeys(plotTypeDictionary); track type) {
-                      <option value="{{type}}">{{type}}</option>
-                  }
-              </select>
-          </div>
-          <div>
-              @if (plotForm.get('plotType')?.touched && plotForm.get('plotType')?.invalid) {
-                  @if (plotForm.get('plotType')?.getError('required')) {<small class="text-danger ms-2">Campo requerido.</small>}
-              }
-          </div>
+        <div class="d-flex align-items-center">
+          <label for="plot-type" class="col-form-label col-md-3">Tipo de Lote<label class="text-danger">*</label></label>
+          <select id="plot-type" class="form-select" formControlName="plotType"
+                  [ngClass]="{'is-invalid': plotForm.get('plotType')?.invalid && plotForm.get('plotType')?.touched,
+                  'is-valid': plotForm.get('plotType')?.valid && plotForm.get('plotType')?.touched}">
+            <option disabled selected>Selecciona un tipo</option>
+            @for (type of getKeys(plotTypeDictionary); track type) {
+              <option value="{{type}}">{{type}}</option>
+            }
+          </select>
+        </div>
+        <div>
+          @if (plotForm.get('plotType')?.touched && plotForm.get('plotType')?.invalid) {
+            @if (plotForm.get('plotType')?.getError('required')) {<small class="text-danger ms-2">Campo requerido.</small>}
+          }
+        </div>
       </div>
-
+  
       <div class="col-md-6">
-          <div class="d-flex align-items-center">
-              <label for="plot-status" class="col-form-label col-md-3">Estado del Lote<label class="text-danger">*</label></label>
-              <select id="plot-status" class="form-select" formControlName="plotStatus"
-              [ngClass]="{'is-invalid': plotForm.get('plotStatus')?.invalid && plotForm.get('plotStatus')?.touched, 
-                'is-valid': plotForm.get('plotStatus')?.valid && plotForm.get('plotStatus')?.touched}">
-                  <option disabled selected>Selecciona un estado</option>
-                  @for (status of getKeys(plotStatusDictionary); track status) {
-                      <option value="{{status}}">{{status}}</option>
-                  }
-              </select>
-          </div>
-          <div>
-              @if (plotForm.get('plotStatus')?.touched && plotForm.get('plotStatus')?.invalid) {
-                  @if (plotForm.get('plotStatus')?.getError('required')) {<small class="text-danger ms-2">Campo requerido.</small>}
-              }
-          </div>
+        <div class="d-flex align-items-center">
+          <label for="plot-status" class="col-form-label col-md-3">Estado del Lote<label class="text-danger">*</label></label>
+          <select id="plot-status" class="form-select" formControlName="plotStatus"
+                  [ngClass]="{'is-invalid': plotForm.get('plotStatus')?.invalid && plotForm.get('plotStatus')?.touched,
+                  'is-valid': plotForm.get('plotStatus')?.valid && plotForm.get('plotStatus')?.touched}">
+            <option disabled selected>Selecciona un estado</option>
+            @for (status of getKeys(plotStatusDictionary); track status) {
+              <option value="{{status}}">{{status}}</option>
+            }
+          </select>
+        </div>
+        <div>
+          @if (plotForm.get('plotStatus')?.touched && plotForm.get('plotStatus')?.invalid) {
+            @if (plotForm.get('plotStatus')?.getError('required')) {<small class="text-danger ms-2">Campo requerido.</small>}
+          }
+        </div>
       </div>
-
+  
       <div class="col-12 d-flex justify-content-end">
-          <div class="mx-2">
-              <button type="button" class="btn btn-danger" (click)="cancel()">Cancelar</button>
-          </div>
-          <div>
-              <button type="submit" class="btn btn-primary">Guardar</button>
-          </div>
+        <div class="mx-2">
+          <button type="button" class="btn btn-danger" (click)="cancel()">Cancelar</button>
+        </div>
+        <div>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
       </div>
-  </form>
-</app-main-container>
+    </form>
+  </app-main-container>
+  

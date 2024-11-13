@@ -20,7 +20,7 @@ export class CategoryService {
     searchParams: any = {}
   ): Observable<PaginatedResponse<Category>> {
     try {
-
+      page--
       let params = new HttpParams()
         .set('page', page.toString())
         .set('size', size.toString())
@@ -31,9 +31,6 @@ export class CategoryService {
           params = params.set(key, searchParams[key]);
         }
       });
-
-      // console.log('Request URL:', `${this.url}/page`);
-      // console.log('Request params:', params.toString());
 
       return this.http.get<PaginatedResponse<Category>>(`${this.url}/page`, { params });
     } catch (error) {
@@ -74,7 +71,11 @@ export class CategoryService {
 
   validateCategoryName(name: string): Observable<boolean> {
     return this.getAllCategories().pipe(
-      map(categories => categories.some(category => category.name.toLowerCase() === name.toLowerCase()))
+      map(categories =>
+        categories.some(category =>
+          category.name.toLowerCase().trim() === name.toLowerCase().trim()
+        )
+      )
     );
   }
 }
