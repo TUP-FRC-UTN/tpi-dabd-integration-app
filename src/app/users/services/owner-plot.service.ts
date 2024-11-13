@@ -15,10 +15,7 @@ import { environment } from '../../../environments/environment';
 export class OwnerPlotService {
   constructor(private http: HttpClient) { }
 
-  host: string = environment.production
-  ? `${environment.apis.cadastre}`
-  : 'http://localhost:8004';
-
+  host: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}`;
   giveActualOwner(plotId : number) {
     return this.http.get<Owner>(`${this.host}/owner/current/plot/${plotId}`);
   }
