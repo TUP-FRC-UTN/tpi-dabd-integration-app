@@ -1,1 +1,13 @@
-<p>piechart works!</p>
+<div class="card">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h5 class="card-title text-secondary mb-1">{{ graphModel.title }}</h5>
+        <small class="text-secondary">{{ graphModel.subtitle }}</small>
+      </div>
+    </div>
+    <google-chart [type]="pieChartType" [data]="graphModel.data" [options]="graphModel.options"
+                  class="w-100">
+    </google-chart>
+  </div>
+</div>

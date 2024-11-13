@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { kpiModel } from '../../../models/stadistics';
 
 @Component({
   selector: 'app-kpi',
@@ -8,5 +9,5 @@ import { Component } from '@angular/core';
   styleUrl: './kpi.component.scss'
 })
 export class KpiComponent {
-
+  @Input() kpi:kpiModel = {} as kpiModel
 }

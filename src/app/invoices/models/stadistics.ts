@@ -44,4 +44,12 @@ export enum DashboardStatus {
   Types = 'TYPES'
 }
 
+export interface kpiModel{
+  title:string,
+  value:string,
+  desc:string,
+  icon: string,
+  color: string,
+}
+
 

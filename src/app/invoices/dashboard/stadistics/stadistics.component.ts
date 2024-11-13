@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MainContainerComponent} from "ngx-dabd-grupo01";
 import {NgbModal, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
@@ -8,8 +8,9 @@ import {KpiComponent} from "../commons/kpi/kpi.component";
 import {NgClass} from "@angular/common";
 import { DashboardStatus, PeriodRequest } from '../../models/stadistics';
 import { MainDashboardComponent } from '../main-dashboard/main-dashboard.component';
-import { BarchartComponent } from '../../../barchart/barchart.component';
+import { BarchartComponent } from '../commons/barchart/barchart.component';
 import { StadisticsService } from '../../services/stadistics.service';
+import { InfoComponent } from '../../info/info.component';
 
 @Component({
   selector: 'app-stadistics',
@@ -19,8 +20,6 @@ import { StadisticsService } from '../../services/stadistics.service';
     FormsModule,
     MainContainerComponent, // Verifica si es standalone o usa su módulo
     GoogleChartsModule,      // Verifica si es compatible
-    MainDashboardComponent,
-    NgClass,
     NgbPopoverModule
   ],
   templateUrl: './stadistics.component.html',
@@ -52,11 +51,12 @@ export class StadisticsComponent implements OnInit {
   @ViewChild('infoModal') infoModal!: TemplateRef<any>
 
   constructor(
-    private stadisticsService: StadisticsService) {
+    private stadisticsService: StadisticsService,
+    private cdr: ChangeDetectorRef) {
   }
 
   initializeDefaultDates(){
-    this.filters.group = "DAY"
+    this.filters.group = ""
     this.filters.type = ""
     this.filters.action = "ENTRY"
     const now = new Date();
@@ -99,16 +99,25 @@ export class StadisticsComponent implements OnInit {
     } else {
       console.error('Valor no válido para el enum');
     }
-
-    //this.types.getData()
   }
-
-
 
   protected readonly DashboardStatus = DashboardStatus;
 
   ngAfterViewInit(): void {
     this.initializeDefaultDates();
-    this.filterData()
+    this.filterData();
+    this.cdr.detectChanges(); // Fuerza la detección de cambios
   }
+
+    // ACA SE ABRE EL MODAL DE INFO
+    showInfo(): void {
+      const modalRef = this.modalService.open(InfoComponent, {
+        size: 'lg',
+        backdrop: 'static',
+        keyboard: false,
+        centered: true,
+        scrollable: true,
+      });
+      modalRef.componentInstance.data = { role: 'owner' };
+    }
 }
