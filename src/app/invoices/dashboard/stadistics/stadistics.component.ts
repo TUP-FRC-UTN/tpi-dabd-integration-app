@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, inject, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MainContainerComponent} from "ngx-dabd-grupo01";
 import {NgbModal, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
@@ -48,11 +48,9 @@ export class StadisticsComponent implements OnInit {
 
 
   //Childs
-  // @ViewChild(MainDashboardComponent) main!: MainDashboardComponent;
-  // @ViewChild(EntriesDashboardComponent) entries!: EntriesDashboardComponent;
-  // @ViewChild(LateDashboardComponent) late!: LateDashboardComponent;
-  // @ViewChild(TypesDashboardComponent) types!: TypesDashboardComponent;
-  // @ViewChild(InconsistenciesDashboardComponent) inconsistencies!: InconsistenciesDashboardComponent;
+  @ViewChild(MainDashboardComponent) main!: MainDashboardComponent;
+  @ViewChild(DistributionPaymentMethodsComponent) distribution!: DistributionPaymentMethodsComponent;
+  @ViewChild(TotalPaymentsComponent) total!: TotalPaymentsComponent;
 
 
   @ViewChild(BarchartComponent) barchartComponent!: BarchartComponent;
@@ -60,9 +58,9 @@ export class StadisticsComponent implements OnInit {
   @ViewChild('infoModal') infoModal!: TemplateRef<any>
 
   constructor(
-    private stadisticsService: StadisticsService,
-    private cdr: ChangeDetectorRef) {
-  }
+      private stadisticsService: StadisticsService,
+      @Inject(ChangeDetectorRef) private cdr: ChangeDetectorRef) {
+    }
 
   initializeDefaultDates(){
     this.filters.group = ""
@@ -90,11 +88,9 @@ export class StadisticsComponent implements OnInit {
   }
 
   filterData(){
-    // this.main.getData()
-    // this.entries.getData()
-    // this.types.getData()
-    // this.inconsistencies.getData()
-    // this.late.getData()
+    this.main.getData()
+    // this.distribution.getData()
+    // this.total.getData()
   }
 
   ngOnInit(): void {

@@ -30,8 +30,12 @@ export class StadisticsService {
     return this.http.post<TicketInfo[]>(this.apiUrl + '/totalPayments', fechas);
   }
 
-  getPreferred(fechas: PeriodRequest): Observable<TopPayments> {
-    return this.http.post<TopPayments>(this.baseUrlpayments, fechas);
+  getPreferredApproved(fechas: PeriodRequest): Observable<TopPayments> {
+    return this.http.post<TopPayments>(this.baseUrlpayments + '/topPaymentsApproved', fechas);
+  }
+
+  getPreferredRejected(fechas: PeriodRequest): Observable<TopPayments> {
+    return this.http.post<TopPayments>(this.baseUrlpayments + '/topPaymentsRejected', fechas);
   }
 
 }
