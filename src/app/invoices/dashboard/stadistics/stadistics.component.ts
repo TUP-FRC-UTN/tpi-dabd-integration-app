@@ -5,12 +5,15 @@ import {NgbModal, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
 import {GoogleChartsModule} from "angular-google-charts";
 import {KpiComponent} from "../commons/kpi/kpi.component";
 
-import {NgClass} from "@angular/common";
+import {CommonModule, NgClass} from "@angular/common";
 import { DashboardStatus, PeriodRequest } from '../../models/stadistics';
 import { MainDashboardComponent } from '../main-dashboard/main-dashboard.component';
 import { BarchartComponent } from '../commons/barchart/barchart.component';
 import { StadisticsService } from '../../services/stadistics.service';
 import { InfoComponent } from '../../info/info.component';
+import { DistributionPaymentMethodsComponent } from "../distribution-payment-methods/distribution-payment-methods.component";
+import { TotalPaymentsComponent } from '../total-payments/total-payments.component';
+// import { DashBoardFilters } from '../../models/dashboard.model';
 
 @Component({
   selector: 'app-stadistics',
@@ -19,9 +22,14 @@ import { InfoComponent } from '../../info/info.component';
     ReactiveFormsModule,
     FormsModule,
     MainContainerComponent, // Verifica si es standalone o usa su módulo
-    GoogleChartsModule,      // Verifica si es compatible
-    NgbPopoverModule
-  ],
+    GoogleChartsModule, // Verifica si es compatible
+    NgbPopoverModule,
+    MainDashboardComponent,
+    DistributionPaymentMethodsComponent,
+    DistributionPaymentMethodsComponent,
+    TotalPaymentsComponent,
+    CommonModule,
+],
   templateUrl: './stadistics.component.html',
   styleUrl: './stadistics.component.css'
 })
@@ -29,6 +37,7 @@ export class StadisticsComponent implements OnInit {
 
   //filters
   filters:PeriodRequest = {} as PeriodRequest
+  // filters: DashBoardFilters = {} as DashBoardFilters;
 
   //dashboard settings
   status: DashboardStatus = DashboardStatus.All;

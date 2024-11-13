@@ -1,1 +1,50 @@
-<p>main-dashboard works!</p>
+<div class="row mb-3">
+    <div class="col-3 d-flex align-content-center flex-wrap justify-content-center">
+      <div class="hover-scale">
+        <app-kpi [kpi]="kpi1" (click)="sendNotification('ENTRIES')"></app-kpi>
+      </div>
+    </div>
+    <div class="col-3 d-flex align-content-center flex-wrap justify-content-center">
+      <div class="hover-scale">
+        <app-kpi [kpi]="kpi2" (click)="sendNotification('TYPES')"></app-kpi>
+      </div>
+    </div>
+    <div class="col-3 d-flex align-content-center flex-wrap justify-content-center">
+      <div class="hover-scale h-100">
+        <app-kpi [kpi]="kpi3" (click)="sendNotification('ENTRIES')"></app-kpi>
+      </div>
+    </div>
+    <div class="col-3 d-flex align-content-center flex-wrap justify-content-center">
+      <div class="hover-scale">
+        <app-kpi [kpi]="kpi4" (click)="sendNotification('INCONSISTENCIES')"></app-kpi>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-4">
+      <div class="hover-scale">
+        <app-barchart [graphModel]="graph1" (click)="sendNotification('ENTRIES')"></app-barchart>
+      </div>
+    </div>
+    <div class="col-8">
+      <div class="row mb-3">
+        <div class="col-6">
+          <div class="hover-scale">
+            <app-piechart [graphModel]="graph3" (click)="sendNotification('TYPES')"></app-piechart>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="hover-scale">
+            <app-barchart [graphModel]="graph2" (click)="sendNotification('LATE')"></app-barchart>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="hover-scale">
+          <app-barchart [graphModel]="graph4" (click)="sendNotification('INCONSISTENCIES')"></app-barchart>
+        </div>
+      </div>
+    </div>
+  </div>
+  

@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+// import { DashBoardFilters } from '../../models/dashboard.model';
+import { PeriodRequest } from '../../models/stadistics';
 
 @Component({
   selector: 'app-total-payments',
@@ -8,5 +10,5 @@ import { Component } from '@angular/core';
   styleUrl: './total-payments.component.scss'
 })
 export class TotalPaymentsComponent {
-
+  @Input() filters: PeriodRequest = {} as PeriodRequest;
 }
