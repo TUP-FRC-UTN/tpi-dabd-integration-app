@@ -8,9 +8,9 @@ import { Inventory, Transaction, TransactionPost } from '../models/inventory.mod
   providedIn: 'root'
 })
 export class InventoryService {
-   private apiArticlesUrl = 'http://localhost:8080/articles'; // URL de la API para los ítems DEL BACK
-   private apiInventoriesUrl = 'http://localhost:8080/inventories'; // URL de la API para los inventarios
-   private apiTransactionsUrl = 'http://localhost:8080/transactions'; // URL de la API para las transacciones
+   private apiArticlesUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/articles'; // URL de la API para los ítems DEL BACK
+   private apiInventoriesUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/inventories'; // URL de la API para los inventarios
+   private apiTransactionsUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/transactions'; // URL de la API para las transacciones
 
   //private apiArticlesUrl = 'http://localhost:3000/articles'; // URL de la API para los ítems DEL BACK
   //private apiInventoriesUrl = 'http://localhost:3000/inventories'; // URL de la API para los inventarios

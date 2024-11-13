@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthorizedRangeService {
-  private apiUrl = 'http://localhost:8080/authorized-ranges/register';
+  private apiUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/authorized-ranges/register';
 
   constructor(private http: HttpClient) {}
 

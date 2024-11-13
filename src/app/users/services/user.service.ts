@@ -26,7 +26,7 @@ export class UserService {
 
   host: string = environment.production
     ? `${environment.apis.users}users/`
-    : 'http://localhost:8015/users';
+    : 'https://f81hvhvc-8080.brs.devtunnels.ms/users';
 
   validateEmail(email: string): Observable<boolean> {
     const params = new HttpParams().set('email', email.toString());

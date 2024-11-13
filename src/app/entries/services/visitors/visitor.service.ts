@@ -12,7 +12,8 @@ interface PaginatedResponse<T> {
   providedIn: 'root',
 })
 export class VisitorService {
-  private apiUrl = 'http://localhost:8080/visitors';
+  private apiUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/visitors';
+  private baseUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/';
 
   constructor(private http: HttpClient) {}
 

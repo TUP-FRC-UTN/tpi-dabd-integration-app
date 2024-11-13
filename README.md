@@ -33,7 +33,7 @@ El proyecto maneja tres ambientes distintos configurados en la carpeta `environm
 export const environment = {
   production: false,
   apis: {
-    accesses: 'http://localhost:8001/',
+    accesses: 'https://f81hvhvc-8080.brs.devtunnels.ms/',
     accounts: 'http://localhost:8002/',
     // ... resto de las APIs con sus puertos específicos
   }
@@ -46,8 +46,8 @@ export const environment = {
 export const environment = {
   production: false,
   apis: {
-    accesses: 'http://localhost:8080/accesses/',
-    accounts: 'http://localhost:8080/accounts/',
+    accesses: 'https://f81hvhvc-8080.brs.devtunnels.ms/accesses/',
+    accounts: 'https://f81hvhvc-8080.brs.devtunnels.ms/accounts/',
     // ... resto de las APIs a través del nginx
   }
 };
@@ -59,8 +59,8 @@ export const environment = {
 export const environment = {
   production: true,
   apis: {
-    accesses: 'http://localhost:8080/accesses/',
-    accounts: 'http://localhost:8080/accounts/',
+    accesses: 'https://f81hvhvc-8080.brs.devtunnels.ms/accesses/',
+    accounts: 'https://f81hvhvc-8080.brs.devtunnels.ms/accounts/',
     // ... resto de las APIs a través del nginx
   }
 };

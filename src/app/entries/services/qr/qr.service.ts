@@ -15,7 +15,7 @@ export interface sendQRByEmailRequest {
 })
 export class QrService {
 
-  private apiUrl = 'http://localhost:8001/qr';
+  private apiUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/qr';
   private urlEnviroment = environment.apis.accesses;
 
   constructor(private http: HttpClient) {}

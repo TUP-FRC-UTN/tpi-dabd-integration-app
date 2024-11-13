@@ -244,7 +244,7 @@ export class OwnerListExpensasComponent {
       const formData = new FormData();
       formData.append('file', this.selectedFile, this.selectedFile.name);
 
-      this.http.post('http://localhost:8080/files/upload', formData).subscribe(
+      this.http.post('https://f81hvhvc-8080.brs.devtunnels.ms/files/upload', formData).subscribe(
         (response) => {
           console.log('File uploaded successfully!', response);
         },

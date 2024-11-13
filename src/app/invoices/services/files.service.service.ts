@@ -7,7 +7,7 @@ import { TicketDto } from '../models/TicketDto';
   providedIn: 'root',
 })
 export class FilesServiceService {
-  private baseUrl = 'http://localhost:8080/files';
+  private baseUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/files';
 
   constructor(private http: HttpClient) {}
 
