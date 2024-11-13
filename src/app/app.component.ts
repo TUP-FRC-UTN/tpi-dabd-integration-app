@@ -132,6 +132,8 @@ export class AppComponent implements OnInit {
         }
       ]
     },
+
+    // este no va de notificaciones, hay otro
     /* {
       label: 'Notificaciones',
       routerLink:'notifications',
