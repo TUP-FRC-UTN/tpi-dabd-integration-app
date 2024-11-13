@@ -1,142 +1,155 @@
-<app-main-container title="Hola Administrador" subTitle="Aquí podrás modificar el estado de los pagos" (infoButtonClick)="showInfo()">
-
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div class="btn-group me-5" role="group">
-    <div class="col-sm-12 col-md-8 col-xl-8">
-      <div class="input-group">
-        <span class="input-group-text" id="search-icon">
-          <i class="bi bi-search"></i>
-        </span>
-        <input
-          type="text"
-          class="form-control me-2"
-          id="filter-text-box"
-          (input)="onFilterTextBoxChanged($event)"
-          placeholder="Buscar..."
-        />
-        <app-table-filters class="me-2" [filters]="filterConfig" (filterValueChange)="filterChange($event)">
-        </app-table-filters>
-
+<app-main-container
+  title="Hola Administrador"
+  subTitle="Aquí podrás modificar el estado de los pagos"
+  (infoButtonClick)="showInfo()"
+>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="btn-group me-5" role="group">
+      <div class="col-sm-12 col-md-8 col-xl-8">
+        <div class="input-group">
+          <span class="input-group-text" id="search-icon">
+            <i class="bi bi-search"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control me-2"
+            id="filter-text-box"
+            (input)="onFilterTextBoxChanged($event)"
+            placeholder="Buscar..."
+          />
+          <app-table-filters
+            class="me-2"
+            [filters]="filterConfig"
+            (filterValueChange)="filterChange($event)"
+          ></app-table-filters>
+        </div>
       </div>
     </div>
 
+    <div class="d-flex align-items-center">
+      <!-- <button type="button" class="btn btn-outline-primary" (click)="redirectToForm()">+</button> -->
 
+      <div class="vertical-line mx-3"></div>
+      <button class="btn btn-success me-2" (click)="exportToExcel()">
+        <i class="bi bi-file-earmark-excel"></i>
+      </button>
+      <button class="btn btn-danger me-2" (click)="exportToPdf()">
+        <i class="bi bi-file-earmark-pdf"></i>
+      </button>
+    </div>
   </div>
 
-  <div class="d-flex align-items-center">
+  <div class="table-container">
+    <table
+      class="table table-striped fixed-table"
+      style="border: 1px solid rgba(0, 0, 0, 0.15); border-collapse: collapse"
+      #ticketsTable
+    >
+      <thead>
+        <tr>
+          <th scope="col" class="text-center">Propietario</th>
+          <th scope="col" class="text-center">Lote</th>
+          <th scope="col" class="text-center">Periodo</th>
+          <th scope="col" class="text-center">Total</th>
+          <th scope="col" class="text-center">Estado</th>
+          <th scope="col" class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of filteredTickets; track $index) {
 
-    <!-- <button type="button" class="btn btn-outline-primary" (click)="redirectToForm()">+</button> -->
+        <tr>
+          <th scope="row" class="text-center">
+            {{
+              item.ownerId.first_name +
+                " " +
+                item.ownerId.second_name +
+                " " +
+                item.ownerId.last_name
+            }}
+          </th>
 
+          <td class="text-center">{{ item.lotId }}</td>
 
-    <div class="vertical-line mx-3"></div>
-    <button class="btn btn-success me-2" (click)="exportToExcel()">
-      <i class="bi bi-file-earmark-excel"></i>
-    </button>
-    <button class="btn btn-danger me-2" (click)="exportToPdf()">
-      <i class="bi bi-file-earmark-pdf"></i>
-    </button>
+          <td class="text-center">
+            {{ item.period | periodToMonthYear | capitalize }}
+          </td>
+          <td class="text-center">
+            {{ calculateTotal(item) | currencyFormat }}
+          </td>
+          <td class="text-center">
+            <span
+              class="badge border border-secondary text-success p-2"
+              [ngClass]="{
+                'text-success border-success': item.status === 'PAID',
+                'text-danger border-danger': item.status === 'CANCELED',
+                'text-warning border-warning': item.status === 'PENDING',
+                'text-dark border-dark': item.status === 'UNDER_REVIEW'
+              }"
+            >
+              {{ item.status | translateStatusTicket }}
+            </span>
+          </td>
+          <td class="text-center">
+            <div class="btn-group" ngbDropdown>
+              <button
+                type="button"
+                class="btn btn-sm btn-secondary"
+                ngbDropdownToggle
+                aria-expanded="false"
+              >
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul ngbDropdownMenu class="dropdown-menu">
+                <li>
+                  <a
+                    class="dropdown-item"
+                    data-bs-toggle="modal"
+                    data-bs-target="#ticketModal"
+                    (click)="selectTicket(item)"
+                  >
+                    Ver ticket
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    data-bs-toggle="modal"
+                    data-bs-target="#statusModal"
+                    (click)="selectTicket(item)"
+                  >
+                    Cambiar estado
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        }@empty {
+        <td colspan="7" class="text-center">
+          <div class="text-center p-3">
+            <div class="alert alert-secondary">
+              No hay registros para mostrar
+            </div>
+          </div>
+        </td>
+        }
+      </tbody>
+    </table>
   </div>
-</div>
 
+  <!-- FINALIZA TABLA PRINCIPAL -->
 
-<div class="table-container">
-  <table class="table table-striped fixed-table"
-    style="border: 1px solid rgba(0, 0, 0, 0.15); border-collapse: collapse" #ticketsTable>
-    <thead>
-      <tr>
-        <th scope="col" class="text-center">Propietario</th>
-        <th scope="col" class="text-center">Lote</th>
-        <th scope="col" class="text-center">Periodo</th>
-        <th scope="col" class="text-center">Total</th>
-        <th scope="col" class="text-center">Estado</th>
-        <th scope="col" class="text-center">Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (item of filteredTickets; track $index) {
-
-      <tr>
-        <th scope="row" class="text-center">
-          {{
-          item.ownerId.first_name +
-          " " +
-          item.ownerId.second_name +
-          " " +
-          item.ownerId.last_name
-          }}
-        </th>
-
-        <td class="text-center">{{ item.lotId}}</td>
-
-        <td class="text-center"> {{ (item.period | periodToMonthYear | capitalize) }}</td>
-        <td class="text-center">
-          {{ calculateTotal(item) | currencyFormat }}
-        </td>
-        <td class="text-center">
-          <span class="badge border border-secondary text-success p-2" [ngClass]="{
-              'text-success border-success': item.status === 'PAID',
-              'text-danger border-danger': item.status === 'CANCELED',
-              'text-warning border-warning': item.status === 'PENDING'
-            }">
-            {{ item.status | translateStatusTicket }}
-          </span>
-        </td>
-        <td class="text-center">
-          <div class="btn-group" ngbDropdown>
-            <button 
-              type="button" 
-              class="btn btn-sm btn-secondary" 
-              ngbDropdownToggle 
-              aria-expanded="false">
-              <i class="bi bi-three-dots-vertical"></i>
-            </button>
-            <ul ngbDropdownMenu class="dropdown-menu">
-              <li>
-                <a 
-                  class="dropdown-item" 
-                  data-bs-toggle="modal" 
-                  data-bs-target="#ticketModal"
-                  (click)="selectTicket(item)">
-                  Ver ticket
-                </a>
-              </li>
-              <li>
-                <a 
-                  class="dropdown-item" 
-                  data-bs-toggle="modal" 
-                  data-bs-target="#statusModal"
-                  (click)="selectTicket(item)">
-                  Cambiar estado
-                </a>
-              </li>
-            </ul>
-          </div>
-        </td>
-        
-        
-      </tr>
-      }@empty {
-      <td colspan="7" class="text-center">
-        <div class="text-center p-3">
-          <div class="alert alert-secondary">
-            No hay registros para mostrar
-          </div>
-        </div>
-      </td>
-      }
-    </tbody>
-  </table>
-</div>
-
-
-<!-- FINALIZA TABLA PRINCIPAL -->
-
-<!-- EMPIEZA PAGINACION -->
+  <!-- EMPIEZA PAGINACION -->
 
   <div class="d-flex justify-content-between align-items-center mt-3">
-
     <div class="form-group mb-3 me-2">
-      <select id="itemsPerPage" class="form-select" [(ngModel)]="pageSize" (change)="onItemsPerPageChange()">
+      <select
+        id="itemsPerPage"
+        class="form-select"
+        [(ngModel)]="pageSize"
+        (change)="onItemsPerPageChange()"
+      >
         @for(option of sizeOptions; track $index) {
         <option [value]="option">{{ option }}</option>
         }
@@ -145,219 +158,278 @@
 
     <div class="ms-auto"></div>
 
-    <ngb-pagination [(page)]="currentPage" [pageSize]="pageSize" [collectionSize]="totalItems"
-      (pageChange)="onPageChange($event)" [maxSize]="5" [boundaryLinks]="false"></ngb-pagination>
+    <ngb-pagination
+      [(page)]="currentPage"
+      [pageSize]="pageSize"
+      [collectionSize]="totalItems"
+      (pageChange)="onPageChange($event)"
+      [maxSize]="5"
+      [boundaryLinks]="false"
+    ></ngb-pagination>
   </div>
 
-<!-- Modal payment -->
-<div class="modal fade" id="ticketModal" tabindex="-1" aria-labelledby="ticketModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="ticketModalLabel">
-          Factura - Ticket N° {{ ticketSelectedModal.ticketNumber }}
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-md-6">
-            <strong>Dirigido a:</strong>
-            {{
-            ticketSelectedModal.ownerId.first_name +
-            " " +
-            ticketSelectedModal.ownerId.second_name +
-            " " +
-            ticketSelectedModal.ownerId.last_name
-            }}
-          </div>
-          <div class="col-md-6 text-end">
-            <strong>Fecha de emisión:</strong>
-            {{ ticketSelectedModal.issueDate | date : "dd/MM/yyyy" }}<br />
-            <strong>Fecha de vencimiento:</strong>
-            {{ ticketSelectedModal.expirationDate | date : "dd/MM/yyyy" }}
-          </div>
+  <!-- Modal payment -->
+  <div
+    class="modal fade"
+    id="ticketModal"
+    tabindex="-1"
+    aria-labelledby="ticketModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ticketModalLabel">
+            Factura - Ticket N° {{ ticketSelectedModal.ticketNumber }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
-        <hr />
-
-        <table class="table table-bordered">
-          <thead class="table-warning">
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Descripción</th>
-              <th scope="col">Cantidad</th>
-              <!-- <th scope="col">Precio Unitario</th> -->
-              <th scope="col">Costo Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="
-                let item of ticketSelectedModal?.ticketDetails;
-                let i = index
-              ">
-              <td>{{ i + 1 }}</td>
-              <td>{{ item.description }}</td>
-              <td>
-                {{ item.amount | currencyFormat}}
-              </td>
-              <!-- <td>{{ item.price | currency }}</td> -->
-              <!-- <td>{{ (item.quantity * item.price) | currency }}</td> -->
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="row">
-          <div class="col-md-6">
-            <strong class="me-2">Estado:  </strong>
-            <span 
-              class="badge bg-transparent p-2 border" 
-              [ngClass]="{
-                'border-success text-success': ticketSelectedModal.status === 'PAID',
-                'border-danger text-danger': ticketSelectedModal.status === 'CANCELED',
-                'border-warning text-warning': ticketSelectedModal.status === 'PENDING'
-              }"
-              >
-              {{ ticketSelectedModal.status | translateStatusTicket }}
-              </span>
-          </div>
-          <div class="col-md-6 text-end">
-            <strong>Total:</strong>
-            {{ calculateTotal(ticketSelectedModal) | currencyFormat }}
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          Cerrar
-        </button>
-        <div id="wallet_container"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- Modal status -->
-<div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="ticketModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="ticketModalLabel">
-          MODIFICAR ESTADO DE PAGO
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="row mb-4">
-          <!-- Columna izquierda con la información del ticket -->
-          <div class="col-md-6">
-
-            <div class="container px-5 py-5">
-
-
-              <h6 class="mb-0">
-                ID Factura:
-                <strong>{{ ticketSelectedModal.ticketNumber }}</strong>
-              </h6>
-              <h6 class="mb-0">
-                ID Propietario:
-                <strong>
-                  {{
-                  ticketSelectedModal.ownerId.first_name +
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <strong>Dirigido a:</strong>
+              {{
+                ticketSelectedModal.ownerId.first_name +
                   " " +
                   ticketSelectedModal.ownerId.second_name +
                   " " +
                   ticketSelectedModal.ownerId.last_name
-                  }}
-                </strong>
-              </h6>
+              }}
+            </div>
+            <div class="col-md-6 text-end">
+              <strong>Fecha de emisión:</strong>
+              {{ ticketSelectedModal.issueDate | date : "dd/MM/yyyy" }}<br />
+              <strong>Fecha de vencimiento:</strong>
+              {{ ticketSelectedModal.expirationDate | date : "dd/MM/yyyy" }}
+            </div>
+          </div>
+          <hr />
+
+          <table class="table table-bordered">
+            <thead class="table-warning">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Descripción</th>
+                <!-- <th scope="col">Cantidad</th> -->
+                <!-- <th scope="col">Precio Unitario</th> -->
+                <th scope="col">Sub Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="
+                  let item of ticketSelectedModal?.ticketDetails;
+                  let i = index
+                "
+              >
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.description }}</td>
+                <td>
+                  {{ item.amount | currencyFormat }}
+                </td>
+                <!-- <td>{{ item.price | currency }}</td> -->
+                <!-- <td>{{ (item.quantity * item.price) | currency }}</td> -->
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="row">
+            <div class="col-md-6">
+              <strong class="me-2">Estado: </strong>
+              <span
+                class="badge bg-transparent p-2 border"
+                [ngClass]="{
+                  'border-success text-success':
+                    ticketSelectedModal.status === 'PAID',
+                  'border-danger text-danger':
+                    ticketSelectedModal.status === 'CANCELED',
+                  'border-warning text-warning':
+                    ticketSelectedModal.status === 'PENDING',
+                  'border-dark text-dark':
+                    ticketSelectedModal.status === 'UNDER_REVIEW'
+                }"
+              >
+                {{ ticketSelectedModal.status | translateStatusTicket }}
+              </span>
+            </div>
+            <div class="col-md-6 text-end">
+              <strong>Total:</strong>
+              {{ calculateTotal(ticketSelectedModal) | currencyFormat }}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cerrar
+          </button>
+          <div id="wallet_container"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal status -->
+  <div
+    class="modal fade"
+    id="statusModal"
+    tabindex="-1"
+    aria-labelledby="ticketModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ticketModalLabel">
+            MODIFICAR ESTADO DE PAGO
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="row mb-4">
+            <div class="col-md-6">
               <h6 class="mb-0">
-                Fecha de Emisión:
-                <strong>{{ ticketSelectedModal.issueDate | date: "dd/MM/yyyy" }}</strong>
-              </h6>
-              <h6 class="mb-0">
-                Fecha de Vencimiento:
-                <strong>{{ ticketSelectedModal.expirationDate | date: "dd/MM/yyyy" }}</strong>
+                Factura - Ticket N°
+                <strong>{{ ticketSelectedModal.ticketNumber }}</strong>
               </h6>
             </div>
-
+            <div class="col-md-6">
+              <h6 class="mb-0">
+                Nombre Propietario:
+                <strong>{{
+                  ticketSelectedModal.ownerId.first_name +
+                    " " +
+                    ticketSelectedModal.ownerId.second_name +
+                    " " +
+                    ticketSelectedModal.ownerId.last_name
+                }}</strong>
+              </h6>
+            </div>
+            <div class="col-md-6">
+              <h6 class="mb-0">
+                Fecha de Emisión:
+                <strong>{{
+                  ticketSelectedModal.issueDate | date : "dd/MM/yyyy"
+                }}</strong>
+              </h6>
+            </div>
+            <div class="col-md-6">
+              <h6 class="mb-0">
+                Fecha de Vencimiento:
+                <strong>{{
+                  ticketSelectedModal.expirationDate | date : "dd/MM/yyyy"
+                }}</strong>
+              </h6>
+            </div>
           </div>
-
-          <!-- Columna derecha con la imagen -->
-          <div class="col-md-6 text-center">
-
           
-            <a [href]="'https://vientostucumanos.com.ar/download/multimedia.grande.b880c89f211440fe.N0E1N0RGRDItMDBBRS00Mjg5LUE2OUYtQjU4N0M5OTFfZ3JhbmRlLndlYnA%3D.webp'"
-              target="_blank">
-            
-              <img
-              [src]="'https://vientostucumanos.com.ar/download/multimedia.grande.b880c89f211440fe.N0E1N0RGRDItMDBBRS00Mjg5LUE2OUYtQjU4N0M5OTFfZ3JhbmRlLndlYnA%3D.webp'"
-              alt="Imagen del Ticket" class="img-fluid img-thumbnail modal-image" />
-            
-            
-            </a>
-         
+          @if (ticketSelectedModal.status === 'UNDER_REVIEW') {
+          <div class="row mb-4">
+            <!-- Columna derecha con la imagen -->
+            <div class="col-md-6">
+              <button class="btn btn-primary" (click)="downloadTicket()">
+                Descargar comprobante
+              </button>
+            </div>
+          </div>}
+
+          <hr />
+          <div class="d-flex justify-content-center">
+            <select
+              class="form-select form-select-lg mb-3"
+              [(ngModel)]="selectedState"
+              aria-label="Seleccione nuevo estado"
+            >
+              <option selected value="">Seleccione nuevo estado</option>
+              @if (ticketSelectedModal.status !== 'PENDING') {
+              <option value="1">PENDIENTE</option>
+              } @if (ticketSelectedModal.status !== 'PAID') {
+              <option value="2">PAGADO</option>
+              } @if (ticketSelectedModal.status !== 'CANCELED') {
+              <option value="3">CANCELADO</option>
+              }
+            </select>
           </div>
         </div>
-
-        <hr />
-        <div class="d-flex justify-content-center">
-          <select class="form-select form-select-lg mb-3" [(ngModel)]="selectedState" aria-label="Seleccione nuevo estado">
-            <option selected value="">Seleccione nuevo estado</option>
-            @if (ticketSelectedModal.status !== 'PENDING') {
-            <option value="1">PENDIENTE</option>
-            }
-            @if (ticketSelectedModal.status !== 'PAID') {
-            <option value="2">PAGADO</option>
-            }
-            @if (ticketSelectedModal.status !== 'CANCELED') {
-            <option value="3">CANCELADO</option>
-            }
-          </select>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            (click)="closeAllModals()"
+          >
+            Cerrar
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="openConfirmModal()"
+            [disabled]="!isStateSelected()"
+          >
+            Cambiar Estado
+          </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmación -->
+  <ng-template #confirmModal>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmar Cambio de Estado</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeAllModals()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          <strong>
+            Propietario:
+            {{
+              ticketSelectedModal.ownerId.first_name +
+                " " +
+                ticketSelectedModal.ownerId.second_name +
+                " " +
+                ticketSelectedModal.ownerId.last_name
+            }}
+          </strong>
+        </p>
+        <p class="mt-3">
+          Está a punto de cambiar el estado a {{ selectedStateChange() }} del
+          ticket
+          <strong>Nro: {{ ticketSelectedModal.ticketNumber }}</strong> con un
+          valor de <strong>${{ totalTicketSelected | number }}</strong
+          >.
+        </p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeAllModals()">
-          Cerrar
+        <button type="button" class="btn btn-success" (click)="confirmChange()">
+          Confirmar Cambio
         </button>
-        <button type="button" class="btn btn-primary" (click)="openConfirmModal()" [disabled]="!isStateSelected()">
-          Cambiar Estado
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          (click)="closeAllModals()"
+        >
+          Cancelar
         </button>
       </div>
     </div>
-  </div>
-</div>
-
-
-
-
-
-<!-- Modal de Confirmación -->
-<ng-template #confirmModal>
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title">Confirmar Cambio de Estado</h5>
-      <button type="button" class="btn-close" (click)="closeAllModals()"></button>
-    </div>
-    <div class="modal-body">
-      <p>
-        <strong>
-          Propietario:
-          {{
-          ticketSelectedModal.ownerId.first_name +
-          " " +
-          ticketSelectedModal.ownerId.second_name +
-          " " +
-          ticketSelectedModal.ownerId.last_name
-          }}
-        </strong>
-      </p>
-      <p class="mt-3">Está a punto de cambiar el estado a {{selectedStateChange()}} del ticket <strong>nro: {{ ticketSelectedModal.ticketNumber }}</strong> con un valor de <strong>${{ totalTicketSelected | number }}</strong>.</p>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-success" (click)="confirmChange()">Confirmar Cambio</button>
-      <button type="button" class="btn btn-outline-secondary" (click)="closeAllModals()">Cancelar</button>
-    </div>
-  </div>
-</ng-template>
+  </ng-template>
 </app-main-container>

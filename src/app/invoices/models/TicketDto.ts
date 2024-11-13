@@ -7,7 +7,10 @@ export interface TicketDetail {
 export enum TicketStatus {
   PENDING = 'PENDING',
   PAID = 'PAID',
-  CANCELED = 'CANCELED'
+  CANCELED = 'CANCELED',
+  UNDER_REVIEW = 'UNDER_REVIEW',
+  EXPIRED = 'EXPIRED',
+  IN_DEFAULT = 'IN_DEFAULT',
 }
 
 export interface Owner{

@@ -144,7 +144,7 @@ export class AppComponent {
       routerLink:'invoices',
       sidebarMenu: [
         {
-          label: 'Lista de Expensas (Propietario)',
+          label: 'Lista de Expensas (Administrador)',
           routerLink: 'invoices/admin-list-expensas'
         },
         {
@@ -154,10 +154,6 @@ export class AppComponent {
         {
           label: 'Estadísticas',
           routerLink: 'invoices/stadistics'
-        },
-        {
-          label: 'Review-Tickets-Transfer',
-          routerLink: 'invoices/review-tickets-transfer'
         }
       ]
     },

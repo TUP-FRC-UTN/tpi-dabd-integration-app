@@ -1,50 +1,131 @@
-<div class="container d-flex justify-content-center align-items-center min-vh-100">
-  <div class="row justify-content-center">
-    <!-- Gráfico de barras para "Cantidad de Pagos por Día" -->
-    <div class="col-md-6 mb-4 d-flex justify-content-center">
-      <div class="card shadow-sm w-100" style="max-width: 500px;">
-        <div class="card-body">
-          <h3 class="card-title text-center">Cantidad de Pagos por Día</h3>
-          <div class="chart-container" style="position: relative; height: 40vh; width: 100%;">
-            <canvas baseChart
-                    [data]="barChartData"
-                    [options]="barChartOptions"
-                    chartType="bar">
-            </canvas>
+<app-main-container title="Graficos estadísticos" subTitle="" (infoButtonClick)="showInfo()">
+  <div class="container">
+    <!-- Filtros de fecha y botón buscar -->
+    <form [formGroup]="dateForm" (ngSubmit)="buscar()">
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <label for="startDate" class="form-label">Periodo Desde</label>
+          <input
+            type="month"
+            id="startDate"
+            class="form-control w-100"
+            formControlName="startDate"
+            (ngModelChange)="onDateChange()">
+          <div *ngIf="dateForm.get('startDate')?.errors?.['required'] && dateForm.get('startDate')?.touched" class="text-danger mt-1">
+            La fecha de inicio es requerida.
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label for="endDate" class="form-label">Periodo Hasta</label>
+          <input
+            type="month"
+            id="endDate"
+            class="form-control w-100"
+            formControlName="endDate"
+            (ngModelChange)="onDateChange()">
+          <div *ngIf="dateForm.get('endDate')?.errors?.['required'] && dateForm.get('endDate')?.touched" class="text-danger mt-1">
+            La fecha de fin es requerida.
+          </div>
+          <div *ngIf="dateForm.get('endDate')?.errors?.['endDateInvalid'] && dateForm.get('endDate')?.touched" class="text-danger mt-1">
+            La fecha de fin no puede ser menor que la fecha de inicio.
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- Fila de tarjetas -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="card shadow-lg rounded-4 text-dark mb-3 full-height-card">
+          <div class="card-body">
+            <h5 class="card-title">Ingresos totales</h5>
+            <p class="card-text fs-3"><i class="bi bi-cash-coin"></i> $ {{ resumenIngresos }} </p>
+            <small>Promedio mensual: {{ promedioMensual }}</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-lg rounded-4 text-dark mb-3 full-height-card">
+          <div class="card-body">
+            <h5 class="card-title">Cantidad pagos aprobados</h5>
+            <p class="card-text fs-3"><i class="bi bi-wallet2"></i> {{ metodosPago }}</p>
+            <small>Método principal: {{ metodoPrincipal }} ({{ porcentajeMetodoPrincipal }}%)</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-lg rounded-4 text-dark mb-3 full-height-card">
+          <div class="card-body">
+            <h5 class="card-title">Boleta más alta</h5>
+            <p class="card-text fs-3"><i class="bi bi-receipt"></i> $ {{ boletaMasAlta }}</p>
+            <small>Promedio Top 5: ${{ promedioTop5 }}</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-lg rounded-4 text-dark full-height-card">
+          <div class="card-body">
+            <h5 class="card-title">Total ingresado por: {{ metodoPrincipal }}</h5>
+            <p class="card-text fs-3"><i class="bi bi-graph-up-arrow"></i> $ {{ mercadoPagoPromedio }}</p>
+            <small>Fue el metodo de pago mas elegido</small>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Gráfico de torta para "Estado de Pagos" -->
-    <div class="col-md-6 mb-4 d-flex justify-content-center">
-      <div class="card shadow-sm w-100" style="max-width: 500px;">
-        <div class="card-body">
-          <h3 class="card-title text-center">Estado de Pagos</h3>
-          <div class="chart-container" style="position: relative; height: 40vh; width: 100%;">
-            <canvas baseChart
-                    [data]="doughnutChartData"
-                    [type]="pieChartType">
-            </canvas>
+    <!-- Fila de gráficos -->
+    <div class="row mb-4 d-flex align-items-stretch">
+      <!-- Gráfico de comparación de ingresos -->
+      <div class="col-md-4">
+        <div class="card shadow-lg rounded-4 equal-height-card full-height-card">
+          <div class="card-body">
+            <h3 class="card-title text-center">Comparación de Ingresos</h3>
+            <div class="chart-container" style="position: relative; height: 100%; width: 100%;">
+              <canvas baseChart
+                      [data]="chartDataPeriodsAmount"
+                      [options]="barChartOptions"
+                      chartType="bar">
+              </canvas>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Gráfico de torta para "Distribucion de pagos" -->
-    <div class="col-md-6 mb-4 d-flex justify-content-center">
-      <div class="card shadow-sm w-100" style="max-width: 500px;">
-        <div class="card-body">
-          <h3 class="card-title text-center">Distribucion de pagos</h3>
-          <div class="chart-container" style="position: relative; height: 40vh; width: 100%;">
-            <canvas baseChart
-                    [data]="doughnutChartPaymentDistribution"
-                    [type]="pieChartType">
-            </canvas>
+      <!-- Gráfico TOP 5 -->
+      <div class="col-md-4">
+        <div class="card shadow-lg rounded-4 equal-height-card full-height-card">
+          <div class="card-body">
+            <h3 class="card-title text-center">TOP 5</h3>
+            <p class="text-center">De expensas más costosas</p>
+            <div class="chart-container" style="position: relative; height: 100%; width: 100%;">
+              <canvas baseChart
+                      [data]="chartData"
+                      [options]="barChartOptionsHorizontal"
+                      chartType="bar">
+              </canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráfico de torta de estados de pagos -->
+      <div class="col-md-4">
+        <div class="card shadow-lg rounded-4 equal-height-card full-height-card">
+          <div class="card-body">
+            <h3 class="card-title text-center">Estados de Pagos</h3>
+            <div class="chart-container" style="position: relative; height: 100%; width: 100%;">
+              <canvas baseChart
+                      [data]="doughnutChartData"
+                      [type]="pieChartType">
+              </canvas>
+            </div>
+            <div><small>Cantidad de pagos aprobados: {{ cantidadAprobados }}</small></div>
+            <div><small>Cantidad de pagos pendientes: {{ cantidadPendientes }}</small></div>
+            <div><small>Cantidad de pagos cancelados: {{ cantidadCancelados }}</small></div>
           </div>
         </div>
       </div>
     </div>
 
   </div>
-</div>
+</app-main-container>

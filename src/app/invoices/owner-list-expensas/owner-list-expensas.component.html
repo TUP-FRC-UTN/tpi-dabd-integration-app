@@ -1,5 +1,8 @@
-<app-main-container title="Hola Propietario" subTitle="Aquí puedes ver tu expensas" (infoButtonClick)="showInfo()">
-
+<app-main-container
+  title="Hola Propietario"
+  subTitle="Aquí puedes ver tu expensas"
+  (infoButtonClick)="showInfo()"
+>
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="btn-group me-5" role="group">
       <div class="col-sm-12 col-md-8 col-xl-8">
@@ -14,19 +17,18 @@
             (input)="onFilterTextBoxChanged($event)"
             placeholder="Buscar..."
           />
-          <app-table-filters class="me-2" [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
-  
+          <app-table-filters
+            class="me-2"
+            [filters]="filterConfig"
+            (filterValueChange)="filterChange($event)"
+          ></app-table-filters>
         </div>
       </div>
-  
-  
     </div>
-  
-    <div class="d-flex align-items-center">
 
+    <div class="d-flex align-items-center">
       <!-- <button type="button" class="btn btn-outline-primary" (click)="redirectToForm()">+</button> -->
-  
-  
+
       <div class="vertical-line mx-3"></div>
       <button class="btn btn-success me-2" (click)="exportToExcel()">
         <i class="bi bi-file-earmark-excel"></i>
@@ -36,10 +38,6 @@
       </button>
     </div>
   </div>
-  
-  
-
-
 
   <div class="table-container">
     <table
@@ -61,7 +59,7 @@
         @for (item of filteredTickets; track $index) {
         <tr>
           <th scope="row" class="text-center">
-            {{ (item.period | periodToMonthYear | capitalize) }}
+            {{ item.period | periodToMonthYear | capitalize }}
           </th>
           <td class="text-center">
             {{ item.expirationDate | date : "dd/MM/YYYY" }}
@@ -75,7 +73,8 @@
               [ngClass]="{
                 'text-success border-success': item.status === 'PAID',
                 'text-danger border-danger': item.status === 'CANCELED',
-                'text-warning border-warning': item.status === 'PENDING'
+                'text-warning border-warning': item.status === 'PENDING',
+                'text-dark border-dark': item.status === 'UNDER_REVIEW'
               }"
             >
               {{ item.status | translateStatusTicket }}
@@ -104,7 +103,12 @@
                   >
                 </li>
                 <li>
-                  <a *ngIf="item.status !== 'PAID' && item.status !== 'CANCELED'"
+                  <a
+                    *ngIf="
+                      item.status !== 'PAID' &&
+                      item.status !== 'CANCELED' &&
+                      item.status !== 'UNDER_REVIEW'
+                    "
                     class="dropdown-item"
                     data-bs-toggle="modal"
                     data-bs-target="#statusModal"
@@ -113,7 +117,12 @@
                   >
                 </li>
                 <li>
-                  <a *ngIf="item.status !== 'PAID' && item.status !== 'CANCELED'"
+                  <a
+                    *ngIf="
+                      item.status !== 'PAID' &&
+                      item.status !== 'CANCELED' &&
+                      item.status !== 'UNDER_REVIEW'
+                    "
                     class="dropdown-item"
                     data-bs-toggle="modal"
                     data-bs-target="#ticketModal"
@@ -122,9 +131,7 @@
                   >
                 </li>
                 <li>
-                  <a
-                    class="dropdown-item"
-                    (click)="downloadTicket(item)"
+                  <a class="dropdown-item" (click)="downloadTicket(item)"
                     >Descargar Expensa</a
                   >
                 </li>
@@ -133,20 +140,19 @@
           </td>
         </tr>
         }@empty {
-          <td colspan="7" class="text-center">
-            <div class="text-center p-3">
-              <div class="alert alert-secondary">
-                No hay registros para mostrar
-              </div>
+        <td colspan="7" class="text-center">
+          <div class="text-center p-3">
+            <div class="alert alert-secondary">
+              No hay registros para mostrar
             </div>
-          </td>
-          }
+          </div>
+        </td>
+        }
       </tbody>
     </table>
   </div>
 
   <div class="d-flex justify-content-between align-items-center mt-3">
-
     <div class="form-group mb-3 me-2">
       <select
         id="itemsPerPage"
@@ -172,30 +178,6 @@
     ></ngb-pagination>
   </div>
 </app-main-container>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <!-- Modal -->
 <div
@@ -244,9 +226,9 @@
             <tr>
               <th scope="col">#</th>
               <th scope="col">Descripción</th>
-              <th scope="col">Cantidad</th>
+              <!-- <th scope="col">Cantidad</th> -->
               <!-- <th scope="col">Precio Unitario</th> -->
-              <th scope="col">Costo Total</th>
+              <th scope="col">Sub Total</th>
             </tr>
           </thead>
           <tbody>
@@ -269,24 +251,26 @@
 
         <div class="row">
           <div class="col-md-6">
-            <strong >Estado:  </strong>
-            <span 
-          class="badge bg-transparent p-2 border" 
-          [ngClass]="{
-            'border-success text-success': ticketSelectedModal.status === 'PAID',
-            'border-danger text-danger': ticketSelectedModal.status === 'CANCELED',
-            'border-warning text-warning': ticketSelectedModal.status === 'PENDING'
-          }"
-          >
-          {{ ticketSelectedModal.status | translateStatusTicket }}
-          </span>
+            <strong>Estado: </strong>
+            <span
+              class="badge bg-transparent p-2 border"
+              [ngClass]="{
+                'border-success text-success':
+                  ticketSelectedModal.status === 'PAID',
+                'border-danger text-danger':
+                  ticketSelectedModal.status === 'CANCELED',
+                'border-warning text-warning':
+                  ticketSelectedModal.status === 'PENDING',
+                'border-dark text-dark':
+                  ticketSelectedModal.status === 'UNDER_REVIEW'
+              }"
+            >
+              {{ ticketSelectedModal.status | translateStatusTicket }}
+            </span>
           </div>
           <div class="col-md-6 text-end">
             <strong>Total:</strong>
-            {{
-              calculateTotal(ticketSelectedModal)
-                | currencyFormat
-            }}
+            {{ calculateTotal(ticketSelectedModal) | currencyFormat }}
           </div>
         </div>
       </div>
@@ -295,9 +279,10 @@
           Cerrar
         </button>
         <!-- <button type="button" class="btn btn-primary" (click)="pagar()">Pagar</button> -->
-        <div *ngIf="ticketSelectedModal.status === 'PENDING'" id="wallet_container">
-        </div>
-        
+        <div
+          *ngIf="ticketSelectedModal.status === 'PENDING'"
+          id="wallet_container"
+        ></div>
       </div>
     </div>
   </div>
@@ -369,6 +354,7 @@
               class="form-control"
               id="inputGroupFile02"
               (change)="onFileSelected($event)"
+              accept=".pdf, .jpg, .png, .jpeg"
             />
             <label class="input-group-text" for="inputGroupFile02"
               >Subir comprobante</label
@@ -385,10 +371,10 @@
           class="btn btn-primary"
           [disabled]="!selectedFile"
           (click)="onUpload()"
+          data-bs-dismiss="modal"
         >
           Cargar Comprobante
         </button>
-        
       </div>
     </div>
   </div>
