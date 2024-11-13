@@ -73,13 +73,12 @@ export class OwnerListExpensasComponent {
   filteredTicketList: TicketDto[] = [];
   lastPage: boolean | undefined;
   totalItems: number = 0;
-
   filteroptions: FilterOption[] = [
     { value: 'PENDING', label: 'Pendiente' },
     { value: 'PAID', label: 'Pagado' },
     { value: 'CANCELED', label: 'Anulado' },
   ];
-
+  eventSaved!: Record<string, any>;
   filterConfig: Filter[] = new FilterConfigBuilder()
     .selectFilter('Estado', 'status', 'Estado', this.filteroptions)
     .numberFilter('Año desde', 'initYear', 'Seleccione un año ')
@@ -128,9 +127,8 @@ export class OwnerListExpensasComponent {
   // Método que detecta cambios en los filtros
   filterChange($event: Record<string, any>) {
     console.log($event); // Muestra los valores actuales de los filtros en la consola
-    // this.eventSaved = $event;
+    this.eventSaved = $event;
     this.isFilter = true;
-    debugger
     if(!this.ticketService.isValidYearFilter($event['initYear']) || !this.ticketService.isValidYearFilter($event['endYear'])) {
       return;
     }
@@ -376,7 +374,11 @@ export class OwnerListExpensasComponent {
 
   onPageChange(page: number) {
     this.currentPage = --page;
-    this.getTickets();
+    if (!this.isFilter) {
+      this.getTickets();
+    } else {
+      this.filterChange(this.eventSaved);
+    }
     this.currentPage++;
   }
 

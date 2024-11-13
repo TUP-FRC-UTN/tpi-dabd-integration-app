@@ -560,7 +560,6 @@ export class AdminListExpensasComponent implements OnInit {
     console.log($event); // Muestra los valores actuales de los filtros en la consola
     this.eventSaved = $event;
     this.isFilter = true;
-    
     if(!this.ticketService.isValidYearFilter($event['initYear']) || !this.ticketService.isValidYearFilter($event['endYear'])) {
       return;
     }
