@@ -277,7 +277,7 @@ export class UsersRoleListComponent {
           this.filterSubject.next(result.content);
         },
         error: (err) =>
-          this.toastService.sendError('Error al cargar la lista.'),
+          this.toastService.sendError('Error al cargar la lista'),
       });
   }
 

@@ -24,9 +24,7 @@ export class UserService {
   private http = inject(HttpClient)
   private sessionService = inject(SessionService);
 
-  host: string = environment.production
-    ? `${environment.apis.users}users/`
-    : 'http://localhost:8015/users';
+  host: string = `${environment.production ? `${environment.apis.users}` : `${environment.apis.users}`}users`;
 
   validateEmail(email: string): Observable<boolean> {
     const params = new HttpParams().set('email', email.toString());

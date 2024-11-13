@@ -146,8 +146,8 @@ export class CadastreOwnerAssignPlotComponent {
       const plotNumber = this.plotForm.controls['plotNumber'].value;
       const modalRef = this.modalService.open(ConfirmAlertComponent);
       modalRef.componentInstance.alertType = "info";
-      modalRef.componentInstance.alertTitle = 'Confirmacion';
-      modalRef.componentInstance.alertMessage = `Estas seguro de que desea asociar a ${this.selectedOwner.firstName} ${this.selectedOwner.lastName} al lote nro ${plotNumber} en la manzana ${blockNumber} ?`;
+      modalRef.componentInstance.alertTitle = 'Confirmación';
+      modalRef.componentInstance.alertMessage = `Estás seguro de que desea asociar a ${this.selectedOwner.firstName} ${this.selectedOwner.lastName} al lote nro ${plotNumber} en la manzana ${blockNumber} ?`;
 
       modalRef.result.then((result) => {
         if (result && this.selectedOwner?.id) {
@@ -156,22 +156,22 @@ export class CadastreOwnerAssignPlotComponent {
               if (this.selectedOwner?.id !== undefined) {
                 this.ownerService.linkOwnerWithPlot(this.selectedOwner.id, plot.id).subscribe({
                   next: () => {
-                    this.toastService.sendSuccess("Dueño y lote asociado exitosamente.")
+                    this.toastService.sendSuccess("Dueño y lote asociado exitosamente")
                     this.plotForm.reset()
                     this.selectedOwner = null
                   },
-                  error: (error) => { this.toastService.sendError("Error al asociar al dueño con el lote.") }
+                  error: (error) => { this.toastService.sendError("Error al asociar al dueño con el lote") }
                 });
               }
             },
-            error: () => { this.toastService.sendError('Error al obtener el lote.'); }
+            error: () => { this.toastService.sendError('Error al obtener el lote'); }
           });
         } else {
-          this.toastService.sendSuccess("Asignación cancelada con éxito.");
+          this.toastService.sendSuccess("Asignación cancelada con éxito");
         }
       });
     } else {
-      this.toastService.sendError("Debe seleccionar un propietario o lote válido.");
+      this.toastService.sendError("Debe seleccionar un propietario o lote válido");
     }
   }
 
