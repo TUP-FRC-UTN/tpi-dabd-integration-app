@@ -70,7 +70,7 @@ export class LoginComponent implements OnInit {
         .pipe(
           catchError((error: HttpErrorResponse) => {
             if (error.status === 401) {
-              this.toastService.sendError("La contraseña o el email son invalidos, por favor vuelva a intentar");
+              this.toastService.sendError("La contraseña o el email son inválidos, por favor vuelva a intentar");
             } else {
               console.log('An unexpected error occurred:', error);
               this.toastService.sendError("Ha sucedido un error inesperado, por favor vuelva a intentar más tarde");
