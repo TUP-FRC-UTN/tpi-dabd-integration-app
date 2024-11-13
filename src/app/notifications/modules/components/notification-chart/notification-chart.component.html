@@ -5,7 +5,7 @@
       Asistente IA
       <i class="bi bi-stars"></i>
     </button>
-  
+
     <div *ngIf="isTooltipOpen" class="tooltip-container">
       <div class="tooltip-content">
         <div *ngIf="isLoading" class="spinner-border text-primary" role="status">
@@ -18,7 +18,7 @@
       </div>
     </div>
   </div>
-  
+
   <div class="d-flex justify-content-between align-items-center mb-3">
 
     @if (isBrowser) {
@@ -45,18 +45,17 @@
       <!-- Filter Dropdown -->
       <div class="dropdown">
         <div class="dropdown-menu dropdown-menu-end p-3" [ngClass]="{'show': isDropdownOpen}">
-          <!-- Asunto -->
-          <div class="mb-3">
-            <label class="form-label">Asunto</label>
-            <input type="text" class="form-control" placeholder="Buscar por asunto..." [(ngModel)]="searchSubject">
+
+          <div class="form-group">
+            <label for="templateFilter">Filtrar por plantilla:</label>
+            <select class="form-select" id="templateFilter" [(ngModel)]="selectedTemplate" (change)="applyFilters()">
+              <option value="">Todas las plantillas</option>
+              <option *ngFor="let template of availableTemplates" [value]="template">
+                {{ template }}
+              </option>
+            </select>
           </div>
 
-          <!-- Usuario -->
-          <div class="mb-3">
-            <label class="form-label">Usuario</label>
-            <input type="text" class="form-control" placeholder="Buscar por email de destinatario..."
-              [(ngModel)]="searchEmail">
-          </div>
 
           <!-- Estado -->
           <div class="mb-3">
@@ -129,20 +128,24 @@
   </div>
 
   <!-- Most Used Template KPI -->
-  <div class="col-md-3 mb-3">
-    <div class="card">
-      <div class="card-body" style="height: 150px; width: 100%;">
-        <div class="d-flex align-items-center mb-2">
-          <div class="icon-circle bg-warning text-white me-3">
-            <i class="bi bi-file-text"></i>
-          </div>
-          <h6 class="card-subtitle text-muted mb-0">Plantilla más Usada</h6>
+<!-- Most Used Template KPI -->
+<div class="col-md-3 mb-3">
+  <div class="card">
+    <div class="card-body" style="height: 150px; width: 100%;">
+      <div class="d-flex align-items-center mb-2">
+        <div class="icon-circle bg-warning text-white me-3">
+          <i class="bi bi-file-text"></i>
         </div>
-        <h2 class="card-title mb-0">{{kpis.mostUsedTemplate.count}}</h2>
-        <small class="text-muted">{{kpis.mostUsedTemplate.name}}</small>
+        <h6 class="card-subtitle text-muted mb-0">
+          {{ selectedTemplate ? 'Veces Utilizada' : 'Plantilla Más Usada' }}
+        </h6>
       </div>
+      <h2 class="card-title mb-0">{{kpis.mostUsedTemplate.count}}</h2>
+      <small class="text-muted">{{kpis.mostUsedTemplate.name}}</small>
     </div>
   </div>
+</div>
+
 
   <!-- Peak Hour KPI -->
   <div class="col-md-3 mb-3">

@@ -123,20 +123,6 @@ export class AppComponent {
       ]
     },
     {
-      label: 'Notificaciones',
-      routerLink:'notifications',
-      sidebarMenu: [
-        {
-          label: 'Listar Plantillas',
-          routerLink: 'notifications/templates',
-        },
-        {
-          label: 'Registrar Plantillas',
-          routerLink: 'notifications/templates/new',
-        }
-      ],
-    },
-    {
       label: 'Contactos',
       routerLink: 'notifications/contacts',
       sidebarMenu: [
@@ -158,6 +144,14 @@ export class AppComponent {
       label: 'Notificaciones',
       routerLink: 'notifications/send-email',
       sidebarMenu: [
+        {
+          label: 'Listar Plantillas',
+          routerLink: 'notifications/templates',
+        },
+        {
+          label: 'Registrar Plantillas',
+          routerLink: 'notifications/templates/new',
+        },
         {
           label: 'Enviar Notificación',
           routerLink: 'notifications/send-email',

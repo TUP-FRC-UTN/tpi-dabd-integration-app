@@ -25,7 +25,7 @@
   height: 250px;  /* Reducir la altura de los gráficos */
   width: 100%;
   margin: 0 auto;
-} 
+}
 
 /* Form Styles */
 .form-control {
@@ -238,7 +238,7 @@
 
 .hover-underline:hover {
   text-decoration: underline;
-  color: inherit; 
+  color: inherit;
 }
 
 
@@ -247,15 +247,15 @@
   background-color: #8b5cf6;
 }
 .tooltip-wrapper {
-  position: relative; 
+  position: relative;
 }
 
 .tooltip-container {
   position: absolute;
   top: 100%;
-  right: 0; 
-  transform: translateY(10px); 
-  width: 500px; 
+  right: 0;
+  transform: translateY(10px);
+  width: 500px;
   background: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -267,8 +267,8 @@
 .tooltip-container::before {
   content: '';
   position: absolute;
-  top: -5px; 
-  right: 15px; 
+  top: -5px;
+  right: 15px;
   transform: translateY(-100%);
   border-width: 5px;
   border-style: solid;

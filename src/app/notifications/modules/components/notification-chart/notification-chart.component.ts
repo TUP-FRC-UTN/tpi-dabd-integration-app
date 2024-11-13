@@ -1,5 +1,5 @@
-import { Component, Inject, inject, OnInit, ViewChild } from '@angular/core';
-import { NgChartsModule, BaseChartDirective } from 'ng2-charts';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { BaseChartDirective } from 'ng2-charts';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../../services/notification.service';
@@ -10,17 +10,16 @@ import { PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
 import { IaService } from '../../../services/ia-service';
-import { ChartData } from 'chart.js';
+import { ChartData, ChartConfiguration } from 'chart.js';
 import { RouterModule } from '@angular/router';
-
 
 @Component({
   selector: 'app-notification-chart',
   standalone: true,
   imports: [
-    NgChartsModule,
     FormsModule,
     CommonModule,
+    BaseChartDirective,
     MainContainerComponent,
     RouterModule
   ],
@@ -36,7 +35,7 @@ export class NotificationChartComponent implements OnInit {
   @ViewChild('dailyChart') dailyChart?: BaseChartDirective;
   @ViewChild('weeklyChart') weeklyChart?: BaseChartDirective;
 
-  
+
   private platformId = inject(PLATFORM_ID);
   notificationService = inject(NotificationService);
   chartConfigurationService = inject(ChartConfigurationService);
@@ -64,10 +63,13 @@ export class NotificationChartComponent implements OnInit {
   templateChartOptions = this.chartConfigurationService.templateChartOptions;
   dailyChartOptions = this.chartConfigurationService.dailyChartOptions;
 
+  availableTemplates: string[] = []; // Lista de plantillas disponibles
+  selectedTemplate: string = ''; // Plantilla seleccionada por el usuario
 
-  isTooltipOpen = false; 
+
+  isTooltipOpen = false;
   isLoading = false;
-  iaResponse = ''; 
+  iaResponse = '';
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
@@ -78,17 +80,28 @@ export class NotificationChartComponent implements OnInit {
   notifications: NotificationModelChart[] = []
 
   ngOnInit() {
-    this.getAllNotifications(); // Carga de datos inicial
-  
+    this.getAllNotifications();
+
     this.notificationService.getAllNotificationsNotFiltered().subscribe((data) => {
       this.notifications = data;
-  
-      // Asegurate de que los gráficos se actualizan después de cargar los datos.
+
+      // Obtener todas las plantillas únicas
+      this.availableTemplates = Array.from(new Set(data.map(notification => notification.templateName)));
+
+      const today = new Date();
+      this.dateFrom = this.formatDate(today);
+
+      const tomorrow = new Date(today);
+      today.setDate(today.getDate() + 2);
+      tomorrow.setDate(today.getDate());
+      this.dateUntil = this.formatDate(tomorrow);
+
       if (this.isBrowser) {
         this.filterAndUpdateCharts();
       }
     });
   }
+
 
 
   getAllNotifications() {
@@ -124,46 +137,52 @@ export class NotificationChartComponent implements OnInit {
     this.selectedStatus = 'ALL';
     this.dateFrom = '';
     this.dateUntil = '';
+    this.selectedTemplate ='ALL';
     this.filterAndUpdateCharts();
   }
 
-private filterAndUpdateCharts(): void {
-  let filteredData = [...this.notifications];
+  private filterAndUpdateCharts(): void {
+    let filteredData = [...this.notifications];
 
-  // Filtros existentes
-  if (this.searchSubject) {
-    filteredData = filteredData.filter(notification =>
-      notification.subject.toLowerCase().includes(this.searchSubject.toLowerCase())
-    );
+    if (this.dateFrom || this.dateUntil) {
+      filteredData = filteredData.filter(notification => {
+        const notificationDate = new Date(this.convertToISODate(notification.dateSend));
+        const fromDate = this.dateFrom ? new Date(this.dateFrom) : null;
+        const untilDate = this.dateUntil ? new Date(this.dateUntil) : null;
+
+        return (!fromDate || notificationDate >= fromDate) &&
+               (!untilDate || notificationDate <= untilDate);
+      });
+    }
+
+    if (this.searchSubject) {
+      filteredData = filteredData.filter(notification =>
+        notification.subject.toLowerCase().includes(this.searchSubject.toLowerCase())
+      );
+    }
+
+    if (this.searchEmail) {
+      filteredData = filteredData.filter(notification =>
+        notification.recipient.toLowerCase().includes(this.searchEmail.toLowerCase())
+      );
+    }
+
+    if (this.selectedStatus !== 'ALL') {
+      filteredData = filteredData.filter(notification =>
+        notification.statusSend === this.selectedStatus
+      );
+    }
+
+    if (this.selectedTemplate) {
+      filteredData = filteredData.filter(notification =>
+        notification.templateName === this.selectedTemplate
+      );
+    }
+
+    this.updateChartsWithData(filteredData);
+    this.updateWeeklyChartData(filteredData);
   }
 
-  if (this.searchEmail) {
-    filteredData = filteredData.filter(notification =>
-      notification.recipient.toLowerCase().includes(this.searchEmail.toLowerCase())
-    );
-  }
-
-  if (this.selectedStatus !== 'ALL') {
-    filteredData = filteredData.filter(notification =>
-      notification.statusSend === this.selectedStatus
-    );
-  }
-
-  if (this.dateFrom || this.dateUntil) {
-    filteredData = this.notifications.filter(notification => {
-      const notificationDate = new Date(this.convertToISODate(notification.dateSend));
-      const fromDate = this.dateFrom ? new Date(this.dateFrom) : null;
-      const untilDate = this.dateUntil ? new Date(this.dateUntil) : null;
-
-      return (!fromDate || notificationDate >= fromDate) &&
-        (!untilDate || notificationDate <= untilDate);
-    });
-  }
-
-  this.updateChartsWithData(filteredData);
-
-  this.updateWeeklyChartData(filteredData);
-}
 
   private convertToISODate(dateString: string): string {
     const [date, time] = dateString.split(' ');
@@ -242,7 +261,6 @@ private filterAndUpdateCharts(): void {
 
 
   private calculateKPIs(data: any[]): void {
-
     const total = data.length;
 
     const sent = data.filter(n => n.statusSend === 'SENT').length;
@@ -251,12 +269,21 @@ private filterAndUpdateCharts(): void {
     const uniqueDays = new Set(data.map(n => n.dateSend.split(' ')[0])).size;
 
     const templateCount = new Map<string, number>();
-
     data.forEach(n => {
       templateCount.set(n.templateName, (templateCount.get(n.templateName) || 0) + 1);
     });
-    const mostUsedTemplate = Array.from(templateCount.entries())
-      .reduce((a, b) => a[1] > b[1] ? a : b, ['', 0]);
+
+    let mostUsedTemplate: [string, number];
+
+    if (this.selectedTemplate) {
+      // Si hay filtro por plantilla, mostrar cuántas veces se utilizó
+      const count = templateCount.get(this.selectedTemplate) || 0;
+      mostUsedTemplate = [this.selectedTemplate, count];
+    } else {
+      // Si no hay filtro por plantilla, mostrar la plantilla más usada
+      mostUsedTemplate = Array.from(templateCount.entries())
+        .reduce((a, b) => a[1] > b[1] ? a : b, ['', 0]);
+    }
 
     const hourCount = new Map<number, number>();
     data.forEach(n => {
@@ -268,6 +295,7 @@ private filterAndUpdateCharts(): void {
     data.forEach(n => {
       contactCount.set(n.recipient, (contactCount.get(n.recipient) || 0) + 1);
     });
+
     const mostFrequentContact = Array.from(contactCount.entries())
       .reduce((a, b) => a[1] > b[1] ? a : b, ['', 0]);
 
@@ -293,7 +321,6 @@ private filterAndUpdateCharts(): void {
         mostActiveDay = day;
       }
     });
-
 
     this.kpis = {
       pendingRate: (sent / total) * 100,
@@ -357,7 +384,7 @@ private filterAndUpdateCharts(): void {
   weeklyChartData: ChartData = {
     labels: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
     datasets: [{
-      data: [],  
+      data: [],
       label: 'Notificaciones por Día',
       backgroundColor: '#FF6384',
       borderColor: '#FF6384',
