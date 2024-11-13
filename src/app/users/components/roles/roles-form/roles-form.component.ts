@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Role } from '../../../models/role';
 import { RoleService } from '../../../services/role.service';
@@ -6,6 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Operations } from '../../../constants/operationContants';
 import { CommonModule } from '@angular/common';
 import { ToastService, MainContainerComponent } from 'ngx-dabd-grupo01';
+import { InfoComponent } from '../../commons/info/info.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-roles-form',
@@ -15,6 +17,7 @@ import { ToastService, MainContainerComponent } from 'ngx-dabd-grupo01';
   styleUrl: './roles-form.component.css'
 })
 export class RolesFormComponent implements OnInit {
+  private modalService = inject(NgbModal);
   roleForm: FormGroup;
   role: Role | undefined;
   id: string | null = "";
@@ -45,6 +48,7 @@ export class RolesFormComponent implements OnInit {
             descriptionControl: this.role.description
           })
           this.roleForm.controls['codeControl'].disable();
+          this.roleForm.controls['nameControl'].disable();
         },
         error: (error) => {
           console.log(error);
@@ -76,12 +80,12 @@ export class RolesFormComponent implements OnInit {
     }
     this.roleService.createRole(newRole as Role).subscribe({
       next: () => {
-        this.toastService.sendSuccess("Rol creado con éxito.");
+        this.toastService.sendSuccess("Rol creado con éxito");
         this.navigateToList();
       },
       error: (error) => {
         console.error('Error creating plot:', error);
-        this.toastService.sendError("Error creando el rol.");
+        this.toastService.sendError("Error creando el rol");
       }
     });
   }
@@ -95,12 +99,12 @@ export class RolesFormComponent implements OnInit {
     }
     this.roleService.updateRole(id, updateRole as Role).subscribe({
       next: () => {
-        this.toastService.sendSuccess("Rol modificado con éxito.");
+        this.toastService.sendSuccess("Rol modificado con éxito");
         this.navigateToList();
       },
       error: (error) => {
         console.log(error);
-        this.toastService.sendError("Error modificando el rol.");
+        this.toastService.sendError("Error modificando el rol");
       }
     });
   }
@@ -115,5 +119,63 @@ export class RolesFormComponent implements OnInit {
       }
     }
   }
+
+  //#region Info Button
+  openInfo() {
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true,
+    });
+
+    modalRef.componentInstance.title = 'Edición de roles';
+    modalRef.componentInstance.description =
+      'En esta pantalla se podrán editar los datos referidos al rol.';
+    modalRef.componentInstance.body = [
+      {
+        title: 'Datos',
+        content: [
+          {
+            strong: 'Código:',
+            detail: 'Código del rol.',
+          },
+          {
+            strong: 'Nombre:',
+            detail: 'Nombre del rol en el sistema.',
+          },
+          {
+            strong: 'Nombre detallado:',
+            detail: 'Nombre detallado del rol, a diferencia con el nombre común, éste es el nombre por el cuál se identificará el rol.',
+          },
+          {
+            strong: 'Descripción: ',
+            detail: 'Descripción breve de lo que define el rol.',
+          }
+        ],
+      },
+      {
+        title: 'Acciones',
+        content: [
+          {
+            strong: 'Cancelar: ',
+            detail:
+              'Cancela la edición y vuelve a la vista anterior',
+          },
+          {
+            strong: 'Guardar: ',
+            detail: 'Guarda los cambios realizados en el rol',
+          },
+        ],
+      }
+    ];
+    modalRef.componentInstance.notes = [
+      'Los campos de código y nombre del rol no serán editables ya que se son sensibles para el uso del sistema.',
+      'El nombre detallado es requerido para editar el rol.',
+      'La interfaz está diseñada para ofrecer una administración eficiente de los roles, manteniendo la integridad y precisión de los datos.',
+    ];
+  }
+  //#end region
 
 }

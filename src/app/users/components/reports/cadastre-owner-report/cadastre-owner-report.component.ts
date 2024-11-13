@@ -152,7 +152,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
       { value: 'SALE', label: 'Venta' },
       { value: 'SALE_PROCESS', label: 'Proceso de Venta' },
       { value: 'CONSTRUCTION_PROCESS', label: 'En construcciones' },
-      { value: 'EMPTY', label: 'Vacio' },
+      { value: 'EMPTY', label: 'Vacío' },
     ])
     .selectFilter('Activo', 'isActive', '', [
       { value: 'true', label: 'Activo' },

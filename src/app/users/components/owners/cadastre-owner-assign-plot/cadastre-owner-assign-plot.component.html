@@ -105,10 +105,10 @@
         <div class="col-12">
           @if (plotForm.get('blockNumber')?.touched && plotForm.get('blockNumber')?.invalid) {
             @if (plotForm.get('blockNumber')?.hasError('required')) {
-              <small class="text-danger">Campo requerido.</small>
+              <small class="text-danger">Requerido</small>
             }
             @if (plotForm.get('blockNumber')?.hasError('min')) {
-              <small class="text-danger">El número mínimo es 1.</small>
+              <small class="text-danger">El número mínimo es 1</small>
             }
           }
         </div>
@@ -135,19 +135,19 @@
         <div class="col-12">
           @if (plotForm.get('plotNumber')?.touched && plotForm.get('plotNumber')?.invalid) {
             @if (plotForm.get('plotNumber')?.hasError('required')) {
-              <small class="text-danger">Campo requerido.</small>
+              <small class="text-danger">Requerido</small>
             }
             @if (plotForm.get('plotNumber')?.hasError('min')) {
-              <small class="text-danger">El número mínimo es 1.</small>
+              <small class="text-danger">El número mínimo es 1</small>
             }
             @if (plotForm.get('plotNumber')?.hasError('serverError')) {
-              <small class="text-danger">Error en el servidor, por favor intenta nuevamente.</small>
+              <small class="text-danger">Error en el servidor, por favor intenta nuevamente</small>
             }
             @if (plotForm.get('plotNumber')?.hasError('plotExists')) {
-              <small class="text-danger ms-2">No existe un lote con ese número en esa manzana.</small>
+              <small class="text-danger ms-2">No existe un lote con ese número en esa manzana</small>
             }
             @if (plotForm.get('plotNumber')?.hasError('plotWithNoOwner')) {
-              <small class="text-danger ms-2">Ese lote tiene un dueño asociado.</small>
+              <small class="text-danger ms-2">Ese lote tiene un dueño asociado</small>
             }
           }
         </div>

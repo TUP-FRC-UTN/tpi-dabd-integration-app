@@ -263,7 +263,7 @@ export class FilesFormComponent implements OnInit {
               })
             ).subscribe({
               complete: () => {
-                this.toastService.sendSuccess('Archivos cargados exitosamente.');
+                this.toastService.sendSuccess('Archivos cargados exitosamente');
                 this.isUploading = false;
                 this.ownerFiles = [];
                 this.getOwnerPlots();
@@ -310,7 +310,7 @@ export class FilesFormComponent implements OnInit {
             })
           ).subscribe({
             complete: () => {
-              this.toastService.sendSuccess('Archivos cargados exitosamente.');
+              this.toastService.sendSuccess('Archivos cargados exitosamente');
               this.isUploading = false;
             }
           });

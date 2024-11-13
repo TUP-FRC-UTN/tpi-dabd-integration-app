@@ -73,7 +73,7 @@ export class LoginComponent implements OnInit {
               this.toastService.sendError("La contraseña o el email son inválidos, por favor vuelva a intentar");
             } else {
               console.log('An unexpected error occurred:', error);
-              this.toastService.sendError("Ha sucedido un error inesperado, por favor vuelva a intentar más tarde.");
+              this.toastService.sendError("Ha sucedido un error inesperado, por favor vuelva a intentar más tarde");
             }
             return of(null);
           }),
@@ -86,7 +86,7 @@ export class LoginComponent implements OnInit {
           }),
           catchError((error: HttpErrorResponse) => {
             console.log('Error fetching user details:', error);
-            this.toastService.sendError("Error al recuperar los datos del usuario, por favor vuelva a intentar más tarde.")
+            this.toastService.sendError("Error al recuperar los datos del usuario, por favor vuelva a intentar más tarde")
             return of(null);
           })
         )

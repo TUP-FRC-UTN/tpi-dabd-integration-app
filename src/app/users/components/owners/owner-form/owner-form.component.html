@@ -15,7 +15,7 @@
       <div>
         @if (ownerForm.get('firstName')?.invalid && ownerForm.get('firstName')?.touched) {
           @if (ownerForm.get('firstName')?.errors?.['required']) {
-            <small class="text-danger ms-2">Requerido </small>
+            <small class="text-danger ms-2">Requerido</small>
           }
           @if (ownerForm.get('firstName')?.errors?.['minlength']) {
             <small class="text-danger ms-2">Al menos 2 caracteres</small>
@@ -54,7 +54,7 @@
       <div>
         @if (ownerForm.get('lastName')?.invalid && ownerForm.get('lastName')?.touched) {
           @if (ownerForm.get('lastName')?.errors?.['required']) {
-            <small class="text-danger ms-2">Requerido </small>
+            <small class="text-danger ms-2">Requerido</small>
           }
         }
       </div>
@@ -74,7 +74,7 @@
       <div>
         @if (ownerForm.get('ownerType')?.invalid && ownerForm.get('ownerType')?.touched) {
           @if (ownerForm.get('ownerType')?.errors?.['required']) {
-            <small class="text-danger">Requerido </small>
+            <small class="text-danger">Requerido</small>
           }
         }
       </div>
@@ -94,7 +94,7 @@
       <div>
         @if (ownerForm.get('documentType')?.invalid && ownerForm.get('documentType')?.touched) {
           @if (ownerForm.get('documentType')?.errors?.['required']) {
-            <small class="text-danger">requerido </small>
+            <small class="text-danger">Requerido</small>
           }
         }
       </div>
@@ -114,13 +114,13 @@
       <div>
         @if (ownerForm.get('documentNumber')?.invalid && ownerForm.get('documentNumber')?.touched) {
           @if (ownerForm.get('documentNumber')?.errors?.['required']) {
-            <small class="text-danger">Requerido </small>
+            <small class="text-danger">Requerido</small>
           }
           @if (ownerForm.get('documentNumber')?.errors?.['ownerExists']) {
             <small class="text-danger">Documento en uso</small>
           }
           @if (ownerForm.get('documentNumber')?.errors?.['serverError']) {
-            <small class="text-danger">Error en la validacion</small>
+            <small class="text-danger">Error en la validación</small>
           }
         }
       </div>
@@ -140,10 +140,10 @@
       <div>
         @if (ownerForm.get('cuit')?.invalid && ownerForm.get('cuit')?.touched) {
           @if (ownerForm.get('cuit')?.errors?.['required']) {
-            <small class="text-danger">Requerido </small>
+            <small class="text-danger">Requerido</small>
           }
           @if (ownerForm.get('cuit')?.errors?.['pattern']) {
-            <small class="text-danger">Solo número</small>
+            <small class="text-danger">Solo números</small>
           }
           @if (ownerForm.get('cuit')?.errors?.['invalidCuit']) {
             <small class="text-danger">CUIT no válido</small>
@@ -166,10 +166,10 @@
       <div>
         @if (ownerForm.get('bankAccount')?.invalid && ownerForm.get('bankAccount')?.touched) {
           @if (ownerForm.get('bankAccount')?.errors?.['required']) {
-            <small class="text-danger">Requerido </small>
+            <small class="text-danger">Requerido</small>
           }
           @if (ownerForm.get('bankAccount')?.errors?.['pattern']) {
-            <small class="text-danger">Solo número</small>
+            <small class="text-danger">Solo números</small>
           }
         }
       </div>
@@ -190,7 +190,7 @@
       <div>
         @if (ownerForm.get('birthdate')?.invalid && ownerForm.get('birthdate')?.touched) {
           @if (ownerForm.get('birthdate')?.errors?.['required']) {
-            <small class="text-danger">requerido </small>
+            <small class="text-danger">Requerido</small>
           }
           @if (ownerForm.get('birthdate')?.errors) {
             <small class="text-danger">Fecha inválida</small>
@@ -227,10 +227,10 @@
             ownerForm.get('plotForm.blockNumber')?.invalid) {
               @if
               (ownerForm.get('plotForm.blockNumber')?.getError('required')) {
-                <small class="text-danger">Campo requerido. </small>
+                <small class="text-danger">Campo requerido</small>
               }
               @if (ownerForm.get('plotForm.blockNumber')?.getError('min')) {
-              <small class="text-danger">El número mínimo es 1.</small>
+              <small class="text-danger">El número mínimo es 1</small>
               }
             }
           </div>
@@ -255,19 +255,19 @@
           <div class="col-12">
             @if (ownerForm.get('plotForm.plotNumber')?.touched && ownerForm.get('plotForm.plotNumber')?.invalid) {
               @if (ownerForm.get('plotForm.plotNumber')?.hasError('required')) {
-                <small class="text-danger">Campo requerido. </small>
+                <small class="text-danger">Campo requerido</small>
               }
               @if (ownerForm.get('plotForm.plotNumber')?.hasError('min')) {
-                <small class="text-danger">El número mínimo es 1.</small>
+                <small class="text-danger">El número mínimo es 1</small>
               }
               @if (ownerForm.get('plotForm.plotNumber')?.hasError('serverError')) {
-                <small class="text-danger">Error en el servidor, por favor intenta nuevamente.</small>
+                <small class="text-danger">Error en el servidor, por favor intenta nuevamente</small>
               }
               @if (ownerForm.get('plotForm.plotNumber')?.hasError('plotNotExists')) {
-                <small class="text-danger ms-2">No existe un lote con ese número en esa manzana.</small>
+                <small class="text-danger ms-2">No existe un lote con ese número en esa manzana</small>
               }
               @if (ownerForm.get('plotForm.plotNumber')?.hasError('plotHaveOwner')) {
-                <small class="text-danger ms-2">El lote ya tiene un dueño asociado.</small>
+                <small class="text-danger ms-2">El lote ya tiene un dueño asociado</small>
               }
             }
           </div>
@@ -299,7 +299,7 @@
         <div>
           @if(ownerForm.get('addressForm.streetAddress')?.invalid && ownerForm.get('addressForm.streetAddress')?.touched) {
             @if(ownerForm.get('addressForm.streetAddress')?.errors?.['required']) {
-              <small class="text-danger ms-2">Campo obligatorio.</small>
+              <small class="text-danger ms-2">Requerido</small>
             }
           }
         </div>
@@ -316,7 +316,7 @@
         <div>
           @if(ownerForm.get('addressForm.number')?.invalid && ownerForm.get('addressForm.number')?.touched) {
             @if(ownerForm.get('addressForm.number')?.errors?.['required']) {
-              <small class="text-danger ms-2">Campo obligatorio.</small>
+              <small class="text-danger ms-2">Requerido</small>
             }
           }
         </div>
@@ -357,7 +357,7 @@
         <div>
           @if(ownerForm.get('addressForm.country')?.invalid && ownerForm.get('addressForm.country')?.touched) {
             @if(ownerForm.get('addressForm.country')?.errors?.['required']) {
-              <small class="text-danger ms-2">Campo obligatorio.</small>
+              <small class="text-danger ms-2">Requerido</small>
             }
           }
         </div>
@@ -387,7 +387,7 @@
         <div>
           @if(ownerForm.get('addressForm.province')?.invalid && ownerForm.get('addressForm.province')?.touched) {
             @if(ownerForm.get('addressForm.province')?.errors?.['required']) {
-              <small class="text-danger ms-2">Campo obligatorio.</small>
+              <small class="text-danger ms-2">Requerido</small>
             }
           }
         </div>
@@ -408,7 +408,7 @@
           @if(ownerForm.get('addressForm.city')?.invalid &&
           ownerForm.get('addressForm.city')?.touched ) {
             @if(ownerForm.get('addressForm.city')?.errors?.['required']){
-              <small class="text-danger ms-2">Campo obligatorio.</small> } }
+              <small class="text-danger ms-2">Requerido</small> } }
         </div>
       </div>
 
@@ -431,7 +431,7 @@
             @if(ownerForm.get('addressForm.postalCode')?.invalid &&
             ownerForm.get('addressForm.postalCode')?.touched ) {
               @if(ownerForm.get('addressForm.postalCode')?.errors?.['required']){
-                <small class="text-danger">Campo obligatorio.</small>
+                <small class="text-danger">Requerido</small>
               } }
           </div>
         </div>

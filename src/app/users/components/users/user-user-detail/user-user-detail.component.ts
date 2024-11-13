@@ -168,7 +168,7 @@ export class UserUserDetailComponent {
           }
         },
         error => {
-          this.toastService.sendError('Error al obtener el usuario.')
+          this.toastService.sendError('Error al obtener el usuario')
         }
       );
     }
@@ -256,7 +256,7 @@ export class UserUserDetailComponent {
     this.userService.addUser(this.user).subscribe({
       // '1' is x-user-id
       next: (response) => {
-        this.toastService.sendSuccess("Usuario creado con éxito.")
+        this.toastService.sendSuccess("Usuario creado con éxito")
         this.router.navigate(['users/user/list']);
       },
       error: (error) => {
@@ -270,15 +270,15 @@ export class UserUserDetailComponent {
     if (this.user.id) {
       this.userService.updateUser(this.user.id, this.user).subscribe({
         next: (response) => {
-          this.toastService.sendSuccess("Usuario actualizado con éxito.")
+          this.toastService.sendSuccess("Usuario actualizado con éxito")
           this.router.navigate(['users/owner/list']);
         },
         error: (error) => {
-          this.toastService.sendError("Error actualizado el usuario.")
+          this.toastService.sendError("Error actualizado el usuario")
         },
       });
     } else {
-      this.toastService.sendError("Algo salió mal.")
+      this.toastService.sendError("Algo salió mal")
     }
   }
   //#endregion
@@ -293,7 +293,7 @@ export class UserUserDetailComponent {
           this.actualPlotOfOwner = [response];
         },
         error => {
-          this.toastService.sendError("Error recuperando los datos del usuario. Reinicie la página.")
+          this.toastService.sendError("Error recuperando los datos del usuario. Reinicie la página")
         }
       )
     }
@@ -368,7 +368,7 @@ export class UserUserDetailComponent {
       }
       this.userForm.get('addressForm')?.reset();
     } else {
-      this.toastService.sendError("Direccion no válida.")
+      this.toastService.sendError("Dirección no válida")
     }
   }
 

@@ -116,7 +116,7 @@ export class UserUserListComponent {
 
   assignUserToDelete(user: User) {
     const modalRef = this.modalService.open(ConfirmAlertComponent);
-    modalRef.componentInstance.alertTitle = 'Confirmacion';
+    modalRef.componentInstance.alertTitle = 'Confirmación';
     modalRef.componentInstance.alertMessage = `Estás seguro que desea eliminar el usuario?`;
     modalRef.componentInstance.alertVariant = 'delete';
 
@@ -124,10 +124,10 @@ export class UserUserListComponent {
       if (result && user.id) {
         this.userService.deleteUser(user.id).subscribe(
           (response) => {
-            this.toastService.sendSuccess('Usuario eliminado correctamente.');
+            this.toastService.sendSuccess('Usuario eliminado correctamente');
           },
           (error) => {
-            this.toastService.sendError('Error al eliminar usuario.');
+            this.toastService.sendError('Error al eliminar usuario');
           }
         );
       }

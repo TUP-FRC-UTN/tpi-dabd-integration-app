@@ -144,7 +144,7 @@
             @if (userForm.get('plotForm.blockNumber')?.touched &&
             userForm.get('plotForm.blockNumber')?.invalid) {
               @if (userForm.get('plotForm.blockNumber')?.getError('min')) {
-                <small class="text-danger">El número mínimo es 1.</small>
+                <small class="text-danger">El número mínimo es 1</small>
               }
             }
           </div>
@@ -169,13 +169,13 @@
             @if (userForm.get('plotForm.plotNumber')?.touched &&
             userForm.get('plotForm.plotNumber')?.invalid) {
               @if (userForm.get('plotForm.plotNumber')?.getError('min')) {
-                <small class="text-danger">El número mínimo es 1.</small>
+                <small class="text-danger">El número mínimo es 1</small>
               } @if (userForm.get('plotForm.plotNumber')?.getError('serverError')) {
                 <small class="text-danger"
-                >Error en el servidor, por favor intenta nuevamente.</small
+                >Error en el servidor, por favor intenta nuevamente</small
                 >
               }  @if (userForm.get('plotForm.plotNumber')?.getError('plotExists')) { <small class="text-danger ms-2">
-                No existe un lote con ese número en esa manzana.
+                No existe un lote con ese número en esa manzana
               </small> }}
           </div>
         </div>
