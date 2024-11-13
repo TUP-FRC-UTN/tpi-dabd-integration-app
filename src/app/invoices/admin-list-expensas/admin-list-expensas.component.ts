@@ -543,8 +543,37 @@ export class AdminListExpensasComponent implements OnInit {
 
   filterConfig: Filter[] = new FilterConfigBuilder()
     .numberFilter('Numero de lote', 'lotId', 'Ingrese un numero de lote')
-    // .checkboxFilter("Estado", "status", this.filteroptions)
     .selectFilter('Estado', 'status', 'Estado', this.filteroptions)
+    .numberFilter('Año desde', 'initYear', 'Seleccione un año ')
+    .selectFilter('Mes desde', 'initMonth', 'Seleccione un mes', [
+      { value: '01', label: 'Enero' },
+      { value: '02', label: 'Febrero' },
+      { value: '03', label: 'Marzo' },
+      { value: '04', label: 'Abril' },
+      { value: '05', label: 'Mayo' },
+      { value: '06', label: 'Junio' },
+      { value: '07', label: 'Julio' },
+      { value: '08', label: 'Agosto' },
+      { value: '09', label: 'Septiembre' },
+      { value: '10', label: 'Octubre' },
+      { value: '11', label: 'Noviembre' },
+      { value: '12', label: 'Diciembre' },
+    ])
+    .numberFilter('Año hasta', 'endYear', 'Seleccione un año ')
+    .selectFilter('Mes hasta', 'endMonth', 'Seleccione un mes', [
+      { value: '01', label: 'Enero' },
+      { value: '02', label: 'Febrero' },
+      { value: '03', label: 'Marzo' },
+      { value: '04', label: 'Abril' },
+      { value: '05', label: 'Mayo' },
+      { value: '06', label: 'Junio' },
+      { value: '07', label: 'Julio' },
+      { value: '08', label: 'Agosto' },
+      { value: '09', label: 'Septiembre' },
+      { value: '10', label: 'Octubre' },
+      { value: '11', label: 'Noviembre' },
+      { value: '12', label: 'Diciembre' },
+    ])
     .build();
 
   // Método que detecta cambios en los filtros
@@ -552,14 +581,30 @@ export class AdminListExpensasComponent implements OnInit {
     console.log($event); // Muestra los valores actuales de los filtros en la consola
     this.eventSaved = $event;
     this.isFilter = true;
+    if(!this.ticketService.isValidYearFilter($event['initYear']) || !this.ticketService.isValidYearFilter($event['endYear'])) {
+      return;
+    }
+    const initYear = this.ticketService.cutYearFilter($event['initYear']);
+    const endYear = this.ticketService.cutYearFilter($event['endYear']);
+    const monthInit = $event['initMonth'];
+    const monthEnd = $event['endMonth'];
+
+    const concatDateInit = !this.ticketService.isValidPeriod(initYear, monthInit) ? `${monthInit}/${initYear}` : '/';
+    const concatDateEnd = !this.ticketService.isValidPeriod(monthEnd, endYear) ? `${monthEnd}/${endYear}` : '/';
+
+    if(!this.ticketService.isValidateFullDate($event['initYear'], $event['initMonth'])){
+      return;
+    }
+
+
     this.ticketService
       .getAllWithFilters(
         this.currentPage--,
         this.pageSize,
         $event['status'],
         $event['lotId'],
-        $event['firstPeriod'],
-        $event['lastPeriod']
+        concatDateInit == '/' ? '' : concatDateInit,
+        concatDateEnd == '/' ? '' : concatDateEnd
       )
       .subscribe(
         (response: PaginatedResponse<TicketDto>) => {

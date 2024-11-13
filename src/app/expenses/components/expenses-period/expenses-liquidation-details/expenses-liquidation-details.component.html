@@ -1,0 +1,87 @@
+<ng-template #amountTemplate let-item>
+  <td class="text-end">
+    {{
+      item.amount?.toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })
+    }}
+  </td>
+</ng-template>
+
+<ng-template #dateTemplate let-item>
+  <td>
+    {{ item.date | date: 'dd/MM/yyyy' }}
+  </td>
+</ng-template>
+
+<ng-template #statusTemplate let-item>
+  <td>
+    @if(item.status === 'Activo') {
+      <p class="badge border p-2 border-success text-success">
+        {{ item.status }}
+      </p>
+    } @else if (item.status === 'Cerrado') {
+      <p class="badge border p-2 border-danger text-danger">
+        {{ item.status }}
+      </p>
+    } @else {
+      <p class="badge border p-2 border-warning text-warning">
+        {{ item.status }}
+      </p>
+    }
+
+  </td>
+</ng-template>
+
+<ng-template #actionsTemplate let-item>
+  <td style="display: flex; flex-direction: row; gap: 4px;">
+    <button type="button" class="btn btn-primary" (click)="showPaidModal(item)">
+      <i class="bi bi-eye"></i>
+    </button>
+    @if(period.state !== 'Cerrado') {
+      <button type="button" class="btn btn-warning" (click)="edit(item)">
+        <i class="bi bi-pencil"></i>
+      </button>
+    }
+  </td>
+</ng-template>
+
+<ng-template #paidPdf let-item>
+  <div class="d-flex justify-content-center align-items-center">
+    <img src="https://res.cloudinary.com/dxatwbzff/image/upload/v1728734703/factura_ecogas_numerada_rvn6pt.jpg" alt="" height="500px" width="400px">
+  </div>
+</ng-template>
+
+
+<app-main-container
+  [title]="'Liquidación de Expensas ' + fechaTitulo"
+  (infoButtonClick)="showModal()"
+>
+
+
+<app-table
+  [items]="billsFiltered"
+  [columns]="columns"
+  [showSearchBar]="true"
+  [showHeaderButton]="false"
+  (excelButtonClick)="downloadTable()"
+  (pdfButtonClick)="imprimir()"
+  [isLoading]="isLoading"
+  [tableFilters]="filters"
+  (searchValueChange)="filterTableByText($event)"
+  (filterValueChange)="filterTableBySelects($event)"
+  [pagination]="{
+      totalItems: totalItems,
+      page: page,
+      size: size,
+      onPageChange: onPageChange,
+      onPageSizeChange: onPageSizeChange
+    }"
+>
+</app-table>
+</app-main-container>
+
+

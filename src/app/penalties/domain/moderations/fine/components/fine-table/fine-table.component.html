@@ -66,43 +66,43 @@
             </div>
           </div>
           <!-- Fecha -->
-          @if(filterType === 'fecha'){
-          <div class="d-flex">
-            <input
-              type="date"
-              class="form-control me-2"
-              placeholder="Fecha de inicio"
-              [(ngModel)]="startDate"
-              [max]="endDate"
-            />
-            <input
-              type="date"
-              class="form-control me-2"
-              placeholder="Fecha de fin"
-              [(ngModel)]="endDate"
-              [min]="startDate"
-            />
-            <button class="btn btn-dark" type="button" (click)="applyFilters()">
-              Buscar
-            </button>
-          </div>
+          @if (filterType === 'fecha') {
+            <div class="d-flex">
+              <input
+                type="date"
+                class="form-control me-2"
+                placeholder="Fecha de inicio"
+                [(ngModel)]="startDate"
+                [max]="endDate"
+              />
+              <input
+                type="date"
+                class="form-control me-2"
+                placeholder="Fecha de fin"
+                [(ngModel)]="endDate"
+                [min]="startDate"
+              />
+              <button class="btn btn-dark" type="button" (click)="applyFilters()">
+                Buscar
+              </button>
+            </div>
 
           }
           <!-- Estado -->
-          @if(filterType === 'estado'){
-          <div class="d-flex">
-            <select class="form-select me-2" [(ngModel)]="status">
-              <option [ngValue]="''">Todos</option>
-              @for (key of fineService.fineStatusKeys; track $index) {
-              <option [value]="key">
-                {{ key | getValueByKeyForEnum : FineStatusEnum }}
-              </option>
-              }
-            </select>
-            <button class="btn btn-dark" type="button" (click)="applyFilters()">
-              Buscar
-            </button>
-          </div>
+          @if (filterType === 'estado') {
+            <div class="d-flex">
+              <select class="form-select me-2" [(ngModel)]="status">
+                <option [ngValue]="''">Todos</option>
+                @for (key of fineService.fineStatusKeys; track $index) {
+                  <option [value]="key">
+                    {{ key | getValueByKeyForEnum : FineStatusEnum }}
+                  </option>
+                }
+              </select>
+              <button class="btn btn-dark" type="button" (click)="applyFilters()">
+                Buscar
+              </button>
+            </div>
           }
         </div>
       </div>

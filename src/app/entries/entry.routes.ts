@@ -13,7 +13,7 @@ export const ENTRY_ROUTES: Routes = [
     { path: '', component: EntryHomeComponent },
     {
         path: 'visitors',
-        component: VisitorListComponent,
+        component: VisitorListComponent,//
       },
       {
         path: 'visitor/add',
@@ -33,7 +33,7 @@ export const ENTRY_ROUTES: Routes = [
       },
       {
         path: 'access-query',
-        component: AccessQueryComponent,
+        component: AccessQueryComponent,//
       },
       {
         path: 'new/auth',
@@ -41,7 +41,7 @@ export const ENTRY_ROUTES: Routes = [
       },
       {
         path: 'auth-list',
-        component: ListAuthComponent,
+        component: ListAuthComponent,//
       },
       {
         path: 'access-form',
