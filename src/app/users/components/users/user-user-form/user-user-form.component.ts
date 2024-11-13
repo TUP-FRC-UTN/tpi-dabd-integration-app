@@ -356,7 +356,7 @@ export class UserUserFormComponent {
       this.userService.addUser(this.user).subscribe({
         // '1' is x-user-id
         next: (response) => {
-          this.toastService.sendSuccess("Usuario creado con exito.")
+          this.toastService.sendSuccess("Usuario creado con éxito")
 
           this.router.navigate(['/users/user/list']);
         },
@@ -376,15 +376,15 @@ export class UserUserFormComponent {
         console.log(this.user.documentNumber)
         this.userService.updateUser(this.user.id, toSnakeCase(this.user)).subscribe({
           next: (response) => {
-            this.toastService.sendSuccess("Usuario actualizado con exito.")
+            this.toastService.sendSuccess("Usuario actualizado con éxito")
             this.router.navigate(['users/user/list']);
           },
           error: (error) => {
-            this.toastService.sendError("Error actualizado el usuario.")
+            this.toastService.sendError("Error actualizado el usuario")
           },
         });
       } else {
-        this.toastService.sendError("Algo salio mal.")
+        this.toastService.sendError("Algo salió mal")
       }
     }
     //#endregion

@@ -23,7 +23,7 @@
         @if (userForm.get('email')?.getError('required')) {
         <small class="text-danger ms-2">El email es obligatorio</small>
         } @if (userForm.get('email')?.getError('email')) {
-        <small class="text-danger ms-2">El email tiene que ser valido</small>
+        <small class="text-danger ms-2">El email tiene que ser válido</small>
         } @if (userForm.get('email')?.getError('maxlength')) {
         <small class="text-danger ms-2">Máximo 50 caracteres</small>
         } @if (userForm.get('email')?.getError('emailExists')) {
@@ -132,7 +132,7 @@
           @if(userForm.get('addressForm.streetAddress')?.invalid &&
           userForm.get('addressForm.streetAddress')?.touched) {
           @if(userForm.get('addressForm.streetAddress')?.errors?.['required']) {
-          <small class="text-danger ms-2">Campo obligatorio.</small>
+          <small class="text-danger ms-2">Requerido</small>
           } }
         </div>
       </div>
@@ -161,7 +161,7 @@
           @if(userForm.get('addressForm.number')?.invalid &&
           userForm.get('addressForm.number')?.touched) {
           @if(userForm.get('addressForm.number')?.errors?.['required']) {
-          <small class="text-danger ms-2">Campo obligatorio.</small>
+          <small class="text-danger ms-2">Requerido</small>
           } }
         </div>
       </div>
@@ -233,7 +233,7 @@
           @if(userForm.get('addressForm.country')?.invalid &&
           userForm.get('addressForm.country')?.touched) {
           @if(userForm.get('addressForm.country')?.errors?.['required']) {
-          <small class="text-danger ms-2">Campo obligatorio.</small>
+          <small class="text-danger ms-2">Requerido</small>
           } }
         </div>
       </div>
@@ -263,7 +263,7 @@
         <div>
             @if(userForm.get('addressForm.province')?.invalid && userForm.get('addressForm.province')?.touched) {
                 @if(userForm.get('addressForm.province')?.errors?.['required']) {
-                    <small class="text-danger ms-2">Campo obligatorio. </small>
+                    <small class="text-danger ms-2">Requerido</small>
                 }
             }
         </div>
@@ -292,7 +292,7 @@
           @if(userForm.get('addressForm.city')?.invalid &&
           userForm.get('addressForm.city')?.touched ) {
           @if(userForm.get('addressForm.city')?.errors?.['required']){
-          <small class="text-danger ms-2">Campo obligatorio.</small> } }
+          <small class="text-danger ms-2">Requerido</small> } }
         </div>
       </div>
 
@@ -401,7 +401,7 @@
                 formControlName="contactType"
               >
                 <option disabled selected>Selecciona un tipo</option>
-                <option value="PHONE">Telefono</option>
+                <option value="PHONE">Teléfono</option>
                 <option value="EMAIL">Email</option>
                 <option value="SOCIAL_MEDIA_LINK">Otro</option>
               </select>

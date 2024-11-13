@@ -274,7 +274,7 @@ export class RolesListComponent implements OnInit {
         }));
         const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);
         const wb: XLSX.WorkBook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Users');
+        XLSX.utils.book_append_sheet(wb, ws, 'Roles');
         XLSX.writeFile(wb, `${this.getActualDayFormat()}_Roles.xlsx`);
       },
       error: () => { console.log("Error retrieved all, on export component.") }

@@ -3,15 +3,15 @@
   
       <div class="col-md-6">
         <div class="d-flex align-items-center">
-          <label for="block-number" class="col-form-label col-md-3">Numero de Manzana<label class="text-danger">*</label></label>
+          <label for="block-number" class="col-form-label col-md-3">Número de Manzana<label class="text-danger">*</label></label>
           <input type="number" class="form-control" id="block-number" formControlName="blockNumber"
                  [ngClass]="{'is-invalid': plotForm.get('blockNumber')?.invalid && plotForm.get('blockNumber')?.touched,
                   'is-valid': plotForm.get('blockNumber')?.valid && plotForm.get('blockNumber')?.touched}">
         </div>
         <div>
           @if (plotForm.get('blockNumber')?.touched && plotForm.get('blockNumber')?.invalid) {
-            @if (plotForm.get('blockNumber')?.getError('required')) {<small class="text-danger ms-2">Campo requerido.</small>}
-            @if (plotForm.get('blockNumber')?.getError('min')) {<small class="text-danger ms-2">El numero minimo es 1.</small>}
+            @if (plotForm.get('blockNumber')?.getError('required')) {<small class="text-danger ms-2">Requerido</small>}
+            @if (plotForm.get('blockNumber')?.getError('min')) {<small class="text-danger ms-2">El número mínimo es 1</small>}
           }
         </div>
       </div>
@@ -25,13 +25,13 @@
         </div>
         <div>
           @if (plotForm.get('plotNumber')?.touched && plotForm.get('plotNumber')?.invalid) {
-            @if (plotForm.get('plotNumber')?.getError('required')) { <small class="text-danger ms-2">Campo requerido.</small> }
-            @if (plotForm.get('plotNumber')?.getError('min')) { <small class="text-danger ms-2">El número mínimo es 1.</small> }
+            @if (plotForm.get('plotNumber')?.getError('required')) { <small class="text-danger ms-2">Requerido</small> }
+            @if (plotForm.get('plotNumber')?.getError('min')) { <small class="text-danger ms-2">El número mínimo es 1</small> }
           }
           @if (plotForm.get('plotNumber')?.dirty && plotForm.get('plotNumber')?.invalid &&
           plotForm.get('blockNumber')?.dirty) {
-            @if (plotForm.get('plotNumber')?.getError('plotExists')) { <small class="text-danger ms-2">Ya existe ese numero de lote en la manzana.</small> }
-            @else if (plotForm.get('plotNumber')?.getError('serverError')) { <small class="text-danger ms-2">Error en el servidor, por favor intenta nuevamente.</small> }
+            @if (plotForm.get('plotNumber')?.getError('plotExists')) { <small class="text-danger ms-2">Ya existe ese número de lote en la manzana</small> }
+            @else if (plotForm.get('plotNumber')?.getError('serverError')) { <small class="text-danger ms-2">Error en el servidor, por favor intenta nuevamente</small> }
           }
         </div>
       </div>
@@ -45,8 +45,8 @@
         </div>
         <div>
           @if (plotForm.get('totalArea')?.touched && plotForm.get('totalArea')?.invalid) {
-            @if (plotForm.get('totalArea')?.getError('required')) {<small class="text-danger ms-2">Campo requerido.</small>}
-            @if (plotForm.get('totalArea')?.getError('min')) {<small class="text-danger ms-2">El numero minimo es 1.</small>}
+            @if (plotForm.get('totalArea')?.getError('required')) {<small class="text-danger ms-2">Requerido</small>}
+            @if (plotForm.get('totalArea')?.getError('min')) {<small class="text-danger ms-2">El número mínimo es 1</small>}
           }
         </div>
       </div>
@@ -60,8 +60,8 @@
         </div>
         <div>
           @if (plotForm.get('builtArea')?.touched && plotForm.get('builtArea')?.invalid) {
-            @if (plotForm.get('builtArea')?.getError('required')) {<small class="text-danger ms-2">Campo requerido.</small>}
-            @if (plotForm.get('builtArea')?.getError('min')) {<small class="text-danger ms-2">El numero minimo es 1.</small>}
+            @if (plotForm.get('builtArea')?.getError('required')) {<small class="text-danger ms-2">Requerido</small>}
+            @if (plotForm.get('builtArea')?.getError('min')) {<small class="text-danger ms-2">El número mínimo es 1</small>}
           }
         </div>
       </div>
@@ -80,7 +80,7 @@
         </div>
         <div>
           @if (plotForm.get('plotType')?.touched && plotForm.get('plotType')?.invalid) {
-            @if (plotForm.get('plotType')?.getError('required')) {<small class="text-danger ms-2">Campo requerido.</small>}
+            @if (plotForm.get('plotType')?.getError('required')) {<small class="text-danger ms-2">Requerido</small>}
           }
         </div>
       </div>
@@ -99,7 +99,7 @@
         </div>
         <div>
           @if (plotForm.get('plotStatus')?.touched && plotForm.get('plotStatus')?.invalid) {
-            @if (plotForm.get('plotStatus')?.getError('required')) {<small class="text-danger ms-2">Campo requerido.</small>}
+            @if (plotForm.get('plotStatus')?.getError('required')) {<small class="text-danger ms-2">Requerido</small>}
           }
         </div>
       </div>

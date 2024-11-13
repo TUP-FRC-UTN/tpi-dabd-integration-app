@@ -262,7 +262,7 @@ export class FilesFormComponent implements OnInit {
               })
             ).subscribe({
               complete: () => {
-                this.toastService.sendSuccess('Archivos cargados exitosamente.');
+                this.toastService.sendSuccess('Archivos cargados exitosamente');
                 this.isUploading = false;
                 this.ownerFiles = [];
                 this.getOwnerPlots();
@@ -309,12 +309,12 @@ export class FilesFormComponent implements OnInit {
             })
           ).subscribe({
             complete: () => {
-              this.toastService.sendSuccess('Archivos cargados exitosamente.');
+              this.toastService.sendSuccess('Archivos cargados exitosamente');
               this.isUploading = false;
             }
           });
         } else {
-          this.toastService.sendError('operacion cancelada'); // aca no entra nunca
+          this.toastService.sendError('Operación cancelada'); // aca no entra nunca
         }
       });
     }

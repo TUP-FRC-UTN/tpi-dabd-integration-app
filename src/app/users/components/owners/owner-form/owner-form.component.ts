@@ -433,7 +433,7 @@ export class OwnerFormComponent implements OnInit {
       }
       this.ownerForm.get('contactsForm')?.reset();
     } else {
-      this.toastService.sendError("Contacto no valido.")
+      this.toastService.sendError("Contacto no válido")
     }
   }
 
@@ -523,7 +523,7 @@ export class OwnerFormComponent implements OnInit {
       }
       this.ownerForm.get('addressForm')?.reset();
     } else {
-      this.toastService.sendError("Direccion no valida.")
+      this.toastService.sendError("Direccion no válida")
     }
   }
 
