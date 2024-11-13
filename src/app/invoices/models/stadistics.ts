@@ -52,4 +52,12 @@ export interface kpiModel{
   color: string,
 }
 
+export interface graphModel{
+  title:string,
+  subtitle:string,
+  data:any[],
+  options: any
+}
+
+
 
