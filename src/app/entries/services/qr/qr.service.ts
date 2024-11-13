@@ -31,6 +31,6 @@ export class QrService {
     const headers = new HttpHeaders({
       'x-user-id': userId
     });
-    return this.http.post(`${this.apiUrl}/qr/send` , request ,{ headers });
+    return this.http.post(`${this.urlEnviroment}qr/send` , request ,{ headers });
   }
 }
