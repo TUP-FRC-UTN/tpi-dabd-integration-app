@@ -7,13 +7,11 @@ import { CaseTransformerService } from './case-transformer.service';
 import { environment } from '../../../environments/environment.prod';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-
   //private apiUrl = 'http://localhost:8001/auths';
-  private apiUrl = environment.apis.accesses+'auths/';
-
+  private apiUrl = environment.apis.accesses + 'auths/';
 
   constructor(
     private http: HttpClient,
@@ -76,9 +74,7 @@ export class AuthService {
   }
 
   getValid(document: number): Observable<Auth[]> {
-    return this.http
-      .get<Auth[]>(`${this.apiUrl}authorization/${document}`)
-
+    return this.http.get<Auth[]>(`${this.apiUrl}authorization/${document}`);
   }
 
   getValidAuths(document: number): Observable<Auth[]> {

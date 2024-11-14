@@ -11,13 +11,12 @@ import {
 } from '../../models/dashboard.model';
 import { environment } from '../../../../environments/environment.prod';
 
-
 @Injectable({
   providedIn: 'root',
 })
 export class AccessService {
   //private apiUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/access';
-  private apiUrl = environment.apis.accesses;
+  private apiUrl = environment.apis.accesses + 'access';
 
   constructor(
     private http: HttpClient,
@@ -30,7 +29,7 @@ export class AccessService {
     isActive?: boolean
   ): Observable<{ items: AccessModel[] }> {
     return this.http
-      .get<{ items: AccessModel[] }>(this.apiUrl +'/access', {
+      .get<{ items: AccessModel[] }>(this.apiUrl, {
         params: { size: 1000000 },
       })
       .pipe(
@@ -51,7 +50,7 @@ export class AccessService {
     const snakeCaseData = this.caseTransformer.toSnakeCase(data);
 
     return this.http
-      .post<AccessModel>(this.apiUrl + '/authorize', snakeCaseData, {
+      .post<AccessModel>(this.apiUrl + '/' + 'authorize', snakeCaseData, {
         headers,
       })
       .pipe(map((response) => this.caseTransformer.toCamelCase(response)));
