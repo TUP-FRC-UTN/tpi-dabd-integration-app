@@ -11,6 +11,7 @@ export class ProviderService {
 
   private http = inject(HttpClient);
   private url = PORT + "providers?supplierOrEmployeeType=SUPPLIER"
+  // private url ="https://my-json-server.typicode.com/113898-KUMIEC/getSupplier/suppliers"
 
   constructor() { }
 

@@ -28,6 +28,7 @@ export class ExpenseServiceService {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
+    // Parámetros adicionales
     if (periodId !== undefined && periodId !== 0 && periodId != null ) {
       params = params.set('periodId', periodId.toString());
     }
@@ -50,7 +51,7 @@ export class ExpenseServiceService {
     if (sortField) {
       params = params.set('sort', `${sortField},${sortOrder}`);
     }
-    return this.http.get<Page<Expense>>(`${this.apiUrl}all/pageable`, { params });
+    return this.http.get<Page<Expense>>('http://localhost:8088/expense/all/pageable', { params });
 
   }
   getByPeriod(periodId:number):Observable<Expense[]>{
@@ -87,16 +88,15 @@ export class ExpenseServiceService {
       params = params.set('periodId', periodId.toString());
     }
     if(quantity == 0) {
-      console.log('Aca deberia')
       quantity = 10
     }
     if (quantity !== undefined && quantity !== 0 && quantity !== null) {
       params = params.set('quantity', quantity.toString());
     }
 
-    return this.http.get<expenseReport>(`${PORT}report/expense?top=` + top.toString(), {params});
+    return this.http.get<expenseReport>("http://localhost:8088/report/expense?top=" + top.toString(), {params});
   }
   getLotPercentage() : Observable<number[]> {
-    return this.http.get<number[]>(`${PORT}report/lot`)
+    return this.http.get<number[]>(`http://localhost:8088/report/lot`)
   }
 }
