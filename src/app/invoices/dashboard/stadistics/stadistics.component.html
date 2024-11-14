@@ -31,7 +31,7 @@
             <span class="text-secondary">Estado:</span>
           </div>
           <div class="col-8">
-            <select id="period-type" class="form-select" [(ngModel)]="filters.paymentType" (change)="filterData()">
+            <select id="period-type" class="form-select" [(ngModel)]="filters.paymentMethod" (change)="filterData()">
               <option value="">Todos</option>
               <option value="PAID">Pagado</option>
               <option value="PENDING">Pendiente</option>
@@ -44,7 +44,7 @@
             <span class="text-secondary">Forma de pago:</span>
           </div>
           <div class="col-8">
-            <select id="visitor-type" class="form-select" [(ngModel)]="filters.paymentType" (change)="filterData()">
+          <select id="visitor-type" class="form-select" [(ngModel)]="filters.paymentMethod" (change)="filterData()">
               <option value="">Todos</option>
               <option value="TRANSFER">Transferencia</option>
               <option value="MERCADOPAGO">Mercado pago</option>

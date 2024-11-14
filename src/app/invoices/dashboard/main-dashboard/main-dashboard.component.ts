@@ -7,6 +7,7 @@ import { PiechartComponent } from '../commons/piechart/piechart.component';
 import { graphModel, kpiModel, PeriodRequest, TopPayments } from '../../models/stadistics';
 import Period from '../../../expenses/models/period';
 import { filter } from 'rxjs';
+import { PaymentReportDto } from '../../models/payments.report.model';
 
 @Component({
   selector: 'app-main-dashboard',
@@ -22,7 +23,7 @@ export class MainDashboardComponent {
 
   //vars
   kpi1: kpiModel = {} as kpiModel
-  kpi2: kpiModel = {} as kpiModel
+    kpi2: kpiModel = {} as kpiModel
   kpi3: kpiModel = {} as kpiModel
 
   graph1: graphModel = {} as graphModel
@@ -37,7 +38,7 @@ export class MainDashboardComponent {
   //init
   constructor(private stadisticsService: StadisticsService) {
     this.kpi1 = {title: "Tasa de cobros existos", desc: "", value: "0", icon: "", color: "bg-success"}
-    this.kpi2 = {title: "Tasa de propietarios morosos", desc: "", value: "0%", icon: "bi bi-graph-up", color: "bg-info"}
+    this.kpi2 = {title: "Aprobados vs Pendientes", desc: "", value: "0%", icon: "bi bi-graph-up", color: "bg-info"}
     this.kpi3 = {title: "Tiempo promedio de pagos", desc: "Tipo más frecuente en el periodo", value: "0", icon: "bi bi-person-circle", color: "bg-warning"}
 
     this.graph1 = {title: "Informe de total cobrado", subtitle: "", data: [], options: null}
@@ -46,11 +47,11 @@ export class MainDashboardComponent {
 
    //getData
    async getData() {
-    let action = this.filters.paymentType == "TRANSFER" ? "Transferencia" : "Mercado Pago"
+    let action = this.filters.paymentMethod == "TRANSFER" ? "Transferencia" : "Mercado Pago"
     this.kpi1.icon = "bi bi-arrow-down-circle"
     this.kpi1.color = "bg-success"
     this.kpi1.title = "Tasa de cobros exitosos con " + action
-    this.kpi2.title = "Tendencias de " + action.toLowerCase()
+    this.kpi2.title = "Pendiente y aprobados"
     this.kpi1.desc = "Suma total de " + action.toLowerCase() + " en el periodo actual vs. anterior"
     this.kpi3.desc = "Tipo de " + action.toLowerCase() + " más frecuente en el periodo"
     this.kpi3.title = "Tipo de " + action.toLowerCase() + " Más Frecuente"
@@ -62,14 +63,39 @@ export class MainDashboardComponent {
     this.graph2.options.height = 200;
 
     //tasa de pagos
-    this.getReportDataTopPayments(this.filters);
+    this.getReportDinamicFilters();
   }
 
-  getReportDataTopPayments(periodRequest: PeriodRequest): void {
-    console.log('PeriodRequest ', periodRequest);
-    this.stadisticsService.getPreferredApproved(periodRequest).subscribe(
-      (data: TopPayments) => {
-        this.kpi1.value = data.totalByMercadoPago.toString() + " vs. " + data.totalByTransfer.toString();
+  getReportDinamicFilters(): void {
+    console.log("FILTOROOOOS" +this.filters);
+
+    this.stadisticsService.getDinamycFilters(this.filters).subscribe(
+      (data: PaymentReportDto[]) => {
+        let countMP = 0;
+        let countT = 0;
+
+        let countPending = 0;
+        let countApproved = 0;
+
+        for (const payment of data) {
+          if (payment.paymentMethod === 'MERCADO_PAGO') {
+            countMP++;
+          } else if (payment.paymentMethod === 'TRANSFERENCE') {
+            countT++;
+          }if(payment.status === 'REJECTED'){
+            console.log("REJECTED", countPending);
+            countPending++;
+        } else if (payment.status === 'APPROBED'){
+            countApproved++;
+        }
+
+        if(payment.amount > 0){
+          this.graph1.data.push([payment.createdAt, payment.amount]);
+        }
+      }
+
+        this.kpi1.value = countMP + " vs. " + countT;
+        this.kpi2.value = countPending + " - " + countApproved;
       },
       (error: any) => {
         console.error('Error al obtener el reporte', error);
@@ -125,7 +151,7 @@ export class MainDashboardComponent {
   };
 
   ngAfterViewInit(): void {
-   // this.getData()
+  //  this.getData()
   }
 
 
@@ -133,8 +159,8 @@ export class MainDashboardComponent {
 
 
 function createPreviousFilter(filters: PeriodRequest): PeriodRequest {
-  const dateFrom = new Date(filters.firstDate);
-  const dateTo = new Date(filters.lastDate);
+  const dateFrom = new Date(filters.startCreatedAt);
+  const dateTo = new Date(filters.endCreatedAt);
 
   const diffInDays = (dateTo.getTime() - dateFrom.getTime()) / (1000 * 60 * 60 * 24);
 
@@ -143,10 +169,10 @@ function createPreviousFilter(filters: PeriodRequest): PeriodRequest {
   newDateFrom.setDate(newDateFrom.getDate() - diffInDays);
 
   return {
-    firstDate: newDateFrom.toISOString(),
-    lastDate: newDateTo.toISOString(),
+    startCreatedAt: newDateFrom.toISOString(),
+    endCreatedAt: newDateTo.toISOString(),
     status: filters.status,
-    paymentType: filters.paymentType
+    paymentMethod: filters.status
   };
 }
 

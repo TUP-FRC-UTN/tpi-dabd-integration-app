@@ -102,8 +102,8 @@ export class StadisticsComponent implements OnInit {
     const year = now.getFullYear().toString();
 
     // Asigna las fechas en formato MM-YYYY
-    this.filters.firstDate = `${'01'}/${year.slice(2)}`;
-    this.filters.lastDate = `${'03'}/${year.slice(2)}`;
+    this.filters.startCreatedAt = `${'01'}/${year.slice(2)}`;
+    this.filters.endCreatedAt = `${'03'}/${year.slice(2)}`;
     // this.filters = {
     //   firstDate: this.formatMonthYear(this.filters.firstDate),
     //   lastDate: this.formatMonthYear(this.filters.lastDate),
@@ -111,6 +111,7 @@ export class StadisticsComponent implements OnInit {
     //   status: '' // Add appropriate default value
     // };
 
+    this.filterData()
   }
 
   formatMonthYear(dateString: string): string {

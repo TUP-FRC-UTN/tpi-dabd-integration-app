@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { OtherReport, PeriodRequest, TicketInfo, Top5, TopPayments } from '../models/stadistics';
+import { PaymentReportDto } from '../models/payments.report.model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,8 @@ import { OtherReport, PeriodRequest, TicketInfo, Top5, TopPayments } from '../mo
 export class StadisticsService {
 
   private readonly baseUrl = 'http://localhost:8087/report';
-  private readonly baseUrlpayments = 'http://localhost:8092/report';
+  private readonly baseUrlpayments = 'http://localhost:8092/report/topPayments';
+  private readonly baseUrlpaymentsReport = 'http://localhost:8092/report';
 
   // Endpoints específicos
   private readonly apiUrl = this.baseUrl;
@@ -31,13 +33,25 @@ export class StadisticsService {
   }
 
   getPreferredApproved(fechas: PeriodRequest): Observable<TopPayments> {
-    console.log('API: ',fechas);
-    return this.http.post<TopPayments>(this.baseUrlpayments + '/topPaymentsApproved', fechas);
+    console.log(fechas);
+    
+    return this.http.post<TopPayments>(this.baseUrlpaymentsReport + '/topPaymentsApproved', fechas);
   }
 
   getPreferredRejected(fechas: PeriodRequest): Observable<TopPayments> {
-    console.log('API: ',fechas);
-    return this.http.post<TopPayments>(this.baseUrlpayments + '/topPaymentsRejected', fechas);
+    return this.http.post<TopPayments>(this.baseUrlpaymentsReport + '/topPaymentsRejected', fechas);
+  }
+
+  getDinamycFilters(filters: any) {
+    let httpParams = new HttpParams()
+
+    for (const key in filters) {
+      if (filters.hasOwnProperty(key) && filters[key] !== undefined && filters[key] !== '') {
+        httpParams = httpParams.set(key, filters[key].toString());
+      }
+    }
+
+    return this.http.get<PaymentReportDto[]>(this.baseUrlpaymentsReport + '/filters');
   }
 
 }

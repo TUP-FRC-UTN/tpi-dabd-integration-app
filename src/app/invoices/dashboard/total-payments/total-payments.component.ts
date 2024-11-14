@@ -41,7 +41,7 @@ export class TotalPaymentsComponent {
   }
 
   async getData() {
-    let action = this.filters.paymentType == "TRANSFER" ? "Transferencia" : "Mercado Pago"
+    let action = this.filters.paymentMethod == "TRANSFER" ? "Transferencia" : "Mercado Pago"
     this.title = action;
     this.graph1.title = "Ingresos por: " + action
     this.kpi1.title = action + " totales"

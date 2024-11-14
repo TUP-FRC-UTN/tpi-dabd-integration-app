@@ -18,9 +18,9 @@ export interface TicketInfo2 {
 }
 
 export interface PeriodRequest  {
-  firstDate: string;
-  lastDate: string;
-  paymentType: string;
+  startCreatedAt: string;
+  endCreatedAt: string;
+  paymentMethod: string;
   status: string;
 }
 
