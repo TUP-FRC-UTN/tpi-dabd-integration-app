@@ -179,7 +179,7 @@ export class ContactService {
   private mapContactType(contactType: ContactType): string {
     switch (contactType) {
       case ContactType.EMAIL:
-        return 'Correo eléctronico';
+        return 'Correo electrónico';
       case ContactType.PHONE:
         return 'Teléfono';
       case ContactType.SOCIAL_MEDIA_LINK:
