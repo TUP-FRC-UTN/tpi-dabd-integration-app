@@ -835,6 +835,4 @@ private calculateSubscriptionAnalysis(contacts: any[], subscriptionTypes: any[])
         ]
     };
 }
-
-
 }
