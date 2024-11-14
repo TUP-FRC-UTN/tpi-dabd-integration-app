@@ -1,11 +1,11 @@
-import { ChangeDetectorRef, Component, Inject, inject, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {MainContainerComponent} from "ngx-dabd-grupo01";
-import {NgbModal, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
-import {GoogleChartsModule} from "angular-google-charts";
-import {KpiComponent} from "../commons/kpi/kpi.component";
+import { ChangeDetectorRef, Component, Inject, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { MainContainerComponent } from "ngx-dabd-grupo01";
+import { NgbModal, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
+import { GoogleChartsModule } from "angular-google-charts";
+import { KpiComponent } from "../commons/kpi/kpi.component";
 
-import {CommonModule, NgClass} from "@angular/common";
+import { CommonModule, NgClass } from "@angular/common";
 import { DashboardStatus, PeriodRequest } from '../../models/stadistics';
 import { MainDashboardComponent } from '../main-dashboard/main-dashboard.component';
 import { BarchartComponent } from '../commons/barchart/barchart.component';
@@ -28,15 +28,15 @@ import { TotalPaymentsComponent } from '../total-payments/total-payments.compone
     DistributionPaymentMethodsComponent,
     DistributionPaymentMethodsComponent,
     TotalPaymentsComponent,
-    CommonModule,
-],
+    CommonModule
+  ],
   templateUrl: './stadistics.component.html',
   styleUrl: './stadistics.component.css'
 })
 export class StadisticsComponent implements OnInit {
 
   //filters
-  filters:PeriodRequest = {} as PeriodRequest
+  filters: PeriodRequest = {} as PeriodRequest
   // filters: DashBoardFilters = {} as DashBoardFilters;
 
   //dashboard settings
@@ -56,13 +56,46 @@ export class StadisticsComponent implements OnInit {
   @ViewChild(BarchartComponent) barchartComponent!: BarchartComponent;
 
   @ViewChild('infoModal') infoModal!: TemplateRef<any>
+  dateFilterForm: FormGroup;
 
-  constructor(
-      private stadisticsService: StadisticsService,
-      @Inject(ChangeDetectorRef) private cdr: ChangeDetectorRef) {
-    }
 
-  initializeDefaultDates(){
+  constructor(private fb: FormBuilder,
+    private stadisticsService: StadisticsService,
+    @Inject(ChangeDetectorRef) private cdr: ChangeDetectorRef) {
+
+    this.dateFilterForm = this.fb.group({
+      firstDate: [''],
+      lastDate: ['']
+    });
+  }
+  // INICIAMOS COMPONENTE CON FORMULARIO NUEVO Y CARGA DE FECHA INICIAL ACTUAL FORMATO "YYYY-MM"
+  ngOnInit(): void {
+    const currentDate = new Date();
+    const currentMonth = currentDate.toISOString().slice(0, 7);
+
+    this.dateFilterForm.patchValue({
+      firstDate: currentMonth
+    });
+
+
+    this.dateFilterForm.get('firstDate')?.valueChanges.subscribe(value => {
+      console.log('Cambio en la fecha de inicio:', value);
+      this.filterData();
+    });
+
+    this.dateFilterForm.get('lastDate')?.valueChanges.subscribe(value => {
+      console.log('Cambio en la fecha de fin:', value);
+      this.filterData();
+    });
+
+    this.dateFilterForm.valueChanges.subscribe(values => {
+      console.log('Cambio en el formulario:', values);
+      this.filterData();
+    });
+  }
+
+
+  initializeDefaultDates() {
     const now = new Date();
 
     const month = (now.getMonth() + 1).toString().padStart(2, '0'); // `padStart` asegura que el mes tenga dos dígitos
@@ -86,24 +119,22 @@ export class StadisticsComponent implements OnInit {
   }
 
   onInfoButtonClick() {
-   this.modalService.open(this.infoModal, { size: 'lg' });
+    this.modalService.open(this.infoModal, { size: 'lg' });
   }
 
-  resetFilters(){
+  resetFilters() {
     this.initializeDefaultDates();
     this.filterData()
   }
 
-  filterData(){
+  filterData() {
     this.main.getData()
     this.total.getData()
   }
 
-  ngOnInit(): void {
-    this.initializeDefaultDates();
-  }
 
-  changeMode(event: any){
+
+  changeMode(event: any) {
     const statusKey = Object.keys(DashboardStatus).find(key => DashboardStatus[key as keyof typeof DashboardStatus] === event);
 
     if (statusKey) {
@@ -120,14 +151,14 @@ export class StadisticsComponent implements OnInit {
     this.cdr.detectChanges(); // Fuerza la detección de cambios
   }
 
-    // ACA SE ABRE EL MODAL DE INFO
-    showInfo(): void {
-      const modalRef = this.modalService.open(InfoComponent, {
-        size: 'lg',
-        backdrop: 'static',
-        keyboard: false,
-        centered: true,
-        scrollable: true,
-      });
-    }
+  // ACA SE ABRE EL MODAL DE INFO
+  showInfo(): void {
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true,
+    });
+  }
 }

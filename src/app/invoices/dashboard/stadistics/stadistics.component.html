@@ -1,16 +1,26 @@
 <app-main-container title="Reportes" (infoButtonClick)="onInfoButtonClick()">
   <div class="row mb-4">
     <div class="d-flex align-items-center gap-3 mb-3">
-      <div class="d-flex align-items-center gap-2">
-        <span class="text-secondary">Desde:</span>
-        <input type="month" [(ngModel)]="filters.firstDate" class="form-control form-control-sm"
-               (change)="filterData()">
-      </div>
-      <div class="d-flex align-items-center gap-2">
-        <span class="text-secondary">Hasta:</span>
-        <input type="month" [(ngModel)]="filters.lastDate" class="form-control form-control-sm"
-               (change)="filterData()">
-      </div>
+
+      <form [formGroup]="dateFilterForm" (ngSubmit)="filterData()" class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-secondary">Desde:</span>
+          <input
+          type="month"
+          formControlName="firstDate"
+          class="form-control form-control-sm"
+        />
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-secondary">Hasta:</span>
+          <input
+          type="month"
+          formControlName="lastDate"
+          class="form-control form-control-sm"
+        />
+        </div>
+      </form>
+   
       <button type="button" class="btn btn-outline-info" [ngbPopover]="popContent"
               [autoClose]="'outside'" placement = "bottom" >
         <i class="bi bi-funnel-fill"></i>
