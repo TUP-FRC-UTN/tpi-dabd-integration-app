@@ -60,7 +60,7 @@
     ngOnInit(): void {
       this.serviceContacts.getAllContacts().subscribe((data) => {
         this.allContacts = data
-          .filter(contact => contact.contactType === "Correo eléctronico")
+          .filter(contact => contact.contactType === "Correo electrónico")
           .sort((a, b) => a.contactValue.localeCompare(b.contactValue))
           .filter(contact => !this.contacts_id.includes(contact.id))
       });
