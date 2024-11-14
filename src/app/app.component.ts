@@ -155,7 +155,7 @@ export class AppComponent {
             { label: 'Reporte de expensas', routerLink: 'expenses/expenses/report' },
           ]
         },
-      ],
+      ],
     },
     {
       "label": "Inventario",

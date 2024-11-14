@@ -61,7 +61,7 @@ export class ExpensesListChargesComponent implements OnInit {
   @ViewChild('paidPdf', { static: true }) paidPdf!: TemplateRef<any>;
   @ViewChild('statusTemplate', { static: true }) statusTemplate!: TemplateRef<any>;
 addCharge() {
-  this.router.navigate(['/cargos/nuevo'])
+  this.router.navigate(['expenses/cargos/nuevo'])
 }
 
   // Variables de Filtros y Paginación
