@@ -13,6 +13,14 @@
       ></app-table-filters>
     </div>
     <div class="col-auto">
+      <select class="form-select" aria-label="Default select example"(change)="onPeriodChange($event)">
+        <option selected [value]="null">Periodos</option>
+        @for (period of periods; track $index) {
+          <option [value]="period.id">{{getMonthName(period.month) +'/'+ period.year}}</option>
+        }
+      </select>
+    </div>
+    <div class="col-auto">
       <button class="btn btn-success me-2" (click)="downloadTable()">
         <i class="bi bi-file-earmark-excel"></i>
       </button>
@@ -34,7 +42,9 @@
           <div class="card flex-grow-1 shadow-sm h-100">
             <div class="card-body">
               <h6 class="card-subtitle text-muted mb-2 ms-2">
-                Monto Total {{ periodo }}
+                <div class="icon-circle bg-success">
+                  <i class="bi bi-cash-stack"></i>
+                </div> Monto Total {{ periodo }}
               </h6>
               @if (total) {
               <h3 class="card-title mb-0">{{ "$" + total }} mill</h3>
@@ -47,8 +57,9 @@
         <div class="col-6">
           <div class="card flex-grow-1 shadow-sm h-100">
             <div class="card-body">
-              <h6 class="card-subtitle text-muted mb-2 ms-2">
-                Promedio por Lote {{ periodo }}
+              <h6 class="card-subtitle text-muted mb-2 ms-2"><div class="icon-circle bg-success">
+                <i class="bi bi-cash"></i>
+              </div> Promedio por Lote {{ periodo }}
               </h6>
               @if (averageAmount) {
               <h3 class="card-title mb-0">{{ "$" + averageAmount }} mill</h3>
@@ -61,7 +72,9 @@
         <div class="col-6">
           <div class="card flex-grow-1 shadow-sm h-100">
             <div class="card-body">
-              <h6 class="card-subtitle text-muted mb-2 ms-2">Total Lotes</h6>
+              <h6 class="card-subtitle text-muted mb-2 ms-2"><div class="icon-circle bg-house">
+                <i class="bi bi-houses-fill"></i>
+              </div> Total Lotes</h6>
               @if (totalLotes) {
               <h3 class="card-title mb-0">{{ totalLotes }}</h3>
 
@@ -72,7 +85,9 @@
         <div class="col-6">
           <div class="card flex-grow-1 shadow-sm h-100">
             <div class="card-body">
-              <h6 class="card-subtitle text-muted mb-2 ms-2">Tipos de Lote</h6>
+              <h6 class="card-subtitle text-muted mb-2 ms-2"><div class="icon-circle bg-houses">
+                <i class="bi bi-houses"></i>
+              </div> Tipos de Lote</h6>
               @if(typesPlots){
               <h3 class="card-title mb-0">{{ typesPlots }}</h3>
               }

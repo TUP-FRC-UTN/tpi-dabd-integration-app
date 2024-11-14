@@ -87,13 +87,16 @@ export class ExpenseServiceService {
     if (periodId !== undefined && periodId !== 0 && periodId !== null) {
       params = params.set('periodId', periodId.toString());
     }
+    if(periodId == 0 || isNaN(periodId)) {
+      params = params.delete('periodId')
+    }
     if(quantity == 0) {
       quantity = 10
     }
     if (quantity !== undefined && quantity !== 0 && quantity !== null) {
       params = params.set('quantity', quantity.toString());
     }
-
+    console.log(periodId)
     return this.http.get<expenseReport>("http://localhost:8088/report/expense?top=" + top.toString(), {params});
   }
   getLotPercentage() : Observable<number[]> {

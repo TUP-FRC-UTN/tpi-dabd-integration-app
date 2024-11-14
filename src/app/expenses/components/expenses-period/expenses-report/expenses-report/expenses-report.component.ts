@@ -33,8 +33,13 @@ import {BaseChartDirective} from "ng2-charts";
 import Chart from 'chart.js/auto';
 import {BillService} from "../../../../services/bill.service";
 import {PeriodService} from "../../../../services/period.service";
+import BillType from "../../../../models/billType";
+import {expenseReport} from "../../../../models/expenseReport";
+import { map } from 'rxjs/operators';
 import * as XLSX from "xlsx";
+import {InfoExpensesListComponent} from "../../../modals/info-expenses-list/info-expenses-list.component";
 import {InfoExpenseReportComponent} from "../../../modals/info-expense-report/info-expense-report.component";
+import Period from "../../../../models/period";
 
 
 Chart.register(BarController, PieController, RadarController, LineController, PolarAreaController, DoughnutController, BubbleController, ScatterController);
@@ -50,6 +55,7 @@ Chart.register(BarController, PieController, RadarController, LineController, Po
 })
 export class ExpensesReportComponent {
 
+  private readonly billService = inject(BillService)
   private readonly periodService = inject(PeriodService)
   total: number | undefined;
   averageAmount: number | undefined;
@@ -60,13 +66,12 @@ export class ExpensesReportComponent {
 
   modalService = inject(NgbModal);
   menosMayor :number=1
-  periods: FilterOption[] = [];
+  periods: Period[] = [];
   categories: FilterOption[] = []
   types: FilterOption[]= []
   filterConfig: Filter[] = [
     new SelectFilter('Tipo de Top','lot','Seleccione un tipo de top',this.categories),
     new NumberFilter('Cantidad de lotes para mostrar','count','Seleccione una cantidad'),
-    new SelectFilter('Periodos','period','Seleccione un periodo',this.periods)
   ]
   selectedPeriodId: number = 0;
   countPlots: number = 10; //Predefinido 10
@@ -75,19 +80,23 @@ export class ExpensesReportComponent {
     this.loadKpis();
     this.loadSelect();
   }
+  getMonthName(month: number): string {
+    const monthNames = [
+      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+    ];
+    return monthNames[month - 1];
+  }
   loadSelect() {
-    this.periodService.get().subscribe((data) => {
-      // @ts-ignore
-      this.periods.push({value: null, label: 'Todos'})
-      data.forEach(item => {
-        // @ts-ignore
-        this.periods.push({value: item.id, label: item.month + '/' + item.year})
-      })
-      // @ts-ignore
-      this.categories.push({value: 1, label: 'Lotes que mas pagaron'})
-      // @ts-ignore
-      this.categories.push({value: 2, label: 'Lotes que menos pagaron'})
-    })
+    let formattedPeriods: string[] = [];
+
+    this.periodService.get().subscribe((data: Period[]) => {
+      this.periods = data;
+    });
+    // @ts-ignore
+    this.categories.push({value: 1, label: 'Lotes que mas pagaron'})
+    // @ts-ignore
+    this.categories.push({value: 2, label: 'Lotes que menos pagaron'})
   }
 
   public barChartType: ChartType = 'bar';
@@ -135,13 +144,20 @@ export class ExpensesReportComponent {
         right: 20,
         bottom: 20,
         left: 20
-      }
-    }
+
+      },
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: 'Distribución de Expensas por Tipo de Lote (en millones)'
+      },}
   };
   public kpiChart2Data: ChartData<'pie'> = {
       labels: [],
       datasets: [{
         data: [],
+
         backgroundColor: ['rgba(255, 193, 7, 0.2)',
           'rgba(25, 135, 84, 0.2)',   // Verde
           'rgba(220, 53, 69, 0.2)',   // Rojo
@@ -162,7 +178,7 @@ export class ExpensesReportComponent {
       }]
 
   };
-  public kpiChart1Tpe: ChartType = 'line';
+  public kpiChart1Tpe: ChartType = 'bar';
   public kpiChart1Options: ChartOptions = {
     responsive: true,
     plugins: {
@@ -237,7 +253,6 @@ export class ExpensesReportComponent {
       if(this.top == null) {
         this.top = true
       }
-      console.log(expenses.totalPlots);
       this.total = Number((expenses.totalAmount / 1000000).toFixed(3));
       this.averageAmount = Number((expenses.averageAmount/1000000).toFixed(3)) ;
       this.totalLotes = expenses.totalPlots;
@@ -258,7 +273,6 @@ export class ExpensesReportComponent {
       const lotNumbers = expenseReport.expenses.map(expenseReport => expenseReport.plotNumber).reverse();
       const totalAmounts = expenseReport.expenses.map(expenseReport => Number((expenseReport.totalAmount/1000000).toFixed(3)) );
       // Usar Object.values() y Object.keys() para objetos regulares
-      console.log(expenseReport.expenses)
       const valuesArray: number[] = Object.values(expenseReport.totalAmountPerTypePlot).map(num=>num= Number(num/100000)).reverse()
       const labelsArray: string[] = Object.keys(expenseReport.totalAmountPerTypePlot).reverse()
       const valuesArrayLine: number[] = Object.values(expenseReport.totalAmountPerPeriod)
@@ -267,26 +281,16 @@ export class ExpensesReportComponent {
 
       const labelsArrayLine: string[] = Object.keys(expenseReport.totalAmountPerPeriod).reverse();
       // Debug para verificar los datos
-      console.log(expenseReport.totalAmountPerPeriod)
-      console.log(Object.keys(expenseReport.totalAmountPerPeriod))
       // Reasignar el objeto completo para forzar la detección de cambios
       this.kpiChart1Data = {
         labels: labelsArrayLine,
         datasets: [
           {
             data: valuesArrayLine,
-            label: 'Total',
-          }
-        ]
-      }
-      this.kpiChart2Data = {
-        labels: labelsArray,
-        datasets: [
-          {
-            data: valuesArray,
+            label: 'Total del Periodo',
             backgroundColor: [
-              'rgba(220, 53, 69, 0.2)',   // Rojo
-              'rgba(13, 110, 253, 0.2)',  // Azul
+              'rgba(255, 193, 7, 0.2)',   // Amarillo
+              'rgba(25, 135, 84, 0.2)',   // Verde
               'rgba(123, 31, 162, 0.2)',  // Púrpura
               'rgba(255, 87, 34, 0.2)',   // Naranja
               'rgba(76, 175, 80, 0.2)',   // Verde claro
@@ -298,8 +302,38 @@ export class ExpensesReportComponent {
               'rgba(158, 158, 158, 0.2)', // Gris
               'rgba(121, 85, 72, 0.2)',   // Café
               'rgba(33, 150, 243, 0.2)',
+              'rgba(220, 53, 69, 0.2)',   // Rojo
+              'rgba(13, 110, 253, 0.2)',  // Azul
+
+
+            ],
+            borderColor: 'rgba(13,110,253,1)',
+            borderWidth: 1,
+          }
+        ]
+      }
+      this.kpiChart2Data = {
+        labels: labelsArray,
+        datasets: [
+          {
+            data: valuesArray,
+            backgroundColor: [
               'rgba(255, 193, 7, 0.2)',   // Amarillo
               'rgba(25, 135, 84, 0.2)',   // Verde
+              'rgba(123, 31, 162, 0.2)',  // Púrpura
+              'rgba(255, 87, 34, 0.2)',   // Naranja
+              'rgba(76, 175, 80, 0.2)',   // Verde claro
+              'rgba(63, 81, 181, 0.2)',   // Azul índigo
+              'rgba(244, 67, 54, 0.2)',   // Rojo claro
+              'rgba(0, 150, 136, 0.2)',   // Turquesa
+              'rgba(255, 235, 59, 0.2)',  // Amarillo claro
+              'rgba(205, 220, 57, 0.2)',  // Lima
+              'rgba(158, 158, 158, 0.2)', // Gris
+              'rgba(121, 85, 72, 0.2)',   // Café
+              'rgba(33, 150, 243, 0.2)',
+              'rgba(220, 53, 69, 0.2)',   // Rojo
+              'rgba(13, 110, 253, 0.2)',  // Azul
+
 
             ],
             borderColor: 'rgba(13,110,253,1)',
@@ -311,7 +345,8 @@ export class ExpensesReportComponent {
         labels: lotNumbers,
         datasets: [
           {
-            data: totalAmounts, label: 'Distribución de Expensas por Lote',
+            data: totalAmounts,
+            label: 'Monto del Lote',
             backgroundColor: [
               'rgba(255, 193, 7, 0.2)',   // Amarillo
               'rgba(25, 135, 84, 0.2)',   // Verde
@@ -388,6 +423,14 @@ export class ExpensesReportComponent {
       alert("Debe ingresar una cantidad de lotes valida")
       return;
     }
+    this.loadExpenseData()
+    this.loadKpis()
+  }
+
+  onPeriodChange($event: Event): void {
+    const selectedIndex = ($event.target as HTMLSelectElement).value;
+    this.selectedPeriodId = Number(selectedIndex);
+    console.log(this.selectedPeriodId)// Convierte a número
     this.loadExpenseData()
     this.loadKpis()
   }
