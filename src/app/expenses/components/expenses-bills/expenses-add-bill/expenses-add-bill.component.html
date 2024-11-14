@@ -13,7 +13,7 @@
               [ngClass]="{
       'is-invalid': billForm.get('supplierId')?.invalid && (billForm.get('supplierId')?.dirty || billForm.get('supplierId')?.touched),
       'is-valid': billForm.get('supplierId')?.valid && (billForm.get('supplierId')?.dirty || billForm.get('supplierId')?.touched)
-    }" [searchable]="true" notFoundText="No se encontraron proveedores" class="form-select rounded-end-3">
+    }" [searchable]="true" notFoundText="No se encontraron proveedores" class="form-select rounded-end-3 bg-body">
             </ng-select>
             <div class="invalid-feedback">
               El proveedor es obligatorio.
@@ -103,9 +103,16 @@
             'is-invalid': billForm.get('amount')?.invalid && (billForm.get('amount')?.dirty || billForm.get('amount')?.touched),
             'is-valid': billForm.get('amount')?.valid && (billForm.get('amount')?.dirty || billForm.get('amount')?.touched)
           }">
+          @if(billForm.get('amount')?.errors?.['required'] && (billForm.get('amount')?.dirty || billForm.get('amount')?.touched)) {
+            <div class="invalid-feedback">
+              El monto es obligatorio.
+            </div>
+            }
+          @if(billForm.get('amount')?.errors?.['min'] && (billForm.get('amount')?.dirty || billForm.get('amount')?.touched)) {
           <div class="invalid-feedback">
-            El monto es obligatorio.
+            El monto debe ser mayor a 0.
           </div>
+          }
         </div>
       </div>
     </div>
@@ -129,6 +136,11 @@
             La fecha seleccionada es anterior a la fecha de inicio del período.
           </div>
           }
+          <!-- @if (billForm.get('date')?.pending) {
+            <div class="text-info">
+              <small>Validando fecha...</small>
+            </div>
+          } -->
         </div>
       </div>
     </div>
