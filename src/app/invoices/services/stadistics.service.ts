@@ -63,14 +63,13 @@ export class StadisticsService {
     //   filters.startExpirationDate = filters.startExpirationDate + '-01';
     //   filters.endExpirationDate = filters.endExpirationDate + '-01';
     // }
-
     let params = new HttpParams()
     for (const key in filters) {
       if (filters.hasOwnProperty(key) && filters[key] !== undefined && filters[key] !== '') {
         params = params.set(key, filters[key].toString());
       }
     }
+
     return this.http.get<TicketReportDto[]>(this.baseUrlTicket + '/filters', {params});
   }
-
 }

@@ -84,15 +84,15 @@ export class StadisticsComponent implements OnInit {
 
 
     this.dateFilterForm.get('firstDate')?.valueChanges.subscribe(value => {
-      this.filterData();
+      // this.filterData();
     });
 
     this.dateFilterForm.get('lastDate')?.valueChanges.subscribe(value => {
-      this.filterData();
+      // this.filterData();
     });
 
     this.dateFilterForm.valueChanges.subscribe(values => {
-      this.filterData();
+      // this.filterData();
     });
   }
 
@@ -100,6 +100,10 @@ export class StadisticsComponent implements OnInit {
     this.filterData();
     this.filterDataPayment()
     this.cdr.detectChanges(); // Fuerza la detección de cambios
+  }
+
+  onDateChange(){
+    this.filterData();
   }
 
   initializeDefaultDates() {

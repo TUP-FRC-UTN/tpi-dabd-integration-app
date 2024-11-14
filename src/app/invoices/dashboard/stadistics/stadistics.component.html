@@ -10,6 +10,7 @@
           formControlName="firstDate"
           class="form-control form-control-sm"
           [(ngModel)]="ticketFilter.startExpirationDate"
+          (change)="onDateChange()"
         />
         </div>
         <div class="d-flex align-items-center gap-2">
@@ -19,6 +20,7 @@
             formControlName="lastDate"
           class="form-control form-control-sm"
           [(ngModel)]="ticketFilter.endExpirationDate"
+          (change)="onDateChange()"
         />
         </div>
       </form>
