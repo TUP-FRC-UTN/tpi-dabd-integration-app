@@ -1,6 +1,6 @@
 // environment.ts (desarrollo local)
 export const environment = {
-  production: false,
+  production: true,
   apis: {
     // URLs directas a los servicios de cada grupo con su docker-compose
     accesses: 'http://localhost:8001/',
