@@ -22,8 +22,7 @@ import { AuthorizerCompleterService } from '../../../../services/authorizer-comp
     MainContainerComponent,
     FormsModule,
   ],
-  templateUrl: './access-list.component.html',
-  styleUrl: './access-list.component.css'
+  templateUrl: './access-list.component.html'
 })
 export class AccessListComponent implements OnInit, AfterViewInit {
 

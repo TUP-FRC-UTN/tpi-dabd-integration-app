@@ -9,7 +9,7 @@
            @param objectName => Hace referencia al nombre de su objeto para guardar el archivo pdf o excel. Ej: 25/10/2024_LOTES
            -->
         <app-cadastre-plot-filter-buttons #filterComponent [itemsList]="completeList"
-            [tableName]="tableName.nativeElement" [heads]="heads" [props]="props" formPath="/access/form"
+            [tableName]="tableName.nativeElement" [heads]="heads" [props]="props" formPath="entries/access-form"
             [tableFilters]="filterConfig" (filterValueChange)="onFilterValueChange($event)"
             [dictionaries]="dictionaries" objectName="ACCESOS"></app-cadastre-plot-filter-buttons>
     </div>

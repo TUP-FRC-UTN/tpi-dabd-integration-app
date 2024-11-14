@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgClass, NgIf } from '@angular/common';
 import { QrComponent } from '../../../qr/qr.component';
-import { ToastsContainer, ToastService } from 'ngx-dabd-grupo01';
+import { MainContainerComponent, ToastsContainer, ToastService } from 'ngx-dabd-grupo01';
 import {
   NgxScannerQrcodeComponent,
   NgxScannerQrcodeModule,
@@ -26,10 +26,12 @@ import { AuthService } from '../../../services/auth.service';
     NgClass,
     NgxScannerQrcodeModule,
     ToastsContainer,
+    MainContainerComponent
   ],
   templateUrl: './access-form.component.html',
 })
 export class AccessFormComponent implements OnInit {
+
   accessForm: FormGroup = {} as FormGroup;
   checkButtonDisabled = true;
   modalService = inject(NgbModal);
@@ -293,4 +295,9 @@ export class AccessFormComponent implements OnInit {
 
     return match ? match[1] : null;
   }
+
+
+  openInfo() {
+    alert('mostrar info')
+    }
 }

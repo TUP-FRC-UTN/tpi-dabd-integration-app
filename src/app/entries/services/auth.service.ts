@@ -4,13 +4,16 @@ import { Observable, map } from 'rxjs';
 import { Auth } from '../models/authorization/authorize.model';
 import { VisitorAuthorizationRequest } from '../models/authorization/authorizeRequest.model';
 import { CaseTransformerService } from './case-transformer.service';
+import { environment } from '../../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:8001/auths';
+  //private apiUrl = 'http://localhost:8001/auths';
+  private apiUrl = environment.apis.accesses+'auths/';
+
 
   constructor(
     private http: HttpClient,
@@ -29,7 +32,7 @@ export class AuthService {
 
     return this.http
       .post<VisitorAuthorizationRequest>(
-        this.apiUrl + '/authorization',
+        this.apiUrl + 'authorization',
         snakeCaseData,
         { headers }
       )
@@ -48,7 +51,7 @@ export class AuthService {
 
     return this.http
       .put<VisitorAuthorizationRequest>(
-        this.apiUrl + '/authorization',
+        this.apiUrl + 'authorization',
         snakeCaseData,
         { headers }
       )
@@ -74,7 +77,7 @@ export class AuthService {
 
   getValid(document: number): Observable<Auth[]> {
     return this.http
-      .get<Auth[]>(`${this.apiUrl}/authorization/${document}`)
+      .get<Auth[]>(`${this.apiUrl}authorization/${document}`)
 
   }
 
@@ -82,7 +85,7 @@ export class AuthService {
     const params = { docNumber: document };
 
     return this.http
-      .get<Auth[]>(`${this.apiUrl}/valid`, {
+      .get<Auth[]>(`${this.apiUrl}valid`, {
         params: params as any,
       })
       .pipe(
@@ -127,7 +130,7 @@ export class AuthService {
     });
 
     return this.http
-      .delete<any>(`${this.apiUrl}/authorization`, { headers })
+      .delete<any>(`${this.apiUrl}authorization`, { headers })
       .pipe(map((response) => response));
   }
 
@@ -138,7 +141,7 @@ export class AuthService {
     });
 
     return this.http
-      .put<any>(`${this.apiUrl}/authorization/activate`, null, { headers })
+      .put<any>(`${this.apiUrl}authorization/activate`, null, { headers })
       .pipe(map((response) => this.caseTransformer.toCamelCase(response)));
   }
 }

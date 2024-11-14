@@ -8,6 +8,7 @@ import { ListAuthComponent } from "./authorization/features/list-auth/list-auth.
 import { QrComponent } from "./qr/qr.component";
 import { EntityFormComponent } from "./entities/features/entity-form/entity-form/entity-form.component";
 import { EntityListComponent } from "./entities/features/entity-list/entity-list/entity-list.component";
+import { AccessListComponent } from "./accesses/features/access-list/access-list/access-list.component";
 
 export const ENTRY_ROUTES: Routes = [
     { path: '', component: EntryHomeComponent },
@@ -42,6 +43,10 @@ export const ENTRY_ROUTES: Routes = [
       {
         path: 'access-form',
         component: AccessFormComponent,
+      },
+      {
+        path: 'access-query',
+        component: AccessListComponent,
       },
       {
         path: '',

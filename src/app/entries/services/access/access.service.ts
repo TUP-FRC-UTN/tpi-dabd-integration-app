@@ -9,12 +9,15 @@ import {
   DashboardWeeklyDTO,
   EntryReport,
 } from '../../models/dashboard.model';
+import { environment } from '../../../../environments/environment.prod';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class AccessService {
-  private apiUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/access';
+  //private apiUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/access';
+  private apiUrl = environment.apis.accesses;
 
   constructor(
     private http: HttpClient,
@@ -27,7 +30,7 @@ export class AccessService {
     isActive?: boolean
   ): Observable<{ items: AccessModel[] }> {
     return this.http
-      .get<{ items: AccessModel[] }>(this.apiUrl, {
+      .get<{ items: AccessModel[] }>(this.apiUrl +'/access', {
         params: { size: 1000000 },
       })
       .pipe(
