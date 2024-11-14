@@ -3,15 +3,18 @@ import { BaseChartDirective } from 'ng2-charts';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../../services/notification.service';
+import { ContactService } from '../../../services/contact.service';
 import { NotificationModelChart } from '../../../models/notifications/notification';
+import { ContactModel } from '../../../models/contacts/contactModel';
 import { ChartConfigurationService } from '../../../services/chart-configuration.service';
 import { KPIModel } from '../../../models/kpi/kpiModel';
 import { PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
 import { IaService } from '../../../services/ia-service';
-import { ChartData, ChartConfiguration } from 'chart.js';
+import { ChartData,ChartConfiguration  } from 'chart.js';
 import { RouterModule } from '@angular/router';
+
 
 @Component({
   selector: 'app-notification-chart',
@@ -30,14 +33,24 @@ import { RouterModule } from '@angular/router';
 
 export class NotificationChartComponent implements OnInit {
 
+
+
+  filterNotifications(){
+
+
+}
+
+
   @ViewChild('statusChart') statusChart?: BaseChartDirective;
   @ViewChild('templateChart') templateChart?: BaseChartDirective;
   @ViewChild('dailyChart') dailyChart?: BaseChartDirective;
   @ViewChild('weeklyChart') weeklyChart?: BaseChartDirective;
+  @ViewChild('contactTypeChart') contactTypeChart?: BaseChartDirective;
 
 
   private platformId = inject(PLATFORM_ID);
   notificationService = inject(NotificationService);
+  contactService = inject(ContactService);
   chartConfigurationService = inject(ChartConfigurationService);
   isBrowser = isPlatformBrowser(this.platformId);
   iaService = inject(IaService);
@@ -78,10 +91,35 @@ export class NotificationChartComponent implements OnInit {
   kpis!: KPIModel;
 
   notifications: NotificationModelChart[] = []
+  contacts: ContactModel[] = []
+
+
+  contactTypeChartData: ChartData = {
+    labels: ['Email', 'Teléfono', 'Redes Sociales'],
+    datasets: [{
+      data: [0, 0, 0],
+      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+      hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+    }]
+  };
+  
+  contactTypeChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+      },
+      title: {
+        display: true,
+        text: 'Distribución por Tipo de Contacto'
+      }
+    }
+  };
+  
 
   ngOnInit() {
+    this.processContactData();
     this.getAllNotifications();
-
     this.notificationService.getAllNotificationsNotFiltered().subscribe((data) => {
       this.notifications = data;
 
@@ -111,6 +149,38 @@ export class NotificationChartComponent implements OnInit {
       this.notifications = data;
 
     })
+
+  }
+
+  processContactData(){
+    this.contactService.getAllContacts().subscribe((data)=>{
+      this.contacts = data;
+
+      const contactTypeCounts = {
+        EMAIL: 0,
+        PHONE: 0,
+        SOCIAL_MEDIA_LINK: 0
+      };
+
+      this.contacts.forEach(contact => {
+        if(contact.active){
+          contactTypeCounts[contact.contactType as keyof typeof contactTypeCounts ]++;
+        }
+      });
+
+      this.contactTypeChartData = {
+        labels: ['Email', 'Teléfono', 'Redes Sociales'],
+        datasets: [{
+          data: [
+            contactTypeCounts.EMAIL,
+            contactTypeCounts.PHONE,
+            contactTypeCounts.SOCIAL_MEDIA_LINK
+          ],
+          backgroundColor:  ['#FF6384', '#36A2EB', '#FFCE56'],
+          hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+        }]
+      }
+    });
 
   }
 
