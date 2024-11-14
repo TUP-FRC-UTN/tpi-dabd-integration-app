@@ -125,7 +125,7 @@ export class TotalPaymentsComponent {
         this.kpi2.value = `Cantidad de expensas pendientes: ${countPending}`;;
 
         const avgTime = approvedCount > 0 ? totalTime / approvedCount : 0;
-        this.kpi3.value = `A validar: ${transferPending} transferencias`;
+        this.kpi3.value = `Cantidad de transferencias pendientes: ${transferPending}`;;
 
         const retentionRate = (recurrentPayments / (countMP + countT)) * 100;
         this.kpi4.value = `Tasa de Retención: ${retentionRate.toFixed(2)}%`;
