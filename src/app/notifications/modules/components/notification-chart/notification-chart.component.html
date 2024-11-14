@@ -1,4 +1,4 @@
-<app-main-container title="Estadisticas de Notificaciones" (infoButtonClick)="showInfo()">
+<app-main-container title="Estadísticas de Notificaciones" (infoButtonClick)="showInfo()">
   <!-- Botón Asistente IA -->
   <div class="d-flex justify-content-end tooltip-wrapper mb-2">
     <button type="button" class="btn btn-outline-primary" (click)="toggleTooltip()">
@@ -27,7 +27,7 @@
         <div class="col-12">
           <div class="card">
             <div class="card-body p-3">
-              <div class="d-flex align-items-center gap-3">
+              <div class="d-flex flex-column flex-sm-row align-items-center gap-3">
                 <div class="d-flex align-items-center gap-2">
                   <span class="text-secondary">Desde:</span>
                   <input type="date" [(ngModel)]="dateFrom" class="form-control form-control-sm">
@@ -80,11 +80,11 @@
         </div>
       </div>
 
-      <!-- Primera fila de KPIs -->
+      <!-- KPIs: Fila de tarjetas -->
       <div class="row mb-4">
-        <div class="col-md-6 mb-3">
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
           <div class="card">
-            <div class="card-body" style="height: 150px; width: 100%;">
+            <div class="card-body" style="height: 150px;">
               <div class="d-flex align-items-center mb-2">
                 <div class="icon-circle bg-success text-white me-3">
                   <i class="bi bi-check-circle"></i>
@@ -97,9 +97,9 @@
           </div>
         </div>
 
-        <div class="col-md-6 mb-3">
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
           <div class="card">
-            <div class="card-body" style="height: 150px; width: 100%;">
+            <div class="card-body" style="height: 150px;">
               <div class="d-flex align-items-center mb-2">
                 <div class="icon-circle bg-primary text-white me-3">
                   <i class="bi bi-graph-up"></i>
@@ -111,13 +111,10 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Segunda fila de KPIs -->
-      <div class="row mb-4">
-        <div class="col-md-4 mb-3">
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
           <div class="card">
-            <div class="card-body" style="height: 150px; width: 100%;">
+            <div class="card-body" style="height: 150px;">
               <div class="d-flex align-items-center mb-2">
                 <div class="icon-circle bg-info text-white me-3">
                   <i class="bi bi-clock"></i>
@@ -130,9 +127,9 @@
           </div>
         </div>
 
-        <div class="col-md-4 mb-3">
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
           <div class="card">
-            <div class="card-body" style="height: 150px; width: 100%;">
+            <div class="card-body" style="height: 150px;">
               <div class="d-flex align-items-center mb-2">
                 <div class="icon-circle bg-danger text-white me-3">
                   <i class="bi bi-person"></i>
@@ -144,9 +141,9 @@
           </div>
         </div>
 
-        <div class="col-md-4 mb-3">
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
           <div class="card">
-            <div class="card-body" style="height: 150px; width: 100%;">
+            <div class="card-body" style="height: 150px;">
               <div class="d-flex align-items-center mb-2">
                 <div class="icon-circle bg-violet text-white me-3">
                   <i class="bi bi-calendar-week"></i>
@@ -163,7 +160,7 @@
 
       <!-- KPIs de Retención -->
       <div class="row mb-4">
-        <div class="col-md-6 mb-3">
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
           <div class="card">
             <div class="card-body" style="height: 150px;">
               <div class="d-flex align-items-center mb-2">
@@ -178,7 +175,7 @@
           </div>
         </div>
 
-        <div class="col-md-6 mb-3">
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
           <div class="card">
             <div class="card-body" style="height: 150px;">
               <div class="d-flex align-items-center mb-2">
@@ -187,76 +184,36 @@
                 </div>
                 <h6 class="card-subtitle text-muted mb-0">Alta Retención</h6>
               </div>
-              <h2 class="card-title mb-0">{{retentionKPIs.subscriptionsAbove80}}</h2>
-              <small class="text-muted">Suscripciones con >80% de retención</small>
+              <h2 class="card-title mb-0">{{retentionKPIs.highestRetention | number:'1.0-1'}}%</h2>
+              <small class="text-muted">De suscripciones con alta interacción</small>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Gráficos: Asegúrate de que los gráficos también se adapten -->
       <div class="row mb-4">
-        <div class="col-md-6 mb-3">
-          <div class="card">
-            <div class="card-body" style="height: 150px;">
-              <div class="d-flex align-items-center mb-2">
-                <div class="icon-circle bg-info text-white me-3">
-                  <i class="bi bi-trophy-fill"></i>
-                </div>
-                <h6 class="card-subtitle text-muted mb-0">Mejor Retención</h6>
-              </div>
-              <h2 class="card-title mb-0">
-                {{subscriptionService.getSubscriptionNameInSpanish(retentionKPIs.highestRetention)}}
-              </h2>
-              <small class="text-muted">Suscripción más mantenida</small>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-6 mb-3">
-          <div class="card">
-            <div class="card-body" style="height: 150px;">
-              <div class="d-flex align-items-center mb-2">
-                <div class="icon-circle bg-warning text-white me-3">
-                  <i class="bi bi-exclamation-triangle-fill"></i>
-                </div>
-                <h6 class="card-subtitle text-muted mb-0">Menor Retención</h6>
-              </div>
-              <h2 class="card-title mb-0">
-                {{subscriptionService.getSubscriptionNameInSpanish(retentionKPIs.lowestRetention)}}
-              </h2>
-              <small class="text-muted">Suscripción más desactivada</small>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Gráficos -->
-      <div class="row mb-4">
-        <div class="col-md-6">
+        <div class="col-12 col-md-6 mb-3">
           <div class="card">
             <div class="card-body">
               <h5 class="card-title text-center">Tipos de Contacto</h5>
               <div class="chart-container">
-                <canvas baseChart #contactTypeChart="base-chart"
-                  [data]="contactTypeChartData"
-                  [options]="contactTypeChartOptions"
-                  [type]="'pie'">
+                <canvas baseChart #contactTypeChart="base-chart" [data]="contactTypeChartData"
+                  [options]="contactTypeChartOptions" [type]="'pie'">
                 </canvas>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-12 col-md-6 mb-3">
           <div class="card">
             <div class="card-body">
               <a [routerLink]="['/notifications-historic']" style="text-decoration: none; color: inherit;">
                 <h5 class="card-title text-center hover-underline">Estado de Notificaciones</h5>
               </a>
               <div class="chart-container">
-                <canvas baseChart #statusChart="base-chart"
-                  [data]="statusChartData"
-                  [options]="statusChartOptions"
+                <canvas baseChart #statusChart="base-chart" [data]="statusChartData" [options]="statusChartOptions"
                   [type]="'pie'">
                 </canvas>
               </div>
@@ -265,16 +222,15 @@
         </div>
       </div>
 
+
       <!-- Gráficos de barras -->
       <div class="row mb-4">
-        <div class="col-md-12">
+        <div class="col-12">
           <div class="card">
             <div class="card-body">
               <h5 class="card-title text-center">Actividad Semanal</h5>
-              <div class="chart-container" style="height: 100%;">
-                <canvas baseChart #weeklyChart="base-chart"
-                  [data]="weeklyChartData"
-                  [options]="weeklyChartOptions"
+              <div class="chart-container" style="height: 100%; width: 100%;">
+                <canvas baseChart #weeklyChart="base-chart" [data]="weeklyChartData" [options]="weeklyChartOptions"
                   [type]="'bar'">
                 </canvas>
               </div>
@@ -289,11 +245,8 @@
           <div class="card">
             <div class="card-body">
               <h5 class="card-title text-center">Tasa de Retención por Suscripción</h5>
-              <div style="height: 100%;">
-                <canvas baseChart
-                  [data]="retentionChartData"
-                  [options]="retentionChartOptions"
-                  [type]="'bar'">
+              <div style="height: 100%; width: 100%;">
+                <canvas baseChart [data]="retentionChartData" [options]="retentionChartOptions" [type]="'bar'">
                 </canvas>
               </div>
             </div>
@@ -302,23 +255,21 @@
       </div>
 
       <!-- Gráfico de análisis de suscripciones -->
-<div class="row mb-4">
-  <div class="col-12">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title text-center">Análisis de Suscripciones Opcionales</h5>
-        <div style="height: 400px;">
-          <canvas baseChart
-            #subscriptionAnalysisChart="base-chart"
-            [data]="subscriptionAnalysisData"
-            [options]="subscriptionAnalysisOptions"
-            [type]="'bar'">
-          </canvas>
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title text-center">Análisis de Suscripciones Opcionales</h5>
+              <div style="height: 400px;">
+                <canvas baseChart #subscriptionAnalysisChart="base-chart" [data]="subscriptionAnalysisData"
+                  [options]="subscriptionAnalysisOptions" [type]="'bar'">
+                </canvas>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
+
 
     </div>
     }
@@ -378,4 +329,4 @@
       </div>
     </div>
   </div>
- </div>
+</div>
