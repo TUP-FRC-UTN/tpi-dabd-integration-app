@@ -20,4 +20,13 @@ export interface KPIModel {
     percentage: number;
   };
 
+
+
+}
+
+export interface RetentionMetric {
+  subscriptionName: string;
+  totalUsers: number;
+  activeUsers: number;
+  retentionRate: number;
 }

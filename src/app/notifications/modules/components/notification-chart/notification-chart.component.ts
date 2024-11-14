@@ -7,13 +7,16 @@ import { ContactService } from '../../../services/contact.service';
 import { NotificationModelChart } from '../../../models/notifications/notification';
 import { ContactModel } from '../../../models/contacts/contactModel';
 import { ChartConfigurationService } from '../../../services/chart-configuration.service';
-import { KPIModel } from '../../../models/kpi/kpiModel';
+import { KPIModel, RetentionMetric } from '../../../models/kpi/kpiModel';
 import { PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
 import { IaService } from '../../../services/ia-service';
-import { ChartData,ChartConfiguration  } from 'chart.js';
+import { ChartData, ChartConfiguration } from 'chart.js';
 import { RouterModule } from '@angular/router';
+import { forkJoin } from 'rxjs';
+import { SubscriptionService } from '../../../services/subscription.service';
+import { SubscriptionStat } from '../../../models/suscriptions/subscription'
 
 
 @Component({
@@ -35,10 +38,10 @@ export class NotificationChartComponent implements OnInit {
 
 
 
-  filterNotifications(){
+  filterNotifications() {
 
 
-}
+  }
 
 
   @ViewChild('statusChart') statusChart?: BaseChartDirective;
@@ -49,11 +52,13 @@ export class NotificationChartComponent implements OnInit {
 
 
   private platformId = inject(PLATFORM_ID);
+  isBrowser = isPlatformBrowser(this.platformId);
   notificationService = inject(NotificationService);
   contactService = inject(ContactService);
   chartConfigurationService = inject(ChartConfigurationService);
-  isBrowser = isPlatformBrowser(this.platformId);
   iaService = inject(IaService);
+  subscriptionService = inject(SubscriptionService);
+
 
   today: string = new Date().toISOString().split('T')[0];
   dateFrom: string = '';
@@ -102,7 +107,7 @@ export class NotificationChartComponent implements OnInit {
       hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
     }]
   };
-  
+
   contactTypeChartOptions: ChartConfiguration['options'] = {
     responsive: true,
     plugins: {
@@ -115,9 +120,16 @@ export class NotificationChartComponent implements OnInit {
       }
     }
   };
-  
+
 
   ngOnInit() {
+
+
+    this.loadContactsAndSubscriptions();
+
+
+
+
     this.processContactData();
     this.getAllNotifications();
     this.notificationService.getAllNotificationsNotFiltered().subscribe((data) => {
@@ -138,6 +150,10 @@ export class NotificationChartComponent implements OnInit {
         this.filterAndUpdateCharts();
       }
     });
+
+
+
+
   }
 
 
@@ -152,8 +168,8 @@ export class NotificationChartComponent implements OnInit {
 
   }
 
-  processContactData(){
-    this.contactService.getAllContacts().subscribe((data)=>{
+  processContactData() {
+    this.contactService.getAllContacts().subscribe((data) => {
       this.contacts = data;
 
       const contactTypeCounts = {
@@ -163,8 +179,8 @@ export class NotificationChartComponent implements OnInit {
       };
 
       this.contacts.forEach(contact => {
-        if(contact.active){
-          contactTypeCounts[contact.contactType as keyof typeof contactTypeCounts ]++;
+        if (contact.active) {
+          contactTypeCounts[contact.contactType as keyof typeof contactTypeCounts]++;
         }
       });
 
@@ -176,7 +192,7 @@ export class NotificationChartComponent implements OnInit {
             contactTypeCounts.PHONE,
             contactTypeCounts.SOCIAL_MEDIA_LINK
           ],
-          backgroundColor:  ['#FF6384', '#36A2EB', '#FFCE56'],
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
           hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
         }]
       }
@@ -207,7 +223,7 @@ export class NotificationChartComponent implements OnInit {
     this.selectedStatus = 'ALL';
     this.dateFrom = '';
     this.dateUntil = '';
-    this.selectedTemplate ='ALL';
+    this.selectedTemplate = 'ALL';
     this.filterAndUpdateCharts();
   }
 
@@ -221,7 +237,7 @@ export class NotificationChartComponent implements OnInit {
         const untilDate = this.dateUntil ? new Date(this.dateUntil) : null;
 
         return (!fromDate || notificationDate >= fromDate) &&
-               (!untilDate || notificationDate <= untilDate);
+          (!untilDate || notificationDate <= untilDate);
       });
     }
 
@@ -463,79 +479,206 @@ export class NotificationChartComponent implements OnInit {
     }]
   };
 
-weeklyChartOptions = {
-  responsive: true,
-  scales: {
-    x: {
+  subscriptionAnalysisData: ChartData = {
+    labels: [], // Se llenará con los nombres de las suscripciones
+    datasets: [
+      {
+        data: [], // Se llenará con el conteo de suscritos
+        label: 'Suscritos',
+        backgroundColor: '#36A2EB', // Azul para suscritos
+        borderColor: '#36A2EB',
+        borderWidth: 1
+      },
+      {
+        data: [], // Se llenará con el conteo de desuscritos
+        label: 'Desuscritos',
+        backgroundColor: '#FF6384', // Rojo para desuscritos
+        borderColor: '#FF6384',
+        borderWidth: 1
+      }
+    ]
+  };
+
+  subscriptionAnalysisOptions: ChartConfiguration['options'] = {
+    indexAxis: 'y', // Esto hace que las barras sean horizontales
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
       title: {
         display: true,
-        text: 'Día de la Semana'
+        text: 'Análisis de Suscripciones Opcionales'
       }
     },
-    y: {
-      title: {
-        display: true,
-        text: 'Cantidad de Notificaciones'
+    scales: {
+      x: {
+        stacked: false,
+        title: {
+          display: true,
+          text: 'Cantidad de Usuarios'
+        }
       },
-      beginAtZero: true
+      y: {
+        stacked: false,
+        title: {
+          display: true,
+          text: 'Tipos de Suscripción'
+        }
+      }
     }
-  }
-};
-
-private updateWeeklyChartData(data: any[]): void {
-  const weekdayCount = new Map<string, number>();
-  const weekdays = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-
-  data.forEach(notification => {
-    const [day, month, year] = notification.dateSend.split(' ')[0].split('/');
-    const date = new Date(year, month - 1, day);
-    const weekday = weekdays[date.getDay()];
-    weekdayCount.set(weekday, (weekdayCount.get(weekday) || 0) + 1);
-  });
-
-  this.weeklyChartData.datasets[0].data = weekdays.map(day => weekdayCount.get(day) || 0);
-
-  setTimeout(() => {
-    if (this.weeklyChart) {
-      this.weeklyChart.update(); // Solo actualiza si el gráfico existe
-    }
-  });
-}
-
-
-exportDashboardData(): string {
-  const data = {
-    kpis: this.kpis,
-    statusChartData: this.statusChartData,
-    templateChartData: this.templateChartData,
-    dailyChartData: this.dailyChartData,
-    notifications: this.notifications,
   };
-  return JSON.stringify(data);
-}
 
-
-toggleTooltip() {
-  this.isTooltipOpen = !this.isTooltipOpen;
-  if (this.isTooltipOpen) {
-    this.fetchIaResponse();
-  }
-}
-
-fetchIaResponse() {
-  console.log(this.exportDashboardData());
-  this.isLoading = true; // Mostrar spinner
-  this.iaService.analyzdeDashboard(this.exportDashboardData()).subscribe({
-    next: (response) => {
-      this.iaResponse = response; // Cambia según el formato de tu API
-      this.isLoading = false; // Ocultar spinner
-    },
-    error: () => {
-      this.iaResponse = 'Error al obtener respuesta del asistente.';
-      this.isLoading = false;
+  weeklyChartOptions = {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Día de la Semana'
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Cantidad de Notificaciones'
+        },
+        beginAtZero: true
+      }
     }
-  });
-}
+  };
+
+  private updateWeeklyChartData(data: any[]): void {
+    const weekdayCount = new Map<string, number>();
+    const weekdays = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+    data.forEach(notification => {
+      const [day, month, year] = notification.dateSend.split(' ')[0].split('/');
+      const date = new Date(year, month - 1, day);
+      const weekday = weekdays[date.getDay()];
+      weekdayCount.set(weekday, (weekdayCount.get(weekday) || 0) + 1);
+    });
+
+    this.weeklyChartData.datasets[0].data = weekdays.map(day => weekdayCount.get(day) || 0);
+
+    setTimeout(() => {
+      if (this.weeklyChart) {
+        this.weeklyChart.update(); // Solo actualiza si el gráfico existe
+      }
+    });
+  }
+
+  // Método para procesar los datos
+  processSubscriptionData(contacts: any[], subscriptionTypes: any[]) {
+    // Filtrar solo las suscripciones opcionales
+    const optionalSubs = subscriptionTypes
+      .filter(sub => sub.isUnsubscribable)
+      .map(sub => sub.name);
+
+    const subscriptionStats: Record<string, SubscriptionStat> = optionalSubs.reduce((acc, subName) => {
+      acc[subName] = { subscribed: 0, unsubscribed: 0, total: contacts.length };
+      return acc;
+    }, {} as Record<string, SubscriptionStat>);
+
+    // Ahora el sort estará correctamente tipado
+    const sortedStats = Object.entries(subscriptionStats)
+      .sort(([, a], [, b]) => b.subscribed - a.subscribed);
+
+
+    // Contar suscripciones
+    contacts.forEach(contact => {
+      optionalSubs.forEach(subName => {
+        if (contact.subscriptions.includes(subName)) {
+          subscriptionStats[subName].subscribed++;
+        } else {
+          subscriptionStats[subName].unsubscribed++;
+        }
+      });
+    });
+
+    // Actualizar datos del gráfico
+    this.subscriptionAnalysisData.labels = sortedStats.map(([name]) => name);
+    this.subscriptionAnalysisData.datasets[0].data = sortedStats.map(([, stats]) => stats.subscribed);
+    this.subscriptionAnalysisData.datasets[1].data = sortedStats.map(([, stats]) => stats.unsubscribed);
+  }
+
+
+
+
+
+  exportDashboardData(): string {
+    const data = {
+      kpis: this.kpis,
+      statusChartData: this.statusChartData,
+      templateChartData: this.templateChartData,
+      dailyChartData: this.dailyChartData,
+      notifications: this.notifications,
+    };
+    return JSON.stringify(data);
+  }
+
+
+  toggleTooltip() {
+    this.isTooltipOpen = !this.isTooltipOpen;
+    if (this.isTooltipOpen) {
+      this.fetchIaResponse();
+    }
+  }
+
+  fetchIaResponse() {
+    console.log(this.exportDashboardData());
+    this.isLoading = true; // Mostrar spinner
+    this.iaService.analyzdeDashboard(this.exportDashboardData()).subscribe({
+      next: (response) => {
+        this.iaResponse = response; // Cambia según el formato de tu API
+        this.isLoading = false; // Ocultar spinner
+      },
+      error: () => {
+        this.iaResponse = 'Error al obtener respuesta del asistente.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  private loadContactsAndSubscriptions(): void {
+    forkJoin({
+      subscriptionTypes: this.subscriptionService.getAllSubscriptions(),
+      contacts: this.contactService.getAllContacts()
+    }).subscribe({
+      next: ({ subscriptionTypes, contacts }) => {
+        this.processSubscriptionData(contacts, subscriptionTypes);
+      },
+      error: (error) => {
+        console.error('Error loading contacts and subscriptions:', error);
+      }
+    });
+  }
+
+  private calculateRetentionMetrics(contacts: any[], subscriptionTypes: any[]): RetentionMetric[] {
+    // Filtrar solo suscripciones opcionales
+    const optionalSubs = subscriptionTypes
+      .filter(sub => sub.isUnsubscribable)
+      .map(sub => sub.name);
+
+    const totalUsers = contacts.length;
+
+    // Calcular retención para cada suscripción opcional
+    const retentionMetrics = optionalSubs.map(subName => {
+      const activeUsers = contacts.filter(contact =>
+        contact.subscriptions.includes(subName)
+      ).length;
+
+      return {
+        subscriptionName: subName,
+        totalUsers,
+        activeUsers,
+        retentionRate: (activeUsers / totalUsers) * 100
+      };
+    });
+
+    // Ordenar por tasa de retención de mayor a menor
+    return retentionMetrics.sort((a, b) => b.retentionRate - a.retentionRate);
+  }
 
 
 }
