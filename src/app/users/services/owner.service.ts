@@ -15,12 +15,10 @@ import { SessionService } from './session.service';
   providedIn: 'root',
 })
 export class OwnerService {
-  private apiUrl = `${
-    environment.production 
-    ? environment.apis.cadastre 
-    : 'http://localhost:8004'
-  }/owners`;
   private sessionService = inject(SessionService);
+
+
+  host: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}owners`;
 
   constructor(private http: HttpClient) {}
 
@@ -38,7 +36,7 @@ export class OwnerService {
     }
 
     return this.http
-      .get<PaginatedResponse<OwnerResponse>>(this.apiUrl, { params })
+      .get<PaginatedResponse<OwnerResponse>>(this.host, { params })
       .pipe(
         map((response) => {
           const transformPipe = new OwnerMapperPipe();
@@ -54,7 +52,7 @@ export class OwnerService {
   }
 
   getOwnerById(ownerId: number): Observable<Owner> {
-    return this.http.get<OwnerResponse>(this.apiUrl + `/${ownerId}`).pipe(
+    return this.http.get<OwnerResponse>(this.host + `/${ownerId}`).pipe(
       map((data: any) => {
         const transformPipe = new OwnerMapperPipe();
         return transformPipe.transform(data);
@@ -67,7 +65,7 @@ export class OwnerService {
       'x-user-id': this.sessionService.getItem('user').id.toString(),
     });
     const owner = toSnakeCase(ownerData);
-    return this.http.post<Owner>(this.apiUrl, owner, { headers });
+    return this.http.post<Owner>(this.host, owner, { headers });
   }
 
   linkOwnerWithPlot(ownerId: number, plotId: number) {
@@ -92,7 +90,7 @@ export class OwnerService {
 
     const owner = toSnakeCase(ownerData);
 
-    return this.http.put<Owner>(`${this.apiUrl}/${ownerId}`, owner, {
+    return this.http.put<Owner>(`${this.host}/${ownerId}`, owner, {
       headers,
     });
   }
@@ -101,14 +99,14 @@ export class OwnerService {
     const headers = new HttpHeaders({
       'x-user-id': this.sessionService.getItem('user').id.toString(),
     });
-    return this.http.delete<any>(this.apiUrl + `/${id}`, { headers });
+    return this.http.delete<any>(this.host + `/${id}`, { headers });
   }
 
   getOwnerByDocAndType(docNumber: string, docType: string) {
     const params = new HttpParams()
       .set('document_number', docNumber.toString())
       .set('document_type', docType.toString());
-    return this.http.get<any>(this.apiUrl + '/document', { params });
+    return this.http.get<any>(this.host + '/document', { params });
   }
 
   filterOwnerByDocType(
@@ -127,7 +125,7 @@ export class OwnerService {
     }
 
     return this.http
-      .get<PaginatedResponse<Owner>>(this.apiUrl + '/doctype', { params })
+      .get<PaginatedResponse<Owner>>(this.host + '/doctype', { params })
       .pipe(
         map((response) => {
           const transformPipe = new OwnerMapperPipe();
@@ -147,7 +145,7 @@ export class OwnerService {
     let params = new HttpParams().set('is-active', true);
 
     return this.http
-      .get<any>(this.apiUrl + `/${ownerId}/files`, { params })
+      .get<any>(this.host + `/${ownerId}/files`, { params })
       .pipe(
         map((response: any) => {
           const transformPipe = new OwnerMapperPipe();
@@ -169,7 +167,7 @@ export class OwnerService {
       roles: [102],
     };
 
-    return this.http.post<any>(this.apiUrl + `/validate`, change, { headers });
+    return this.http.post<any>(this.host + `/validate`, change, { headers });
   }
 
   filterOwnerByOwnerType(
@@ -187,7 +185,7 @@ export class OwnerService {
       params = params.append('is_active', isActive.toString());
     }
     return this.http
-      .get<PaginatedResponse<Owner>>(this.apiUrl + '/type', { params })
+      .get<PaginatedResponse<Owner>>(this.host + '/type', { params })
       .pipe(
         map((response) => {
           const transformPipe = new OwnerMapperPipe();
@@ -218,7 +216,7 @@ export class OwnerService {
     }
 
     return this.http
-      .get<PaginatedResponse<Owner>>(`${this.apiUrl}/filters`, {
+      .get<PaginatedResponse<Owner>>(`${this.host}/filters`, {
         params: httpParams,
       })
       .pipe(

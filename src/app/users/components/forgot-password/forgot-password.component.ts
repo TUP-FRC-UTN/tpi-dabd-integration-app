@@ -32,7 +32,7 @@ export class ForgotPasswordComponent {
     if(this.forgotForm.valid){
       this.userService.forgotPassword(this.forgotForm.value).subscribe({
         next: (response) => {
-          this.toastService.sendSuccess("Email enviado a "+ this.forgotForm.get('email')?.value +" con éxito. Revisa tu casilla de correo.")
+          this.toastService.sendSuccess("Email enviado a "+ this.forgotForm.get('email')?.value +" con éxito. Revisa tu casilla de correo")
           this.router.navigate(['']);
         },
         error: (error) => {

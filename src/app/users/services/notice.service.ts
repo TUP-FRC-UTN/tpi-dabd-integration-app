@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { toCamelCase } from '../utils/owner-helper';
+import { environment } from '../../../environments/environment';
 
 export interface Notice {
   id?: number;
@@ -43,7 +44,8 @@ export interface PaginatedResponse<T> {
 })
 export class NoticeService {
   private http = inject(HttpClient);
-  private host: string = 'http://localhost:8015/notices';
+
+  host: string = `${environment.production ? `${environment.apis.users}` : `${environment.apis.users}`}notices`;
 
   private transformNoticeToAnnouncement(notice: Notice): Announcement {
     return {
@@ -57,7 +59,7 @@ export class NoticeService {
   }
 
   getAllNotices(
-    page: number = 0, 
+    page: number = 0,
     size: number = 5,
     isActive?: boolean
   ): Observable<PaginatedResponse<Announcement>> {

@@ -40,100 +40,55 @@ export class AppComponent {
       routerLink: 'entries',
       sidebarMenu: [
         {
-          label: 'Visitantes',
-          routerLink: 'entries/visitors',
+          label: 'Entidades',
+          routerLink: 'entries/entity/list',
         },
         {
           label: 'Consulta de Accesos',
           routerLink: 'entries/access-query',
         },
         {
-          label: 'Listado de Autorización',
+          label: 'Listado de Autorizaciónes',
           routerLink: 'entries/auth-list',
         },
       ],
-
     },
     {
-      label: 'Empleados',
-      routerLink:'inventories',
+      label: 'Boletas',
+      routerLink: '/invoices',
       sidebarMenu: [
         {
-          label: 'Empleados',
-          routerLink: 'inventories/employees/list'
-        }
-      ]
-    },
-    {
-      label: 'Gastos', //expensas
-      routerLink:'expenses',
-      sidebarMenu: [
-        {
-          label: 'Gastos',
-          subMenu: [
-            { label: 'Lista de gastos', routerLink: 'expenses/gastos' },
-            { label: 'Categorias', routerLink: 'expenses/gastos/categorias' },
-            { label: 'Reporte de gastos', routerLink: 'expenses/gastos/report' },
-          ],
+          label: 'Lista de Expensas (Admin)',
+          routerLink: '/invoices/admin-list-expensas',
         },
         {
-          label: 'Cargos',
-          subMenu: [
-            { label: 'Lista de cargos', routerLink: 'expenses/cargos' },
-            { label: 'Categorias', routerLink: 'expenses/cargos/categorias' }
-          ],
+          label: 'Lista de Expensas (Propietario)',
+          routerLink: '/invoices/owner-list-expensas',
         },
-        {
-          label: 'Periodo',
-          subMenu: [
-            { label: 'Lista de periodos', routerLink: 'expenses/periodo' },
-            { label: 'Historico de expensas', routerLink: 'expenses/expenses' },
-            { label: 'Reporte de expensas', routerLink: 'expenses/expenses/report' },
-          ]
-        },
+        { label: 'Estadísticas', routerLink: '/invoices/stadistics' },
       ],
     },
     {
-      label: 'Inventarios',
-      routerLink:'inventories',
+      label: 'Construcciones',
       sidebarMenu: [
         {
-          label: 'Inventarios',
+          label: 'Administración',
           subMenu: [
-            {label: 'Inventarios',routerLink:'inventories/inventories'},
-            {label: 'Nuevo Artículo',routerLink:'inventories/articles/article'},
-          ]
-        }
-      ]
-    },
-    {
-      label: 'Multas',
-      routerLink: 'penalties/sanctionType',
-      sidebarMenu: [
-
-        {
-          label: 'Multas',
-          subMenu: [
-            {label: 'Multas',routerLink:'penalties/fine'},
-            {label: 'Infracciones',routerLink:'penalties/infraction'},
-            {label: 'Reclamos',routerLink:'penalties/claim'},
-            {label: 'Tipos de Sanciones',routerLink:'penalties/sanctionType'}
-          ]
-        }
-      ]
-    },
-    {
-      label: 'Notificaciones',
-      routerLink:'notifications',
-      sidebarMenu: [
-        {
-          label: 'Listar Plantillas',
-          routerLink: 'notifications/templates',
+            {
+              label: 'Obras',
+              routerLink: '/constructions',
+            },
+          ],
         },
         {
-          label: 'Registrar Plantillas',
-          routerLink: 'notifications/templates/new',
-        }
+          label: 'Reportes',
+          subMenu: [
+            {
+              label: 'Gráficos de obras',
+              routerLink: '/constructions-report',
+            },
+          ],
+        },
       ],
     },
     {
@@ -155,9 +110,102 @@ export class AppComponent {
       ],
     },
     {
+      "label": "Empleados",
+      "routerLink": "inventories/employees",
+      "sidebarMenu": [
+        {
+          "label": "Gráficos",
+          "routerLink": "inventories/employees/dashboard"
+        },
+        {
+          "label": "Lista",
+          "routerLink": "inventories/employees/list"
+        },
+        {
+          "label": "Registrar",
+          "routerLink": "inventories/employees/form"
+        }
+      ]
+    },
+    {
+      label: 'Gastos', //expensas
+      routerLink:'expenses',
+      sidebarMenu: [
+        {
+          label: 'Gastos',
+          subMenu: [
+            { label: 'Lista de gastos', routerLink: 'expenses/gastos' },
+            { label: 'Categoria de gastos', routerLink: 'expenses/gastos/categorias' },
+            { label: 'Reporte de gastos', routerLink: 'expenses/gastos/report' },
+
+          ],
+        },
+        {
+          label: 'Cargos',
+          subMenu: [
+            { label: 'Lista de cargos', routerLink: '/cargos' },
+            { label: 'Categorias de cargos', routerLink: '/cargos/categorias' }
+          ],
+        },
+        {
+          label: 'Periodo',
+          subMenu: [
+            { label: 'Lista', routerLink: 'expenses/periodo' },
+            { label: 'Historico de expensas', routerLink: 'expenses/expenses' },
+            { label: 'Reporte de expensas', routerLink: 'expenses/expenses/report' },
+          ]
+        },
+      ],
+    },
+    {
+      "label": "Inventario",
+      "routerLink": "inventories/inventory",
+      "sidebarMenu": [
+        {
+          "label": "Gráficos",
+          "routerLink": "inventories/inventory/dashboard"
+        },
+        {
+          "label": "Lista",
+          "routerLink": "inventories/inventories"
+        },
+        {
+          "label": "Registrar",
+          "routerLink": "inventories/articles/article"
+        },
+        {
+          "label": "Configuración",
+          "routerLink": "inventories/inventories/config",
+          subMenu: [
+            {
+              "label": "Categorías",
+              "routerLink": "inventories/inventories/config/category"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      label: 'Normas',
+      sidebarMenu: [
+        {
+          label: 'Reglamento',
+          routerLink: '/rules',
+        }
+      ]
+    },
+    {
       label: 'Notificaciones',
       routerLink: 'notifications/send-email',
       sidebarMenu: [
+        {
+          label: 'Listar Plantillas',
+          routerLink: 'notifications/templates',
+        },
+        {
+          label: 'Registrar Plantillas',
+          routerLink: 'notifications/templates/new',
+        },
         {
           label: 'Enviar Notificación',
           routerLink: 'notifications/send-email',
@@ -181,83 +229,56 @@ export class AppComponent {
       ],
     },
     {
-      label: 'Empleados',
-      routerLink:'inventories',
+      label: 'Moderación',
       sidebarMenu: [
         {
-          label: 'Empleados',
-          routerLink: 'inventories/employees/list'
-        }
-      ]
-    },
-    {
-      label: 'Obras',
-      routerLink: 'penalties',
-      sidebarMenu: [
-        {
-          label: 'Obras',
-          routerLink: 'penalties/constructions'
-        }
-      ]
-    },
-    {
-      label: 'Boletas',
-      routerLink: '/invoices',
-      sidebarMenu: [
-        {
-          label: 'Lista de Expensas (Admin)',
-          routerLink: '/invoices/admin-list-expensas',
+          label: 'Administración',
+          subMenu: [
+            { label: 'Multas', routerLink: '/fine' },
+            { label: 'Infracciones', routerLink: '/infraction' },
+            { label: 'Reclamos', routerLink: '/claim' },
+            { label: 'Tipos de Sanciones', routerLink: '/sanctionType' },
+          ],
         },
         {
-          label: 'Lista de Expensas (Propietario)',
-          routerLink: '/invoices/owner-list-expensas',
-        },
-        { label: 'Estadísticas', routerLink: '/invoices/stadistics' },
-        {
-          label: 'Revisar Transferencias de Tickets',
-          routerLink: '/invoices/review-tickets-transfer',
+          label: 'Reportes',
+          subMenu: [
+            { label: 'Gráficos de Multas', routerLink: '/fine-report' },
+            { label: 'Gráficos de Infracciones', routerLink: '/infraction-report' },
+            { label: 'Gráficos de Reclamos', routerLink: '/claim-report' },
+          ],
         },
       ],
     },
     {
-      label: 'Obras',
-      routerLink: 'penalties',
+      "label": "Proveedores",
+      "routerLink": "inventories/providers",
       sidebarMenu: [
         {
-          label: 'Obras',
-          routerLink: 'penalties/constructions'
-        }
-      ]
-    },
-    {
-      label: 'Proveedores',
-      routerLink:'inventories',
-      sidebarMenu: [
-        {
-          label: 'Proveedores',
-          routerLink: 'inventories/providers/list'
-        },
-      ]
-    },
-    {
-      label: 'Tickets', //invoices
-      routerLink:'invoices',
-      sidebarMenu: [
-        {
-          label: 'Lista de Expensas (Propietario)',
-          routerLink: 'invoices/admin-list-expensas'
+          "label": "Gráficos",
+          "routerLink": "inventories/providers/dashboard"
         },
         {
-          label: 'Lista de Expensas (Propietario)',
-          routerLink: 'invoices/owner-list-expensas'
+          "label": "Lista",
+          "routerLink": "inventories/providers/list"
         },
         {
-          label: 'Estadísticas',
-          routerLink: 'invoices/stadistics'
+          "label": "Registrar",
+          "routerLink": "inventories/providers/form"
         },
         {
-          label: 'Review-Tickets-Transfer',
-          routerLink: 'invoices/review-tickets-transfer'
+          "label": "Configuración",
+          "routerLink": "inventories/providers/config",
+          subMenu: [
+            {
+              "label": "Empresas",
+              "routerLink": "inventories/providers/config/company"
+            },
+            {
+              "label": "Servicios",
+              "routerLink": "inventories/providers/config/service"
+            }
+          ],
         }
       ]
     },
@@ -318,22 +339,13 @@ export class AppComponent {
               routerLink: '/users/user/tenant/form',
             },
             { label: 'Lista de Roles', routerLink: '/users/roles/list' },
-          /*   { label: 'Cargar Roles', routerLink: '/users/roles/form' }, */
+            /*   { label: 'Cargar Roles', routerLink: '/users/roles/form' }, */
             { label: 'Usuarios Creados', routerLink: '/users/user/created' },
             { label: 'Usuarios por Rol', routerLink: '/users/user/role' },
           ],
         },
       ],
     },
-    // not working for now
-    // {
-    //   label: 'Configuración',
-    //   subMenu: [
-    //     { label: 'Usuarios', routerLink: '/user' },
-    //     { label: 'Roles', routerLink: '/role' },
-    //     { label: 'Lotes', routerLink: '/lot' },
-    //   ],
-    // },
   ];
 
   //#region LOGIN

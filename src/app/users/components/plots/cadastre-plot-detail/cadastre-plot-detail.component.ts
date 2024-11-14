@@ -110,7 +110,7 @@ export class CadastrePlotDetailComponent {
     modalRef.componentInstance.description = 'Esta pantalla permite visualizar los datos detallados de los lotes.';
     modalRef.componentInstance.body = [
       { 
-        title: 'Detos', 
+        title: 'Datos', 
         content: [
           {
             strong: 'Número de Manzana:',
