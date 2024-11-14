@@ -7,6 +7,7 @@ import { map } from 'rxjs';
 import { TransformPlotPipe } from '../pipes/plot-mapper.pipe';
 import { TransformOwnerPlotHistoryPipe } from '../pipes/owner-history-plots-mapper.pipe';
 import { OwnerPlotHistoryDTO } from '../models/ownerXplot';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,7 @@ import { OwnerPlotHistoryDTO } from '../models/ownerXplot';
 export class OwnerPlotService {
   constructor(private http: HttpClient) { }
 
-  host: string = "http://localhost:8282"
-
+  host: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}`;
   giveActualOwner(plotId : number) {
     return this.http.get<Owner>(`${this.host}/owner/current/plot/${plotId}`);
   }
@@ -24,13 +24,13 @@ export class OwnerPlotService {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
-  
+
     return this.http.get<PaginatedResponse<OwnerPlotHistoryDTO>>(`${this.host}/owner/plot/${plotId}`, { params }).pipe(
       map((response: PaginatedResponse<any>) => {
         const transformPipe = new TransformOwnerPlotHistoryPipe();
         const transformedOwners = response.content.map((owner: any) => transformPipe.transform(owner));
         return {
-          
+
           ...response,
           content: transformedOwners
         };
@@ -49,7 +49,7 @@ export class OwnerPlotService {
         const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
         return {
           ...response,
-          content: transformedPlots 
+          content: transformedPlots
         };
       })
     );

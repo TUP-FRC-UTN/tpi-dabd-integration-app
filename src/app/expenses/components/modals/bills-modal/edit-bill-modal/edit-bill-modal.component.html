@@ -30,19 +30,6 @@
         <div class="d-flex align-items-center">
           <label for="category" class="col-sm-4 col-form-label">Categoría<span class="text-danger">*</span></label>
           <div class="col-sm-8 d-flex">
-            <!-- <ng-select id="category" [items]="categoriesList" bindLabel="name" bindValue="category_id" formControlName="category"
-              [ngClass]="{
-            'is-valid': updateBill.get('category')?.valid && !updateBill.get('category')?.errors?.['required'],
-            'is-invalid': updateBill.get('category')?.errors?.['required']
-          }" notFoundText="No se encontraron categorías" [clearable]="false" [searchable]="true" class="form-select">
-            </ng-select>
-            <button class="btn form-control-sm border rounded-end-3 btn-outline-secondary" type="button"
-              (click)="openNewCategoryModal()">
-              <i class="bi bi-plus-lg"></i>
-            </button>
-            <div class="invalid-feedback">
-              Por favor, seleccione una categoría.
-            </div> -->
             <div class="input-group">
               <ng-select id="category" [items]="categoriesList" bindLabel="name" bindValue="category_id"
                 formControlName="category" [ngClass]="{
@@ -70,13 +57,6 @@
         <div class="d-flex align-items-center">
           <label for="period" class="col-sm-4 col-form-label">Periodo<span class="text-danger">*</span></label>
           <div class="col-sm-8">
-            <!-- <select id="period" formControlName="period" class="form-select"
-              [ngClass]="{'is-invalid': updateBill.get('period')?.invalid && (updateBill.get('period')?.dirty || updateBill.get('period')?.touched)}">
-              <option value="">Seleccione un periodo</option>
-              @for (period of periodsList ; track period.id) {
-              <option [value]="period.id">{{ period.month + '/' + period.year }}</option>
-              }
-            </select> -->
             <ng-select id="period" [items]="periodsList" bindLabel="displayPeriod"
               bindValue="id" formControlName="period" [ngClass]="{
                 'is-valid': updateBill.get('period')?.valid && !updateBill.get('period')?.errors?.['required'],
@@ -138,12 +118,6 @@
               'is-valid': updateBill.get('date')?.valid && !updateBill.get('date')?.errors?.['required'],
               'is-invalid': updateBill.get('date')?.errors?.['required'] || updateBill.get('date')?.errors?.['invalidDate']
             }">
-            <!-- <div class="invalid-feedback" *ngIf="updateBill.get('date')?.errors?.['required']">
-              La fecha es obligatoria.
-            </div>
-            <div class="invalid-feedback" *ngIf="updateBill.get('date')?.errors?.['invalidDate']">
-              La fecha seleccionada es anterior a la fecha de inicio del período.
-            </div>             -->
             @if (updateBill.get('date')?.errors?.['required'] &&
           (updateBill.get('date')?.dirty || updateBill.get('date')?.touched)) {
           <div class="invalid-feedback">
@@ -181,37 +155,4 @@
       <button class="btn btn-primary" data-bs-dismiss="modal" [disabled]="updateBill.invalid">Enviar</button>
     </div>
   </form>
-
-  <!-- Modal Nueva Categoría -->
-  <!-- <ng-template #newCategoryModal let-modal>
-    <div class="modal-header">
-      <h4 class="modal-title">Nueva Categoría</h4>
-      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
-    </div>
-    <div class="modal-body">
-      <form [formGroup]="newCategoryForm">
-        <div class="mb-3">
-          <label for="newCategoryName" class="form-label">Nombre de la categoría</label>
-          <input type="text" class="form-control" id="newCategoryName" formControlName="name"
-            [ngClass]="{'is-invalid': newCategoryForm.get('name')?.invalid && (newCategoryForm.get('name')?.dirty || newCategoryForm.get('name')?.touched)}">
-          <div class="invalid-feedback">
-            Por favor, ingrese un nombre para la categoría.
-          </div>
-        </div>
-        <div class="mb-3">
-          <label for="newCategoryDescription" class="form-label">Descripción</label>
-          <input type="text" class="form-control" id="newCategoryDescription" formControlName="description"
-            [ngClass]="{'is-invalid': newCategoryForm.get('description')?.invalid && (newCategoryForm.get('description')?.dirty || newCategoryForm.get('description')?.touched)}">
-          <div class="invalid-feedback">
-            Por favor, ingrese una descripción para la categoría.
-          </div>
-        </div>
-      </form>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-success" (click)="saveNewCategory()"
-        [disabled]="newCategoryForm.invalid">Confirmar</button>
-      <button type="button" class="btn btn-danger" (click)="modal.dismiss()">Cancelar</button>
-    </div>
-  </ng-template> -->
 </div>

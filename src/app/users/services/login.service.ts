@@ -3,12 +3,16 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LoginRequest } from '../models/login';
 import { SessionService } from './session.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LoginService {
-  private apiUrl = 'http://localhost:8283/authentications';
+
+
+  host: string = `${environment.production ? `${environment.apis.users}` : `${environment.apis.users}`}authentications`;
+
 
   constructor(private http: HttpClient,
     private sessionService: SessionService
@@ -24,8 +28,8 @@ export class LoginService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });
-    
-    return this.http.post<number>(`${this.apiUrl}/login`, loginRequest, {
+
+    return this.http.post<number>(`${this.host}/login`, loginRequest, {
       headers,
     });
   }
@@ -36,4 +40,6 @@ export class LoginService {
    logout(): void {
     this.sessionService.logout();
   }
+
+
 }

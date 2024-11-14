@@ -1,13 +1,12 @@
 import { Component, inject, OnInit, TemplateRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, Location } from '@angular/common';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-modal.component';
 import LiquidationExpense from '../../../models/liquidationExpense';
 import { TableComponent, ToastService } from 'ngx-dabd-grupo01';
-// import { ExpensesPeriodListComponent } from '../../period/expenses-period-list/expenses-period-list.component';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { InfoModalComponent } from '../../modals/info-modal/info-modal.component';
 import { FormsModule } from '@angular/forms';
@@ -25,7 +24,6 @@ import moment from 'moment';
     CommonModule,
     ExpensesModalComponent,
     TableComponent,
-    // ExpensesPeriodListComponent,
     NgModalComponent,
     InfoModalComponent,
     FormsModule,
@@ -138,11 +136,10 @@ export class ExpensesLiquidationComponent implements OnInit {
   seeDetail(categoryId:number) {
     let id = this.listLooking[0].expense_id;
     console.log(categoryId)
-    this.router.navigate([`periodo/${this.id}/liquidacion/${id}/${categoryId}`]);
+    this.router.navigate([`expense/periodo/${this.id}/liquidacion/${id}/${categoryId}`]);
   }
 
   openErrorModal(err: any) {
-    console.log(err);
     const modalRef = this.modalService.open(NgModalComponent);
     modalRef.componentInstance.title = 'Error';
     modalRef.componentInstance.message = err?.error.message;
@@ -214,7 +211,6 @@ export class ExpensesLiquidationComponent implements OnInit {
     );
 
     const fecha = new Date();
-      console.log(fecha);
      const finalFileName = this.fileName+"-"+ moment(fecha).format("DD-MM-YYYY_HH-mm");
 
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);

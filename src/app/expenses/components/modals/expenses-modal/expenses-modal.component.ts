@@ -1,7 +1,5 @@
 import { Component, EventEmitter, inject, Input, Output, TemplateRef } from '@angular/core';
 
-import { ModalDismissReasons, NgbActiveModal, NgbDatepickerModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
 @Component({
   selector: 'app-expenses-modal',
   standalone: true,
@@ -26,6 +24,6 @@ export class ExpensesModalComponent {
 
   cancel() {
     this.onCancel.emit();
-    
+
   }
 }

@@ -1,56 +1,188 @@
-<app-main-container title="Consultar Propietario">
-    <form [formGroup]="ownerForm" class="row g-3 m-2">
-      <div class="col-md-6">
-        <div class="d-flex flex-row align-items-center">
-          <label for="first-name" class="form-label me-2">Nombre</label>
-          <input
-            type="text"
-            class="form-control"
-            id="first-name"
-            formControlName="firstName"
-          />
-        </div>
+<app-main-container title="Consultar Propietario" (infoButtonClick)="openInfo()">
+  <form [formGroup]="ownerForm" class="row g-3 m-2">
+    <div class="col-md-6">
+      <div class="d-flex flex-row align-items-center">
+        <label for="first-name" class="form-label me-2">Nombre</label>
+        <input
+          type="text"
+          class="form-control"
+          id="first-name"
+          formControlName="firstName"
+        />
       </div>
+    </div>
 
-      <div class="col-md-6">
-        <div class="d-flex flex-row align-items-center">
-          <label for="second-name" class="form-label me-2"
-            >Segundo nombre</label
-          >
-          <input
-            type="text"
-            class="form-control"
-            id="second-name"
-            formControlName="secondName"
-          />
-        </div>
+    <div class="col-md-6">
+      <div class="d-flex flex-row align-items-center">
+        <label for="second-name" class="form-label me-2"
+        >Segundo nombre</label
+        >
+        <input
+          type="text"
+          class="form-control"
+          id="second-name"
+          formControlName="secondName"
+        />
       </div>
+    </div>
 
-      <div class="col-md-6">
-        <div class="d-flex flex-row align-items-center">
-          <label for="last-name" class="form-label me-2">Apellido</label>
-          <input
-            type="text"
-            class="form-control"
-            id="last-name"
-            formControlName="lastName"
-          />
-        </div>
+    <div class="col-md-6">
+      <div class="d-flex flex-row align-items-center">
+        <label for="last-name" class="form-label me-2">Apellido</label>
+        <input
+          type="text"
+          class="form-control"
+          id="last-name"
+          formControlName="lastName"
+        />
       </div>
+    </div>
 
-      <div class="col-md-6">
-        <div class="d-flex flex-row align-items-center">
-          <label for="owner-type" class="form-label me-2"
-            >Tipo Propietario</label
-          >
-          <select
-            id="owner-type"
-            class="form-select"
-            formControlName="ownerType"
-          >
-            <option disabled selected>Selecciona un tipo</option>
-            @for (type of ownerTypes; track type) {
+    <div class="col-md-6">
+      <div class="d-flex flex-row align-items-center">
+        <label for="owner-type" class="form-label me-2"
+        >Tipo Propietario</label
+        >
+        <select
+          id="owner-type"
+          class="form-select"
+          formControlName="ownerType"
+        >
+          <option disabled selected>Selecciona un tipo</option>
+          @for (type of ownerTypes; track type) {
             <option value="{{ type }}">{{ mapType(type) }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="d-flex flex-row align-items-center">
+        <label for="doc-type" class="form-label me-2">Tipo Documento</label>
+        <select
+          id="doc-type"
+          class="form-select"
+          formControlName="documentType"
+        >
+          <option selected>Selecciona un tipo</option>
+          <option value="DNI">DNI</option>
+          <option value="ID">Cédula</option>
+          <option value="PASSPORT">Pasaporte</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="d-flex flex-row align-items-center">
+        <label for="doc-number" class="form-label me-2">Número</label>
+        <input
+          type="text"
+          class="form-control"
+          id="doc-number"
+          formControlName="documentNumber"
+        />
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="d-flex flex-row align-items-center">
+        <label for="cuit-number" class="form-label me-2">CUIT</label>
+        <input
+          type="text"
+          class="form-control"
+          id="cuit-number"
+          formControlName="cuit"
+        />
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="d-flex flex-row align-items-center">
+        <label for="bank-account" class="form-label me-2"
+        >Cuenta Bancaria
+        </label>
+        <input
+          type="text"
+          class="form-control"
+          id="bank-account"
+          formControlName="bankAccount"
+        />
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="d-flex flex-row align-items-center">
+        <label for="birth-date" class="form-label me-2"
+        >Fecha de Nacimiento</label
+        >
+        <input
+          type="date"
+          class="form-control"
+          id="birth-date"
+          formControlName="birthdate"
+        />
+      </div>
+    </div>
+
+    <hr />
+    <!-- Addresses -->
+    <div formGroupName="addressForm" class="row g-3 m-2">
+      <h5 class="mt-2 p-2">Añadir Dirección</h5>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="street-address" class="form-label me-2">Calle</label>
+          <input
+            type="text"
+            class="form-control"
+            id="street-address"
+            formControlName="street_address"
+          />
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="number" class="form-label me-2">Número</label>
+          <input
+            type="number"
+            class="form-control"
+            id="number"
+            formControlName="number"
+          />
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="floor" class="form-label me-2">Piso</label>
+          <input
+            type="number"
+            class="form-control"
+            id="floor"
+            formControlName="floor"
+          />
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="apartment" class="form-label me-2">Depto</label>
+          <input
+            type="text"
+            class="form-control"
+            id="apartment"
+            formControlName="apartment"
+          />
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="country" class="form-label me-2">País</label>
+          <select id="country" class="form-select" formControlName="country">
+            @for(country of countryOptions; track $index) {
+              <option [value]="country.value">{{ country.display }}</option>
             }
           </select>
         </div>
@@ -58,198 +190,67 @@
 
       <div class="col-md-6">
         <div class="d-flex flex-row align-items-center">
-          <label for="doc-type" class="form-label me-2">Tipo Documento</label>
           <select
-            id="doc-type"
+            id="province"
             class="form-select"
-            formControlName="documentType"
+            formControlName="province"
           >
-            <option selected>Selecciona un tipo</option>
-            <option value="P">DNI</option>
-            <option value="I">Cédula</option>
-            <option value="T">Pasaporte</option>
+            @for(province of provinceOptions; track $index) {
+              <option [value]="province.value">{{ province.display }}</option>
+            }
           </select>
         </div>
       </div>
 
       <div class="col-md-6">
         <div class="d-flex flex-row align-items-center">
-          <label for="doc-number" class="form-label me-2">Numero</label>
+          <label for="city" class="form-label me-2">Ciudad</label>
           <input
             type="text"
             class="form-control"
-            id="doc-number"
-            formControlName="documentNumber"
+            id="city"
+            formControlName="city"
           />
         </div>
       </div>
 
       <div class="col-md-6">
         <div class="d-flex flex-row align-items-center">
-          <label for="cuit-number" class="form-label me-2">CUIT</label>
-          <input
-            type="text"
-            class="form-control"
-            id="cuit-number"
-            formControlName="cuit"
-          />
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="d-flex flex-row align-items-center">
-          <label for="bank-account" class="form-label me-2"
-            >Cuenta Bancaria
-          </label>
-          <input
-            type="text"
-            class="form-control"
-            id="bank-account"
-            formControlName="bankAccount"
-          />
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="d-flex flex-row align-items-center">
-          <label for="birth-date" class="form-label me-2"
-            >Fecha de Nacimiento</label
+          <label for="postal-code" class="form-label me-2"
+          >Código Postal</label
           >
           <input
-            type="date"
+            type="number"
             class="form-control"
-            id="birth-date"
-            formControlName="birthdate"
+            id="postal-code"
+            formControlName="postal_code"
           />
         </div>
       </div>
+    </div>
 
-      <hr />
-      <!-- Addresses -->
-      <div formGroupName="addressForm" class="row g-3 m-2">
-        <h5 class="mt-2 p-2">Añadir Dirección</h5>
+    <hr />
+    <!-- Contactos -->
 
-        <div class="col-md-6">
-          <div class="d-flex flex-row align-items-center">
-            <label for="street-address" class="form-label me-2">Calle</label>
-            <input
-              type="text"
-              class="form-control"
-              id="street-address"
-              formControlName="street_address"
-            />
-          </div>
-        </div>
+    <h5 class="mt-2 p-2">Contactos</h5>
 
-        <div class="col-md-6">
-          <div class="d-flex flex-row align-items-center">
-            <label for="number" class="form-label me-2">Numero</label>
-            <input
-              type="number"
-              class="form-control"
-              id="number"
-              formControlName="number"
-            />
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="d-flex flex-row align-items-center">
-            <label for="floor" class="form-label me-2">Piso</label>
-            <input
-              type="number"
-              class="form-control"
-              id="floor"
-              formControlName="floor"
-            />
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="d-flex flex-row align-items-center">
-            <label for="apartment" class="form-label me-2">Depto</label>
-            <input
-              type="text"
-              class="form-control"
-              id="apartment"
-              formControlName="apartment"
-            />
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="d-flex flex-row align-items-center">
-            <label for="country" class="form-label me-2">Pais</label>
-            <select id="country" class="form-select" formControlName="country">
-              @for(country of countryOptions; track $index) {
-              <option [value]="country.value">{{ country.display }}</option>
-              }
-            </select>
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="d-flex flex-row align-items-center">
-            <select
-              id="province"
-              class="form-select"
-              formControlName="province"
-            >
-              @for(province of provinceOptions; track $index) {
-              <option [value]="province.value">{{ province.display }}</option>
-              }
-            </select>
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="d-flex flex-row align-items-center">
-            <label for="city" class="form-label me-2">Ciudad</label>
-            <input
-              type="text"
-              class="form-control"
-              id="city"
-              formControlName="city"
-            />
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="d-flex flex-row align-items-center">
-            <label for="postal-code" class="form-label me-2"
-              >Codigo Postal</label
-            >
-            <input
-              type="number"
-              class="form-control"
-              id="postal-code"
-              formControlName="postal_code"
-            />
-          </div>
-        </div>
-      </div>
-
-      <hr />
-      <!-- Contactos -->
-
-      <h5 class="mt-2 p-2">Contactos</h5>
-
-      <div class="row">
-        @for(contact of contacts; track $index) {
+    <div class="row" formArrayName="contactsForm">
+      @for(contact of contacts; track $index) {
         <div class="row">
           <div class="col-9">
             {{ contact.contact_type }} - {{ contact.contact_value }}
           </div>
         </div>
-        }
-      </div>
+      }
+    </div>
 
-      <div class="col-12 d-flex justify-content-end">
-        <div class="mx-2">
-          <button type="button" class="btn btn-info" (click)="onBack()">
-            Volver
-          </button>
-        </div>
+
+    <div class="col-12 d-flex justify-content-end">
+      <div class="mx-2">
+        <button type="button" class="btn btn-info" (click)="onBack()">
+          Volver
+        </button>
       </div>
-    </form>
+    </div>
+  </form>
 </app-main-container>

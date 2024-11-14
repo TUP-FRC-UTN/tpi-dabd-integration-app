@@ -6,6 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { plotValidator } from '../../../validators/cadastre-plot-validators';
 import { ToastService, MainContainerComponent } from 'ngx-dabd-grupo01';
 import { NgClass } from '@angular/common';
+import { InfoComponent } from '../../commons/info/info.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-plot-form',
@@ -20,18 +22,19 @@ export class PlotFormComponent {
   private activatedRoute = inject(ActivatedRoute)
   private router = inject(Router)
   private toastService = inject(ToastService)
+  private modalService = inject(NgbModal)
   //#endregion
 
   //#region ATT
   id: string | null = null;
-  plot : any;  
+  plot : any;
   //#endregion
-  
+
   //#region DICCIONARIOS
   plotTypeDictionary = PlotTypeDictionary;
   plotStatusDictionary = PlotStatusDictionary;
   //#endregion
-  
+
   //#region FORMULARIO REACTIVO
   plotForm = new FormGroup({
     plotNumber:  new FormControl('', [Validators.required, Validators.min(1)], [plotValidator(this.plotService)]),
@@ -83,15 +86,15 @@ export class PlotFormComponent {
         };
         plotFormData.plot_status = this.translateCombo(this.plotForm, 'plotStatus', this.plotStatusDictionary);
         plotFormData.plot_type = this.translateCombo(this.plotForm, 'plotType', this.plotTypeDictionary);
-        this.plotService.createPlot(plotFormData, 1).subscribe(
+        this.plotService.createPlot(plotFormData).subscribe(
           response => {
             console.log('Plot created successfully:', response);
-            this.router.navigate(["/plot/list"])
-            this.toastService.sendSuccess("Lote creado con exito.")
+            this.router.navigate(["/users/plot/list"])
+            this.toastService.sendSuccess("Lote creado con éxito")
           },
           error => {
             console.error('Error creating plot:', error);
-            this.toastService.sendError("Error creando el lote.")
+            this.toastService.sendError("Error creando el lote")
           }
         );
       }
@@ -103,15 +106,15 @@ export class PlotFormComponent {
           plot_type: this.translateCombo(this.plotForm, 'plotType', this.plotTypeDictionary)
         }
 
-        this.plotService.updatePlot(Number.parseInt(this.id), plotForUpdate, 1).subscribe(
+        this.plotService.updatePlot(Number.parseInt(this.id), plotForUpdate).subscribe(
           response => {
             console.log('Plot updated successfully:', response);
-            this.toastService.sendSuccess("Lote actualizado con exito.")
-            this.router.navigate(["/plot/list"])
+            this.toastService.sendSuccess("Lote actualizado con éxito")
+            this.router.navigate(["/users/plot/list"])
           },
           error => {
             console.error('Error creating plot:', error);
-            this.toastService.sendError("Error actualizando el lote.")
+            this.toastService.sendError("Error actualizando el lote")
           }
         );
       }
@@ -155,7 +158,56 @@ export class PlotFormComponent {
 
   //#region RUTEO | CANCELAR
   cancel() {
-    this.router.navigate(["/plot/list"])
+    this.router.navigate(["/users/plot/list"])
   }
   //#endregion
+
+  openInfo(){
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
+
+    modalRef.componentInstance.title = 'Registrar un lote';
+    modalRef.componentInstance.description = 'En esta pantalla se permite cargar los datos correspondientes para registrar un lote.';
+    modalRef.componentInstance.body = [
+      {
+        title: 'Datos',
+        content: [
+          {
+            strong: 'Número de Manzana:',
+            detail: 'Campo para ingresar el número de manzana del lote.'
+          },
+          {
+            strong: 'Número de Lote:',
+            detail: 'Campo para ingresar el número del lote.'
+          },
+          {
+            strong: 'Área Total:',
+            detail: 'Campo para ingresar la superficie total del lote.'
+          },
+          {
+            strong: 'Área Construida:',
+            detail: 'Campo para ingresar la superficie construida dentro del lote.'
+          },
+          {
+            strong: 'Tipo de Lote:',
+            detail: 'Desplegable para seleccionar el tipo de lote (Comercial, Privado, Comunal).'
+          },
+          {
+            strong: 'Estado del Lote:',
+            detail: 'Desplegable para seleccionar el estado actual del lote (Creado, En Venta, Vendido, En construcción, etc.).'
+          }
+        ]
+      }
+    ];
+    modalRef.componentInstance.notes = [
+      'La interfaz está diseñada para ofrecer una gestión eficiente y segura de la información de los lotes, manteniendo la integridad y precisión de los datos.',
+      'Campos obligatorios: Número de Manzana, Número de Lote, Área Total, Área Construida, Tipo de Lote, Estado del Lote.'
+    ];
+
+  }
 }

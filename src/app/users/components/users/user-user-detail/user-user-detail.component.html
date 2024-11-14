@@ -1,47 +1,365 @@
-<h1 class="mt-2 p-2">Registrar Usuario</h1>
-<form [formGroup]="userForm" class="row g-3 m-2">
+<app-main-container title="Consultar Usuario" (infoButtonClick)="openInfo()">
+  <form [formGroup]="userForm" class="row g-3 m-2">
 
     <div class="col-md-6">
-        <div class="flex-row d-flex align-items-center">
-            <label for="emailForm" class="form-label">Email</label>
-            <input type="email" class="form-control m-2" id="emailForm" formControlName="email">
-        </div>
+      <div class="flex-row d-flex align-items-center">
+        <label for="emailForm" class="col-form-label col-md-2">Email<label class="text-danger">*</label></label>
+        <input type="email" class="form-control m-2" id="emailForm" formControlName="email"
+               [ngClass]="{'is-invalid': userForm.get('email')?.invalid && userForm.get('email')?.touched, 'is-valid':
+                userForm.get('email')?.valid && userForm.get('email')?.touched}">
+      </div>
     </div>
 
     <div class="col-md-6">
-        <div class="flex-row d-flex align-items-center">
-            <label for="firstNameForm" class="form-label">Nombre</label>
-            <input type="text" class="form-control m-2" id="firstNameForm" formControlName="firstName">
-        </div>
+      <div class="flex-row d-flex align-items-center">
+        <label for="firstNameForm" class="col-form-label col-md-2">Nombre<label class="text-danger">*</label></label>
+        <input type="text" class="form-control m-2" id="firstNameForm" formControlName="firstName"
+               [ngClass]="{'is-invalid': userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched,
+              'is-valid': userForm.get('firstName')?.valid && userForm.get('firstName')?.touched}">
+      </div>
     </div>
 
     <div class="col-md-6">
-        <div class="flex-row d-flex align-items-center">
-            <label for="userNameForm" class="form-label">Nombre de usuario</label>
-            <input type="text" class="form-control m-2" id="userNameForm" formControlName="userName">
-        </div>
+      <div class="flex-row d-flex align-items-center">
+        <label for="userNameForm" class="col-form-label col-md-2">Nombre de usuario<label class="text-danger">*</label></label>
+        <input type="text" class="form-control m-2" id="userNameForm" formControlName="userName"
+               [ngClass]="{'is-invalid': userForm.get('userName')?.invalid && userForm.get('userName')?.touched, 'is-valid': userForm.get('userName')?.valid && userForm.get('userName')?.touched}">
+      </div>
     </div>
 
     <div class="col-md-6">
-        <div class="flex-row d-flex align-items-center">
-            <label for="lastNameForm" class="form-label">Apellido</label>
-            <input type="text" class="form-control m-2" id="lastNameForm" formControlName="lastName">
-        </div>
+      <div class="flex-row d-flex align-items-center">
+        <label for="lastNameForm" class="col-form-label col-md-2">Apellido<label class="text-danger">*</label></label>
+        <input type="text" class="form-control m-2" id="lastNameForm" formControlName="lastName"
+               [ngClass]="{'is-invalid': userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched, 'is-valid': userForm.get('lastName')?.valid && userForm.get('lastName')?.touched}">
+      </div>
+    </div>
+
+    <!-- NUEVOOO --->
+
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="doc-type" class="col-form-label col-md-2">Tipo Documento<label class="text-danger">*</label></label>
+        <select id="doc-type" class="form-select m-2" formControlName="documentType"
+                [ngClass]="{'is-invalid': userForm.get('documentType')?.invalid && userForm.get('documentType')?.touched, 'is-valid': userForm.get('documentType')?.valid && userForm.get('documentType')?.touched}">
+          <option disabled selected>Selecciona un tipo</option>
+          <option value="DNI">DNI</option>
+          <option value="ID">Cédula</option>
+          <option value="PASSPORT">Pasaporte</option>
+        </select>
+      </div>
     </div>
 
     <div class="col-md-6">
-        <div class="flex-row d-flex align-items-center">
-            <label for="plot-status" class="form-label">Roles</label>
-            <select id="plot-status" class="form-select m-2" formControlName="role">
-                <option value="" disabled selected>Selecciona un rol</option>
-                <option value="admin">Admin</option>
-                <option value="user">Usuario</option>
-            </select>
-        </div>
+      <div class="flex-row d-flex align-items-center">
+        <label for="doc-number" class="col-form-label col-md-2">Número<label class="text-danger">*</label></label>
+        <input
+          type="text"
+          class="form-control m-2"
+          id="doc-number"
+          formControlName="documentNumber"
+          [ngClass]="{'is-invalid': userForm.get('documentNumber')?.invalid && userForm.get('documentNumber')?.touched, 'is-valid':
+          userForm.get('documentNumber')?.valid && userForm.get('documentNumber')?.touched}"
+        />
+      </div>
     </div>
 
+    <div class="col-md-12">
+      <div class="flex-row d-flex align-items-center">
+        <label for="birth-date" class="col-form-label col-md-2">Fecha de Nacimiento<label class="text-danger">*</label></label>
+        <input
+          type="date"
+          class="form-control m-2"
+          id="birth-date"
+          formControlName="birthdate"
+          [ngClass]="{'is-invalid': userForm.get('birthdate')?.invalid && userForm.get('birthdate')?.touched,
+             'is-valid': userForm.get('birthdate')?.valid && userForm.get('birthdate')?.touched}"
+        />
+      </div>
+    </div>
+
+    <!-- NUEVOOO --->
+
+    <div class="mb-3"></div>
+    <hr>
+
+    <!-- Roles -->
+    <!-- Roles -->
+    <!-- Roles -->
+    <!-- Roles -->
+    <!-- Roles -->
+    <!-- Roles -->
+    <!-- Roles -->
+    <!-- Roles -->
+    <div formGroupName="rolesForm" class="row g-3">
+      @if (roles.length !== 0) {
+
+        <div class="col-12">
+          <h5 class="mb-3">Lista de Roles</h5>
+          <div class="list-group">
+            @for (rol of roles; track $index) {
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <button type="button"
+                        class="list-group-item list-group-item-action btn btn-primary btn-sm me-2" disabled>
+                  {{ rol.prettyName }}
+                </button>
+              </div>
+
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+
+    <div class="mb-3"></div>
+    <hr />
+
+    <!-- Asignar un lote -->
+    <!-- Asignar un lote -->
+    <!-- Asignar un lote -->
+    <!-- Asignar un lote -->
+    <!-- Asignar un lote -->
+    <!-- Asignar un lote -->
+    <!-- Asignar un lote -->
+    <!-- Asignar un lote -->
+    <div formGroupName="plotForm" class="row g-3">
+      <h5 class="mt-2 p-2">Asociar un lote</h5>
+      <div class="col-md-6">
+        <div class="row g-0 align-items-center">
+          <label for="block-number" class="col-form-label col-md-3"
+          >Número de Manzana</label>
+          <div class="col">
+            <input
+              type="number"
+              class="form-control"
+              id="block-number"
+              formControlName="blockNumber"
+              [ngClass]="{'is-invalid': userForm.get('plotForm')?.get('blockNumber')?.invalid && userForm.get('plotForm')?.get('blockNumber')?.touched,
+                   'is-valid': userForm.get('plotForm')?.get('blockNumber')?.valid && userForm.get('plotForm')?.get('blockNumber')?.touched}"
+              disable
+            >
+          </div>
+          <div class="col-12">
+            @if (userForm.get('plotForm.blockNumber')?.touched &&
+            userForm.get('plotForm.blockNumber')?.invalid) {
+              @if (userForm.get('plotForm.blockNumber')?.getError('min')) {
+                <small class="text-danger">El número mínimo es 1</small>
+              }
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="row g-0 align-items-center">
+          <label for="plot-number" class="col-form-label col-md-2">Número de Lote</label>
+          <div class="col">
+            <input
+              type="number"
+              class="form-control"
+              id="plot-number"
+              formControlName="plotNumber"
+              [ngClass]="{'is-invalid': userForm.get('plotForm')?.get('plotNumber')?.invalid && userForm.get('plotForm')?.get('plotNumber')?.touched,
+                   'is-valid': userForm.get('plotForm')?.get('plotNumber')?.valid && userForm.get('plotForm')?.get('plotNumber')?.touched}"
+              disable
+            >
+          </div>
+          <div class="col-12">
+            @if (userForm.get('plotForm.plotNumber')?.touched &&
+            userForm.get('plotForm.plotNumber')?.invalid) {
+              @if (userForm.get('plotForm.plotNumber')?.getError('min')) {
+                <small class="text-danger">El número mínimo es 1</small>
+              } @if (userForm.get('plotForm.plotNumber')?.getError('serverError')) {
+                <small class="text-danger"
+                >Error en el servidor, por favor intenta nuevamente</small
+                >
+              }  @if (userForm.get('plotForm.plotNumber')?.getError('plotExists')) { <small class="text-danger ms-2">
+                No existe un lote con ese número en esa manzana
+              </small> }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3"></div>
+    <hr />
+
+
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <!-- Addresses -->
+    <div formGroupName="addressForm" class="row g-3">
+      <h5 class="mt-2 p-2">Dirección</h5>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="street-address" class="col-form-label col-md-2">Calle<label class="text-danger">*</label></label>
+          <input type="text" class="form-control" id="street-address" formControlName="streetAddress"
+                 [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('streetAddress')?.invalid && userForm.get('addressForm')?.get('streetAddress')?.touched,
+                  'is-valid': userForm.get('streetAddress')?.get('streetAddress')?.valid && userForm.get('addressForm')?.get('streetAddress')?.touched}"
+          >
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="number" class="col-form-label col-md-2">Número<label class="text-danger">*</label></label>
+          <input type="number" class="form-control" id="number" formControlName="number"
+                 [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('number')?.invalid && userForm.get('addressForm')?.get('number')?.touched,
+                   'is-valid': userForm.get('addressForm')?.get('number')?.valid && userForm.get('addressForm')?.get('number')?.touched}"
+          >
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="floor" class="col-form-label col-md-2">Piso</label>
+          <input type="number" class="form-control" id="floor" formControlName="floor"
+                 [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('floor')?.invalid && userForm.get('addressForm')?.get('floor')?.touched,
+                  'is-valid': userForm.get('addressForm')?.get('floor')?.valid && userForm.get('addressForm')?.get('floor')?.touched}"
+          >
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="apartment" class="col-form-label col-md-2">Depto</label>
+          <input type="text" class="form-control" id="apartment" formControlName="apartment"
+                 [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('apartment')?.invalid && userForm.get('addressForm')?.get('apartment')?.touched,
+                   'is-valid': userForm.get('addressForm')?.get('apartment')?.valid && userForm.get('addressForm')?.get('apartment')?.touched}"
+          >
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="country" class="col-form-label col-md-2">País<label class="text-danger">*</label></label>
+          <select id="country" class="form-select" formControlName="country"
+                  [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('country')?.invalid && userForm.get('addressForm')?.get('country')?.touched,
+                      'is-valid': userForm.get('addressForm')?.get('country')?.valid && userForm.get('addressForm')?.get('country')?.touched}"
+          >
+            @for(country of countryOptions; track $index) {
+              <option [value]="country.value">{{ country.display }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="province" class="col-form-label col-md-2">Provincia<label class="text-danger">*</label></label>
+            <select id="province" class="form-select" formControlName="province"
+                    [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('province')?.invalid && userForm.get('addressForm')?.get('province')?.touched,
+                      'is-valid': userForm.get('addressForm')?.get('province')?.valid && userForm.get('addressForm')?.get('province')?.touched}"
+            >
+            @for(province of provinceOptions; track $index) {
+              <option [value]="province.value">{{ province.display }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="d-flex flex-row align-items-center">
+          <label for="city" class="col-form-label col-md-2">Ciudad<label class="text-danger">*</label></label>
+          <input
+            type="text"
+            class="form-control w-100"
+            id="city"
+            formControlName="city"
+            [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('city')?.invalid && userForm.get('addressForm')?.get('city')?.touched,
+                 'is-valid': userForm.get('addressForm')?.get('city')?.valid && userForm.get('addressForm')?.get('city')?.touched}"
+          />
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="row g-0 align-items-center">
+          <label for="postal-code" class="col-form-label col-md-2"
+          >Código Postal<label class="text-danger">*</label></label
+          >
+          <div class="col">
+            <input
+              type="number"
+              class="form-control"
+              id="postal-code"
+              formControlName="postalCode"
+              [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('postalCode')?.invalid && userForm.get('addressForm')?.get('postalCode')?.touched,
+                   'is-valid': userForm.get('addressForm')?.get('postalCode')?.valid && userForm.get('addressForm')?.get('postalCode')?.touched}"
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @if (addresses.length !== 0) {
+
+      <div class="col-12">
+        <h5 class="mb-3">Lista de Direcciones</h5>
+        <div class="list-group">
+          @for (address of addresses; track $index) {
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <button type="button"
+                      class="list-group-item list-group-item-action btn btn-primary btn-sm me-2"
+                      (click)="setAddressValue($index)">
+                {{address.streetAddress}} {{address.number}}
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+
+    <div class="mb-3"></div>
+    <hr />
+
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <!-- Contactos -->
+    <div formGroupName="contactsForm" class="row g-3 pb-5">
+
+      @if (contacts.length !== 0) {
+
+        <div class="col-12">
+          <h5 class="mb-3">Lista de Contactos</h5>
+          <div class="list-group">
+            @for (contact of contacts; track $index) {
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <button type="button"
+                        class="list-group-item list-group-item-action btn btn-primary btn-sm me-2"
+                        (click)="setContactValue($index)">
+                  {{ contact.contactType }} - {{ contact.contactValue }}
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Botones -->
+    <!-- Botones -->
+    <!-- Botones -->
+    <!-- Botones -->
+    <!-- Botones -->
+    <!-- Botones -->
+    <!-- Botones -->
     <div class="col-12 d-flex justify-content-end">
-        <button type="submit" class="btn btn-secondary">Registrar Usuario</button>
-        <button type="button" class="btn btn-outline-secondary" (click)="goBack()">Volver</button>
+      <div class="mx-2">
+      </div>
+      <div>
+        <button type="button" class="btn btn-primary" (click)="goBack()">Volver</button>
+      </div>
     </div>
-</form>
+  </form>
+</app-main-container>
