@@ -90,7 +90,6 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
         { value: 'DNI', label: 'DNI' },
         { value: 'ID', label: 'Cédula' },
         { value: 'PASSPORT', label: 'Pasaporte' },
-        { value: 'PASSASDASDASDPORT', label: 'ASDASD' },
 
       ]
     )
@@ -99,16 +98,16 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
       { value: 'false', label: 'Inactivo' },
       { value: '', label: 'Todos' },
     ])
-    .dateFilter(
-      'Fecha de Nacimiento Desde',
-      'birthdateStart',
-      'Seleccione la fecha de inicio'
-    )
-    .dateFilter(
-      'Fecha de Nacimiento Hasta',
-      'birthdateEnd',
-      'Seleccione la fecha de fin'
-    )
+    // .dateFilter(
+    //   'Fecha de Nacimiento Desde',
+    //   'birthdateStart',
+    //   'Seleccione la fecha de inicio'
+    // )
+    // .dateFilter(
+    //   'Fecha de Nacimiento Hasta',
+    //   'birthdateEnd',
+    //   'Seleccione la fecha de fin'
+    // )
     .build();
 
   userFilterConfig: Filter[] = new FilterConfigBuilder()

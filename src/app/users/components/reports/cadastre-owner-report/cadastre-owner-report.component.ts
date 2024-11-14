@@ -155,16 +155,6 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
       { value: 'true', label: 'Activo' },
       { value: 'false', label: 'Inactivo' },
     ])
-    .dateFilter(
-      'Fecha de Nacimiento Desde',
-      'birthdateStart',
-      'Seleccione la fecha de inicio'
-    )
-    .dateFilter(
-      'Fecha de Nacimiento Hasta',
-      'birthdateEnd',
-      'Seleccione la fecha de fin'
-    )
     .build();
 
   // Configuración de Filtros
