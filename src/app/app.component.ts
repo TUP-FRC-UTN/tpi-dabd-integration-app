@@ -143,8 +143,8 @@ export class AppComponent {
         {
           label: 'Cargos',
           subMenu: [
-            { label: 'Lista de cargos', routerLink: '/cargos' },
-            { label: 'Categorias de cargos', routerLink: '/cargos/categorias' }
+            { label: 'Lista de cargos', routerLink: 'expenses/cargos' },
+            { label: 'Categorias de cargos', routerLink: 'expenses/cargos/categorias' }
           ],
         },
         {
@@ -155,7 +155,7 @@ export class AppComponent {
             { label: 'Reporte de expensas', routerLink: 'expenses/expenses/report' },
           ]
         },
-      ],
+      ],
     },
     {
       "label": "Inventario",
