@@ -77,11 +77,11 @@ export class RolesDetailComponent implements OnInit{
           },
           {
             strong: 'Nombre:',
-            detail: 'Nombre corto del rol.'
+            detail: 'Nombre del rol en el sistema.'
           },
           {
             strong: 'Nombre detallado:',
-            detail: 'Nombre detallado del rol.'
+            detail: 'Nombre detallado del rol, a diferencia con el nombre común, éste es el nombre por el cuál se identificará el rol.'
           },
           {
             strong: 'Descripción:',

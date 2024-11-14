@@ -215,7 +215,7 @@ export class UserUserTenantFormComponent {
           }
         },
         error => {
-          this.toastService.sendError('Error al obtener el usuario.')
+          this.toastService.sendError('Error al obtener el usuario')
         }
       );
     }
@@ -266,7 +266,7 @@ export class UserUserTenantFormComponent {
         }
         this.userForm.get('contactsForm')?.reset();
       } else {
-        this.toastService.sendError("Contacto no valido.")
+        this.toastService.sendError("Contacto no válido")
       }
     }
 
@@ -314,7 +314,7 @@ export class UserUserTenantFormComponent {
       rolValue && this.roles.push(rolValue.rol);
       this.userForm.get('rolesForm')?.reset();
     } else {
-      this.toastService.sendError("Rol no valido.")
+      this.toastService.sendError("Rol no válido")
     }
   }
 
@@ -359,7 +359,7 @@ export class UserUserTenantFormComponent {
     this.userService.addUser(toSnakeCase(this.user)).subscribe({
       // '1' is x-user-id
       next: (response) => {
-        this.toastService.sendSuccess("Usuario creado con exito.")
+        this.toastService.sendSuccess("Usuario creado con éxito")
         this.router.navigate(['users/user/list']);
       },
       error: (error) => {
@@ -377,15 +377,15 @@ export class UserUserTenantFormComponent {
     if (this.user.id) {
       this.userService.updateUser(this.user.id, toSnakeCase(this.user)).subscribe({
         next: (response) => {
-          this.toastService.sendSuccess("Usuario actualizado con exito.")
+          this.toastService.sendSuccess("Usuario actualizado con éxito")
           this.router.navigate(['users/user/list']);
         },
         error: (error) => {
-          this.toastService.sendError("Error actualizado el usuario.")
+          this.toastService.sendError("Error actualizado el usuario")
         },
       });
     } else {
-      this.toastService.sendError("Algo salio mal.")
+      this.toastService.sendError("Algo salió mal")
     }
   }
   //#endregion
@@ -398,7 +398,7 @@ export class UserUserTenantFormComponent {
         this.actualPlotOfOwner = response.content;
       },
       error => {
-        this.toastService.sendError("Error recuperando sus lotes. Reinicie la pagina.")
+        this.toastService.sendError("Error recuperando sus lotes. Reinicie la pagina")
       }
     )
   }
@@ -478,7 +478,7 @@ export class UserUserTenantFormComponent {
       }
       this.userForm.get('addressForm')?.reset();
     } else {
-      this.toastService.sendError("Direccion no valida.")
+      this.toastService.sendError("Direccion no válida")
     }
   }
 
