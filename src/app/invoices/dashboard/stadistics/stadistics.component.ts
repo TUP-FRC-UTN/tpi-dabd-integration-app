@@ -50,7 +50,7 @@ export class StadisticsComponent implements OnInit {
 
   //Childs
   @ViewChild(MainDashboardComponent) main!: MainDashboardComponent;
-  @ViewChild(TotalPaymentsComponent) total!: TotalPaymentsComponent;
+  @ViewChild(TotalPaymentsComponent) payments!: TotalPaymentsComponent;
 
 
   @ViewChild(BarchartComponent) barchartComponent!: BarchartComponent;
@@ -94,25 +94,26 @@ export class StadisticsComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit(): void {
+    this.filterData();
+    this.filterDataPayment()
+    this.cdr.detectChanges(); // Fuerza la detección de cambios
+  }
 
   initializeDefaultDates() {
-    this.ticketFilter = {
-      status: "",
-      startExpirationDate: "",
-      endExpirationDate: ""
+      // this.dateFilterForm.patchValue({
+      //   firstDate: "2024-01",
+      //   lastDate: "2024-03"
+      // })
+      //
+      this.ticketFilter = {
+        status: "",
+        startExpirationDate: "",
+        endExpirationDate: ""
+      };
+
+      this.filterData();
     }
-
-    this.filterData()
-  }
-
-  formatMonthYear(dateString: string): string {
-    const [year, month] = dateString.split('-');
-    return `${month}/${year.slice(2)}`; // Formato "MM/YY" para la API
-  }
-
-  onInfoButtonClick() {
-    this.modalService.open(this.infoModal, { size: 'lg' });
-  }
 
   resetFilters() {
     this.initializeDefaultDates();
@@ -121,27 +122,29 @@ export class StadisticsComponent implements OnInit {
 
   filterData() {
     this.main.getData()
-    this.total.getData()
   }
 
+  filterDataPayment() {
+    this.payments.getData()
+  }
 
+  resetFiltersPayment() {
+    this.initializeDefaultDatesPayment();
+  }
 
-  changeMode(event: any) {
-    const statusKey = Object.keys(DashboardStatus).find(key => DashboardStatus[key as keyof typeof DashboardStatus] === event);
-
-    if (statusKey) {
-      this.status = DashboardStatus[statusKey as keyof typeof DashboardStatus];
-    } else {
-      console.error('Valor no válido para el enum');
+  initializeDefaultDatesPayment() {
+    this.paymentFilter = {
+      status: "",
+      paymentMethod: "",
+      startCreatedAt: "",
+      endCreatedAt: ""
     }
+
+    this.filterDataPayment()
   }
 
   protected readonly DashboardStatus = DashboardStatus;
 
-  ngAfterViewInit(): void {
-    this.filterData();
-    this.cdr.detectChanges(); // Fuerza la detección de cambios
-  }
 
   // ACA SE ABRE EL MODAL DE INFO
   showInfo(): void {
@@ -152,5 +155,10 @@ export class StadisticsComponent implements OnInit {
       centered: true,
       scrollable: true,
     });
+  }
+
+
+  onInfoButtonClick() {
+    this.modalService.open(this.infoModal, { size: 'lg' });
   }
 }

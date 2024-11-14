@@ -16,7 +16,7 @@
           <span class="text-secondary">Hasta:</span>
           <input
           type="month"
-          formControlName="lastDate"
+            formControlName="lastDate"
           class="form-control form-control-sm"
           [(ngModel)]="ticketFilter.endExpirationDate"
         />
@@ -69,8 +69,8 @@
 
   <!-- Grilla del dashboard -->
   <div class="row position-relative min-vh-75">
-    <div [ngClass]="{ 'd-none': status !== DashboardStatus.All }">
-      <app-main-dashboard [filters]="ticketFilter" (notifyParent)="changeMode($event)"></app-main-dashboard>
+    <div>
+      <app-main-dashboard [filters]="ticketFilter"></app-main-dashboard>
     </div>
   </div>
 
@@ -90,7 +90,7 @@
   <div class="row mb-4">
     <div class="d-flex align-items-center gap-3 mb-3">
 
-      <form [formGroup]="dateFilterForm" (ngSubmit)="filterData()" class="d-flex align-items-center gap-3">
+      <form [formGroup]="dateFilterForm" (ngSubmit)="filterDataPayment()" class="d-flex align-items-center gap-3">
         <div class="d-flex align-items-center gap-2">
           <span class="text-secondary">Desde:</span>
           <input
@@ -121,7 +121,7 @@
                     <span class="text-secondary">Forma de pago:</span>
                   </div>
                   <div class="col-8">
-                  <select id="visitor-type" class="form-select" [(ngModel)]="paymentFilter.paymentMethod" (change)="filterData()">
+                  <select id="visitor-type" class="form-select" [(ngModel)]="paymentFilter.paymentMethod" (change)="filterDataPayment()">
                       <option value="">Todos</option>
                       <option value="TRANSFER">Transferencia</option>
                       <option value="MERCADOPAGO">Mercado pago</option>
@@ -130,7 +130,7 @@
                 </div>
       </ng-template>
       <div class="d-flex gap-1">
-        <button class="btn btn-outline-danger" (click)="resetFilters()">
+        <button class="btn btn-outline-danger" (click)="resetFiltersPayment()">
           <i class="bi bi-trash-fill"></i>
         </button>
       </div>
