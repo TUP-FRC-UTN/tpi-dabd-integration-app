@@ -38,7 +38,6 @@ import { CadastrePlotFilterButtonsComponent } from '../../../../accesses/feature
     NgbPagination,
     ReactiveFormsModule,
     FormsModule,
-    RouterLink,
   ],
   templateUrl: './entity-list.component.html'
 })

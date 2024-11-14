@@ -1,67 +1,233 @@
-<div class="d-flex justify-content-center align-items-center min-vh-100" style="background-color: #000000;">
-    <div class="card p-4 w-100" style="max-width: 600px; border-radius: 15px;">
-        <h2 class="text-center mb-4">Registrar Acceso</h2>
-
-        <form (ngSubmit)="submitAccessForm()">
+<h1 class="mt-2 p-2">Nuevo acceso</h1>
+<form [formGroup]="accessForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
+    <h5>Ingresante</h5>
+    <hr>
+    <!-- Número de Documento -->
+    <div class="row">
+        <div class="col-6">
             <div class="row">
-                <div class="col-12 col-md-6 mb-3">
-                    <label for="first_name" class="form-label">Nombre</label>
-                    <input type="text" class="form-control" id="first_name" [(ngModel)]="access.first_name"
-                        name="first_name" required>
+                <div class="col-3">
+                    <label for="docNumber" class="form-label">
+                        Número de Documento<label class="text-danger">*</label>
+                    </label>
                 </div>
-
-                <div class="col-12 col-md-6 mb-3">
-                    <label for="last_name" class="form-label">Apellido</label>
-                    <input type="text" class="form-control" id="last_name" [(ngModel)]="access.last_name"
-                        name="last_name" required>
-                </div>
-
-                <div class="col-12 mb-3">
-                    <label for="doc_number" class="form-label">Número de Documento</label>
-                    <input type="number" class="form-control" id="doc_number" [(ngModel)]="access.doc_number"
-                        name="doc_number" required>
-                </div>
-
-                <div class="col-12 col-md-6 mb-3">
-                    <label for="action" class="form-label">Acción</label>
-                    <select class="form-control" id="action" [(ngModel)]="access.action" name="action" required>
-                        <option value="ENTRY">Entrada</option>
-                        <option value="EXIT">Salida</option>
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-6 mb-3">
-                    <label for="vehicle_type" class="form-label">Tipo de Vehículo</label>
-                    <select class="form-control" id="vehicle_type" [(ngModel)]="access.vehicle_type" name="vehicle_type"
-                        required>
-                        <option value="CAR">Automóvil</option>
-                    </select>
-                </div>
-
-                <div class="col-12 mb-3">
-                    <label for="vehicle_reg" class="form-label">Matrícula del Vehículo</label>
-                    <input type="text" class="form-control" id="vehicle_reg" [(ngModel)]="access.vehicle_reg"
-                        name="vehicle_reg">
-                </div>
-
-                <div class="col-12 mb-3">
-                    <label for="vehicle_description" class="form-label">Descripción del Vehículo</label>
-                    <input type="text" class="form-control" id="vehicle_description"
-                        [(ngModel)]="access.vehicle_description" name="vehicle_description">
-                </div>
-
-                <div class="col-12 mb-3">
-                    <label for="comments" class="form-label">Comentarios</label>
-                    <textarea class="form-control" id="comments" [(ngModel)]="access.comments"
-                        name="comments"></textarea>
-                </div>
-
-                <div class="col-12">
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Registrar Acceso</button>
+                <div class="col-9">
+                    <input type="number" id="docNumber" class="form-control" formControlName="docNumber" [ngClass]="{
+          'is-invalid':
+            (accessForm.get('docNumber')?.invalid &&
+              accessForm.get('docNumber')?.touched) ||
+            accessForm.get('docNumber')?.hasError('unauthorized')
+        }" (input)="onDocNumberChange($event)" />
+                    <div>
+                        <small class="text-danger" *ngIf="
+          accessForm.get('docNumber')?.invalid &&
+          accessForm.get('docNumber')?.touched &&
+          !accessForm.get('docNumber')?.hasError('unauthorized')
+        ">
+                            Por favor, ingrese el número de documento del visitante
+                        </small>
+                        <small class="text-danger" *ngIf="accessForm.get('docNumber')?.hasError('unauthorized')">
+                            Por favor, ingrese un número de documento registrado
+                        </small>
                     </div>
                 </div>
             </div>
-        </form>
+        </div>
+
+        <div class="col-6">
+            <div class="row">
+                <div class="col-3">
+                    <button type="button" class="btn btn-info" (click)="isAuthorized()"
+                        [disabled]="checkButtonDisabled">
+                        Consultar
+                    </button>
+                </div>
+                <div class="col-2">
+
+                    <button (click)="openScanner()"
+                        class="btn btn-info d-flex justify-content-center align-items-center">
+                        <i class="bi bi-qr-code-scan"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
     </div>
-</div>
+
+    <!-- Nombre -->
+
+    <div class="row">
+        <div class="col-6">
+            <div class="row">
+                <div class="col-3">
+                    <label for="firstName" class="form-label">Nombre</label>
+                </div>
+                <div class="col-9">
+                    <input type="text" id="firstName" class="form-control" formControlName="firstName" />
+                    <small class="text-danger" *ngIf="accessForm.get('firstName')?.invalid &&
+                    accessForm.get('firstName')?.touched">
+                        requerido
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="row">
+                <div class="col-3">
+                    <label for="lastName" class="form-label">Apellido</label>
+                </div>
+                <div class="col-9">
+                    <input type="text" id="lastName" class="form-control" formControlName="lastName" />
+                    <div>
+                        <small class="text-danger" *ngIf="
+          accessForm.get('lastName')?.invalid &&
+          accessForm.get('lastName')?.touched
+        ">
+                            requerido
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h5 class="mt-3">Detalles</h5>
+    <hr>
+
+    <!-- Destino -->
+
+    <div class="row">
+        <div class="col-6">
+            <div class="row">
+                <div class="col-3">
+                    <label for="firstName" class="form-label">Nro de Lote de Destino</label>
+                </div>
+                <div class="col-9">
+                    <input type="text" id="plotId" class="form-control" formControlName="plotId" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="row">
+                <div class="col-3">
+                    <label class="form-label m-0">Acción</label><label class="text-danger">*</label>
+                </div>
+                <div class="col-9">
+                    <div class="d-flex align-items-center flex-row">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="entry" formControlName="action"
+                                value="ENTRY" />
+                            <label class="form-check-label" for="entry">Entrada</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="exit" formControlName="action"
+                                value="EXIT" />
+                            <label class="form-check-label" for="exit">Salida</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Tipo de Vehículo -->
+
+    <div class="row">
+        <div class="col-6">
+            <div class="row">
+                <div class="col-3">
+                    <label for="vehicleType" class="form-label">Tipo de Vehículo<label
+                            class="text-danger">*</label></label>
+                </div>
+                <div class="col-9">
+                    <select id="vehicleType" class="form-select" formControlName="vehicleType">
+                        <option value="CAR">Automóvil</option>
+                        <option value="PICKUP">Camioneta</option>
+                        <option value="MOTORBIKE">Motocicleta</option>
+                        <option value="TRUCK">Camión</option>
+                        <!--   <option value="FOOT">A pie / Bicicleta</option>-->
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="row">
+                <div class="col-3">
+                    <label for="vehicleReg" class="form-label">Patente</label>
+                </div>
+                <div class="col-9">
+                    <input type="text" id="vehicleReg" class="form-control" formControlName="vehicleReg" [ngClass]="{
+          'is-invalid':
+            accessForm.get('vehicleReg')?.invalid &&
+            accessForm.get('vehicleReg')?.touched
+        }" />
+                    <small class="text-danger ms-4 ps-1" *ngIf="
+          accessForm.get('vehicleReg')?.invalid &&
+          accessForm.get('vehicleReg')?.touched
+        ">
+                        Por favor, ingrese la matrícula del vehículo
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Descripción Detallada del Vehículo -->
+
+    <div class="row mt-3">
+        <div class="col-6">
+            <div class="row">
+                <div class="col-3">
+                    <label for="vehicleDescription" class="form-label">Descripción del Vehículo</label>
+                </div>
+                <div class="col-9">
+                    <textarea id="vehicleDescription" class="form-control"
+                        formControlName="vehicleDescription"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="row">
+                <div class="col-3">
+                    <label for="comments" class="form-label">Comentarios</label>
+                </div>
+                <div class="col-9">
+                    <textarea id="comments" class="form-control" formControlName="comments"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 d-flex justify-content-end mt-5">
+        <button type="button" class="btn btn-danger me-2" (click)="onCancel()">
+            Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+</form>
+
+<ng-template #scannerModal let modal>
+    <div style="
+      width: 100%;
+      height: 100%;
+      padding: 20px;
+      background-color: lightgrey;
+    ">
+        <ngx-scanner-qrcode #action="scanner" [config]="config" (event)="onEvent($event, action)"></ngx-scanner-qrcode>
+        <button class="btn" [class.btn-info]="!action.isStart" [class.btn-warning]="action.isStart"
+            [disabled]="action.isLoading" (click)="handle(action, action.isStart ? 'stop' : 'start')">
+            <img [src]="
+          action.isStart
+            ? 'https://id1945.github.io/images/svg/camera-off.svg'
+            : 'https://id1945.github.io/images/svg/camera-on.svg'
+        " width="30px" />
+        </button>
+    </div>
+</ng-template>
+<app-toasts></app-toasts>
