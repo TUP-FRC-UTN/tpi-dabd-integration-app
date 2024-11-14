@@ -88,7 +88,8 @@ export class SessionService {
 
   isAuthenticated(): boolean {
     return this.getItem(this.USER_KEY) !== null;
-   // return true;
+    //return true
+   
   }
 
   /**
