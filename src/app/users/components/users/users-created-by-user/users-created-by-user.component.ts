@@ -77,7 +77,7 @@ export class UsersCreatedByUserComponent {
         }
       })
     } else {
-      this.toastService.sendError("Error al cargar la pagina, reintente.")
+      this.toastService.sendError("Error al cargar la pagina, reintente")
     }
   }
 

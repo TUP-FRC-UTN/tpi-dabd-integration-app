@@ -9,16 +9,11 @@ import { SessionService } from './session.service';
   providedIn: 'root',
 })
 export class LoadFileService {
-  private ownerUploadUrl: string = environment.production
-    ? `${environment.apis.cadastre}owners`
-    : 'http://localhost:8004/owners';
-  
+  private ownerUploadUrl: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}owners`;
 
-  private fileUploadUrl: string = environment.production
-    ? `${environment.apis.cadastre}plots`
-    : 'http://localhost:8004/plots';
+  private plotUploadUrl: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}plots`;
 
-    private sessionService = inject(SessionService);
+  private sessionService = inject(SessionService);
 
   constructor(private http: HttpClient) {}
 
@@ -83,7 +78,7 @@ export class LoadFileService {
 
   // metodo para subir archivos de Owners
   uploadFilesOwner(files: File[], fileTypeMap: FileTypeMap, ownerId: number): Observable<Document[]> {
-    
+
     const formDataOwner = new FormData();
     formDataOwner.append(
       'typeMap',
@@ -130,7 +125,7 @@ export class LoadFileService {
       'x-user-id': this.sessionService.getItem('user').id.toString()
     });
     return this.http.post<Document[]>(
-      `${this.fileUploadUrl}/${plotId}/files`,
+      `${this.plotUploadUrl}/${plotId}/files`,
       formDataPlot,
       { headers }
     );
@@ -148,7 +143,7 @@ export class LoadFileService {
     });
 
     return this.http.put<Document>(
-      this.fileUploadUrl + '/' + fileId,
+      this.plotUploadUrl + '/' + fileId,
       formData,
       { headers }
     );
