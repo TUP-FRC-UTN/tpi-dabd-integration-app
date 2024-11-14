@@ -111,6 +111,7 @@ export class ExpensesAddChargeComponent implements OnInit{
 
 
   amountValidator(): ValidatorFn {
+    console.log(this.chargeForm);
     return (control: AbstractControl): ValidationErrors | null => {
       const amount = control.value;
       const categoryChargeId = this.chargeForm.get('categoryChargeId')?.value;
@@ -139,6 +140,7 @@ export class ExpensesAddChargeComponent implements OnInit{
     this.storage.saveToStorage(this.userLoggin,'user');
     this.loadSelect();
     let user = this.storage.getFromSessionStorage('user') as User;
+    alert(user.value.first_name)
   }
 
   onBack() {
