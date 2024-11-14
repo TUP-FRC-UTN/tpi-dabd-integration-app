@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { OtherReport, PeriodRequest, TicketInfo, Top5, TopPayments } from '../models/stadistics';
+import { OtherReport, TicketFilter, TicketInfo, Top5, TopPayments } from '../models/stadistics';
 import { PaymentReportDto } from '../models/payments.report.model';
 import { TicketReportDto } from '../models/ticket.report.model';
 
@@ -22,25 +22,25 @@ export class StadisticsService {
 
   }
 
-  getBaseReport(fechas: PeriodRequest): Observable<Top5> {
+  getBaseReport(fechas: TicketFilter): Observable<Top5> {
     return this.http.post<Top5>(this.apiUrl + '/top5', fechas);
   }
 
-  getOtherReport(fechas: PeriodRequest): Observable<OtherReport> {
+  getOtherReport(fechas: TicketFilter): Observable<OtherReport> {
     return this.http.post<OtherReport>(this.apiUrl + '/otherReports', fechas);
   }
 
-  getAmountByDate(fechas: PeriodRequest): Observable<TicketInfo[]> {
+  getAmountByDate(fechas: TicketFilter): Observable<TicketInfo[]> {
     return this.http.post<TicketInfo[]>(this.apiUrl + '/totalPayments', fechas);
   }
 
-  getPreferredApproved(fechas: PeriodRequest): Observable<TopPayments> {
+  getPreferredApproved(fechas: TicketFilter): Observable<TopPayments> {
     console.log(fechas);
 
     return this.http.post<TopPayments>(this.baseUrlpaymentsReport + '/topPaymentsApproved', fechas);
   }
 
-  getPreferredRejected(fechas: PeriodRequest): Observable<TopPayments> {
+  getPreferredRejected(fechas: TicketFilter): Observable<TopPayments> {
     return this.http.post<TopPayments>(this.baseUrlpaymentsReport + '/topPaymentsRejected', fechas);
   }
 

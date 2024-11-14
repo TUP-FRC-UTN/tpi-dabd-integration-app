@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 // import { DashBoardFilters } from '../../models/dashboard.model';
-import { graphModel, kpiModel, PeriodRequest, TicketInfo } from '../../models/stadistics';
+import { graphModel, kpiModel, TicketFilter, TicketInfo } from '../../models/stadistics';
 import { StadisticsService } from '../../services/stadistics.service';
 import { KpiComponent } from '../commons/kpi/kpi.component';
 import { BarchartComponent } from '../commons/barchart/barchart.component';
@@ -16,7 +16,7 @@ import { BarchartComponent } from '../commons/barchart/barchart.component';
   styleUrl: './total-payments.component.scss'
 })
 export class TotalPaymentsComponent {
-  @Input() filters: PeriodRequest = {} as PeriodRequest;
+  @Input() filters: TicketFilter = {} as TicketFilter;
   @Output() notifyParent: EventEmitter<string> = new EventEmitter<string>();
   title: string = "";
 
@@ -41,7 +41,7 @@ export class TotalPaymentsComponent {
   }
 
   async getData() {
-    let action = this.filters.paymentMethod == "TRANSFER" ? "Transferencia" : "Mercado Pago"
+    let action = this.filters.status == "TRANSFER" ? "Transferencia" : "Mercado Pago"
     this.title = action;
     this.graph1.title = "Ingresos por: " + action
     this.kpi1.title = action + " totales"
@@ -53,7 +53,7 @@ export class TotalPaymentsComponent {
   }
 
   // Se obtienen los totales cobrados en cada periodo para el gráfico de comparación
-  getPeriodAmount(periodRequest: PeriodRequest): void {
+  getPeriodAmount(periodRequest: TicketFilter): void {
     console.log('PeriodRequest ', periodRequest);
 
     this.stadistictsService.getAmountByDate(periodRequest).subscribe(

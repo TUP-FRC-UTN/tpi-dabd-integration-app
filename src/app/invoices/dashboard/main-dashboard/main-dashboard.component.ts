@@ -4,11 +4,12 @@ import { StadisticsService } from '../../services/stadistics.service';
 import { KpiComponent } from '../commons/kpi/kpi.component';
 import { BarchartComponent } from '../commons/barchart/barchart.component';
 import { PiechartComponent } from '../commons/piechart/piechart.component';
-import { graphModel, kpiModel, PeriodRequest, TopPayments } from '../../models/stadistics';
+import { graphModel, kpiModel, TicketFilter, TopPayments } from '../../models/stadistics';
 import Period from '../../../expenses/models/period';
 import { filter } from 'rxjs';
-import { PaymentReportDto } from '../../models/payments.report.model';
+import {PaymentReportDto, PayMethod} from '../../models/payments.report.model';
 import { TicketReportDto } from '../../models/ticket.report.model';
+import {TicketStatus} from '../../models/TicketDto';
 
 @Component({
   selector: 'app-main-dashboard',
@@ -18,13 +19,13 @@ import { TicketReportDto } from '../../models/ticket.report.model';
   styleUrl: './main-dashboard.component.scss'
 })
 export class MainDashboardComponent {
-  @Input() filters: PeriodRequest = {} as PeriodRequest;
+  @Input() filters: TicketFilter = {} as TicketFilter;
   @Output() notifyParent: EventEmitter<string> = new EventEmitter<string>();
   // typeDictionary = VisitorTypeAccessDictionary;
 
   //vars
   kpi1: kpiModel = {} as kpiModel
-    kpi2: kpiModel = {} as kpiModel
+  kpi2: kpiModel = {} as kpiModel
   kpi3: kpiModel = {} as kpiModel
 
   graph1: graphModel = {} as graphModel
@@ -40,7 +41,7 @@ export class MainDashboardComponent {
   constructor(private stadisticsService: StadisticsService) {
     this.kpi1 = {title: "Tasa de cobros existos", desc: "", value: "0", icon: "", color: "bg-success"}
     this.kpi2 = {title: "Aprobados vs Pendientes", desc: "", value: "0%", icon: "bi bi-graph-up", color: "bg-info"}
-    this.kpi3 = {title: "Tiempo promedio de pagos", desc: "Tipo más frecuente en el periodo", value: "0", icon: "bi bi-person-circle", color: "bg-warning"}
+    this.kpi3 = {title: "Tiempo promedio de pagos", desc: "", value: "0", icon: "bi bi-person-circle", color: "bg-warning"}
 
     this.graph1 = {title: "Informe de total cobrado", subtitle: "", data: [], options: null}
     this.graph2 = {title: "Deuda total de propietarios", subtitle: "", data: [], options: null}
@@ -53,8 +54,6 @@ export class MainDashboardComponent {
     this.kpi1.color = "bg-success"
     this.kpi1.title = "Tasa de cobros exitosos con " + action
     this.kpi2.title = "Pendiente y aprobados"
-    this.kpi1.desc = "Suma total de " + action.toLowerCase() + " en el periodo actual vs. anterior"
-    this.kpi3.desc = "Tipo de " + action.toLowerCase() + " más frecuente en el periodo"
     this.kpi3.title = "Tipo de " + action.toLowerCase() + " Más Frecuente"
     this.graph1.title = "Totales de " + action + " por Periodo"
 
@@ -66,6 +65,8 @@ export class MainDashboardComponent {
     //tasa de pagos
     this.getReportDinamicFilters();
   }
+
+
 
   getReportDinamicFilters(): void {
     console.log("FILTOROOOOS" +this.filters);
@@ -84,24 +85,27 @@ export class MainDashboardComponent {
           } else if (payment.paymentMethod === 'TRANSFERENCE') {
             countT++;
           }if(payment.status === 'REJECTED'){
-            console.log("REJECTED", countPending);
             countPending++;
-        } else if (payment.status === 'APPROBED'){
+        } else if (payment.status === 'APPROVED'){
             countApproved++;
         }
 
-        if(payment.amount > 0){
-          this.graph1.data.push([payment.createdAt, payment.amount]);
-        }
+        // if(payment.amount > 0){
+        //   this.graph1.data.push([payment.createdAt, payment.amount]);
+        // }
       }
 
         this.kpi1.value = countMP + " vs. " + countT;
         this.kpi2.value = countPending + " - " + countApproved;
+        this.graph2.data= this.mapPayMethodData(data)
+
       },
       (error: any) => {
         console.error('Error al obtener el reporte', error);
       }
     );
+
+
 
 
     this.stadisticsService.getDinamycFilterTickets(this.filters).subscribe((data : TicketReportDto[] ) => {
@@ -112,20 +116,70 @@ export class MainDashboardComponent {
       let countPending = 0;
       let countApproved = 0;
 
-      for (const ticket of data) {
 
-    }
-
-      this.kpi1.value = countMP + " vs. " + countT;
-      this.kpi2.value = countPending + " - " + countApproved;
+      this.graph1.title = "Tipo de Pago Utilizado"
+      this.graph1.data = this.mapPayMethod(data)
     },
     (error: any) => {
       console.error('Error al obtener el reporte', error);
     });
-
-
   }
 
+  // ngOnInit(): void {
+  //   // Asignamos datos mock a graph1.data
+  //   this.graph1.data = [
+  //     ['PENDING', 10],
+  //     ['PAID', 5],
+  //     ['CANCELED', 2],
+  //     ['UNDER_REVIEW', 1],
+  //     ['EXPIRED', 0],
+  //     ['IN_DEFAULT', 4]
+  //   ];
+  // }
+
+  mapPayMethodData(array: any[]): any[] {
+    const countPayMethod: { [key in PayMethod]: number } = {
+      [PayMethod.TRANSFERENCE]: 0,
+      [PayMethod.MERCADO_PAGO]: 0,
+    };
+
+    array.forEach(data => {
+      if (Object.values(PayMethod).includes(data.paymentMethod as PayMethod)) {
+        countPayMethod[data.paymentMethod as PayMethod]++;
+      }
+    });
+
+    const formattedData = Object.entries(countPayMethod).map(([key, value]) => [
+      key,
+      value
+    ]);
+
+    return formattedData;
+  }
+
+  mapPayMethod(data: any[]): any[] {
+    const countTicketStatus: { [key in TicketStatus]: number } = {
+      [TicketStatus.PENDING]: 0,
+      [TicketStatus.PAID]: 0,
+      [TicketStatus.CANCELED]: 0,
+      [TicketStatus.UNDER_REVIEW]: 0,
+      [TicketStatus.EXPIRED]: 0,
+      [TicketStatus.IN_DEFAULT]: 0,
+    };
+
+    data.forEach(item => {
+      if (Object.values(TicketStatus).includes(item.status as TicketStatus)) {
+        countTicketStatus[item.status as TicketStatus]++;
+      }
+    });
+
+    const formattedData = Object.entries(countTicketStatus).map(([key, value]) => [
+      key,
+      value
+    ]);
+
+    return formattedData;
+  }
 
 
   columnChartOptions = {
@@ -182,7 +236,7 @@ export class MainDashboardComponent {
 }
 
 
-function createPreviousFilter(filters: PeriodRequest): PeriodRequest {
+function createPreviousFilter(filters: TicketFilter): TicketFilter {
   const dateFrom = new Date(filters.startCreatedAt);
   const dateTo = new Date(filters.endCreatedAt);
 

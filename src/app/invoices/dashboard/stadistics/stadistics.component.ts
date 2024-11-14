@@ -6,7 +6,7 @@ import { GoogleChartsModule } from "angular-google-charts";
 import { KpiComponent } from "../commons/kpi/kpi.component";
 
 import { CommonModule, NgClass } from "@angular/common";
-import { DashboardStatus, PeriodRequest } from '../../models/stadistics';
+import { DashboardStatus, TicketFilter } from '../../models/stadistics';
 import { MainDashboardComponent } from '../main-dashboard/main-dashboard.component';
 import { BarchartComponent } from '../commons/barchart/barchart.component';
 import { StadisticsService } from '../../services/stadistics.service';
@@ -36,7 +36,7 @@ import { TotalPaymentsComponent } from '../total-payments/total-payments.compone
 export class StadisticsComponent implements OnInit {
 
   //filters
-  filters: PeriodRequest = {} as PeriodRequest
+  filters: TicketFilter = {} as TicketFilter
   // filters: DashBoardFilters = {} as DashBoardFilters;
 
   //dashboard settings
@@ -102,8 +102,8 @@ export class StadisticsComponent implements OnInit {
     const year = now.getFullYear().toString();
 
     // Asigna las fechas en formato MM-YYYY
-    this.filters.startCreatedAt = `${'01'}/${year.slice(2)}`;
-    this.filters.endCreatedAt = `${'03'}/${year.slice(2)}`;
+    this.filters.startExpirationDate = `${'01'}/${year.slice(2)}`;
+    this.filters.endExpirationDate = `${'03'}/${year.slice(2)}`;
     // this.filters = {
     //   firstDate: this.formatMonthYear(this.filters.firstDate),
     //   lastDate: this.formatMonthYear(this.filters.lastDate),
