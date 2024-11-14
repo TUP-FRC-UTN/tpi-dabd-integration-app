@@ -145,8 +145,8 @@ export const NOTIFICATION_ROUTES: Routes = [
   {
     path: 'notification/charts',
     component: NotificationChartComponent,
-    //canActivate: [authGuard],
-    //canMatch: [hasRoleCodeGuard],
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
     data: {
       allowedRoleCodes: [
         URLTargetType.SUPERADMIN,
