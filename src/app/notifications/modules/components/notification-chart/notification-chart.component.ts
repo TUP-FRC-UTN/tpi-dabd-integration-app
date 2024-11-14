@@ -7,7 +7,7 @@ import { ContactService } from '../../../services/contact.service';
 import { NotificationModelChart } from '../../../models/notifications/notification';
 import { ContactModel } from '../../../models/contacts/contactModel';
 import { ChartConfigurationService } from '../../../services/chart-configuration.service';
-import { KPIModel, RetentionMetric } from '../../../models/kpi/kpiModel';
+import { KPIModel, RetentionKPIs, RetentionMetric } from '../../../models/kpi/kpiModel';
 import { PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
@@ -84,6 +84,12 @@ export class NotificationChartComponent implements OnInit {
 
   availableTemplates: string[] = []; // Lista de plantillas disponibles
   selectedTemplate: string = ''; // Plantilla seleccionada por el usuario
+  retentionKPIs: RetentionKPIs = {
+    averageRetention: 0,
+    highestRetention: '',
+    lowestRetention: '',
+    subscriptionsAbove80: 0
+  };
 
 
   isTooltipOpen = false;
@@ -470,19 +476,19 @@ export class NotificationChartComponent implements OnInit {
   };
 
   subscriptionAnalysisData: ChartData = {
-    labels: [], // Se llenará con los nombres de las suscripciones
+    labels: [], // Nombres de suscripciones
     datasets: [
       {
-        data: [], // Se llenará con el conteo de suscritos
+        data: [], // Cantidad de usuarios suscritos
         label: 'Suscritos',
-        backgroundColor: '#36A2EB', // Azul para suscritos
+        backgroundColor: '#36A2EB',
         borderColor: '#36A2EB',
         borderWidth: 1
       },
       {
-        data: [], // Se llenará con el conteo de desuscritos
+        data: [], // Cantidad de usuarios desuscritos
         label: 'Desuscritos',
-        backgroundColor: '#FF6384', // Rojo para desuscritos
+        backgroundColor: '#FF6384',
         borderColor: '#FF6384',
         borderWidth: 1
       }
@@ -490,7 +496,7 @@ export class NotificationChartComponent implements OnInit {
   };
 
   subscriptionAnalysisOptions: ChartConfiguration['options'] = {
-    indexAxis: 'y', // Esto hace que las barras sean horizontales
+    indexAxis: 'y',
     responsive: true,
     plugins: {
       legend: {
@@ -504,21 +510,33 @@ export class NotificationChartComponent implements OnInit {
     scales: {
       x: {
         stacked: false,
+        grid: {
+          display: true
+        },
         title: {
           display: true,
           text: 'Cantidad de Usuarios'
+        },
+        border: {
+          display: true
         }
       },
       y: {
         stacked: false,
+        grid: {
+          display: false
+        },
         title: {
           display: true,
           text: 'Tipos de Suscripción'
+        },
+        border: {
+          display: true
         }
       }
-    }
+    },
+    maintainAspectRatio: false
   };
-
   weeklyChartOptions = {
     responsive: true,
     scales: {
@@ -643,13 +661,46 @@ export class NotificationChartComponent implements OnInit {
     });
   }
 
-  private loadContactsAndSubscriptions(): void {
+  loadContactsAndSubscriptions(): void {
     forkJoin({
       subscriptionTypes: this.subscriptionService.getAllSubscriptions(),
       contacts: this.contactService.getAllContacts()
     }).subscribe({
       next: ({ subscriptionTypes, contacts }) => {
-        this.processSubscriptionData(contacts, subscriptionTypes);
+        // Actualizar gráfico de tasa de retención (verde)
+        const retentionMetrics = this.calculateRetentionMetrics(contacts, subscriptionTypes);
+        this.retentionChartData = {
+          labels: retentionMetrics.map(m => this.subscriptionService.getSubscriptionNameInSpanish(m.subscriptionName)),
+          datasets: [{
+            data: retentionMetrics.map(m => m.retentionRate),
+            label: 'Tasa de Retención (%)',
+            backgroundColor: '#4CAF50',
+            borderColor: '#4CAF50',
+            borderWidth: 1
+          }]
+        };
+
+        // Actualizar gráfico de análisis (azul/rojo)
+        const analysisMetrics = this.calculateSubscriptionAnalysis(contacts, subscriptionTypes);
+        this.subscriptionAnalysisData = {
+          labels: analysisMetrics.map(m => this.subscriptionService.getSubscriptionNameInSpanish(m.subscriptionName)),
+          datasets: [
+            {
+              data: analysisMetrics.map(m => m.subscribed),
+              label: 'Suscritos',
+              backgroundColor: '#36A2EB',
+              borderColor: '#36A2EB',
+              borderWidth: 1
+            },
+            {
+              data: analysisMetrics.map(m => m.unsubscribed),
+              label: 'Desuscritos',
+              backgroundColor: '#FF6384',
+              borderColor: '#FF6384',
+              borderWidth: 1
+            }
+          ]
+        };
       },
       error: (error) => {
         console.error('Error loading contacts and subscriptions:', error);
@@ -658,30 +709,132 @@ export class NotificationChartComponent implements OnInit {
   }
 
   private calculateRetentionMetrics(contacts: any[], subscriptionTypes: any[]): RetentionMetric[] {
-    // Filtrar solo suscripciones opcionales
+    // Solo para suscripciones opcionales
     const optionalSubs = subscriptionTypes
       .filter(sub => sub.isUnsubscribable)
       .map(sub => sub.name);
 
     const totalUsers = contacts.length;
 
-    // Calcular retención para cada suscripción opcional
-    const retentionMetrics = optionalSubs.map(subName => {
+    return optionalSubs.map(subName => {
       const activeUsers = contacts.filter(contact =>
         contact.subscriptions.includes(subName)
       ).length;
 
       return {
         subscriptionName: subName,
-        totalUsers,
-        activeUsers,
+        totalUsers: totalUsers,
+        activeUsers: activeUsers,
         retentionRate: (activeUsers / totalUsers) * 100
       };
     });
-
-    // Ordenar por tasa de retención de mayor a menor
-    return retentionMetrics.sort((a, b) => b.retentionRate - a.retentionRate);
   }
+
+
+  retentionChartData: ChartData = {
+    labels: [], // Nombres de suscripciones
+    datasets: [{
+      data: [], // Porcentajes de retención
+      label: 'Tasa de Retención (%)',
+      backgroundColor: '#4CAF50', // Verde
+      borderColor: '#4CAF50',
+      borderWidth: 1
+    }]
+  };
+
+  retentionChartOptions: ChartConfiguration['options'] = {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: 'Tasa de Retención de Notificaciones Opcionales'
+      }
+    },
+    scales: {
+      x: {
+        min: 0,
+        max: 100,
+        title: {
+          display: true,
+          text: 'Porcentaje de Retención'
+        }
+      }
+    }
+  };
+
+  private updateRetentionChart(metrics: any[]) {
+    this.retentionChartData = {
+        labels: metrics.map(m => this.subscriptionService.getSubscriptionNameInSpanish(m.subscriptionName)),
+        datasets: [{
+            data: metrics.map(m => m.retentionRate),
+            label: 'Tasa de Retención (%)',
+            backgroundColor: '#4CAF50',
+            borderColor: '#4CAF50',
+            borderWidth: 1
+        }]
+    };
+}
+
+  private calculateRetentionKPIs(metrics: RetentionMetric[]): RetentionKPIs {
+    return {
+      averageRetention: metrics.reduce((acc, m) => acc + m.retentionRate, 0) / metrics.length,
+      highestRetention: metrics[0].subscriptionName,
+      lowestRetention: metrics[metrics.length - 1].subscriptionName,
+      subscriptionsAbove80: metrics.filter(m => m.retentionRate > 80).length
+    };
+  }
+
+  processRetentionData(contacts: any[], subscriptionTypes: any[]) {
+    // Para los KPIs y el gráfico de tasa de retención (verde)
+    const retentionMetrics = this.calculateRetentionMetrics(contacts, subscriptionTypes);
+    this.retentionKPIs = this.calculateRetentionKPIs(retentionMetrics);
+    this.updateRetentionChart(retentionMetrics);
+
+    // Para el gráfico de análisis (azul/rojo)
+    const analysisMetrics = this.calculateSubscriptionAnalysis(contacts, subscriptionTypes);
+    this.updateSubscriptionAnalysisChart(analysisMetrics);
+}
+
+private calculateSubscriptionAnalysis(contacts: any[], subscriptionTypes: any[]) {
+  const optionalSubs = subscriptionTypes
+    .filter(sub => sub.isUnsubscribable)
+    .map(sub => sub.name);
+
+  return optionalSubs.map(subName => {
+    const subscribedUsers = contacts.filter(contact =>
+      contact.subscriptions.includes(subName)
+    ).length;
+
+    return {
+      subscriptionName: subName,
+      subscribed: subscribedUsers,
+      unsubscribed: contacts.length - subscribedUsers
+    };
+  });
+}
+
+  private updateSubscriptionAnalysisChart(metrics: any[]) {
+    this.subscriptionAnalysisData = {
+        labels: metrics.map(m => this.subscriptionService.getSubscriptionNameInSpanish(m.subscriptionName)),
+        datasets: [
+            {
+                data: metrics.map(m => m.subscribed),
+                label: 'Suscritos',
+                backgroundColor: '#36A2EB',
+                borderColor: '#36A2EB',
+                borderWidth: 1
+            },
+            {
+                data: metrics.map(m => m.unsubscribed),
+                label: 'Desuscritos',
+                backgroundColor: '#FF6384',
+                borderColor: '#FF6384',
+                borderWidth: 1
+            }
+        ]
+    };
+}
 
 
 }
