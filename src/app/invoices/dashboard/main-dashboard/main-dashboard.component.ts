@@ -8,6 +8,7 @@ import { graphModel, kpiModel, PeriodRequest, TopPayments } from '../../models/s
 import Period from '../../../expenses/models/period';
 import { filter } from 'rxjs';
 import { PaymentReportDto } from '../../models/payments.report.model';
+import { TicketReportDto } from '../../models/ticket.report.model';
 
 @Component({
   selector: 'app-main-dashboard',
@@ -101,7 +102,30 @@ export class MainDashboardComponent {
         console.error('Error al obtener el reporte', error);
       }
     );
+
+
+    this.stadisticsService.getDinamycFilterTickets(this.filters).subscribe((data : TicketReportDto[] ) => {
+      console.log('TicketDto filter',data);
+      let countMP = 0;
+      let countT = 0;
+
+      let countPending = 0;
+      let countApproved = 0;
+
+      for (const ticket of data) {
+
+    }
+
+      this.kpi1.value = countMP + " vs. " + countT;
+      this.kpi2.value = countPending + " - " + countApproved;
+    },
+    (error: any) => {
+      console.error('Error al obtener el reporte', error);
+    });
+
+
   }
+
 
 
   columnChartOptions = {

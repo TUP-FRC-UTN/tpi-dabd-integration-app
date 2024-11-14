@@ -12,10 +12,10 @@ export interface TicketInfo {
   totalAmount: number;
 }
 
-export interface TicketInfo2 {
-  period: string;
-  totalAmount: number;
-}
+// export interface TicketInfo2 {
+//   period: string;
+//   totalAmount: number;
+// }
 
 export interface PeriodRequest  {
   startCreatedAt: string;

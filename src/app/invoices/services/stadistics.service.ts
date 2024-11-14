@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { OtherReport, PeriodRequest, TicketInfo, Top5, TopPayments } from '../models/stadistics';
 import { PaymentReportDto } from '../models/payments.report.model';
+import { TicketReportDto } from '../models/ticket.report.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,7 @@ import { PaymentReportDto } from '../models/payments.report.model';
 export class StadisticsService {
 
   private readonly baseUrl = 'http://localhost:8087/report';
+  private readonly baseUrlTicket = 'http://localhost:8087/tickets';
   private readonly baseUrlpayments = 'http://localhost:8092/report/topPayments';
   private readonly baseUrlpaymentsReport = 'http://localhost:8092/report';
 
@@ -34,7 +36,7 @@ export class StadisticsService {
 
   getPreferredApproved(fechas: PeriodRequest): Observable<TopPayments> {
     console.log(fechas);
-    
+
     return this.http.post<TopPayments>(this.baseUrlpaymentsReport + '/topPaymentsApproved', fechas);
   }
 
@@ -52,6 +54,16 @@ export class StadisticsService {
     }
 
     return this.http.get<PaymentReportDto[]>(this.baseUrlpaymentsReport + '/filters');
+  }
+
+  getDinamycFilterTickets(filters: any) : Observable<TicketReportDto[]> {
+    let httpParams = new HttpParams()
+    for (const key in filters) {
+      if (filters.hasOwnProperty(key) && filters[key] !== undefined && filters[key] !== '') {
+        httpParams = httpParams.set(key, filters[key].toString());
+      }
+    }
+    return this.http.get<TicketReportDto[]>(this.baseUrlTicket + '/filters');
   }
 
 }

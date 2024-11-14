@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 // import { DashBoardFilters } from '../../models/dashboard.model';
-import { graphModel, kpiModel, PeriodRequest, TicketInfo, TicketInfo2 } from '../../models/stadistics';
+import { graphModel, kpiModel, PeriodRequest, TicketInfo } from '../../models/stadistics';
 import { StadisticsService } from '../../services/stadistics.service';
 import { KpiComponent } from '../commons/kpi/kpi.component';
 import { BarchartComponent } from '../commons/barchart/barchart.component';
@@ -48,54 +48,30 @@ export class TotalPaymentsComponent {
     this.kpi1.icon = "bi bi-arrow-up-circle"
     this.kpi1.color = "bg-success"
 
-    // this.columnChartOptions.hAxis.showTextEvery = this.filters.group == "WEEK" ? 2 : 3
-    // this.columnChartOptions.hAxis.showTextEvery = this.filters.group == "MONTH" || this.filters.group == "YEAR" ? 1 : 3
-   // await this.getPeriodAmount(this.filters);
-    await this.loadInvoicesByPeriod();
 
-
+    this.getPeriodAmount(this.filters);
   }
 
-  //Se obtienen los totales cobrados en cada periodo para el grafico de comparacion
-  getPeriodAmount(periodRequest: PeriodRequest): Promise<void> {
-    console.log('PeriodRequest ',periodRequest)
-    return new Promise((resolve, reject) => {
-      this.stadistictsService.getAmountByDate(periodRequest).subscribe(
-        (data: TicketInfo[]) => {
-          console.log('Respuesta ',data)
-          this.PeriodAmount = data; // Asignamos el array recibido a PeriodAmount
-          resolve();
-        },
-        error => {
-          console.error('Error al obtener el reporte', error);
-          reject(error);
+  // Se obtienen los totales cobrados en cada periodo para el gráfico de comparación
+  getPeriodAmount(periodRequest: PeriodRequest): void {
+    console.log('PeriodRequest ', periodRequest);
+
+    this.stadistictsService.getAmountByDate(periodRequest).subscribe(
+      (data: TicketInfo[]) => {
+        console.log('Respuesta ', data);
+        this.PeriodAmount = data; // Asignamos el array recibido a PeriodAmount
+        console.log('PeriodAmount ', this.PeriodAmount);
+        this.graph1.data = mapColumnData(this.PeriodAmount);
+        this.graph1.options = {
+          ...this.columnChartOptions,
+          //colors: '#9d0208'
         }
-      );
-    });
+      },
+      error => {
+        console.error('Error al obtener el reporte', error);
+      }
+    );
   }
-
-
-    //Se configura y cargan los graficos para la comparacion de ingresos
-  loadInvoicesByPeriod(): void {
-    // Verificar que top5Data y top5Data.top5 están definidos
-    if (!this.PeriodAmount) return;
-
-    // Extraer etiquetas (números de ticket) y valores (monto total) para el gráfico
-    const labels = this.PeriodAmount.map((item: TicketInfo) => item.period);
-    const values = this.PeriodAmount.map((item: TicketInfo) => item.totalAmount);
-
-    const data: TicketInfo2[] = [
-      { period: 'Enero', totalAmount: 120 },
-      { period: 'Febrero', totalAmount: 150 },
-      { period: 'Marzo', totalAmount: 100 },
-      { period: 'Abril', totalAmount: 180 },
-      { period: 'Mayo', totalAmount: 90 }
-    ];
-
-    this.graph1.data = mapColumnData(data);
-
-  }
-
 
   columnChartOptions = {
     backgroundColor: 'transparent',
@@ -131,7 +107,7 @@ export class TotalPaymentsComponent {
 }
 
 // Función mapColumnData que transforma el arreglo
-function mapColumnData(array: TicketInfo2[]): any {
+function mapColumnData(array: TicketInfo[]): any {
   return array.map(data => [
     data.period,
     data.totalAmount || 0
