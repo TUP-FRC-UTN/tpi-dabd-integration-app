@@ -23,6 +23,24 @@ export class MainDashboardComponent {
   @Output() notifyParent: EventEmitter<string> = new EventEmitter<string>();
   // typeDictionary = VisitorTypeAccessDictionary;
 
+  colors = [
+    '#62B68F',  // rgba(98, 182, 143)
+    '#FF919E',  // rgba(255, 145, 158)
+    '#82B1FF',  // rgba(130, 177, 255)
+    '#BB83D1',  // rgba(187, 131, 209)
+    '#FFAB91',  // rgba(255, 171, 145)
+    '#A2D9A5',  // rgba(162, 217, 165)
+    '#95A0D9',  // rgba(149, 160, 217)
+    '#FFA29A',  // rgba(255, 162, 154)
+    '#7ECEC6',  // rgba(126, 206, 198)
+    '#FFF59D',  // rgba(255, 245, 157)
+    '#FFE082',  // rgba(255, 224, 130)
+    '#DCE775',  // rgba(220, 231, 117)
+    '#C4C4C4',  // rgba(196, 196, 196)
+    '#BCAAAC',  // rgba(188, 170, 164)
+    '#90CAF9'   // rgba(144, 202, 249)
+  ];
+
   //vars
   kpi1: kpiModel = {} as kpiModel
   kpi2: kpiModel = {} as kpiModel
@@ -39,125 +57,116 @@ export class MainDashboardComponent {
   }
   //init
   constructor(private stadisticsService: StadisticsService) {
-    this.kpi1 = {title: "Tasa de cobros existos", desc: "", value: "0", icon: "", color: "bg-success"}
-    this.kpi2 = {title: "Aprobados vs Pendientes", desc: "", value: "0%", icon: "bi bi-graph-up", color: "bg-info"}
-    this.kpi3 = {title: "Tiempo promedio de pagos", desc: "", value: "0", icon: "bi bi-person-circle", color: "bg-warning"}
+    this.kpi1 = {title: "Tickets Emitidos", desc: "", value: "0", icon: "bi bi-graph-up", color: "bg-success"}
+    this.kpi2 = {title: "Tiempo Promedio de Resolución de Tickets", desc: "", value: "0%", icon: "bi bi-arrow-down-circle", color: "bg-info"}
+    this.kpi3 = {title: "Monto Total de Tickets", desc: "", value: "0", icon: "bi bi-person-circle", color: "bg-warning"}
 
     this.graph1 = {title: "Informe de total cobrado", subtitle: "", data: [], options: null}
     this.graph2 = {title: "Deuda total de propietarios", subtitle: "", data: [], options: null}
   }
 
    //getData
-   async getData() {
-    let action = this.filters.paymentMethod == "TRANSFER" ? "Transferencia" : "Mercado Pago"
-    this.kpi1.icon = "bi bi-arrow-down-circle"
-    this.kpi1.color = "bg-success"
-    this.kpi1.title = "Tasa de cobros exitosos con " + action
-    this.kpi2.title = "Pendiente y aprobados"
-    this.kpi3.title = "Tipo de " + action.toLowerCase() + " Más Frecuente"
-    this.graph1.title = "Totales de " + action + " por Periodo"
-
-    this.graph2.options = {...this.columnChartOptions,
-      colors: ['#ffc107']}
-    this.graph2.options.width = null;
-    this.graph2.options.height = 200;
-
-    //tasa de pagos
+  getData() {
     this.getReportDinamicFilters();
   }
 
 
 
   getReportDinamicFilters(): void {
-    console.log("FILTOROOOOS" +this.filters);
+    this.stadisticsService.getDinamycFilterTickets(this.filters).subscribe(
+      (data : TicketReportDto[] ) => {
+        let totalAmount = 0;
+        let totalResolutionTime = 0;
+        let resolutionCount = 0;
 
-    this.stadisticsService.getDinamycFilters(this.filters).subscribe(
-      (data: PaymentReportDto[]) => {
-        let countMP = 0;
-        let countT = 0;
+        for (let ticket of data) {
+          totalAmount += ticket.totalAmount;
 
-        let countPending = 0;
-        let countApproved = 0;
+          const issueDate = new Date(ticket.issueDate);
+          const expirationDate = new Date(ticket.expirationDate);
+          if (expirationDate > issueDate) {
+            const resolutionTime = expirationDate.getTime() - issueDate.getTime();
 
-        for (const payment of data) {
-          if (payment.paymentMethod === 'MERCADO_PAGO') {
-            countMP++;
-          } else if (payment.paymentMethod === 'TRANSFERENCE') {
-            countT++;
-          }if(payment.status === 'REJECTED'){
-            countPending++;
-        } else if (payment.status === 'APPROVED'){
-            countApproved++;
+            const resolutionTimeInDays = resolutionTime / (1000 * 3600 * 24);
+
+            totalResolutionTime += resolutionTimeInDays;
+            resolutionCount++;
+          }
         }
 
-        // if(payment.amount > 0){
-        //   this.graph1.data.push([payment.createdAt, payment.amount]);
-        // }
-      }
 
-        this.kpi1.value = countMP + " vs. " + countT;
-        this.kpi2.value = countPending + " - " + countApproved;
-        this.graph2.data= this.mapPayMethodData(data)
-
-      },
-      (error: any) => {
-        console.error('Error al obtener el reporte', error);
-      }
-    );
+        let resolutionAverage = resolutionCount > 0 ? totalResolutionTime / resolutionCount : 0;
+        this.kpi1.value = data.length.toString()
+        this.kpi2.value = resolutionAverage.toFixed(2).toString() + " días"
+        this.kpi3.value = "$ " + (Math.round(totalAmount * 100) / 100).toFixed(2);
 
 
+        this.graph1.title = "Estado de Tickets"
+        this.graph1.data = this.mapTicketStatus(data)
+        this.graph1.options = {...this.columnChartOptions,
+          colors: this.colors}
+        this.graph1.options.width = null;
+        this.graph1.options.height = 500;
 
+        this.graph2.title = "Evolución de Tickets a lo Largo del Tiempo";
+        this.graph2.data = this.mapTicketsPerMonth(data)
+        this.graph2.options = {
+          ...this.columnChartOptions,
+          hAxis: {
+            title: 'Mes',
+            format: 'MMM yyyy',
+            slantedText: true,
+            slantedTextAngle: 45,
+          },
+          vAxis: {
+            title: 'Cantidad de Tickets',
+          },
+          lineWidth: 3,
+          pointSize: 6,
+          animation: {
+            duration: 1500,
+            easing: 'out',
+          },
+          colors: this.colors,
+        };
 
-    this.stadisticsService.getDinamycFilterTickets(this.filters).subscribe((data : TicketReportDto[] ) => {
-      console.log('TicketDto filter',data);
-      let countMP = 0;
-      let countT = 0;
-
-      let countPending = 0;
-      let countApproved = 0;
-
-
-      this.graph1.title = "Tipo de Pago Utilizado"
-      this.graph1.data = this.mapPayMethod(data)
+        this.graph2.options.width = null;
+        this.graph2.options.height = 500;
     },
     (error: any) => {
       console.error('Error al obtener el reporte', error);
     });
   }
 
-  // ngOnInit(): void {
-  //   // Asignamos datos mock a graph1.data
-  //   this.graph1.data = [
-  //     ['PENDING', 10],
-  //     ['PAID', 5],
-  //     ['CANCELED', 2],
-  //     ['UNDER_REVIEW', 1],
-  //     ['EXPIRED', 0],
-  //     ['IN_DEFAULT', 4]
-  //   ];
-  // }
 
-  mapPayMethodData(array: any[]): any[] {
-    const countPayMethod: { [key in PayMethod]: number } = {
-      [PayMethod.TRANSFERENCE]: 0,
-      [PayMethod.MERCADO_PAGO]: 0,
-    };
+  mapTicketsPerMonth(data: TicketReportDto[]): any[] {
+    const ticketsPerMonth: { [key: number]: number } = {};
 
-    array.forEach(data => {
-      if (Object.values(PayMethod).includes(data.paymentMethod as PayMethod)) {
-        countPayMethod[data.paymentMethod as PayMethod]++;
+    data.forEach(ticket => {
+      const issueDate = new Date(ticket.issueDate);
+      const monthYear = new Date(issueDate.getFullYear(), issueDate.getMonth(), 1); // Primer día del mes
+      const monthYearKey = monthYear.getTime();  // Utilizamos el timestamp como clave
+
+      if (ticketsPerMonth[monthYearKey]) {
+        ticketsPerMonth[monthYearKey]++;
+      } else {
+        ticketsPerMonth[monthYearKey] = 1;
       }
     });
 
-    const formattedData = Object.entries(countPayMethod).map(([key, value]) => [
-      key,
-      value
-    ]);
+    const formattedData: any[][] = [];
+
+    Object.entries(ticketsPerMonth).forEach(([key, value]) => {
+      const date = new Date(Number(key));
+      formattedData.push([date, value]);
+    });
 
     return formattedData;
   }
 
-  mapPayMethod(data: any[]): any[] {
+
+
+  mapTicketStatus(data: any[]): any[] {
     const countTicketStatus: { [key in TicketStatus]: number } = {
       [TicketStatus.PENDING]: 0,
       [TicketStatus.PAID]: 0,
@@ -191,7 +200,6 @@ export class MainDashboardComponent {
         color: '#6c757d',
         fontSize: 12  // Tamaño de fuente más pequeño
       },
-      // Formato personalizado para mostrar los valores en miles
       format: '#',
     },
     hAxis: {
@@ -236,23 +244,6 @@ export class MainDashboardComponent {
 }
 
 
-function createPreviousFilter(filters: TicketFilter): TicketFilter {
-  const dateFrom = new Date(filters.startCreatedAt);
-  const dateTo = new Date(filters.endCreatedAt);
-
-  const diffInDays = (dateTo.getTime() - dateFrom.getTime()) / (1000 * 60 * 60 * 24);
-
-  const newDateTo = dateFrom;
-  const newDateFrom = new Date(dateFrom);
-  newDateFrom.setDate(newDateFrom.getDate() - diffInDays);
-
-  return {
-    startCreatedAt: newDateFrom.toISOString(),
-    endCreatedAt: newDateTo.toISOString(),
-    status: filters.status,
-    paymentMethod: filters.status
-  };
-}
 
 function mapColumnData(array:any[]) : any{
   return array.map(data => [

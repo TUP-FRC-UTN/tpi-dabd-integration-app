@@ -57,13 +57,20 @@ export class StadisticsService {
   }
 
   getDinamycFilterTickets(filters: any) : Observable<TicketReportDto[]> {
-    let httpParams = new HttpParams()
+
+    // ESTO CAUSA EL CICLO WHILE ???
+    // if (filters.startExpirationDate != null && filters.endExpirationDate != null) {
+    //   filters.startExpirationDate = filters.startExpirationDate + '-01';
+    //   filters.endExpirationDate = filters.endExpirationDate + '-01';
+    // }
+
+    let params = new HttpParams()
     for (const key in filters) {
       if (filters.hasOwnProperty(key) && filters[key] !== undefined && filters[key] !== '') {
-        httpParams = httpParams.set(key, filters[key].toString());
+        params = params.set(key, filters[key].toString());
       }
     }
-    return this.http.get<TicketReportDto[]>(this.baseUrlTicket + '/filters');
+    return this.http.get<TicketReportDto[]>(this.baseUrlTicket + '/filters', {params});
   }
 
 }

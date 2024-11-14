@@ -51,5 +51,11 @@ export interface PaymentReportDto {
 
 export enum PayMethod {
   TRANSFERENCE = "TRANSFERENCE",
-  MERCADO_PAGO = "MERCADO PAGO"
+  MERCADO_PAGO = "MERCADO_PAGO"
+}
+
+export enum PaymentStatus {
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  PENDING = 'PENDING'
 }

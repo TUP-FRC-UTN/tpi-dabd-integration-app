@@ -6,7 +6,7 @@ import { GoogleChartsModule } from "angular-google-charts";
 import { KpiComponent } from "../commons/kpi/kpi.component";
 
 import { CommonModule, NgClass } from "@angular/common";
-import { DashboardStatus, TicketFilter } from '../../models/stadistics';
+import {DashboardStatus, PaymentFilter, TicketFilter} from '../../models/stadistics';
 import { MainDashboardComponent } from '../main-dashboard/main-dashboard.component';
 import { BarchartComponent } from '../commons/barchart/barchart.component';
 import { StadisticsService } from '../../services/stadistics.service';
@@ -36,7 +36,8 @@ import { TotalPaymentsComponent } from '../total-payments/total-payments.compone
 export class StadisticsComponent implements OnInit {
 
   //filters
-  filters: TicketFilter = {} as TicketFilter
+  ticketFilter: TicketFilter = {} as TicketFilter
+  paymentFilter: PaymentFilter = {} as PaymentFilter
   // filters: DashBoardFilters = {} as DashBoardFilters;
 
   //dashboard settings
@@ -49,7 +50,6 @@ export class StadisticsComponent implements OnInit {
 
   //Childs
   @ViewChild(MainDashboardComponent) main!: MainDashboardComponent;
-  @ViewChild(DistributionPaymentMethodsComponent) distribution!: DistributionPaymentMethodsComponent;
   @ViewChild(TotalPaymentsComponent) total!: TotalPaymentsComponent;
 
 
@@ -96,20 +96,11 @@ export class StadisticsComponent implements OnInit {
 
 
   initializeDefaultDates() {
-    const now = new Date();
-
-    const month = (now.getMonth() + 1).toString().padStart(2, '0'); // `padStart` asegura que el mes tenga dos dígitos
-    const year = now.getFullYear().toString();
-
-    // Asigna las fechas en formato MM-YYYY
-    this.filters.startExpirationDate = `${'01'}/${year.slice(2)}`;
-    this.filters.endExpirationDate = `${'03'}/${year.slice(2)}`;
-    // this.filters = {
-    //   firstDate: this.formatMonthYear(this.filters.firstDate),
-    //   lastDate: this.formatMonthYear(this.filters.lastDate),
-    //   paymentType: '', // Add appropriate default value
-    //   status: '' // Add appropriate default value
-    // };
+    this.ticketFilter = {
+      status: "",
+      startExpirationDate: "",
+      endExpirationDate: ""
+    }
 
     this.filterData()
   }
