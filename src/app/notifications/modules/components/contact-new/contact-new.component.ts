@@ -40,7 +40,7 @@ export class ContactNewComponent {
 
     newContactForm: FormGroup = new FormGroup({
       contactType: new FormControl('', [Validators.required]),
-      contactValue: new FormControl('', [Validators.required, Validators.email]),
+      contactValue: new FormControl('', [Validators.required]),
     //  phone: new FormControl('', [Validators.required, Validators.pattern('[0-9]{10}')]),        //[this.uniqueEmail()]      
     });
 

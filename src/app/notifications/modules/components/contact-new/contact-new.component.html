@@ -45,8 +45,10 @@
     <div class="form-group row mb-2" *ngIf="newContactForm.get('contactType')?.value==='PHONE'">
       <label for="phone" class="col-md-2 col-form-label text-orange">Phone</label>
       <div class="col-md-10">
-        <input type="tel" class="form-control custom-input" formControlName="contactValue" required pattern = "[0-9]{10}"
-          [ngClass]="{ 'is-invalid': newContactForm.get('contactValue')?.invalid && (newContactForm.get('contactValue')?.dirty || newContactForm.get('contactValue')?.touched),
+        <input type="tel" class="form-control custom-input" formControlName="contactValue" required pattern="^[0-9]{10}$"
+
+          [ngClass]="{ 
+            'is-invalid': newContactForm.get('contactValue')?.invalid && (newContactForm.get('contactValue')?.dirty || newContactForm.get('contactValue')?.touched),
             'is-valid': newContactForm.get('contactValue')?.valid && (newContactForm.get('contactValue')?.dirty || newContactForm.get('contactValue')?.touched)}">
         <div class="invalid-feedback" *ngIf="newContactForm.get('contactValue')?.invalid && (newContactForm.get('contactValue')?.dirty || newContactForm.get('contactValue')?.touched)">
           <div *ngIf="newContactForm.get('contactValue')?.errors?.['required']">El teléfono es requerido</div>
