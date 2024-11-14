@@ -2,10 +2,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { ContactModel } from '../models/contacts/contactModel';
 import { environment } from '../environments/environment';
-import { Observable, map } from 'rxjs';
+import { Observable, debounceTime, first, map, of, switchMap } from 'rxjs';
 import { SubscriptionMod } from '../models/suscriptions/subscription';
 import { ContactType } from '../models/contacts/contactAudit';
 import { PaginatedContacts } from '../models/contacts/paginated/PaginatedContact';
+import { AsyncValidator, AsyncValidatorFn } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -78,6 +79,12 @@ export class ContactService {
       })))
     );
   };
+
+  checkContactExists(contactValue: string): Observable<boolean> {
+    return this.getAllContacts().pipe(
+      map(contacts => contacts.some(contact => contact.contactValue === contactValue))
+    );
+  }
 
   
 
