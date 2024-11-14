@@ -1,94 +1,88 @@
-<app-main-container
-  title="Enviar una Notificación"
-  (infoButtonClick)="showInfo()"
->
+<app-main-container title="Enviar una Notificación" (infoButtonClick)="showInfo()">
   <form [formGroup]="emailForm" (ngSubmit)="enviar()">
     <div class="mb-3">
       <label class="form-label">Enviar a:</label>
-      <input type="email" class="form-control" formControlName="email" />
+      <input type="email" class="form-control" formControlName="email" style="max-width: 400px;"
+      [ngClass]="{'is-invalid' : emailForm.get('email')?.invalid && (emailForm.get('email')?.dirty || emailForm.get('email')?.touched)}"/>
 
       @if (emailForm.get('email')?.invalid && (emailForm.get('email')?.dirty ||
-      emailForm.get('email')?.touched)) { @if
-      (emailForm.get('email')?.hasError('required')) {
+      emailForm.get('email')?.touched)) { 
+        @if (emailForm.get('email')?.hasError('required')) {
       <div class="text-danger">Campo Obligatorio</div>
-      } @if (emailForm.get('email')?.hasError('email')) {
+      } 
+      @if (emailForm.get('email')?.hasError('email')) {
       <div class="text-danger">Correo Inválido</div>
-      } }
+      } 
+    }
     </div>
     <div class="mb-3">
       <label class="form-label">Asunto:</label>
-      <input type="text" class="form-control" formControlName="subject" />
-      @if (emailForm.get('subject')?.invalid && (emailForm.get('subject')?.dirty
-      || emailForm.get('subject')?.touched)) {
-      <div class="text-danger">Debe contener mínimo tres caracteres</div>
-      }@else {
-      <div class="text-danger">Campo Obligatorio</div>
+      <input type="text" class="form-control" formControlName="subject" style="max-width: 400px;"
+      [ngClass]="{'is-invalid' : emailForm.get('subject')?.invalid && (emailForm.get('subject')?.dirty || emailForm.get('subject')?.touched)}"/>
+      @if (emailForm.get('subject')?.invalid && (emailForm.get('subject')?.dirty || emailForm.get('subject')?.touched)) {
+        @if(emailForm.get('subject')?.hasError('minlength')) {
+          <div class="text-danger">Debe contener mínimo tres caracteres</div>
+        }
+        @if(emailForm.get('subject')?.hasError('required')) {
+          <div class="text-danger">Campo Obligatorio</div>
+        }
       }
     </div>
 
     <div>
       <h6>Plantillas</h6>
-      <select class="form-select" formControlName="templateID">
+      <select class="form-select" formControlName="templateID" style="max-width: 400px;"
+      [ngClass]="{'is-invalid' : emailForm.get('templateID')?.invalid && (emailForm.get('templateID')?.dirty || emailForm.get('templateID')?.touched)}">
         @for (item of templates; track $index) {
         <option [value]="item.id">{{ item.name }}</option>
         }
       </select>
-      <div
-        *ngIf="
-          emailForm.get('templateID')?.invalid &&
-          (emailForm.get('templateID')?.dirty ||
-            emailForm.get('templateID')?.touched)
-        "
-      >
-        <div
-          *ngIf="emailForm.get('templateID')?.hasError('required')"
-          class="text-danger"
-        >
-          Campo Obligatorio
-        </div>
+      @if (emailForm.get('templateID')?.invalid && (emailForm.get('templateID')?.dirty || emailForm.get('templateID')?.touched)) {
+        @if (emailForm.get('templateID')?.hasError('required')) {
+          <div class="text-danger">
+            Campo Obligatorio
+          </div>
+        }
+      }
+    </div>
+    @if (emailForm.get('templateID')?.value !== null) {
+      <button type="button" class="btn btn-secondary mt-3" (click)="previewSelectedTemplate()">
+        Previsualizar
+      </button>
+    }
+    <div class="row">
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1">
+        <button type="submit" class="btn btn-primary" [disabled]="emailForm.invalid || isLoading">
+          <ng-container *ngIf="isLoading; else sendButton">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Enviando...
+          </ng-container>
+          <ng-template #sendButton>Enviar</ng-template>
+        </button>
       </div>
     </div>
-
-    <button
-      type="button"
-      class="btn btn-secondary mt-3"
-      (click)="previewSelectedTemplate()"
-    >
-      Previsualizar
-    </button>
-    <button
-      type="submit"
-      class="btn btn-primary"
-      [disabled]="emailForm.invalid || isLoading"
-    >
-      <ng-container *ngIf="isLoading; else sendButton">
-        <span
-          class="spinner-border spinner-border-sm"
-          role="status"
-          aria-hidden="true"
-        ></span>
-        Enviando...
-      </ng-container>
-      <ng-template #sendButton>Enviar</ng-template>
-    </button>
+    
   </form>
 </app-main-container>
 
 <!-- Modal de previsualización -->
-<div
-  class="modal-email"
-  *ngIf="showModalToRenderHTML"
-  (click)="closeModalToRenderHTML()"
->
+<div class="modal-email" *ngIf="showModalToRenderHTML" (click)="closeModalToRenderHTML()">
   <div class="modal-content-email" (click)="$event.stopPropagation()">
     <span class="close" (click)="closeModalToRenderHTML()">&times;</span>
     <iframe #iframePreview style="width: 100%; border: none"></iframe>
     <div class="mt-3 text-end">
-      <button
-        type="button"
-        class="btn btn-secondary"
-        (click)="closeModalToRenderHTML()"
-      >
+      <button type="button" class="btn btn-secondary" (click)="closeModalToRenderHTML()">
         Aceptar
       </button>
     </div>
@@ -96,21 +90,12 @@
 </div>
 
 <!-- Modal de informacion -->
-<div
-  [class.show]="isModalOpen"
-  [style.display]="isModalOpen ? 'block' : 'none'"
-  class="modal fade"
-  tabindex="-1"
->
+<div [class.show]="isModalOpen" [style.display]="isModalOpen ? 'block' : 'none'" class="modal fade" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">{{ informationModalTitle }}</h5>
-        <button
-          type="button"
-          class="btn-close"
-          (click)="isModalOpen = false"
-        ></button>
+        <button type="button" class="btn-close" (click)="isModalOpen = false"></button>
       </div>
       <div class="modal-body">
         <div class="container-fluid">
@@ -160,11 +145,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          (click)="isModalOpen = false"
-        >
+        <button type="button" class="btn btn-secondary" (click)="isModalOpen = false">
           Volver
         </button>
       </div>

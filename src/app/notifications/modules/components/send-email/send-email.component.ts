@@ -56,10 +56,10 @@ export class SendEmailComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    @Inject('EmailService') private _emailService: EmailService,
-    @Inject('Base64Service') private _base64Service: Base64Service,
-    @Inject('TemplateService') private _templateService: TemplateService,
-    private _toastService: ToastService
+    // @Inject('EmailService') private emailService: EmailService,
+    // @Inject('Base64Service') private base64Service: Base64Service,
+    // @Inject('TemplateService') private templateService: TemplateService,
+    // private toastService: ToastService
   ) {
     this.emailForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
@@ -70,7 +70,7 @@ export class SendEmailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._templateService.getAllTemplates().subscribe((data) => {
+    this.templateService.getAllTemplates().subscribe((data) => {
       this.templates = data;
     });
   }
@@ -112,14 +112,14 @@ export class SendEmailComponent implements OnInit {
       templateId: Number(this.emailForm.get('templateID')?.value),
     };
 
-    this._emailService.sendEmail(data).subscribe({
+    this.emailService.sendEmail(data).subscribe({
       next: (data) => {
-        this._toastService.sendSuccess('Enviado con éxito');
+        this.toastService.sendSuccess('Enviado con éxito');
         this.clean();
         this.isLoading = false;
       },
       error: (err) => {
-        this._toastService.sendError(
+        this.toastService.sendError(
           'Hubo un error al enviar el correo, pruebe más tarde'
         );
         this.isLoading = false;
