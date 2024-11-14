@@ -63,7 +63,10 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
   owners: Owner[] = [];
   plots: Plot[] = [];
   accounts: Account[] = [];
-  dateFilter: any;
+
+  chartFilters: Record<string, any> = {};
+  dateFilterTo: any;
+  dateFilterFrom: any;
 
   newOwnersLastYear: number = 0;
   activeOwnersCount: number = 0;
@@ -86,6 +89,8 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     this.ownerTypeDictionary,
     this.OwnerStatusDictionary,
   ];
+
+  
 
   plotTypeDictionary = PlotTypeDictionary;
   plotStatusDictionary = PlotStatusDictionary;
@@ -164,7 +169,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
   //#end region
 
   ngOnInit(): void {
-    this.loadOwners();
+    this.filterReports();
     this.loadPlots();
     this.loadAccounts();
   }
@@ -172,11 +177,81 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.updateOwnerCharts();
   }
+  //#region Filtros de los charts
+
+  //Acá manejo lo de la fecha desde
+  changeFilterDateFrom(date: string){
+    //Convierto el string en un date
+    const dateFilter = new Date(date)
+    //Verifico primero si no existe la prop en el objeto de charFilters
+    //Si existe la piso con lo nuevo    
+    if(this.chartFilters['dateFrom']){
+      //Paso la prop de esta forma sino el Java se queja
+      this.chartFilters['dateFrom'] = dateFilter.toISOString().slice(0, 16)
+    }
+    //Si no existe entonces la agrego al objeto de chartfilters
+    else{
+      this.chartFilters = {
+        ...this.chartFilters,
+        dateFrom: dateFilter.toISOString().slice(0, 16)
+      }
+    }    
+    //console.log(this.chartFilters);
+    this.filterReports()   
+  }
+
+  //Acá manejo lo de la fecha hasta (Mismo funcionamiento que la fecha desde)
+  changeFilterDateTo(date: string){
+    const dateFilter = new Date(date)
+    if(this.chartFilters['dateTo']){
+      this.chartFilters['dateTo'] = dateFilter.toISOString().slice(0, 16)
+    }    
+    else{
+      this.chartFilters = {
+        ...this.chartFilters,
+        dateTo: dateFilter.toISOString().slice(0, 16)
+      }
+    }    
+    //console.log(this.chartFilters);
+    this.filterReports()
+  }
+
+  //Acá manejo los otros filtros (los que están en la lupita)
+  //Basicamente siempre se pisan porque el event emitter del componente siempre te devuelve todos
+  changeOtherFilters(filters: Record<string, any> = {}){
+    //console.log(filters);
+    this.chartFilters = {
+      ...this.chartFilters,
+      ...filters
+    }
+    ///console.log(this.chartFilters);
+    this.filterReports()    
+  }
+
+  //Esta es una función que basicamente recorre los filtros o más bien el objeto que le pases por parámetro
+  //Y te arma un objeto nuevo validando que cada prop tenga contenido, es decir que no sea nulo, undefined o ''
+  private cleanFilters(filters: Record<string, any>): Record<string, any> {
+    return Object.entries(filters).reduce((acc, [key, value]) => {
+      const isEmpty = 
+        value === null || 
+        value === undefined || 
+        value === '';
+
+      if (!isEmpty) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as Record<string, any>);
+  }
+  //#endregion
 
   //#region Load Data
-  loadOwners(filters: Record<string, any> = {}) {
+  //Acá esto lo modifiqué para que siempre haga la petición entonces le con la funcion cleanFilters que te devuelve el objeto
+  //de filtros limpios, hace la petición bien sin filtros residuales, si no hay nada en chartFilters no le incluye ningún filtro
+  filterReports() {  
+    const clearFilters = this.cleanFilters(this.chartFilters)     
     this.ownerService
-      .dinamicFilters(0, 2147483647, filters)
+      .dinamicFilters(0, 2147483647, clearFilters)
       .pipe(
         map((response: PaginatedResponse<Owner>) => {
           this.owners = response.content;
@@ -348,7 +423,11 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
 
   //#region Filters
   filterChange($event: Record<string, any>) {
-    this.loadOwners($event);
+    this.chartFilters = {
+      ...this.chartFilters,
+      $event
+    }
+    this.filterReports();
   }
 
   plotFilterChange($event: Record<string, any>) {

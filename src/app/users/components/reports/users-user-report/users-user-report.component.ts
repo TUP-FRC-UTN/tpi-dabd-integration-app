@@ -50,7 +50,9 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
   roles: Role[] = [];
 
   
-  dateFilter: any;
+  chartFilters: Record<string, any> = {};
+  dateFilterTo: any;
+  dateFilterFrom: any;
 
   // KPIs
   usersCreatedLastMonth = 0;
@@ -114,6 +116,7 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadData();
+    this.filterReports();
   }
 
   ngAfterViewInit(): void {
@@ -146,9 +149,76 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
     });
   }
 
-  loadUsers(filters: Record<string, any> = {}): void {
+  //#region Filtros de los charts
+
+  //Acá manejo lo de la fecha desde
+  changeFilterDateFrom(date: string){
+    //Verifico primero si no existe la prop en el objeto de charFilters
+    //Si existe la piso con lo nuevo
+    const dateFilter = new Date(date)
+    if(this.chartFilters['startDate']){
+      this.chartFilters['startDate'] = dateFilter.toISOString().slice(0, 16)
+    }
+    //Si no existe entonces la agrego al objeto de chartfilters
+    else{
+      this.chartFilters = {
+        ...this.chartFilters,
+        startDate: dateFilter.toISOString().slice(0, 16)
+      }
+    }    
+    //console.log(this.chartFilters);
+    this.filterReports()   
+  }
+
+  //Acá manejo lo de la fecha hasta (Mismo funcionamiento que la fecha desde)
+  changeFilterDateTo(date: string){
+    const dateFilter = new Date(date)
+    if(this.chartFilters['endDate']){
+      this.chartFilters['endDate'] = dateFilter.toISOString().slice(0, 16)
+    }    
+    else{
+      this.chartFilters = {
+        ...this.chartFilters,
+        endDate: dateFilter.toISOString().slice(0, 16)
+      }
+    }    
+    //console.log(this.chartFilters);
+    this.filterReports()
+  }
+
+  //Acá manejo los otros filtros (los que están en la lupita)
+  //Basicamente siempre se pisan porque el event emitter del componente siempre te devuelve todos
+  changeOtherFilters(filters: Record<string, any> = {}){
+    //console.log(filters);
+    this.chartFilters = {
+      ...this.chartFilters,
+      ...filters
+    }
+    ///console.log(this.chartFilters);
+    this.filterReports()    
+  }
+
+  //Esta es una función que basicamente recorre los filtros o más bien el objeto que le pases por parámetro
+  //Y te arma un objeto nuevo validando que cada prop tenga contenido, es decir que no sea nulo, undefined o ''
+  private cleanFilters(filters: Record<string, any>): Record<string, any> {
+    return Object.entries(filters).reduce((acc, [key, value]) => {
+      const isEmpty = 
+        value === null || 
+        value === undefined || 
+        value === '';
+
+      if (!isEmpty) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as Record<string, any>);
+  }
+  //#endregion
+
+  filterReports(): void {
+    const cleanFilters = this.cleanFilters(this.chartFilters)
     this.userService
-      .dinamicFilters(0, 1000, filters)
+      .dinamicFilters(0, 1000, cleanFilters)
       .pipe(
         map((response: PaginatedResponse<any>) => {
           this.users = response.content;
@@ -290,7 +360,11 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
   }
 
   filterChange(event: Record<string, any>): void {
-    this.loadUsers(event);
+    this.chartFilters = {
+      ...this.chartFilters,
+      event
+    }
+    this.filterReports();
   }
 
   //#region Graficos
