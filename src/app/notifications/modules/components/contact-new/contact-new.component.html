@@ -3,58 +3,62 @@
 
 <div class="container mt-5 custom-form">
 
-  <form #form="ngForm" (ngSubmit)="sendForm(form)" class="row g-3 container">
+  <form [formGroup]="newContactForm" (ngSubmit)="sendForm()" class="row g-3 container">
+    
     <!-- Selector de tipo de contacto -->
     <div class="form-group row mb-2">
       <label for="contactType" class="col-md-2 col-form-label text-orange">Tipo de Contacto</label>
       <div class="col-md-4">
-        <select #contactTypeSelect="ngModel" class="form-select" name="contactType" [(ngModel)]="selectedContactType"
-          (ngModelChange)="onContactTypeChange()" required
-          [ngClass]="{'is-invalid': contactTypeSelect.invalid && (contactTypeSelect.dirty || contactTypeSelect.touched),
-                           'is-valid': contactTypeSelect.valid && (contactTypeSelect.dirty || contactTypeSelect.touched)}">
-          <option value="" disabled selected>Seleccione tipo de contacto</option>
+        <select formControlName="contactType" class="form-select" (change)="onContactTypeChange()" required
+        [ngClass]="{
+          'is-invalid': newContactForm.get('contactType')?.invalid && (newContactForm.get('contactType')?.dirty || newContactForm.get('contactType')?.touched),
+          'is-valid': newContactForm.get('contactType')?.valid && (newContactForm.get('contactType')?.dirty || newContactForm.get('contactType')?.touched)
+        }">
+          <option value="" disabled>Seleccione tipo de contacto</option>
           <option value="EMAIL">Email</option>
           <option value="PHONE">Teléfono</option>
         </select>
-        <div class="invalid-feedback"
-          *ngIf="contactTypeSelect.invalid && (contactTypeSelect.dirty || contactTypeSelect.touched)">
+        <div class="invalid-feedback" *ngIf="newContactForm.get('contactType')?.invalid && (newContactForm.get('contactType')?.dirty || newContactForm.get('contactType')?.touched)">
           Por favor seleccione un tipo de contacto
         </div>
       </div>
     </div>
 
     <!-- Campo Email -->
-    <div class="form-group row mb-2" *ngIf="selectedContactType === 'EMAIL'">
+     
+    <div class="form-group row mb-2" *ngIf="newContactForm.get('contactType')?.value==='EMAIL'">
       <label for="email" class="col-md-2 col-form-label text-orange">Email</label>
       <div class="col-md-10">
-        <input #emailInput="ngModel" type="email" class="form-control custom-input" id="email" name="email"
-          [(ngModel)]="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" [ngClass]="{'is-invalid': emailInput.invalid && (emailInput.dirty || emailInput.touched),
-                          'is-valid': emailInput.valid && (emailInput.dirty || emailInput.touched)}">
-        <div class="invalid-feedback" *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)">
-          <div *ngIf="emailInput.errors?.['required']">El email es requerido</div>
-          <div *ngIf="emailInput.errors?.['pattern']">Por favor ingrese un email válido</div>
+        <input type="email" class="form-control custom-input" formControlName="contactValue" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,}$"
+          [ngClass]="{
+          'is-invalid': newContactForm.get('contactValue')?.invalid && (newContactForm.get('contactValue')?.dirty || newContactForm.get('contactValue')?.touched),
+          'is-valid': newContactForm.get('contactValue')?.valid && (newContactForm.get('contactValue')?.dirty || newContactForm.get('contactValue')?.touched)}">
+        <div class="invalid-feedback" *ngIf="newContactForm.get('contactValue')?.invalid && (newContactForm.get('contactValue')?.dirty || newContactForm.get('contactValue')?.touched)"> 
+          <div *ngIf="newContactForm.get('contactValue')?.errors?.['required']">El email es requerido</div>
+          <div *ngIf="newContactForm.get('contactValue')?.errors?.['pattern']">Por favor ingrese un email válido</div>
         </div>
       </div>
     </div>
+  
 
     <!-- Campo Teléfono -->
-    <div class="form-group row mb-2" *ngIf="selectedContactType === 'PHONE'">
-      <label for="phone" class="col-md-2 col-form-label text-orange">Teléfono</label>
+    <div class="form-group row mb-2" *ngIf="newContactForm.get('contactType')?.value==='PHONE'">
+      <label for="phone" class="col-md-2 col-form-label text-orange">Phone</label>
       <div class="col-md-10">
-        <input #phoneInput="ngModel" type="tel" class="form-control custom-input" id="phone" name="phone"
-          [(ngModel)]="phone" required pattern="[0-9]{10}" [ngClass]="{'is-invalid': phoneInput.invalid && (phoneInput.dirty || phoneInput.touched),
-                          'is-valid': phoneInput.valid && (phoneInput.dirty || phoneInput.touched)}">
-        <div class="invalid-feedback" *ngIf="phoneInput.invalid && (phoneInput.dirty || phoneInput.touched)">
-          <div *ngIf="phoneInput.errors?.['required']">El teléfono es requerido</div>
-          <div *ngIf="phoneInput.errors?.['pattern']">Por favor ingrese un teléfono válido (10 dígitos)</div>
+        <input type="tel" class="form-control custom-input" formControlName="contactValue" required pattern = "[0-9]{10}"
+          [ngClass]="{ 'is-invalid': newContactForm.get('contactValue')?.invalid && (newContactForm.get('contactValue')?.dirty || newContactForm.get('contactValue')?.touched),
+            'is-valid': newContactForm.get('contactValue')?.valid && (newContactForm.get('contactValue')?.dirty || newContactForm.get('contactValue')?.touched)}">
+        <div class="invalid-feedback" *ngIf="newContactForm.get('contactValue')?.invalid && (newContactForm.get('contactValue')?.dirty || newContactForm.get('contactValue')?.touched)">
+          <div *ngIf="newContactForm.get('contactValue')?.errors?.['required']">El teléfono es requerido</div>
+          <div *ngIf="newContactForm.get('contactValue')?.errors?.['pattern']">Por favor ingrese un teléfono válido (10 dígitos)</div>
         </div>
       </div>
     </div>
 
     <!-- Botones de Acción -->
     <div class="d-flex justify-content-end mb-3">
-      <button type="button" class="btn btn-danger me-2" (click)="resetForm(form)">Cancelar</button>
-      <button type="submit" class="btn btn-primary" [disabled]="!form.valid">Guardar</button>
+      <button type="button" class="btn btn-danger me-2" (click)="resetForm()">Cancelar</button>
+      <button type="submit" class="btn btn-primary" [disabled]="!newContactForm.valid">Guardar</button>
     </div>
   </form>
 </div>
