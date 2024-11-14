@@ -80,6 +80,7 @@ export class NotificationChartComponent implements OnInit {
   statusChartOptions = this.chartConfigurationService.statusChartOptions;
   templateChartOptions = this.chartConfigurationService.templateChartOptions;
   dailyChartOptions = this.chartConfigurationService.dailyChartOptions;
+  contactTypeChartOptions = this.chartConfigurationService.statusChartOptions;
 
   availableTemplates: string[] = []; // Lista de plantillas disponibles
   selectedTemplate: string = ''; // Plantilla seleccionada por el usuario
@@ -99,28 +100,29 @@ export class NotificationChartComponent implements OnInit {
   contacts: ContactModel[] = []
 
 
-  contactTypeChartData: ChartData = {
-    labels: ['Email', 'Teléfono', 'Redes Sociales'],
-    datasets: [{
-      data: [0, 0, 0],
-      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-      hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
-    }]
-  };
 
-  contactTypeChartOptions: ChartConfiguration['options'] = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'bottom',
-      },
-      title: {
-        display: true,
-        text: 'Distribución por Tipo de Contacto'
-      }
-    }
-  };
 
+
+
+
+
+  getAllNotifications() {
+
+    this.notificationService.getAllNotificationsNotFiltered().subscribe((data) => {
+
+      this.notifications = data;
+
+    })
+
+  }
+
+  getAllContacts() {
+    this.contactService.getAllContacts().subscribe((data) => {
+      this.contacts = data;
+      console.log('contacts at getAllContacts: ', this.contacts)
+      this.updateContactTypeChart();
+    });
+  }
 
   ngOnInit() {
 
@@ -129,8 +131,7 @@ export class NotificationChartComponent implements OnInit {
 
 
 
-
-    this.processContactData();
+    this.getAllContacts();
     this.getAllNotifications();
     this.notificationService.getAllNotificationsNotFiltered().subscribe((data) => {
       this.notifications = data;
@@ -156,26 +157,14 @@ export class NotificationChartComponent implements OnInit {
 
   }
 
+  updateContactTypeChart() {
+    
 
-
-  getAllNotifications() {
-
-    this.notificationService.getAllNotificationsNotFiltered().subscribe((data) => {
-
-      this.notifications = data;
-
-    })
-
-  }
-
-  processContactData() {
-    this.contactService.getAllContacts().subscribe((data) => {
-      this.contacts = data;
 
       const contactTypeCounts = {
-        EMAIL: 0,
-        PHONE: 0,
-        SOCIAL_MEDIA_LINK: 0
+        'Correo electrónico': 0,
+        'Teléfono': 0,
+        'Red social': 0
       };
 
       this.contacts.forEach(contact => {
@@ -188,16 +177,17 @@ export class NotificationChartComponent implements OnInit {
         labels: ['Email', 'Teléfono', 'Redes Sociales'],
         datasets: [{
           data: [
-            contactTypeCounts.EMAIL,
-            contactTypeCounts.PHONE,
-            contactTypeCounts.SOCIAL_MEDIA_LINK
+            contactTypeCounts['Correo electrónico'],
+            contactTypeCounts['Teléfono'],
+            contactTypeCounts['Red social']
           ],
           backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
           hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
         }]
-      }
-    });
-
+      };
+      setTimeout(() => {
+        this.contactTypeChart?.update();
+      });
   }
 
 
@@ -547,6 +537,19 @@ export class NotificationChartComponent implements OnInit {
       }
     }
   };
+
+  
+  contactTypeChartData: ChartData = {
+    labels: ['Email', 'Teléfono', 'Redes Sociales'],
+    datasets: [{
+      data: [0, 0, 0],
+      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+      hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+    }]
+  };
+
+
+
 
   private updateWeeklyChartData(data: any[]): void {
     const weekdayCount = new Map<string, number>();
