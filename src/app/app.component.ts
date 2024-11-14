@@ -133,12 +133,20 @@ export class AppComponent {
 
     // Empleados
     {
-      label: 'Empleados',
-      routerLink:'inventories',
-      sidebarMenu: [
+      "label": "Empleados",
+      "routerLink": "inventories/employees",
+      "sidebarMenu": [
         {
-          label: 'Empleados',
-          routerLink: 'inventories/employees/list'
+          "label": "Gráficos",
+          "routerLink": "inventories/employees/dashboard"
+        },
+        {
+          "label": "Lista",
+          "routerLink": "inventories/employees/list"
+        },
+        {
+          "label": "Registrar",
+          "routerLink": "inventories/employees/form"
         }
       ]
     },
@@ -148,31 +156,34 @@ export class AppComponent {
 
     // Gastos
     {
-      label: 'Gastos',
+      label: 'Gastos', //expensas
+      routerLink:'expenses',
       sidebarMenu: [
         {
           label: 'Gastos',
           subMenu: [
-            { label: 'Lista', routerLink: '/gastos' },
-            { label: 'Categorias', routerLink: '/gastos/categorias' }
+            { label: 'Lista de gastos', routerLink: 'expenses/gastos' },
+            { label: 'Categoria de gastos', routerLink: 'expenses/gastos/categorias' },
+            { label: 'Reporte de gastos', routerLink: 'expenses/gastos/report' },
+
           ],
         },
         {
           label: 'Cargos',
           subMenu: [
-            { label: 'Lista', routerLink: '/cargos' },
-            { label: 'Categorias', routerLink: '/cargos/categorias' }
+            { label: 'Lista de cargos', routerLink: '/cargos' },
+            { label: 'Categorias de cargos', routerLink: '/cargos/categorias' }
           ],
         },
         {
           label: 'Periodo',
           subMenu: [
-            { label: 'Lista de periodos', routerLink: '/periodo' },
-            { label: 'Historico de expensas', routerLink: '/expenses' },
-            { label: 'Reporte de expensas', routerLink: '/expenses/report' },
+            { label: 'Lista', routerLink: 'expenses/periodo' },
+            { label: 'Historico de expensas', routerLink: 'expenses/expenses' },
+            { label: 'Reporte de expensas', routerLink: 'expenses/expenses/report' },
           ]
         },
-      ],
+      ],
     },
 
 
@@ -180,14 +191,29 @@ export class AppComponent {
 
     // Inventarios
     {
-      label: 'Inventarios',
-      routerLink:'inventories',
-      sidebarMenu: [
+      "label": "Inventario",
+      "routerLink": "inventories/inventory",
+      "sidebarMenu": [
         {
-          label: 'Inventarios',
+          "label": "Gráficos",
+          "routerLink": "inventories/inventory/dashboard"
+        },
+        {
+          "label": "Lista",
+          "routerLink": "inventories/inventories"
+        },
+        {
+          "label": "Registrar",
+          "routerLink": "inventories/articles/article"
+        },
+        {
+          "label": "Configuración",
+          "routerLink": "inventories/inventories/config",
           subMenu: [
-            {label: 'Inventarios',routerLink:'inventories/inventories'},
-            {label: 'Nuevo Artículo',routerLink:'inventories/articles/article'},
+            {
+              "label": "Categorías",
+              "routerLink": "inventories/inventories/config/category"
+            }
           ]
         }
       ]
@@ -215,6 +241,14 @@ export class AppComponent {
       label: 'Notificaciones',
       routerLink: 'notifications/send-email',
       sidebarMenu: [
+        {
+          label: 'Listar Plantillas',
+          routerLink: 'notifications/templates',
+        },
+        {
+          label: 'Registrar Plantillas',
+          routerLink: 'notifications/templates/new',
+        },
         {
           label: 'Enviar Notificación',
           routerLink: 'notifications/send-email',
@@ -270,12 +304,12 @@ export class AppComponent {
 
     // Plantillas
     {
-      label: 'Plantillas',
-      routerLink: 'notifications/templates',
+      "label": "Proveedores",
+      "routerLink": "inventories/providers",
       sidebarMenu: [
         {
-          label: 'Listar Plantillas',
-          routerLink: 'notifications/templates',
+          "label": "Gráficos",
+          "routerLink": "inventories/providers/dashboard"
         },
         {
           label: 'Registrar Plantillas',
@@ -312,16 +346,22 @@ export class AppComponent {
           routerLink: 'invoices/admin-list-expensas'
         },
         {
-          label: 'Lista de Expensas (Propietario)',
-          routerLink: 'invoices/owner-list-expensas'
+          "label": "Registrar",
+          "routerLink": "inventories/providers/form"
         },
         {
-          label: 'Estadísticas',
-          routerLink: 'invoices/stadistics'
-        },
-        {
-          label: 'Review-Tickets-Transfer',
-          routerLink: 'invoices/review-tickets-transfer'
+          "label": "Configuración",
+          "routerLink": "inventories/providers/config",
+          subMenu: [
+            {
+              "label": "Empresas",
+              "routerLink": "inventories/providers/config/company"
+            },
+            {
+              "label": "Servicios",
+              "routerLink": "inventories/providers/config/service"
+            }
+          ],
         }
       ]
     },
@@ -343,23 +383,24 @@ export class AppComponent {
             },
             { label: 'Reporte Usuarios', routerLink: '/users/user/reports' },
           ],
-        }, {
-          label: 'Perfil',
-          subMenu: [
-            {
-              label: 'Consultar Perfil',
-              routerLink: '/users/profile/detail',
-            },
-            {
-              label: 'Editar Perfil',
-              routerLink: '/users/profile/edit',
-            },
-            {
-              label: 'Cambiar contraseña',
-              routerLink: '/users/changepassword',
-            },
-          ],
-        },
+        }, 
+        // {
+        //   label: 'Perfil',
+        //   subMenu: [
+        //     {
+        //       label: 'Consultar Perfil',
+        //       routerLink: '/users/profile/detail',
+        //     },
+        //     {
+        //       label: 'Editar Perfil',
+        //       routerLink: '/users/profile/edit',
+        //     },
+        //     {
+        //       label: 'Cambiar contraseña',
+        //       routerLink: '/users/changepassword',
+        //     },
+        //   ],
+        // },
         {
           label: 'Propietarios',
           subMenu: [
@@ -394,17 +435,6 @@ export class AppComponent {
         },
       ],
     },
-
-
-    // not working for now
-    // {
-    //   label: 'Configuración',
-    //   subMenu: [
-    //     { label: 'Usuarios', routerLink: '/user' },
-    //     { label: 'Roles', routerLink: '/role' },
-    //     { label: 'Lotes', routerLink: '/lot' },
-    //   ],
-    // },
   ];
 
   //#region LOGIN
@@ -434,6 +464,10 @@ export class AppComponent {
     this.router.navigate([""]);
   }
   //#endregion
+
+  openProfile(){
+    this.router.navigate(["/users/profile/detail"]);
+  }
 
   currentUrl$ = this.router.events.pipe(
     filter((event): event is NavigationEnd => event instanceof NavigationEnd),

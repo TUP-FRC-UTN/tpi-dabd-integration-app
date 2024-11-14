@@ -9,7 +9,7 @@ export const routes: Routes = [
   { path: 'forgotpassword', component: ForgotPasswordComponent },
   { path: 'home', component: HomeComponent, canActivate: [authGuard] },
 
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  /* { path: '', redirectTo: '/login', pathMatch: 'full' }, */
 
   {
     path: 'entries',
