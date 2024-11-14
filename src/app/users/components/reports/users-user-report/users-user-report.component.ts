@@ -20,6 +20,7 @@ import { RoleService } from '../../../services/role.service';
 import { User } from '../../../models/user';
 import { Role } from '../../../models/role';
 import { InfoComponent } from '../../commons/info/info.component';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 Chart.register(...registerables);
 
@@ -48,11 +49,44 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
   users: any[] = [];
   roles: Role[] = [];
 
+  
+  dateFilter: any;
+
   // KPIs
   usersCreatedLastMonth = 0;
   ownerUsersCount = 0;
   activeUsersCount = 0;
   mostFrequentUserRole = '';
+
+  public pieChartPlugins: any = [ChartDataLabels];
+
+
+  filterConfig: Filter[] = new FilterConfigBuilder()
+    .selectFilter(
+      'Tipo de Documento',
+      'doc_type',
+      'Seleccione un tipo de documento',
+      [
+        { value: 'DNI', label: 'DNI' },
+        { value: 'ID', label: 'Cédula' },
+        { value: 'PASSPORT', label: 'Pasaporte' },
+      ]
+    )
+    .selectFilter('Activo', 'is_active', '', [
+      { value: 'true', label: 'Activo' },
+      { value: 'false', label: 'Inactivo' },
+    ])
+    .dateFilter(
+      'Fecha de Nacimiento Desde',
+      'birthdateStart',
+      'Seleccione la fecha de inicio'
+    )
+    .dateFilter(
+      'Fecha de Nacimiento Hasta',
+      'birthdateEnd',
+      'Seleccione la fecha de fin'
+    )
+    .build();
 
   userFilterConfig: Filter[] = new FilterConfigBuilder()
     .textFilter('Nombre', 'firstName', 'Nombre')
