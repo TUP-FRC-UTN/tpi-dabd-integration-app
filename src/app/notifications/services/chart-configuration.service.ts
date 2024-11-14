@@ -30,7 +30,7 @@ export class ChartConfigurationService {
     labels: ['Enviados', 'Visualizados' /*, 'No Leída'*/],
     datasets: [{
       data: [0, 0, 0],
-      backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56']
+      backgroundColor: ['rgba(187, 131, 209, 1)', 'rgba(220, 231, 117, 1)', '#FFCE56']
     }]
   };
 

@@ -187,8 +187,8 @@ export class NotificationChartComponent implements OnInit {
             contactTypeCounts['Teléfono'],
             contactTypeCounts['Red social']
           ],
-          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-          hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+          backgroundColor: ['rgba(255, 171, 145, 1)', 'rgba(144, 202, 249, 1)', 'rgba(188, 170, 164, 1'],
+          hoverBackgroundColor: ['rgba(255, 171, 145, 1)', 'rgba(144, 202, 249, 1)', 'rgba(188, 170, 164, 1']
         }]
       };
       setTimeout(() => {
@@ -468,8 +468,8 @@ export class NotificationChartComponent implements OnInit {
     datasets: [{
       data: [],
       label: 'Notificaciones por Día',
-      backgroundColor: '#FF6384',
-      borderColor: '#FF6384',
+      backgroundColor: 'rgba(149, 160, 217, 1)',
+      borderColor: 'rgba(149, 160, 217, 1)',
       borderWidth: 1,
       fill: false
     }]
@@ -561,8 +561,8 @@ export class NotificationChartComponent implements OnInit {
     labels: ['Email', 'Teléfono', 'Redes Sociales'],
     datasets: [{
       data: [0, 0, 0],
-      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-      hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+      backgroundColor: ['rgba(255, 171, 145, 1)', 'rgba(144, 202, 249, 1)', 'rgba(188, 170, 164, 1'],
+      hoverBackgroundColor: ['rgba(255, 171, 145, 1)', 'rgba(144, 202, 249, 1)', 'rgba(188, 170, 164, 1']
     }]
   };
 
@@ -674,8 +674,8 @@ export class NotificationChartComponent implements OnInit {
           datasets: [{
             data: retentionMetrics.map(m => m.retentionRate),
             label: 'Tasa de Retención (%)',
-            backgroundColor: '#4CAF50',
-            borderColor: '#4CAF50',
+            backgroundColor: 'rgba(98, 182, 143, 1)',
+            borderColor: 'rgba(98, 182, 143, 1)',
             borderWidth: 1
           }]
         };
@@ -688,15 +688,15 @@ export class NotificationChartComponent implements OnInit {
             {
               data: analysisMetrics.map(m => m.subscribed),
               label: 'Suscritos',
-              backgroundColor: '#36A2EB',
-              borderColor: '#36A2EB',
+              backgroundColor: 'rgba(130, 177, 255, 1)',
+              borderColor: 'rgba(130, 177, 255, 1)',
               borderWidth: 1
             },
             {
               data: analysisMetrics.map(m => m.unsubscribed),
               label: 'Desuscritos',
-              backgroundColor: '#FF6384',
-              borderColor: '#FF6384',
+              backgroundColor: 'rgba(255, 145, 158, 1)',
+              borderColor: 'rgba(255, 145, 158, 1)',
               borderWidth: 1
             }
           ]
