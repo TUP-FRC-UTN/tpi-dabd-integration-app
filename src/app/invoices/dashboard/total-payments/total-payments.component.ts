@@ -63,6 +63,7 @@ export class TotalPaymentsComponent {
   }
 
   getRerportPayments(): void {
+    console.log(this.filters);
     this.stadisticsService.getDinamycFilters(this.filters).subscribe(
       (data: PaymentReportDto[]) => {
         let countMP = 0;
@@ -122,10 +123,10 @@ export class TotalPaymentsComponent {
 
         const avgAmountMP = countMP > 0 ? totalAmountMP / countMP : 0;
         const avgAmountT = countT > 0 ? totalAmountT / countT : 0;
-        this.kpi2.value = `Cantidad de expensas pendientes: ${countPending}`;;
+        this.kpi2.value = `Cantidad de expensas pendientes: ${countPending}`;
 
         const avgTime = approvedCount > 0 ? totalTime / approvedCount : 0;
-        this.kpi3.value = `Cantidad de transferencias pendientes: ${transferPending}`;;
+        this.kpi3.value = `Cantidad de transferencias pendientes: ${transferPending}`;
 
         const retentionRate = (recurrentPayments / (countMP + countT)) * 100;
         this.kpi4.value = `Tasa de Retención: ${retentionRate.toFixed(2)}%`;
@@ -144,12 +145,6 @@ export class TotalPaymentsComponent {
     );
   }
 
-  formatDuration(durationInMilliseconds: number): string {
-    const seconds = Math.floor(durationInMilliseconds / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    return `${hours}h ${minutes % 60}m`;
-  }
 
   mapPaymentStatusData(data: any[]): any[] {
     const countPaymentStatus: { [key in PaymentStatus]: number } = {

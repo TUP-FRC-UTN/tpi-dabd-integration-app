@@ -71,7 +71,6 @@ export class MainDashboardComponent {
   }
 
   getReportDinamicFilters(): void {
-    console.log(this.filters);
     this.stadisticsService.getDinamycFilterTickets(this.filters).subscribe(
       (data : TicketReportDto[] ) => {
         let totalAmount = 0;

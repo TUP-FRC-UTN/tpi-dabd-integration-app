@@ -53,7 +53,7 @@ export class StadisticsService {
       }
     }
 
-    return this.http.get<PaymentReportDto[]>(this.baseUrlpaymentsReport + '/filters');
+    return this.http.get<PaymentReportDto[]>(this.baseUrlpaymentsReport + '/filters', {params: httpParams});
   }
 
   getDinamycFilterTickets(filters: any) : Observable<TicketReportDto[]> {

@@ -57,6 +57,7 @@ export class StadisticsComponent implements OnInit {
 
   @ViewChild('infoModal') infoModal!: TemplateRef<any>
   dateFilterForm: FormGroup;
+  dateFilterFormPayments: FormGroup;
 
 
   constructor(private fb: FormBuilder,
@@ -64,6 +65,10 @@ export class StadisticsComponent implements OnInit {
     @Inject(ChangeDetectorRef) private cdr: ChangeDetectorRef) {
 
     this.dateFilterForm = this.fb.group({
+      firstDate: [''],
+      lastDate: ['']
+    });
+    this.dateFilterFormPayments = this.fb.group({
       firstDate: [''],
       lastDate: ['']
     });
@@ -79,17 +84,14 @@ export class StadisticsComponent implements OnInit {
 
 
     this.dateFilterForm.get('firstDate')?.valueChanges.subscribe(value => {
-      console.log('Cambio en la fecha de inicio:', value);
       this.filterData();
     });
 
     this.dateFilterForm.get('lastDate')?.valueChanges.subscribe(value => {
-      console.log('Cambio en la fecha de fin:', value);
       this.filterData();
     });
 
     this.dateFilterForm.valueChanges.subscribe(values => {
-      console.log('Cambio en el formulario:', values);
       this.filterData();
     });
   }
@@ -105,7 +107,7 @@ export class StadisticsComponent implements OnInit {
       //   firstDate: "2024-01",
       //   lastDate: "2024-03"
       // })
-      //
+
       this.ticketFilter = {
         status: "",
         startExpirationDate: "",

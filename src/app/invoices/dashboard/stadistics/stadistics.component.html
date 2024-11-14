@@ -90,14 +90,15 @@
   <div class="row mb-4">
     <div class="d-flex align-items-center gap-3 mb-3">
 
-      <form [formGroup]="dateFilterForm" (ngSubmit)="filterDataPayment()" class="d-flex align-items-center gap-3">
+      <form [formGroup]="dateFilterFormPayments"  class="d-flex align-items-center gap-3">
         <div class="d-flex align-items-center gap-2">
           <span class="text-secondary">Desde:</span>
           <input
             type="month"
             formControlName="firstDate"
             class="form-control form-control-sm"
-            [(ngModel)]="ticketFilter.startExpirationDate"
+            [(ngModel)]="paymentFilter.startCreatedAt"
+            (change)="filterDataPayment()"
           />
         </div>
         <div class="d-flex align-items-center gap-2">
@@ -106,7 +107,8 @@
             type="month"
             formControlName="lastDate"
             class="form-control form-control-sm"
-            [(ngModel)]="ticketFilter.endExpirationDate"
+            [(ngModel)]="paymentFilter.endCreatedAt"
+            (change)="filterDataPayment()"
           />
         </div>
       </form>
