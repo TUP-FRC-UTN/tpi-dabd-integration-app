@@ -4,7 +4,9 @@ import { StadisticsService } from '../../services/stadistics.service';
 import { KpiComponent } from '../commons/kpi/kpi.component';
 import { BarchartComponent } from '../commons/barchart/barchart.component';
 import { PiechartComponent } from '../commons/piechart/piechart.component';
-import { graphModel, kpiModel, PeriodRequest } from '../../models/stadistics';
+import { graphModel, kpiModel, PeriodRequest, TopPayments } from '../../models/stadistics';
+import Period from '../../../expenses/models/period';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-main-dashboard',
@@ -26,45 +28,53 @@ export class MainDashboardComponent {
   graph1: graphModel = {} as graphModel
   graph2: graphModel = {} as graphModel
 
+  //Para graficos
+
   //redirect
   sendNotification(mode: string) {
     this.notifyParent.emit(mode);
   }
   //init
-  constructor(private dashBoardService: StadisticsService) {
+  constructor(private stadisticsService: StadisticsService) {
     this.kpi1 = {title: "Tasa de cobros existos", desc: "", value: "0", icon: "", color: "bg-success"}
     this.kpi2 = {title: "Tasa de propietarios morosos", desc: "", value: "0%", icon: "bi bi-graph-up", color: "bg-info"}
     this.kpi3 = {title: "Tiempo promedio de pagos", desc: "Tipo más frecuente en el periodo", value: "0", icon: "bi bi-person-circle", color: "bg-warning"}
-    //this.kpi4 = {title: "Total de Ingresos/Egresos Inconsistentes", desc: "Cantidad total de inconsistencias en el periodo", value: "0", icon: "bi-exclamation-circle", color: "bg-danger"}
 
     this.graph1 = {title: "Informe de total cobrado", subtitle: "", data: [], options: null}
     this.graph2 = {title: "Deuda total de propietarios", subtitle: "", data: [], options: null}
   }
 
    //getData
-   getData() {
-    console.log(this.filters)
-    let action = this.filters.action == "TRANSFER" ? "Transferencia" : "Mercado Pago"
+   async getData() {
+    let action = this.filters.paymentType == "TRANSFER" ? "Transferencia" : "Mercado Pago"
     this.kpi1.icon = "bi bi-arrow-down-circle"
     this.kpi1.color = "bg-success"
-    this.kpi1.title = "tasa de cobros exitosos con " + action
+    this.kpi1.title = "Tasa de cobros exitosos con " + action
     this.kpi2.title = "Tendencias de " + action.toLowerCase()
     this.kpi1.desc = "Suma total de " + action.toLowerCase() + " en el periodo actual vs. anterior"
     this.kpi3.desc = "Tipo de " + action.toLowerCase() + " más frecuente en el periodo"
     this.kpi3.title = "Tipo de " + action.toLowerCase() + " Más Frecuente"
     this.graph1.title = "Totales de " + action + " por Periodo"
 
-    this.columnChartOptions.hAxis.showTextEvery = this.filters.group == "WEEK" ? 2 : 3
-    this.columnChartOptions.hAxis.showTextEvery = this.filters.group == "MONTH" || this.filters.group == "YEAR" ? 1 : 3
-
     this.graph2.options = {...this.columnChartOptions,
       colors: ['#ffc107']}
     this.graph2.options.width = null;
     this.graph2.options.height = 200;
 
-    //Necesito un
+    //tasa de pagos
+    this.getReportDataTopPayments(this.filters);
+  }
 
-
+  getReportDataTopPayments(periodRequest: PeriodRequest): void {
+    console.log('PeriodRequest ', periodRequest);
+    this.stadisticsService.getPreferredApproved(periodRequest).subscribe(
+      (data: TopPayments) => {
+        this.kpi1.value = data.totalByMercadoPago.toString() + " vs. " + data.totalByTransfer.toString();
+      },
+      (error: any) => {
+        console.error('Error al obtener el reporte', error);
+      }
+    );
   }
 
 
@@ -115,7 +125,7 @@ export class MainDashboardComponent {
   };
 
   ngAfterViewInit(): void {
-    this.getData()
+   // this.getData()
   }
 
 
@@ -135,10 +145,8 @@ function createPreviousFilter(filters: PeriodRequest): PeriodRequest {
   return {
     firstDate: newDateFrom.toISOString(),
     lastDate: newDateTo.toISOString(),
-    action: filters.action,
-    group: filters.group,
-    type: filters.type,
-    dataType: "ALL"
+    status: filters.status,
+    paymentType: filters.paymentType
   };
 }
 

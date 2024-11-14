@@ -9,7 +9,7 @@ import { OtherReport, PeriodRequest, TicketInfo, Top5, TopPayments } from '../mo
 export class StadisticsService {
 
   private readonly baseUrl = 'http://localhost:8087/report';
-  private readonly baseUrlpayments = 'http://localhost:8092/report/topPayments';
+  private readonly baseUrlpayments = 'http://localhost:8092/report';
 
   // Endpoints específicos
   private readonly apiUrl = this.baseUrl;
@@ -31,10 +31,12 @@ export class StadisticsService {
   }
 
   getPreferredApproved(fechas: PeriodRequest): Observable<TopPayments> {
+    console.log('API: ',fechas);
     return this.http.post<TopPayments>(this.baseUrlpayments + '/topPaymentsApproved', fechas);
   }
 
   getPreferredRejected(fechas: PeriodRequest): Observable<TopPayments> {
+    console.log('API: ',fechas);
     return this.http.post<TopPayments>(this.baseUrlpayments + '/topPaymentsRejected', fechas);
   }
 

@@ -63,16 +63,26 @@ export class StadisticsComponent implements OnInit {
     }
 
   initializeDefaultDates(){
-    this.filters.group = ""
-    this.filters.type = ""
-    this.filters.action = "ENTRY"
     const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    this.filters.lastDate = now.toISOString().slice(0, 16);
 
-    now.setDate(now.getDate() - 14);
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    this.filters.firstDate = now.toISOString().slice(0, 16);
+    const month = (now.getMonth() + 1).toString().padStart(2, '0'); // `padStart` asegura que el mes tenga dos dígitos
+    const year = now.getFullYear().toString();
+
+    // Asigna las fechas en formato MM-YYYY
+    this.filters.firstDate = `${'01'}/${year.slice(2)}`;
+    this.filters.lastDate = `${'03'}/${year.slice(2)}`;
+    // this.filters = {
+    //   firstDate: this.formatMonthYear(this.filters.firstDate),
+    //   lastDate: this.formatMonthYear(this.filters.lastDate),
+    //   paymentType: '', // Add appropriate default value
+    //   status: '' // Add appropriate default value
+    // };
+
+  }
+
+  formatMonthYear(dateString: string): string {
+    const [year, month] = dateString.split('-');
+    return `${month}/${year.slice(2)}`; // Formato "MM/YY" para la API
   }
 
   onInfoButtonClick() {
@@ -81,19 +91,16 @@ export class StadisticsComponent implements OnInit {
 
   resetFilters(){
     this.initializeDefaultDates();
-    this.filters.type = "";
-    this.filters.group = "DAY"
-    this.filters.action = "ENTRY"
     this.filterData()
   }
 
   filterData(){
     this.main.getData()
-    // this.distribution.getData()
-    // this.total.getData()
+    this.total.getData()
   }
 
   ngOnInit(): void {
+    this.initializeDefaultDates();
   }
 
   changeMode(event: any){
@@ -109,7 +116,6 @@ export class StadisticsComponent implements OnInit {
   protected readonly DashboardStatus = DashboardStatus;
 
   ngAfterViewInit(): void {
-    this.initializeDefaultDates();
     this.filterData();
     this.cdr.detectChanges(); // Fuerza la detección de cambios
   }
@@ -123,6 +129,5 @@ export class StadisticsComponent implements OnInit {
         centered: true,
         scrollable: true,
       });
-      modalRef.componentInstance.data = { role: 'owner' };
     }
 }

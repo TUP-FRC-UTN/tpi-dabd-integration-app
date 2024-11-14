@@ -1,12 +1,12 @@
 <div class="row mb-3">
     <div class="col-3 d-flex align-content-center flex-wrap justify-content-center">
       <div class="hover-scale">
-        <app-kpi [kpi]="kpi1" (click)="sendNotification('ENTRIES')"></app-kpi>
+        <app-kpi [kpi]="kpi1" (click)="sendNotification('TOTAL')"></app-kpi>
       </div>
     </div>
     <div class="col-3 d-flex align-content-center flex-wrap justify-content-center">
       <div class="hover-scale">
-        <app-kpi [kpi]="kpi2" (click)="sendNotification('TYPES')"></app-kpi>
+        <app-kpi [kpi]="kpi2" (click)="sendNotification('DISTRIBUTION')"></app-kpi>
       </div>
     </div>
     <div class="col-3 d-flex align-content-center flex-wrap justify-content-center">
@@ -19,14 +19,14 @@
   <div class="row">
     <div class="col-4">
       <div class="hover-scale">
-        <app-barchart [graphModel]="graph1" (click)="sendNotification('ENTRIES')"></app-barchart>
+        <app-barchart [graphModel]="graph1" (click)="sendNotification('TOTAL')"></app-barchart>
       </div>
     </div>
     <div class="col-8">
       <div class="row mb-3">
         <div class="col-6">
           <div class="hover-scale">
-            <app-barchart [graphModel]="graph2" (click)="sendNotification('LATE')"></app-barchart>
+            <app-barchart [graphModel]="graph2" (click)="sendNotification('DISTRIBUTION')"></app-barchart>
           </div>
         </div>
       </div>

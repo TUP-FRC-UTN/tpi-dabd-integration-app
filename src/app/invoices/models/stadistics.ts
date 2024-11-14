@@ -12,13 +12,16 @@ export interface TicketInfo {
   totalAmount: number;
 }
 
+export interface TicketInfo2 {
+  period: string;
+  totalAmount: number;
+}
+
 export interface PeriodRequest  {
   firstDate: string;
   lastDate: string;
-  action: string;
-  group: string;
-  type: string;
-  dataType: string;
+  paymentType: string;
+  status: string;
 }
 
 export interface OtherReport {
@@ -37,11 +40,23 @@ export interface TopPayments {
   totalByMercadoPago: number;
   percentageByMercadoPago: number;
   preferredMethod: string;
+  periods: TicketDetail[];
+}
+
+export interface TopPaymentsDetail {
+  period: string,
+  byTransfer: number;
+  totalByTransfer: number;
+  percentageByTransfer: number;
+  byMercadoPago: number;
+  totalByMercadoPago: number;
+  percentageByMercadoPago: number;
 }
 
 export enum DashboardStatus {
   All = 'ALL',
-  Types = 'TYPES'
+  TOTAL = 'TOTAL',
+  DISTRIBUTION = 'DISTRIBUTION',
 }
 
 export interface kpiModel{

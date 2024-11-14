@@ -21,7 +21,7 @@
             <span class="text-secondary">Estado:</span>
           </div>
           <div class="col-8">
-            <select id="period-type" class="form-select" [(ngModel)]="filters.group" (change)="filterData()">
+            <select id="period-type" class="form-select" [(ngModel)]="filters.paymentType" (change)="filterData()">
               <option value="">Todos</option>
               <option value="PAID">Pagado</option>
               <option value="PENDING">Pendiente</option>
@@ -34,7 +34,7 @@
             <span class="text-secondary">Forma de pago:</span>
           </div>
           <div class="col-8">
-            <select id="visitor-type" class="form-select" [(ngModel)]="filters.type" (change)="filterData()">
+            <select id="visitor-type" class="form-select" [(ngModel)]="filters.paymentType" (change)="filterData()">
               <option value="">Todos</option>
               <option value="TRANSFER">Transferencia</option>
               <option value="MERCADOPAGO">Mercado pago</option>
@@ -53,14 +53,14 @@
 
   <!-- Grilla del dashboard -->
   <div class="row position-relative min-vh-75">
-    <div [ngClass]="">
+    <div [ngClass]="{ 'd-none': status !== DashboardStatus.All }">
       <app-main-dashboard [filters]="filters" (notifyParent)="changeMode($event)"></app-main-dashboard>
     </div>
-    <div [ngClass]="">
-      <app-distribution-payment-methods [filters]="filters" (notifyParent)="changeMode($event)"></app-distribution-payment-methods>
-    </div>
-    <div [ngClass]="">
+    <div [ngClass]="{ 'd-none': status !== DashboardStatus.TOTAL }">
       <app-total-payments [filters]="filters" (notifyParent)="changeMode($event)"></app-total-payments>
+    </div>
+    <div [ngClass]="{ 'd-none': status !== DashboardStatus.DISTRIBUTION }">
+      <app-distribution-payment-methods [filters]="filters" (notifyParent)="changeMode($event)"></app-distribution-payment-methods>
     </div>
     <!-- <div [ngClass]="">
       <app-types-dashboard [filters]="filters" (notifyParent)="changeMode($event)"></app-types-dashboard>
