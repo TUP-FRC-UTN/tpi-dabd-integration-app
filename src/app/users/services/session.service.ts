@@ -85,7 +85,6 @@ export class SessionService {
    * Checks if the user is authenticated by verifying the presence of the 'user' item.
    * @returns boolean indicating authentication status.
    */
-
   isAuthenticated(): boolean {
     return this.getItem(this.USER_KEY) !== null;
     //return true
