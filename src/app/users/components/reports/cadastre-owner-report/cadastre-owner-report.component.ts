@@ -32,6 +32,7 @@ import {
 import { Account } from '../../../models/account';
 import { AccountService } from '../../../services/account.service';
 import { InfoComponent } from '../../commons/info/info.component';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 Chart.register(...registerables);
 
@@ -80,6 +81,11 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
 
   debtorAccountsCount: number = 0;
   creditorAccountsCount: number = 0;
+
+
+  
+  public pieChartPlugins: any = [ChartDataLabels];
+
 
   documentTypeDictionary = DocumentTypeDictionary;
   ownerTypeDictionary = OwnerTypeDictionary;
@@ -254,6 +260,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
       .dinamicFilters(0, 2147483647, clearFilters)
       .pipe(
         map((response: PaginatedResponse<Owner>) => {
+          console.log("Resp filterReports ", response.content)
           this.owners = response.content;
           this.updateOwnerCharts();
           this.calculateKPIs();

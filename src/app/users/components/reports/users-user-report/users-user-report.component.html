@@ -128,12 +128,12 @@
       <div class="chart">
         <h6>Distribución por Edad</h6>
         <canvas baseChart height="220px" [type]="'bar'" [datasets]="histogramAgeDistributionDatasets"
-          [labels]="histogramAgeDistributionLabels" [options]="barChartOptions"></canvas>
+          [labels]="histogramAgeDistributionLabels" [options]="barChartOptions" [plugins]="pieChartPlugins"></canvas>
       </div>
       <div class="chart">
         <h6>Categorías de Usuarios</h6>
         <canvas baseChart height="220px" [type]="'bar'" [datasets]="barChartUserCategoryDatasets"
-          [labels]="barChartUserCategoryLabels" [options]="barChartOptions"></canvas>
+          [labels]="barChartUserCategoryLabels" [options]="barChartOptions" [plugins]="pieChartPlugins"></canvas>
       </div>
     </div>
   </div>
