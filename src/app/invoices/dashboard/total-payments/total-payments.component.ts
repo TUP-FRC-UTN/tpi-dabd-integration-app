@@ -48,9 +48,9 @@ export class TotalPaymentsComponent {
   // Constructor
   constructor(private stadisticsService: StadisticsService) {
     // Initialize KPIs and Graphs
-    this.kpi1 = { title: "Métodos de Pago", desc: "", value: "0", icon: "bi bi-graph-up", color: "bg-success" };
-    this.kpi2 = { title: "Pagos Aprobados vs Rechazados", desc: "", value: "0%", icon: "bi bi-arrow-down-circle", color: "bg-info" };
-    this.kpi3 = { title: "Promedio de Monto por Método", desc: "", value: "0", icon: "bi bi-person-circle", color: "bg-warning" };
+    this.kpi1 = { title: "Monto total pendiente de pago", desc: "", value: "0", icon: "bi bi-graph-up", color: "bg-danger" };
+    this.kpi2 = { title: "Expenas pendientes de pago", desc: "", value: "0%", icon: "bi bi-arrow-down-circle", color: "bg-info" };
+    this.kpi3 = { title: "Cantidad de transferencias a validar", desc: "", value: "0", icon: "bi bi-person-circle", color: "bg-warning" };
     this.kpi4 = { title: "Tasa de Retención de Pagos", desc: "", value: "0%", icon: "bi bi-person-circle", color: "bg-warning" };
 
     this.graph1 = { title: "Informe de Total Cobrado", subtitle: "", data: [], options: null };
@@ -76,6 +76,8 @@ export class TotalPaymentsComponent {
         let approvedCount = 0;
         let ticketIds = new Set();
         let recurrentPayments = 0;
+        let totalRejected = 0;
+        let transferPending = 0;
 
         for (const payment of data) {
           if (payment.paymentMethod === 'MERCADO_PAGO') {
@@ -96,24 +98,34 @@ export class TotalPaymentsComponent {
               const approvalTime = new Date().getTime() - new Date(payment.createdAt).getTime();
               totalTime += approvalTime;
             }
+          } else if (payment.status === 'PENDING') {
+            countPending++;
           }
 
-          if (ticketIds.has(payment.ticketId)) {
-            recurrentPayments++;
-          } else {
-            ticketIds.add(payment.ticketId);
+          if (payment.status === 'REJECTED') {
+            totalRejected = totalRejected + payment.amount;
+
+            if (ticketIds.has(payment.ticketId)) {
+              recurrentPayments++;
+            } else {
+              ticketIds.add(payment.ticketId);
+            }
+          }
+          //validar transferencias pendientes
+          if (payment.status === 'PENDING' && payment.paymentMethod === 'TRANSFERENCE') {
+            transferPending++;
           }
         }
 
-        const rejectionRate = (countRejected / (countMP + countT)) * 100;
-        this.kpi1.value = `Tasa de Rechazo: ${rejectionRate.toFixed(2)}%`;
+        const rejectionRate = totalRejected;
+        this.kpi1.value = `Monto pendiente: $ ${rejectionRate.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
 
         const avgAmountMP = countMP > 0 ? totalAmountMP / countMP : 0;
         const avgAmountT = countT > 0 ? totalAmountT / countT : 0;
-        this.kpi2.value = `Promedio Mercado Pago: $${avgAmountMP.toFixed(2)} vs. Transferencia: $${avgAmountT.toFixed(2)}`;
+        this.kpi2.value = `Cantidad de expensas pendientes: ${countPending}`;;
 
         const avgTime = approvedCount > 0 ? totalTime / approvedCount : 0;
-        this.kpi3.value = `Tiempo Promedio Aprobación: ${this.formatDuration(avgTime)}`;
+        this.kpi3.value = `A validar: ${transferPending} transferencias`;
 
         const retentionRate = (recurrentPayments / (countMP + countT)) * 100;
         this.kpi4.value = `Tasa de Retención: ${retentionRate.toFixed(2)}%`;

@@ -59,7 +59,7 @@ export class MainDashboardComponent {
   constructor(private stadisticsService: StadisticsService) {
     this.kpi1 = {title: "Tickets Emitidos", desc: "", value: "0", icon: "bi bi-graph-up", color: "bg-success"}
     this.kpi2 = {title: "Tiempo Promedio de Resolución de Tickets", desc: "", value: "0%", icon: "bi bi-arrow-down-circle", color: "bg-info"}
-    this.kpi3 = {title: "Monto Total de Tickets", desc: "", value: "0", icon: "bi bi-person-circle", color: "bg-warning"}
+    this.kpi3 = {title: "Monto total facturado", desc: "", value: "0", icon: "bi bi-person-circle", color: "bg-warning"}
 
     this.graph1 = {title: "Informe de total cobrado", subtitle: "", data: [], options: null}
     this.graph2 = {title: "Deuda total de propietarios", subtitle: "", data: [], options: null}
@@ -69,8 +69,6 @@ export class MainDashboardComponent {
   getData() {
     this.getReportDinamicFilters();
   }
-
-
 
   getReportDinamicFilters(): void {
     this.stadisticsService.getDinamycFilterTickets(this.filters).subscribe(
@@ -98,7 +96,7 @@ export class MainDashboardComponent {
         let resolutionAverage = resolutionCount > 0 ? totalResolutionTime / resolutionCount : 0;
         this.kpi1.value = data.length.toString()
         this.kpi2.value = resolutionAverage.toFixed(2).toString() + " días"
-        this.kpi3.value = "$ " + (Math.round(totalAmount * 100) / 100).toFixed(2);
+        this.kpi3.value = "$ " + (Math.round(totalAmount * 100) / 100).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 
         this.graph1.title = "Estado de Tickets"
