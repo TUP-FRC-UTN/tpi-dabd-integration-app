@@ -35,9 +35,6 @@ export class AppComponent {
 
   //variables
   navbarMenu: NavbarItem[] = [
-
-
-    // Accesos
     {
       label: 'Accesos',
       routerLink: 'entries',
@@ -56,17 +53,12 @@ export class AppComponent {
         },
       ],
     },
-
-
-
-
-    // Boletas
     {
       label: 'Boletas',
       routerLink: '/invoices',
       sidebarMenu: [
         {
-          label: 'Lista de Expensas (Administrador)',
+          label: 'Lista de Expensas (Admin)',
           routerLink: '/invoices/admin-list-expensas',
         },
         {
@@ -76,11 +68,6 @@ export class AppComponent {
         { label: 'Estadísticas', routerLink: '/invoices/stadistics' },
       ],
     },
-
-
-
-
-    // Construcciones
     {
       label: 'Construcciones',
       sidebarMenu: [
@@ -104,11 +91,6 @@ export class AppComponent {
         },
       ],
     },
-
-
-
-
-    // Contactos
     {
       label: 'Contactos',
       routerLink: 'notifications/contacts',
@@ -127,11 +109,6 @@ export class AppComponent {
         }
       ],
     },
-
-
-
-
-    // Empleados
     {
       "label": "Empleados",
       "routerLink": "inventories/employees",
@@ -150,11 +127,6 @@ export class AppComponent {
         }
       ]
     },
-
-
-
-
-    // Gastos
     {
       label: 'Gastos', //expensas
       routerLink:'expenses',
@@ -185,11 +157,6 @@ export class AppComponent {
         },
       ],
     },
-
-
-
-
-    // Inventarios
     {
       "label": "Inventario",
       "routerLink": "inventories/inventory",
@@ -218,11 +185,6 @@ export class AppComponent {
         }
       ]
     },
-
-
-
-
-    // Normas
     {
       label: 'Normas',
       sidebarMenu: [
@@ -232,11 +194,6 @@ export class AppComponent {
         }
       ]
     },
-
-
-
-
-    // Notificaciones
     {
       label: 'Notificaciones',
       routerLink: 'notifications/send-email',
@@ -271,11 +228,6 @@ export class AppComponent {
         }
       ],
     },
-
-
-
-
-    // Moderacion
     {
       label: 'Moderación',
       sidebarMenu: [
@@ -298,11 +250,6 @@ export class AppComponent {
         },
       ],
     },
-
-
-
-
-    // Plantillas
     {
       "label": "Proveedores",
       "routerLink": "inventories/providers",
@@ -312,38 +259,8 @@ export class AppComponent {
           "routerLink": "inventories/providers/dashboard"
         },
         {
-          label: 'Registrar Plantillas',
-          routerLink: 'notifications/templates/new',
-        }
-      ],
-    },
-
-
-
-
-    // Proveedores
-    {
-      label: 'Proveedores',
-      routerLink:'inventories',
-      sidebarMenu: [
-        {
-          label: 'Proveedores',
-          routerLink: 'inventories/providers/list'
-        },
-      ]
-    },
-
-
-
-
-    // Tickets
-    {
-      label: 'Tickets',
-      routerLink:'invoices',
-      sidebarMenu: [
-        {
-          label: 'Lista de Expensas (Propietario)',
-          routerLink: 'invoices/admin-list-expensas'
+          "label": "Lista",
+          "routerLink": "inventories/providers/list"
         },
         {
           "label": "Registrar",
@@ -365,11 +282,6 @@ export class AppComponent {
         }
       ]
     },
-
-
-
-
-    // Usuarios
     {
       label: 'Usuarios',
       routerLink: 'users',
