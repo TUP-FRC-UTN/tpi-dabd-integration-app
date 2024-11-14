@@ -24,7 +24,10 @@
           />
         </div>
          <div class="ps-3" style="border-left: 2px solid #e0e0e0">
-          <app-table-filters [filters]="filterConfig" (filterValueChange)="changeOtherFilters($event)"></app-table-filters>
+          <app-table-filters 
+          [filters]="filterConfig" 
+          (filterValueClear)="clearAllFilters()" 
+          (filterValueChange)="changeOtherFilters($event)"></app-table-filters>
         </div>
       </div>
     </div>

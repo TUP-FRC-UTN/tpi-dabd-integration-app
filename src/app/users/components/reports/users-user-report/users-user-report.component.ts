@@ -49,6 +49,24 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
   users: any[] = [];
   roles: Role[] = [];
 
+  colors = [
+    '#62B68F',  // rgba(98, 182, 143)
+    '#FF919E',  // rgba(255, 145, 158)
+    '#82B1FF',  // rgba(130, 177, 255)
+    '#BB83D1',  // rgba(187, 131, 209)
+    '#FFAB91',  // rgba(255, 171, 145)
+    '#A2D9A5',  // rgba(162, 217, 165)
+    '#95A0D9',  // rgba(149, 160, 217)
+    '#FFA29A',  // rgba(255, 162, 154)
+    '#7ECEC6',  // rgba(126, 206, 198)
+    '#FFF59D',  // rgba(255, 245, 157)
+    '#FFE082',  // rgba(255, 224, 130)
+    '#DCE775',  // rgba(220, 231, 117)
+    '#C4C4C4',  // rgba(196, 196, 196)
+    '#BCAAAC',  // rgba(188, 170, 164)
+    '#90CAF9'   // rgba(144, 202, 249)
+  ];
+
   
   chartFilters: Record<string, any> = {};
   dateFilterTo: any;
@@ -66,17 +84,20 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
   filterConfig: Filter[] = new FilterConfigBuilder()
     .selectFilter(
       'Tipo de Documento',
-      'doc_type',
+      'documentType',
       'Seleccione un tipo de documento',
       [
         { value: 'DNI', label: 'DNI' },
         { value: 'ID', label: 'Cédula' },
         { value: 'PASSPORT', label: 'Pasaporte' },
+        { value: 'PASSASDASDASDPORT', label: 'ASDASD' },
+
       ]
     )
-    .selectFilter('Activo', 'is_active', '', [
+    .selectFilter('Activo', 'isActive', '', [
       { value: 'true', label: 'Activo' },
       { value: 'false', label: 'Inactivo' },
+      { value: '', label: 'Todos' },
     ])
     .dateFilter(
       'Fecha de Nacimiento Desde',
@@ -115,8 +136,8 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
     .build();
 
   ngOnInit(): void {
-    this.loadData();
     this.filterReports();
+    this.loadData();
   }
 
   ngAfterViewInit(): void {
@@ -129,24 +150,22 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
   }
 
   loadData(filters: Record<string, any> = {}): void {
-    const users$ = this.userService.dinamicFilters(0, 1000, filters).pipe(
-      map((response: PaginatedResponse<any>) => response.content),
+    console.log('estos son los filtros');
+    console.log(filters);
+    console.log('--------------------------------------------');
+    
+    
+    this.userService
+    .dinamicFilters(0, 1000, filters)
+    .pipe(
+      map((response: PaginatedResponse<any>) => {
+        this.users = response.content;
+        this.calculateKPIs();
+        this.updateCharts();
+
+      }),
       catchError(() => of([]))
     );
-
-    const roles$ = this.roleService.dinamicFilters(0, 1000, filters).pipe(
-      map((response: PaginatedResponse<Role>) => response.content),
-      catchError(() => of([]))
-    );
-
-    combineLatest([users$, roles$]).subscribe(([users, roles]) => {
-      this.users = users;
-      this.roles = roles;
-
-      this.calculateKPIs();
-      this.updateUserCharts();
-      this.updateRoleCharts();
-    });
   }
 
   //#region Filtros de los charts
@@ -213,10 +232,26 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
       return acc;
     }, {} as Record<string, any>);
   }
+
+
+  clearAllFilters() {
+    this.resetDateFilter()
+  }
+
+  resetDateFilter() {
+    this.dateFilterFrom = ""
+    this.dateFilterTo = ""
+    this.chartFilters = {}
+  }
+
+
   //#endregion
 
   filterReports(): void {
     const cleanFilters = this.cleanFilters(this.chartFilters)
+    console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+    console.log(cleanFilters);
+    
     this.userService
       .dinamicFilters(0, 1000, cleanFilters)
       .pipe(
@@ -225,12 +260,14 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
           this.calculateKPIs();
           this.updateUserCharts();
         }),
-        catchError(() => of([]))
+        catchError((error) => {
+          console.error('Error loading owners', error);
+          return of([])})
       )
       .subscribe();
   }
 
-  loadRoles(): void {
+/*   loadRoles(): void {
     this.roleService
       .getAllRoles(0, 1000)
       .pipe(
@@ -241,31 +278,33 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
         catchError(() => of([]))
       )
       .subscribe();
-  }
+  } */
 
   calculateKPIs(): void {
-    const oneMonthAgo = new Date();
-    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+    if (this.users.length > 0) {
+      const oneMonthAgo = new Date();
+      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
-    this.usersCreatedLastMonth = this.users.filter(
-      (user) => new Date() //new Date(user.createdDate) >= oneMonthAgo
-    ).length;
+      this.usersCreatedLastMonth = this.users.filter(
+        (user) => new Date() //new Date(user.createdDate) >= oneMonthAgo
+      ).length;
 
-    this.ownerUsersCount = this.users.filter(
-      (user) => user.ownerId && user.plotId
-    ).length;
-    this.activeUsersCount = this.users.filter((user) => user.isActive).length;
+      this.ownerUsersCount = this.users.filter(
+        (user) => user.ownerId && user.plotId
+      ).length;
+      this.activeUsersCount = this.users.filter((user) => user.isActive).length;
 
-    const roleCounts = this.users.reduce((acc, user) => {
-      user.roles?.forEach(
-        (role: Role) => (acc[role.prettyName] = (acc[role.prettyName] || 0) + 1)
+      const roleCounts = this.users.reduce((acc, user) => {
+        user.roles?.forEach(
+          (role: Role) => (acc[role.prettyName] = (acc[role.prettyName] || 0) + 1)
+        );
+        return acc;
+      }, {} as Record<string, number>);
+
+      this.mostFrequentUserRole = Object.keys(roleCounts).reduce((a, b) =>
+        roleCounts[a] > roleCounts[b] ? a : b
       );
-      return acc;
-    }, {} as Record<string, number>);
-
-    this.mostFrequentUserRole = Object.keys(roleCounts).reduce((a, b) =>
-      roleCounts[a] > roleCounts[b] ? a : b
-    );
+    }
   }
 
   updateUserCharts(): void {
@@ -392,12 +431,9 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
   pieChartUserActiveStatusDatasets: ChartDataset<'pie', number[]>[] = [
     {
       data: [],
-      backgroundColor: ['rgba(255, 193, 7, 0.2)', 'rgba(220, 53, 69, 0.2)'],
-      hoverBackgroundColor: [
-        'rgba(255, 193, 7, 0.4)',
-        'rgba(220, 53, 69, 0.4)',
-      ],
-      borderColor: ['rgba(255, 193, 7, 1)', 'rgba(220, 53, 69, 1)'],
+      backgroundColor: this.colors,
+      hoverBackgroundColor: this.colors,
+      borderColor: this.colors,
       borderWidth: 1,
     },
   ];
@@ -407,30 +443,9 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
     {
       data: [],
       label: '',
-      backgroundColor: [
-        'rgba(255, 193, 7, 0.2)',
-        'rgba(0, 123, 255, 0.2)',
-        'rgba(25, 135, 84, 0.2)',
-        'rgba(220, 53, 69, 0.2)',
-        'rgba(23, 162, 184, 0.2)',
-        'rgba(52, 58, 64, 0.2)',
-      ],
-      hoverBackgroundColor: [
-        'rgba(255, 193, 7, 0.4)',
-        'rgba(0, 123, 255, 0.4)',
-        'rgba(25, 135, 84, 0.4)',
-        'rgba(220, 53, 69, 0.4)',
-        'rgba(23, 162, 184, 0.4)',
-        'rgba(52, 58, 64, 0.4)',
-      ],
-      borderColor: [
-        'rgba(255, 193, 7, 1)',
-        'rgba(0, 123, 255, 1)',
-        'rgba(25, 135, 84, 1)',
-        'rgba(220, 53, 69, 1)',
-        'rgba(23, 162, 184, 1)',
-        'rgba(52, 58, 64, 1)',
-      ],
+      backgroundColor: this.colors,
+      hoverBackgroundColor: this.colors,
+      borderColor: this.colors,
       borderWidth: 1,
     },
   ];
@@ -440,30 +455,9 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
     {
       data: [],
       label: '',
-      backgroundColor: [
-        'rgba(255, 193, 7, 0.2)',
-        'rgba(0, 123, 255, 0.2)',
-        'rgba(25, 135, 84, 0.2)',
-        'rgba(220, 53, 69, 0.2)',
-        'rgba(23, 162, 184, 0.2)',
-        'rgba(52, 58, 64, 0.2)',
-      ],
-      hoverBackgroundColor: [
-        'rgba(255, 193, 7, 0.4)',
-        'rgba(0, 123, 255, 0.4)',
-        'rgba(25, 135, 84, 0.4)',
-        'rgba(220, 53, 69, 0.4)',
-        'rgba(23, 162, 184, 0.4)',
-        'rgba(52, 58, 64, 0.4)',
-      ],
-      borderColor: [
-        'rgba(255, 193, 7, 1)',
-        'rgba(0, 123, 255, 1)',
-        'rgba(25, 135, 84, 1)',
-        'rgba(220, 53, 69, 1)',
-        'rgba(23, 162, 184, 1)',
-        'rgba(52, 58, 64, 1)',
-      ],
+      backgroundColor: this.colors,
+      hoverBackgroundColor: this.colors,
+      borderColor: this.colors,
       borderWidth: 1,
     },
   ];
@@ -473,30 +467,9 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
     {
       data: [],
       label: '',
-      backgroundColor: [
-        'rgba(255, 193, 7, 0.2)',
-        'rgba(0, 123, 255, 0.2)',
-        'rgba(25, 135, 84, 0.2)',
-        'rgba(220, 53, 69, 0.2)',
-        'rgba(23, 162, 184, 0.2)',
-        'rgba(52, 58, 64, 0.2)',
-      ],
-      hoverBackgroundColor: [
-        'rgba(255, 193, 7, 0.4)',
-        'rgba(0, 123, 255, 0.4)',
-        'rgba(25, 135, 84, 0.4)',
-        'rgba(220, 53, 69, 0.4)',
-        'rgba(23, 162, 184, 0.4)',
-        'rgba(52, 58, 64, 0.4)',
-      ],
-      borderColor: [
-        'rgba(255, 193, 7, 1)',
-        'rgba(0, 123, 255, 1)',
-        'rgba(25, 135, 84, 1)',
-        'rgba(220, 53, 69, 1)',
-        'rgba(23, 162, 184, 1)',
-        'rgba(52, 58, 64, 1)',
-      ],
+      backgroundColor: this.colors,
+      hoverBackgroundColor: this.colors,
+      borderColor: this.colors,
       borderWidth: 1,
     },
   ];
@@ -505,12 +478,9 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
   pieChartRoleActiveStatusDatasets: ChartDataset<'pie', number[]>[] = [
     {
       data: [],
-      backgroundColor: ['rgba(255, 193, 7, 0.2)', 'rgba(220, 53, 69, 0.2)'],
-      hoverBackgroundColor: [
-        'rgba(255, 193, 7, 0.4)',
-        'rgba(220, 53, 69, 0.4)',
-      ],
-      borderColor: ['rgba(255, 193, 7, 1)', 'rgba(220, 53, 69, 1)'],
+      backgroundColor: this.colors,
+      hoverBackgroundColor: this.colors,
+      borderColor: this.colors,
       borderWidth: 1,
     },
   ];
@@ -520,30 +490,9 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
     {
       data: [],
       label: '',
-      backgroundColor: [
-        'rgba(255, 193, 7, 0.2)',
-        'rgba(0, 123, 255, 0.2)',
-        'rgba(25, 135, 84, 0.2)',
-        'rgba(220, 53, 69, 0.2)',
-        'rgba(23, 162, 184, 0.2)',
-        'rgba(52, 58, 64, 0.2)',
-      ],
-      hoverBackgroundColor: [
-        'rgba(255, 193, 7, 0.4)',
-        'rgba(0, 123, 255, 0.4)',
-        'rgba(25, 135, 84, 0.4)',
-        'rgba(220, 53, 69, 0.4)',
-        'rgba(23, 162, 184, 0.4)',
-        'rgba(52, 58, 64, 0.4)',
-      ],
-      borderColor: [
-        'rgba(255, 193, 7, 1)',
-        'rgba(0, 123, 255, 1)',
-        'rgba(25, 135, 84, 1)',
-        'rgba(220, 53, 69, 1)',
-        'rgba(23, 162, 184, 1)',
-        'rgba(52, 58, 64, 1)',
-      ],
+      backgroundColor: this.colors,
+      hoverBackgroundColor: this.colors,
+      borderColor: this.colors,
       borderWidth: 1,
     },
   ];

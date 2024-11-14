@@ -33,6 +33,7 @@ import { Account } from '../../../models/account';
 import { AccountService } from '../../../services/account.service';
 import { InfoComponent } from '../../commons/info/info.component';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { toSnakeCase } from '../../../utils/owner-helper';
 
 Chart.register(...registerables);
 
@@ -82,7 +83,23 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
   debtorAccountsCount: number = 0;
   creditorAccountsCount: number = 0;
 
-
+  colors = [
+    '#62B68F',  // rgba(98, 182, 143)
+    '#FF919E',  // rgba(255, 145, 158)
+    '#82B1FF',  // rgba(130, 177, 255)
+    '#BB83D1',  // rgba(187, 131, 209)
+    '#FFAB91',  // rgba(255, 171, 145)
+    '#A2D9A5',  // rgba(162, 217, 165)
+    '#95A0D9',  // rgba(149, 160, 217)
+    '#FFA29A',  // rgba(255, 162, 154)
+    '#7ECEC6',  // rgba(126, 206, 198)
+    '#FFF59D',  // rgba(255, 245, 157)
+    '#FFE082',  // rgba(255, 224, 130)
+    '#DCE775',  // rgba(220, 231, 117)
+    '#C4C4C4',  // rgba(196, 196, 196)
+    '#BCAAAC',  // rgba(188, 170, 164)
+    '#90CAF9'   // rgba(144, 202, 249)
+  ];
   
   public pieChartPlugins: any = [ChartDataLabels];
 
@@ -199,7 +216,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     else{
       this.chartFilters = {
         ...this.chartFilters,
-        dateFrom: dateFilter.toISOString().slice(0, 16)
+        birthdateStart: dateFilter.toISOString().slice(0, 10)
       }
     }    
     //console.log(this.chartFilters);
@@ -215,7 +232,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     else{
       this.chartFilters = {
         ...this.chartFilters,
-        dateTo: dateFilter.toISOString().slice(0, 16)
+        birthdateEnd: dateFilter.toISOString().slice(0, 10)
       }
     }    
     //console.log(this.chartFilters);
@@ -225,10 +242,9 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
   //Acá manejo los otros filtros (los que están en la lupita)
   //Basicamente siempre se pisan porque el event emitter del componente siempre te devuelve todos
   changeOtherFilters(filters: Record<string, any> = {}){
-    //console.log(filters);
     this.chartFilters = {
       ...this.chartFilters,
-      ...filters
+      ...filters,
     }
     ///console.log(this.chartFilters);
     this.filterReports()    
@@ -249,15 +265,26 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
       return acc;
     }, {} as Record<string, any>);
   }
+
+  clearAllFilters() {
+    this.resetDateFilter()
+  }
+
+  resetDateFilter() {
+    this.dateFilterFrom = ""
+    this.dateFilterTo = ""
+  }
+
+
   //#endregion
 
   //#region Load Data
   //Acá esto lo modifiqué para que siempre haga la petición entonces le con la funcion cleanFilters que te devuelve el objeto
   //de filtros limpios, hace la petición bien sin filtros residuales, si no hay nada en chartFilters no le incluye ningún filtro
   filterReports() {  
-    const clearFilters = this.cleanFilters(this.chartFilters)     
+    const cleanFilters = this.cleanFilters(this.chartFilters)
     this.ownerService
-      .dinamicFilters(0, 2147483647, clearFilters)
+      .dinamicFilters(0, 2147483647, cleanFilters)
       .pipe(
         map((response: PaginatedResponse<Owner>) => {
           console.log("Resp filterReports ", response.content)
@@ -600,21 +627,9 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
   public pieChartKycStatusDatasets: ChartDataset<'pie', number[]>[] = [
     {
       data: [],
-      backgroundColor: [
-        'rgba(255, 193, 7, 0.2)',
-        'rgba(25, 135, 84, 0.2)',
-        'rgba(220, 53, 69, 0.2)',
-      ],
-      hoverBackgroundColor: [
-        'rgba(255, 193, 7, 0.4)',
-        'rgba(25, 135, 84, 0.4)',
-        'rgba(220, 53, 69, 0.4)',
-      ],
-      borderColor: [
-        'rgba(255, 193, 7, 1)',
-        'rgba(25, 135, 84, 1)',
-        'rgba(220, 53, 69, 1)',
-      ],
+      backgroundColor: this.colors,
+      hoverBackgroundColor: this.colors,
+      borderColor: this.colors,
       borderWidth: 1,
     },
   ];
@@ -624,9 +639,9 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     {
       data: [],
       label: 'Tipo de propietario',
-      backgroundColor: ['rgba(25, 135, 84, 0.2)'],
-      hoverBackgroundColor: ['rgba(25, 135, 84, 0.4)'],
-      borderColor: ['rgba(25, 135, 84, 1)'],
+      backgroundColor: this.colors,
+      hoverBackgroundColor: this.colors,
+      borderColor: this.colors,
       borderWidth: 1,
     },
   ];
@@ -635,12 +650,9 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
   public pieChartActiveStatusDatasets: ChartDataset<'pie', number[]>[] = [
     {
       data: [],
-      backgroundColor: ['rgba(255, 193, 7, 0.2)', 'rgba(220, 53, 69, 0.2)'],
-      hoverBackgroundColor: [
-        'rgba(255, 193, 7, 0.4)',
-        'rgba(220, 53, 69, 0.4)',
-      ],
-      borderColor: ['rgba(255, 193, 7, 1)', 'rgba(220, 53, 69, 1)'],
+      backgroundColor: this.colors,
+      hoverBackgroundColor: this.colors,
+      borderColor: this.colors,
       borderWidth: 1,
     },
   ];
@@ -652,21 +664,9 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
   public plotTypeChartDatasets: ChartDataset<'pie', number[]>[] = [
     {
       data: [],
-      backgroundColor: [
-        'rgba(255, 193, 7, 0.2)',
-        'rgba(25, 135, 84, 0.2)',
-        'rgba(220, 53, 69, 0.2)',
-      ],
-      hoverBackgroundColor: [
-        'rgba(255, 193, 7, 0.4)',
-        'rgba(25, 135, 84, 0.4)',
-        'rgba(220, 53, 69, 0.4)',
-      ],
-      borderColor: [
-        'rgba(255, 193, 7, 1)',
-        'rgba(25, 135, 84, 1)',
-        'rgba(220, 53, 69, 1)',
-      ],
+      backgroundColor: this.colors,
+      hoverBackgroundColor: this.colors,
+      borderColor: this.colors,
       borderWidth: 1,
     },
   ];
@@ -676,30 +676,9 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     {
       data: [],
       label: 'Estado del Lote',
-      backgroundColor: [
-        'rgba(255, 193, 7, 0.2)',
-        'rgba(0, 123, 255, 0.2)',
-        'rgba(25, 135, 84, 0.2)',
-        'rgba(220, 53, 69, 0.2)',
-        'rgba(23, 162, 184, 0.2)',
-        'rgba(52, 58, 64, 0.2)',
-      ],
-      hoverBackgroundColor: [
-        'rgba(255, 193, 7, 0.4)',
-        'rgba(0, 123, 255, 0.4)',
-        'rgba(25, 135, 84, 0.4)',
-        'rgba(220, 53, 69, 0.4)',
-        'rgba(23, 162, 184, 0.4)',
-        'rgba(52, 58, 64, 0.4)',
-      ],
-      borderColor: [
-        'rgba(255, 193, 7, 1)',
-        'rgba(0, 123, 255, 1)',
-        'rgba(25, 135, 84, 1)',
-        'rgba(220, 53, 69, 1)',
-        'rgba(23, 162, 184, 1)',
-        'rgba(52, 58, 64, 1)',
-      ],
+      backgroundColor: this.colors,
+      hoverBackgroundColor: this.colors,
+      borderColor: this.colors,
       borderWidth: 1,
     },
   ];
@@ -708,12 +687,10 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
   public plotActiveChartDatasets: ChartDataset<'pie', number[]>[] = [
     {
       data: [],
-      backgroundColor: ['rgba(255, 193, 7, 0.2)', 'rgba(220, 53, 69, 0.2)'],
-      hoverBackgroundColor: [
-        'rgba(255, 193, 7, 0.4)',
-        'rgba(220, 53, 69, 0.4)',
-      ],
-      borderColor: ['rgba(255, 193, 7, 1)', 'rgba(220, 53, 69, 1)'],
+      label: 'Estado del Lote',
+      backgroundColor: this.colors,
+      hoverBackgroundColor: this.colors,
+      borderColor: this.colors,
       borderWidth: 1,
     },
   ];
