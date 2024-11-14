@@ -73,7 +73,7 @@
               [ngClass]="{
                 'text-success border-success': item.status === 'PAID',
                 'text-danger border-danger': item.status === 'CANCELED',
-                'text-warning border-warning': item.status === 'PENDING',
+                'text-secondary border-secondary': item.status === 'PENDING',
                 'text-dark border-dark': item.status === 'UNDER_REVIEW'
               }"
             >
@@ -259,7 +259,7 @@
                   ticketSelectedModal.status === 'PAID',
                 'border-danger text-danger':
                   ticketSelectedModal.status === 'CANCELED',
-                'border-warning text-warning':
+                'border-secondary text-secondary':
                   ticketSelectedModal.status === 'PENDING',
                 'border-dark text-dark':
                   ticketSelectedModal.status === 'UNDER_REVIEW'

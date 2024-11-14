@@ -1,10 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
 import { graphModel, kpiModel, PaymentFilter } from '../../models/stadistics';
 import { StadisticsService } from '../../services/stadistics.service';
 import { KpiComponent } from '../commons/kpi/kpi.component';
 import { BarchartComponent } from '../commons/barchart/barchart.component';
 import { PiechartComponent } from '../commons/piechart/piechart.component';
 import {PaymentReportDto, PaymentStatus, PayMethod} from '../../models/payments.report.model';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-total-payments',
@@ -16,6 +17,8 @@ import {PaymentReportDto, PaymentStatus, PayMethod} from '../../models/payments.
 export class TotalPaymentsComponent {
   @Input() filters: PaymentFilter = {} as PaymentFilter;
   @Output() notifyParent: EventEmitter<string> = new EventEmitter<string>();
+
+  router = inject(Router)
 
   colors = [
     '#62B68F', // Mercado Pago
@@ -167,6 +170,9 @@ export class TotalPaymentsComponent {
     return formattedData;
   }
 
+  goToPaymentList() {
+    this.router.navigate(["/invoices/admin-list-expensas"])
+  }
 
   mapPayMethodData(array: any[]): any[] {
     const countPayMethod: { [key in PayMethod]: number } = {
