@@ -11,6 +11,7 @@ import { User } from '../../../models/user';
 import { Country, Provinces } from '../../../models/generics';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { InfoComponent } from '../../commons/info/info.component';
+import { ChangePasswordComponent } from '../../change-password/change-password.component';
 
 @Component({
   selector: 'app-profile-detail',
@@ -169,7 +170,15 @@ export class ProfileDetailComponent {
     return user.id!!
   }
 
-
+  openChangePasswordModal(){
+    const modalRef = this.modalService.open(ChangePasswordComponent, {
+      size: 'md',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: false
+    });
+  }
 
   openInfo(){
     const modalRef = this.modalService.open(InfoComponent, {

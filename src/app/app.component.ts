@@ -295,23 +295,24 @@ export class AppComponent {
             },
             { label: 'Reporte Usuarios', routerLink: '/users/user/reports' },
           ],
-        }, {
-          label: 'Perfil',
-          subMenu: [
-            {
-              label: 'Consultar Perfil',
-              routerLink: '/users/profile/detail',
-            },
-            {
-              label: 'Editar Perfil',
-              routerLink: '/users/profile/edit',
-            },
-            {
-              label: 'Cambiar contraseña',
-              routerLink: '/users/changepassword',
-            },
-          ],
-        },
+        }, 
+        // {
+        //   label: 'Perfil',
+        //   subMenu: [
+        //     {
+        //       label: 'Consultar Perfil',
+        //       routerLink: '/users/profile/detail',
+        //     },
+        //     {
+        //       label: 'Editar Perfil',
+        //       routerLink: '/users/profile/edit',
+        //     },
+        //     {
+        //       label: 'Cambiar contraseña',
+        //       routerLink: '/users/changepassword',
+        //     },
+        //   ],
+        // },
         {
           label: 'Propietarios',
           subMenu: [
@@ -375,6 +376,10 @@ export class AppComponent {
     this.router.navigate([""]);
   }
   //#endregion
+
+  openProfile(){
+    this.router.navigate(["/users/profile/detail"]);
+  }
 
   currentUrl$ = this.router.events.pipe(
     filter((event): event is NavigationEnd => event instanceof NavigationEnd),
