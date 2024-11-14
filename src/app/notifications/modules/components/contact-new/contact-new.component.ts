@@ -1,11 +1,11 @@
 import { Component, Inject,inject } from '@angular/core';
-import { FormsModule, NgForm, ReactiveFormsModule, FormGroup, FormBuilder, Validators, FormControl} from '@angular/forms';
+import { FormsModule, NgForm, ReactiveFormsModule, FormGroup, FormBuilder, Validators, FormControl, AbstractControl, ValidationErrors} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ContactModel } from '../../../models/contacts/contactModel';
 import { ContactService } from '../../../services/contact.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
-import { Observable } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import {  } from '@angular/forms';
 import { ContactType } from '../../../models/contacts/contactAudit';
 
@@ -40,7 +40,7 @@ export class ContactNewComponent {
 
     newContactForm: FormGroup = new FormGroup({
       contactType: new FormControl('', [Validators.required]),
-      contactValue: new FormControl('', [Validators.required]),
+      contactValue: new FormControl('', [Validators.required], [this.checkContactExistsValidator()]),
     //  phone: new FormControl('', [Validators.required, Validators.pattern('[0-9]{10}')]),        //[this.uniqueEmail()]      
     });
 
@@ -52,6 +52,33 @@ export class ContactNewComponent {
         phone: ['', [Validators.required, Validators.pattern('[0-9]{10}')]],
       });
     }*/
+
+      checkContactExists(contact_value : string): Observable<boolean> {
+        return this.contactService.getAllContacts().pipe(
+          map(response => {
+            const aux = response.find(r => r.contactValue === contact_value);
+            if(aux){
+              return true;
+            }
+            else{
+              return false;
+            }
+          })
+        );
+      }
+
+      private checkContactExistsValidator() {
+        return (control: AbstractControl): Observable<ValidationErrors | null> => {
+          const contactValue = control.value;
+          if(!contactValue){
+            return of(null)
+          }
+          const respuesta = this.checkContactExists(contactValue)
+          return this.checkContactExists(contactValue).pipe(
+            map(exists => exists ? { contactExists: true } : null)
+          );
+        };
+    }
     
   onContactTypeChange() {
     this.email = '';
@@ -88,8 +115,16 @@ export class ContactNewComponent {
         contactType: this.newContactForm.get('contactType')?.value,
         active: true,
         showSubscriptions: false
-      };
+      };        
 
+      /*if(this.contactService.checkContactExists(contact.contactValue)){
+
+        this.toastService.sendError('Ya esta ese contactacto')
+        console.error('Error al crear contacto intentar nuevamente:');
+        console.log(contact);
+
+      }
+        */
       this.contactService.saveContact(contact).subscribe({
         next: (response) => {
 

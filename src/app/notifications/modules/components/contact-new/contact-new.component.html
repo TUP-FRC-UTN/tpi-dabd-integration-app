@@ -36,6 +36,8 @@
         <div class="invalid-feedback" *ngIf="newContactForm.get('contactValue')?.invalid && (newContactForm.get('contactValue')?.dirty || newContactForm.get('contactValue')?.touched)"> 
           <div *ngIf="newContactForm.get('contactValue')?.errors?.['required']">El email es requerido</div>
           <div *ngIf="newContactForm.get('contactValue')?.errors?.['pattern']">Por favor ingrese un email válido</div>
+          <div *ngIf="newContactForm.get('contactValue')?.errors?.['contactExists']">Contacto ya existente</div>
+
         </div>
       </div>
     </div>
@@ -53,6 +55,7 @@
         <div class="invalid-feedback" *ngIf="newContactForm.get('contactValue')?.invalid && (newContactForm.get('contactValue')?.dirty || newContactForm.get('contactValue')?.touched)">
           <div *ngIf="newContactForm.get('contactValue')?.errors?.['required']">El teléfono es requerido</div>
           <div *ngIf="newContactForm.get('contactValue')?.errors?.['pattern']">Por favor ingrese un teléfono válido (10 dígitos)</div>
+          <div *ngIf="newContactForm.get('contactValue')?.errors?.['contactExists']">Contacto ya existente</div>
         </div>
       </div>
     </div>
