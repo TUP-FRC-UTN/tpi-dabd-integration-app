@@ -14,7 +14,7 @@ import { AccessService } from '../../../../services/access/access.service';
   standalone: true,
   imports: [CommonModule, FormsModule, BaseChartDirective],
   templateUrl: './access-pie-dashboard.component.html',
-  styleUrl: './access-pie-dashboard.component.css',
+  styleUrl: './access-pie-dashboard.component.scss',
 })
 export class AccessPieDashboardComponent {
   @ViewChild(BaseChartDirective) chart!: BaseChartDirective;

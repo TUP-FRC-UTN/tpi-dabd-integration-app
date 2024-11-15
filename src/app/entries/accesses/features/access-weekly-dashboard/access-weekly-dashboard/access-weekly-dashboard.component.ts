@@ -14,7 +14,7 @@ import { AccessService } from '../../../../services/access/access.service';
   standalone: true,
   imports: [CommonModule, FormsModule, BaseChartDirective],
   templateUrl: './access-weekly-dashboard.component.html',
-  styleUrl: './access-weekly-dashboard.component.css',
+  styleUrl: './access-weekly-dashboard.component.scss',
 })
 export class AccessWeeklyDashboardComponent {
   @ViewChild(BaseChartDirective) chart!: BaseChartDirective;

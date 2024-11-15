@@ -11,7 +11,7 @@ import { AccessService } from '../../../../services/access/access.service';
   standalone: true,
   imports: [CommonModule, FormsModule, BaseChartDirective],
   templateUrl: './access-hourly-dashboard.component.html',
-  styleUrl: './access-hourly-dashboard.component.css',
+  styleUrl: './access-hourly-dashboard.component.scss',
 })
 export class AccessHourlyDashboardComponent implements AfterViewInit {
   @ViewChild(BaseChartDirective) chart!: BaseChartDirective;

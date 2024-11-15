@@ -3,9 +3,6 @@
  * @implements OnInit, AfterViewInit
  */
 import {AfterViewInit, Component, inject, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {AccessHourlyDashboardComponent} from '../../accesses/access-hourly-dashboard/access-hourly-dashboard.component';
-import {AccessWeeklyDashboardComponent} from '../../accesses/access-weekly-dashboard/access-weekly-dashboard.component';
-import {AccessPieDashboardComponent} from '../../accesses/access-pie-dashboard/access-pie-dashboard.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MainContainerComponent} from "ngx-dabd-grupo01";
 import {NgbModal, NgbPopover} from '@ng-bootstrap/ng-bootstrap';
@@ -20,6 +17,9 @@ import {NgClass} from "@angular/common";
 import { GoogleChartsModule } from 'angular-google-charts';
 import { DashBoardFilters, DashboardStatus } from '../../models/dashboard/dashboard.model';
 import { AccessService } from '../../services/access/access.service';
+import { AccessHourlyDashboardComponent } from '../../accesses/features/access-hourly-dashboard/access-hourly-dashboard/access-hourly-dashboard.component';
+import { AccessWeeklyDashboardComponent } from '../../accesses/features/access-weekly-dashboard/access-weekly-dashboard/access-weekly-dashboard.component';
+import { AccessPieDashboardComponent } from '../../accesses/features/access-pie-dashboard/access-pie-dashboard/access-pie-dashboard.component';
 
 @Component({
   selector: 'app-general-dashboards',

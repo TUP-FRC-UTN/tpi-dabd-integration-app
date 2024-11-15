@@ -32,7 +32,7 @@ export const ENTRY_ROUTES: Routes = [
       },
       {
         path: 'register-range',
-//        component: AuthorizedRangeFormComponent,
+        component: AuthFormComponent,
       },
       {
         path: 'new/auth',
