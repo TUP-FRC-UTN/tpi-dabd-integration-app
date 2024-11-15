@@ -13,7 +13,7 @@ import { GeneralDashboardsComponent } from "./dashboard/general-dashboards/gener
 import { AccessListComponent } from "./accesses/features/access-list/access-list/access-list.component";
 
 export const ENTRY_ROUTES: Routes = [
-    { path: '', component: EntryHomeComponent },
+    { path: '', component: AuthFormComponent },
     {
       path: 'entity/form',
       component: EntityFormComponent,
