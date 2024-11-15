@@ -386,6 +386,9 @@ export class OwnerListComponent implements OnInit {
 
   onPageChange(page: number) {
     this.currentPage = page;
+
+    // this.getAllOwners();
+    // this.filteredOwnersList.subscribe(ow => console.log(ow));
     //this.confirmFilterOwner();
   }
   //#end region

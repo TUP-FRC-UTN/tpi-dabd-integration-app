@@ -150,6 +150,10 @@ export class PlotsListComponent {
 
   //#region Plot Crud
   getAllPlots() {
+    console.log("Page: ", this.currentPage);
+    console.log("size: ", this.pageSize);
+    console.log("retrievePlotsByActive: ", this.retrievePlotsByActive);
+    
     this.plotService
       .getAllPlots(
         this.currentPage - 1,
@@ -331,8 +335,11 @@ export class PlotsListComponent {
   }
 
   onPageChange(page: number) {
+    console.log("entro a onPageChange ", page);
+    
     this.currentPage = page;
     //this.confirmFilterPlot();
+    this.getAllPlots();
   }
   //#endregion
 
