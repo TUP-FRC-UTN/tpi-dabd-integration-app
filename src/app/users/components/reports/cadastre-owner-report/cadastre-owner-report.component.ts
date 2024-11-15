@@ -263,6 +263,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
   resetDateFilter() {
     this.dateFilterFrom = ""
     this.dateFilterTo = ""
+    this.chartFilters = {}
   }
 
 
