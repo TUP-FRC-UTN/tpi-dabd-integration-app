@@ -343,7 +343,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
   private router = inject(Router);
 
   navigateToTopSuppliers() {
-    this.router.navigate(['/gastos/top-proveedores']);
+    this.router.navigate(['expenses//gastos/top-proveedores']);
   }
 
   //De aca para abajo son los metodos que crean los graficos

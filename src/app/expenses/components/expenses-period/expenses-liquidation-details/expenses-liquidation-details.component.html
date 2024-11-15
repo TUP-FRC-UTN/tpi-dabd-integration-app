@@ -36,14 +36,13 @@
   </td>
 </ng-template>
 
-<ng-template #actionsTemplate let-item>
-  @if(period.state !== 'Cerrado') {
+<ng-template #actionsTemplate let-bill>
+  @if(bill.period.state !== 'Cerrado') {
 
     <td style="
       display: flex;
       flex-direction: row;
       gap: 2px;
-      justify-content: center;
     ">
       <div class="btn-group" ngbDropdown>
         <button
@@ -55,20 +54,26 @@
           <i class="bi bi-three-dots-vertical"></i>
         </button>
         <div ngbDropdownMenu>
-          <button type="button" class="dropdown-item" (click)="showPaidModal(item)">
+          <button type="button" class="dropdown-item" (click)="showPaidModal(bill)">
             Detalles
           </button>
-          <button type="button" class="dropdown-item" (click)="edit(item)">
+          <button type="button" class="dropdown-item" (click)="edit(bill)">
             Editar
           </button>
-          <button type="button" class="dropdown-item" (click)="deleteBill(item)">
-            Eliminar
-          </button>
+          @if(bill.status === 'Activo') {
+            <button type="button" class="dropdown-item" (click)="deleteBill(bill)">
+              Eliminar
+            </button>
+          } @else {
+            <button type="button" class="dropdown-item" (click)="activeBill(bill)">
+              Activar
+            </button>
+          }
         </div>
       </div>
     </td>
   } @else {
-    <button type="button" class="btn btn-primary" (click)="showPaidModal(item)">
+    <button type="button" class="btn btn-primary" (click)="showPaidModal(bill)">
       <i class="bi bi-eye"></i>
     </button>
   }

@@ -24,84 +24,6 @@
         </div>
       </div>
     </div>
-    
-
-    <!-- <div class="col-md-6">
-      <div class="d-flex align-items-center">
-        <label for="lote" class="col-sm-4 col-form-label">Lote<span class="text-danger">*</span></label>
-        <div class="col-sm-8">
-          <select
-            class="form-select rounded-end-3"
-            id="lote"
-            formControlName="lotId"
-            [ngClass]="{ 'is-invalid': chargeForm.controls['lotId'].touched && chargeForm.controls['lotId'].hasError('required') }"
-          >
-            <option value="">Seleccione un lote</option>
-            @for (lot of lots; track $index) {
-              <option [value]="lot.id">{{lot.plot_number}}</option>
-            }
-          </select>
-          <div *ngIf="chargeForm.controls['lotId'].touched && chargeForm.controls['lotId'].hasError('required')" class="invalid-feedback">
-            El lote es obligatorio.
-          </div>
-        </div>
-      </div>
-    </div> -->
-    <div class="col-md-6">
-      <div class="d-flex align-items-center">
-        <label for="lotId" class="col-sm-2 col-form-label">Lote<span class="text-danger">*</span></label>
-        <div class="col-sm-10">
-          <div class="input-group">
-            <ng-select
-              id="lotId"
-              [items]="lots"
-              bindLabel="plot_number"
-              bindValue="id"
-              formControlName="lotId"
-              [placeholder]="chargeForm.get('lotId')?.value ? '' : 'Seleccione un lote'"
-              [appendTo]="'body'"
-              [ngClass]="{
-                'is-invalid': chargeForm.get('lotId')?.invalid && (chargeForm.get('lotId')?.dirty || chargeForm.get('lotId')?.touched),
-                'is-valid': chargeForm.get('lotId')?.valid && (chargeForm.get('lotId')?.dirty || chargeForm.get('lotId')?.touched)
-              }"
-              [searchable]="true"
-              notFoundText="No se encontraron lotes"
-              class="form-select"
-            >
-            </ng-select>
-            @if(chargeForm.controls['lotId'].touched && chargeForm.controls['lotId'].hasError('required')){
-              <div class="invalid-feedback">
-                El lote es obligatorio.
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-    </div>
-    
-
-    <!-- Segunda fila con Categoría y Periodo -->
-    <!-- <div class="col-md-6">
-      <div class="d-flex align-items-center">
-        <label for="tipo" class="col-sm-4 col-form-label">Categoría<span class="text-danger">*</span></label>
-        <div class="col-sm-8">
-          <select
-            id="tipo"
-            class="form-select rounded-end-3"
-            formControlName="categoryChargeId"
-            [ngClass]="{ 'is-invalid': chargeForm.controls['categoryChargeId'].touched && chargeForm.controls['categoryChargeId'].hasError('required') }"
-          >
-            <option value="">Seleccione una categoría</option>
-            @for (item of categoriaCargos; track $index) {
-              <option value="{{item.categoryChargeId}}">{{item.name}}</option>
-            }
-          </select>
-          <div *ngIf="chargeForm.controls['categoryChargeId'].touched && chargeForm.controls['categoryChargeId'].hasError('required')" class="invalid-feedback">
-            La categoría es obligatoria.
-          </div>
-        </div>
-      </div>
-    </div> -->
 
     <div class="col-md-6">
       <div class="d-flex align-items-center">
@@ -137,31 +59,6 @@
         </div>
       </div>
     </div>
-    
-    
-    
-    
-
-    <!-- <div class="col-md-6">
-      <div class="d-flex align-items-center">
-        <label for="periodo" class="col-sm-4 col-form-label">Periodo<span class="text-danger">*</span></label>
-        <div class="col-sm-8">
-          <select
-            class="form-select rounded-end-3"
-            formControlName="periodId"
-            [ngClass]="{ 'is-invalid': chargeForm.controls['periodId'].touched && chargeForm.controls['periodId'].hasError('required') }"
-          >
-            <option value="">Seleccione un periodo</option>
-            @for (item of listPeriodo; track $index) {
-              <option value="{{ item.id }}">{{ item.month }} / {{ item.year }}</option>
-            }
-          </select>
-          <div *ngIf="chargeForm.controls['periodId'].touched && chargeForm.controls['periodId'].hasError('required')" class="invalid-feedback">
-            El periodo es obligatorio.
-          </div>
-        </div>
-      </div>
-    </div> -->
 
     <div class="col-md-6">
       <div class="d-flex align-items-center">
@@ -193,8 +90,8 @@
         </div>
       </div>
     </div>
-    
-    
+
+
 
     <!-- Tercera fila con Monto -->
 
@@ -226,7 +123,7 @@
         </div>
       </div>
     </div>
-    
+
 
     <!-- Cuarta fila con Descripción ocupando toda la fila -->
     <div class="col-12">
@@ -238,17 +135,7 @@
         </div>
       </div>
     </div>
-    
-    <!-- <div class="col-md">
-      <div class="d-flex align-items-center">
-        <label for="description" class="col-sm-1 col-form-label">Descripción</label>
-        <div class="col-sm-11">
-          <textarea placeholder="Ingrese una descripción" id="description" formControlName="description"
-            class="form-control" rows="3"
-            [ngClass]="{'is-invalid': billForm.get('description')?.invalid && (billForm.get('description')?.dirty || billForm.get('description')?.touched)}"></textarea>
-        </div>
-      </div>
-    </div> -->
+
 
     <!-- Fila de botones -->
     <div class="col-12 d-flex justify-content-end">

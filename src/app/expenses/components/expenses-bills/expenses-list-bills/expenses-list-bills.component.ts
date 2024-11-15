@@ -128,7 +128,7 @@ export class ExpensesListBillsComponent implements OnInit {
     const filterPeriod = value['period.id'] || 0;
     const filterType = value['billType.name'] || 0;
     let filterStatus = '';
-    if (value['isActive'] !== 'undefined') 
+    if (value['isActive'] !== 'undefined')
       filterStatus = value['isActive'] === 'true' ? 'Activo' : 'Cerrado';
 
     const filtered = this.allBills.filter((bill) => {
@@ -148,7 +148,7 @@ export class ExpensesListBillsComponent implements OnInit {
         ? bill.status === filterStatus
         : true;
 
-      return matchesCategory && matchesSupplier && matchesPeriod && 
+      return matchesCategory && matchesSupplier && matchesPeriod &&
              matchesType && matchesStatus;
     });
 
@@ -349,7 +349,7 @@ export class ExpensesListBillsComponent implements OnInit {
   private loadBills(): void {
     this.isLoading = true;
     const filters = this.filters.value;
-    
+
     this.billService
       .getAllBillsAndPagination(
         0,
@@ -366,9 +366,9 @@ export class ExpensesListBillsComponent implements OnInit {
           this.billService.formatBills(of(response)).subscribe((bills) => {
             if (bills) {
               this.allBills = this.sortBills(bills);
-              
+
               this.totalItems = this.allBills.length;
-              
+
               const startIndex = (this.page - 1) * this.size;
               const endIndex = startIndex + this.size;
               this.bills = this.allBills.slice(startIndex, endIndex);
@@ -399,7 +399,7 @@ export class ExpensesListBillsComponent implements OnInit {
         if (statusComparison !== 0) {
             return statusComparison;
         }
-        
+
         return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
 }
@@ -598,6 +598,6 @@ export class ExpensesListBillsComponent implements OnInit {
   };
 
   nuevoGasto() {
-    this.router.navigate(['/gastos/nuevo']);
+    this.router.navigate(['expenses//gastos/nuevo']);
   }
 }

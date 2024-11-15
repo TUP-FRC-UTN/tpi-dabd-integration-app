@@ -170,7 +170,7 @@ export class ExpensesAddBillComponent implements OnInit {
               'El gasto se ha añadido correctamente.'
             );
             this.resetForm();
-            this.router.navigate([`gastos`]);
+            this.router.navigate([`expenses/gastos`]);
           },
           error: (error: any) => {
             if (error.status === 409) {
@@ -191,7 +191,7 @@ export class ExpensesAddBillComponent implements OnInit {
   // #endregion
 
   onBack() {
-    this.router.navigate([`gastos`]);
+    this.router.navigate([`expenses/gastos`]);
   }
   // #region Form Utilities
   resetForm() {

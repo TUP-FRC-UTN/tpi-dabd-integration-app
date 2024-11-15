@@ -24,9 +24,19 @@ import { ExpensesListBillsComponent } from './components/expenses-bills/expenses
 import {authGuard} from '../users/guards/auth.guard';
 import {hasRoleCodeGuard} from '../users/guards/has-role-code.guard';
 import {URLTargetType} from '../users/models/role';
+import { ExpensesListCategoryChargesComponent } from './components/expenses-charges/expenses-list-category-charges/expenses-list-categorycharge.component';
 
 export const EXPENSES_ROUTES: Routes = [
   // Ruta periodos - manejo del estado del periodo
+  {
+    path: '',
+    component: ExpensesReportComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
   {
     path: 'periodo',
     component: ExpensesPeriodListComponent,
@@ -128,6 +138,15 @@ export const EXPENSES_ROUTES: Routes = [
       allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
     }
   },
+  {
+    path: 'cargos/categorias',
+    component: ExpensesListCategoryChargesComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
 
   // Ruta bills - CRUD de gastos
   {
@@ -142,6 +161,15 @@ export const EXPENSES_ROUTES: Routes = [
   {
     path: 'gastos/nuevo',
     component: ExpensesAddBillComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
+  {
+    path: 'gastos/report',
+    component: ExpensesReportComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
     data: {
