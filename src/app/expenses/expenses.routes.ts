@@ -43,7 +43,7 @@ export const EXPENSES_ROUTES: Routes = [
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
     data: {
-      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE]
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
     }
   },
   {
@@ -52,7 +52,7 @@ export const EXPENSES_ROUTES: Routes = [
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
     data: {
-      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE]
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
     }
   },
   {
@@ -61,7 +61,7 @@ export const EXPENSES_ROUTES: Routes = [
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
     data: {
-      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE]
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
     }
   },
   {
@@ -70,7 +70,7 @@ export const EXPENSES_ROUTES: Routes = [
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
     data: {
-      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE]
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
     }
   },
 
