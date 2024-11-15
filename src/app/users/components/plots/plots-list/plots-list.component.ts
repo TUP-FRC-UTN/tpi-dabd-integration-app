@@ -72,12 +72,6 @@ export class PlotsListComponent {
   //#endregion
 
   //#region ATT de FILTROS
-  applyFilterWithNumber: boolean = false;
-  applyFilterWithCombo: boolean = false;
-  contentForFilterCombo: string[] = [];
-  actualFilter: string | undefined = PlotFilters.NOTHING;
-  filterTypes = PlotFilters;
-  filterInput: string = '';
 
   //itemsList!: Plot[];
   formPath: string = '/users/plot/form';
@@ -130,10 +124,12 @@ export class PlotsListComponent {
   ];
   //#endregion
 
+  filters?: Record<string, any>
+
   //#region NgOnInit | BUSCAR
   ngOnInit() {
     //this.confirmFilterPlot();
-    this.getAllPlots();
+    this.confirmSearch();
   }
 
   ngAfterViewInit(): void {
@@ -153,7 +149,7 @@ export class PlotsListComponent {
     console.log("Page: ", this.currentPage);
     console.log("size: ", this.pageSize);
     console.log("retrievePlotsByActive: ", this.retrievePlotsByActive);
-    
+
     this.plotService
       .getAllPlots(
         this.currentPage - 1,
@@ -197,6 +193,16 @@ export class PlotsListComponent {
 
   //#region Filters
   filterChange($event: Record<string, any>) {
+    this.filters = $event
+    this.confirmSearch()
+  }
+
+  clearFilter() {
+    this.currentPage = 0
+    this.confirmSearch();
+  }
+
+  dinamicFilter($event: Record<string, any>) {
     this.plotService.dinamicFilters(0, this.pageSize, $event).subscribe({
       next: (result) => {
         this.plotsList = result.content;
@@ -206,6 +212,10 @@ export class PlotsListComponent {
       },
       error: (err) => console.log(err),
     });
+  }
+
+  confirmSearch() {
+    this.filters == undefined ? this.getAllPlots() : this.dinamicFilter(this.filters);
   }
 
   onFilterTextBoxChanged(event: Event) {
@@ -330,23 +340,20 @@ export class PlotsListComponent {
 
   //#region Pageable
   onItemsPerPageChange() {
-    this.currentPage = 1;
-    //this.confirmFilterPlot();
+    this.currentPage = 0;
+    this.confirmSearch();
   }
 
   onPageChange(page: number) {
-    console.log("entro a onPageChange ", page);
-    
     this.currentPage = page;
-    //this.confirmFilterPlot();
-    this.getAllPlots();
+    this.confirmSearch();
   }
   //#endregion
 
   //#region EXPORT FUNCTIONS
   exportToPdf() {
     const doc = new jsPDF();
-  
+
     doc.setFontSize(18);
     doc.text('Lotes', 14, 20);
 
@@ -592,8 +599,8 @@ export class PlotsListComponent {
       default:
         break;
     }
-  } 
-  
+  }
+
   filterPlotByBlock(blockNumber : string, isActive? : boolean) {
     this.plotService.filterPlotByBlock(this.currentPage, this.pageSize, blockNumber, this.retrievePlotsByActive).subscribe(
       response => {
@@ -635,7 +642,7 @@ export class PlotsListComponent {
       }
     )
   }
-  
+
   */
   //#endregion
 
@@ -643,4 +650,6 @@ export class PlotsListComponent {
     const formatted = (Math.round(value * 100) / 100).toFixed(2);
     return `$ ${formatted.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
   }
+
+
 }
