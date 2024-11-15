@@ -1,5 +1,4 @@
-import { DaysOfWeek } from "./authorizeRequest.model";
-
+import { DaysOfWeek } from './authorizeRequest.model';
 
 export interface AuthRange {
   authRangeId: number;
@@ -45,18 +44,29 @@ export interface Auth {
 }
 
 export const VisitorTypeAccessDictionary: { [key: string]: string } = {
-  "Visitante": "VISITOR",
-  "Proveedor": "PROVIDER",
-  "Propietario": "OWNER",
-  "Trabajador": "WORKER",
-  "Empleado": "EMPLOYEE",
-  "Conviviente": "COHABITANT",
-  "Emergencia": "EMERGENCY",
-  "Entidad": "PROVIDER_ORGANIZATION",
+  Visitante: 'VISITOR',
+  Proveedor: 'PROVIDER',
+  Propietario: 'OWNER',
+  Trabajador: 'WORKER',
+  Empleado: 'EMPLOYEE',
+  Conviviente: 'COHABITANT',
+  Emergencia: 'EMERGENCY',
+  Entidad: 'PROVIDER_ORGANIZATION',
+};
+
+export const VisitorTypeIconDictionary: { [key: string]: string } = {
+  VISITOR: 'bi-person',
+  PROVIDER: 'bi-truck',
+  OWNER: 'bi-house-door',
+  WORKER: 'bi-wrench',
+  EMPLOYEE: 'bi-briefcase',
+  COHABITANT: 'bi-people-fill',
+  EMERGENCY: 'bi-exclamation-triangle-fill',
+  PROVIDER_ORGANIZATION: 'bi-building',
 };
 
 export enum AuthFilters {
   NOTHING = 'NOTHING',
   PLOT_ID = 'Nro de lote',
-  VISITOR_TYPE = 'VISITOR_TYPE'
+  VISITOR_TYPE = 'VISITOR_TYPE',
 }
