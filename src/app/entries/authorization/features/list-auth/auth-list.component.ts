@@ -73,37 +73,80 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
    this.currentPage = 0;
    }
 
-  filterConfig: Filter[] = new FilterConfigBuilder()
-  .selectFilter('Tipo Visitante', 'visitorTypes', 'Seleccione el tipo de visitante', [
-    { value: 'VISITOR', label: 'Visitante' },
-    { value: 'WORKER', label: 'Trabajador' },
-    { value: 'OWNER', label: 'Propietario' },
-    { value: 'PROVIDER', label: 'Proveedor' },
-    { value: 'EMPLOYEE', label: 'Empleado' },
-    { value: 'COHABITANT', label: 'Conviviente' },
-    { value: 'EMERGENCY', label: 'Emergencia' },
-    { value: 'PROVIDER_ORGANIZATION', label: 'Entidad' },
-  ])
-  .numberFilter('Nro de lote' , 'plotNumber' , 'Seleccione un numero de lote')
-  .build();
+   filterConfig: Filter[] = new FilterConfigBuilder()
+   .selectFilter('Tipo Visitante', 'visitorType', 'Seleccione el tipo de visitante', [
+     { value: 'VISITOR', label: 'Visitante' },
+     { value: 'WORKER', label: 'Trabajador' },
+     { value: 'OWNER', label: 'Propietario' },
+     { value: 'PROVIDER', label: 'Proveedor' },
+     { value: 'EMPLOYEE', label: 'Empleado' },
+     { value: 'COHABITANT', label: 'Conviviente' },
+     { value: 'EMERGENCY', label: 'Emergencia' },
+     { value: 'PROVIDER_ORGANIZATION', label: 'Entidad' },
+   ])
+   .numberFilter('Nro de lote', 'plotNumber', 'Ingrese el número de lote')
+   .build();
 
 
-   onFilterValueChange(filters: Record<string,any>) {
+   onFilterValueChange(filters: Record<string, any>) {
     this.searchParams = {
-      ...filters,
+      ...this.searchParams,  // Mantener filtros anteriores
+      ...filters            // Agregar nuevos filtros
     };
 
     this.currentPage = 1;
-    console.log(this.searchParams);
+    
+    // Obtener todos los datos primero
+    this.authService.getAll(this.currentPage, this.pageSize, this.retrieveByActive).subscribe(data => {
+      let filteredData = [...data];
 
-    if(this.searchParams['visitorTypes']){
-      this.filterByVisitorType(this.searchParams['visitorTypes']);
-    }else if(this.searchParams['plotNumber']){
-    this.filterByPlot(this.searchParams['plotNumber']);
-    }else{
-     this.getAll();
-    }
-}
+      // Aplicar filtro por tipo de visitante
+      if (this.searchParams['visitorType']) {
+        filteredData = filteredData.filter(item => 
+          item.visitorType === this.searchParams['visitorType']
+        );
+      }
+
+      // Aplicar filtro por número de lote
+      if (this.searchParams['plotNumber']) {
+        filteredData = filteredData.filter(item => 
+          item.plotId === Number(this.searchParams['plotNumber'])
+        );
+      }
+
+      // Filtrar por tipo de usuario si es necesario
+      if (this.userType === "OWNER") {
+        filteredData = filteredData.filter(x => x.plotId == 2);
+      }
+      if (this.userType === "GUARD") {
+        filteredData = filteredData.filter(x => x.isActive);
+      }
+
+      // Procesar los datos filtrados
+      filteredData.forEach(date => {
+        date.authorizer = this.authorizerCompleterService.completeAuthorizer(date.authorizerId);
+        if (date.authorizer === undefined) {
+          date.authorizer = this.authorizerCompleterService.completeAuthorizer(1);
+        }
+      });
+
+      // Transformar y actualizar la vista
+      this.completeList = this.transformLotListToTableData(filteredData);
+      let response = this.transformResponseService.transformResponse(
+        filteredData,
+        this.currentPage,
+        this.pageSize,
+        this.retrieveByActive
+      );
+
+      this.list = response.content;
+      this.filteredList = [...this.list];
+      this.lastPage = response.last;
+      this.totalItems = filteredData.length;
+    }, error => {
+      console.error('Error getting:', error);
+    });
+  }
 
   @ViewChild('filterComponent') filterComponent!: CadastrePlotFilterButtonsComponent<AccessModel>;
   @ViewChild('table', {static: true}) tableName!: ElementRef<HTMLTableElement>;
@@ -424,7 +467,7 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
     // Eliminar la última ' y '
     res = res.slice(0, res.length - 3);
     return res;
-}
+ }
 
 
   //#region FUNCIONES PARA PAGINADO
@@ -533,3 +576,5 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
   
   protected readonly VisitorTypeIconDictionary = VisitorTypeIconDictionary;
 }
+
+
