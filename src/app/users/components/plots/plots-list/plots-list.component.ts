@@ -146,10 +146,6 @@ export class PlotsListComponent {
 
   //#region Plot Crud
   getAllPlots() {
-    console.log("Page: ", this.currentPage);
-    console.log("size: ", this.pageSize);
-    console.log("retrievePlotsByActive: ", this.retrievePlotsByActive);
-
     this.plotService
       .getAllPlots(
         this.currentPage - 1,
@@ -198,6 +194,7 @@ export class PlotsListComponent {
   }
 
   clearFilter() {
+    this.filters = undefined;
     this.currentPage = 0
     this.confirmSearch();
   }
