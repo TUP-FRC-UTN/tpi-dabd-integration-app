@@ -17,7 +17,7 @@ export class OwnerPlotService {
 
   host: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}`;
   giveActualOwner(plotId : number) {
-    return this.http.get<Owner>(`${this.host}/owner/current/plot/${plotId}`);
+    return this.http.get<Owner>(`${this.host}owner/current/plot/${plotId}`);
   }
 
   giveAllOwnersByPlot(plotId: number | string, page: number, size: number) {
@@ -43,7 +43,7 @@ export class OwnerPlotService {
     .set('page', page.toString())
     .set('size', size.toString());
 
-    return this.http.get<PaginatedResponse<Plot>>(`${this.host}/plot/owner/${ownerId}`, { params }).pipe(
+    return this.http.get<PaginatedResponse<Plot>>(`${this.host}plot/owner/${ownerId}`, { params }).pipe(
       map((response: PaginatedResponse<any>) => {
         const transformPipe = new TransformPlotPipe();
         const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
@@ -57,6 +57,6 @@ export class OwnerPlotService {
 
   removePlot(plotId : number, ownerId : number) {
     //TODO: Rehacer el back para que acepte esta llamada
-    return this.http.delete<any>(`${this.host}/remove/owner/${ownerId}/plot/${plotId}`);
+    return this.http.delete<any>(`${this.host}remove/owner/${ownerId}/plot/${plotId}`);
   }
 }
