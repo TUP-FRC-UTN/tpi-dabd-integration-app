@@ -140,25 +140,64 @@ export class AccessListComponent implements OnInit, AfterViewInit {
  .build();
 
 
-  onFilterValueChange(filters: Record<string,any>) {
-   this.searchParams = {
-     ...filters,
-   };
+ onFilterValueChange(filters: Record<string,any>) {
+  this.searchParams = {
+    ...filters,
+  };
 
-   this.currentPage = 1;
-   console.log(this.searchParams);
+  this.currentPage = 1;
+  console.log(this.searchParams);
 
-   if(this.searchParams['visitorTypes']){
-     this.filterByVisitorType(this.searchParams['visitorTypes']);
-   } else if(this.searchParams['action']){
-    this.filterByAction(this.searchParams['action'])
-   }else if(this.searchParams['startDate'] && this.searchParams['endDate'] ){
-    console.log('hhhh')
-    this.filterByDate(this.searchParams['startDate'] , this.searchParams['endDate'] )
-   }
-   else{
-    this.getAll();
-   }
+  // Obtener todos los datos
+  this.accessService.getAll(this.currentPage, this.pageSize, this.retrieveByActive).subscribe(data => {
+    let filteredData = [...data.items];
+
+    // Aplicar todos los filtros activos
+    if (this.searchParams['visitorTypes']) {
+      filteredData = filteredData.filter(item => 
+        item.visitorType === this.searchParams['visitorTypes']
+      );
+    }
+
+    if (this.searchParams['action']) {
+      filteredData = filteredData.filter(item => 
+        item.action === this.searchParams['action']
+      );
+    }
+
+    if (this.searchParams['startDate'] && this.searchParams['endDate']) {
+      const startDate = new Date(new Date(this.searchParams['startDate']+"T00:00:00").setHours(0,0,0,0));
+      const endDate = new Date(new Date(this.searchParams['endDate']+"T00:00:00").setHours(23,59,59,999));
+      
+      filteredData = filteredData.filter(item => {
+        const itemDate = new Date(new Date(item.actionDate).setHours(0,0,0,0));
+        return itemDate >= startDate && itemDate <= endDate;
+      });
+    }
+
+    // Transformar y mostrar los resultados
+    let response = this.transformResponseService.transformResponse(
+      filteredData,
+      this.currentPage,
+      this.pageSize,
+      this.retrieveByActive
+    );
+
+    response.content.forEach(data => {
+      if (data.authorizerId != undefined && data.authorizerId < 10) {
+        data.authorizer = this.authorizerCompleterService.completeAuthorizer(data.authorizerId);
+      } else {
+        data.authorizer = this.authorizerCompleterService.completeAuthorizer(3);
+      }
+    });
+
+    this.list = response.content;
+    this.filteredList = [...this.list];
+    this.lastPage = response.last;
+    this.totalItems = filteredData.length;
+  }, error => {
+    console.error('Error getting:', error);
+  });
 }
 
   //#region NgOnInit | BUSCAR
