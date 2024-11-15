@@ -1,7 +1,5 @@
 import { Component, inject, TemplateRef, ViewChild } from '@angular/core';
-import { MainContainerComponent } from '../../../../../../../projects/ngx-dabd-grupo01/src/lib/main-container/main-container.component';
-import { TableComponent } from '../../../../../../../projects/ngx-dabd-grupo01/src/lib/table/table.component';
-import { ConfirmAlertComponent, TableColumn } from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, Filter, FilterConfigBuilder, MainContainerComponent, TableColumn, TableComponent } from 'ngx-dabd-grupo01';
 import { Observable } from 'rxjs';
 import {
   InfractionResponseDTO,
@@ -10,10 +8,6 @@ import {
 import { InfractionServiceService } from '../../services/infraction-service.service';
 import { ChartConfiguration, ChartDataset, ChartOptions } from 'chart.js';
 import { CommonModule } from '@angular/common';
-import {
-  Filter,
-  FilterConfigBuilder,
-} from '../../../../../../../projects/ngx-dabd-grupo01/src/public-api';
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
 import { BaseChartDirective } from 'ng2-charts';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';

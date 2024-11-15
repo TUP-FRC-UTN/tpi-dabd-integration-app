@@ -1,19 +1,13 @@
 import { Component, inject, TemplateRef, ViewChild } from '@angular/core';
-import { MainContainerComponent } from '../../../../../../../projects/ngx-dabd-grupo01/src/lib/main-container/main-container.component';
-import { TableComponent } from '../../../../../../../projects/ngx-dabd-grupo01/src/lib/table/table.component';
 import { Observable } from 'rxjs';
 import { Fine } from '../../models/fine.model';
 import { FineService } from '../../services/fine.service';
 import { CommonModule } from '@angular/common';
-import { ConfirmAlertComponent, TableColumn } from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, Filter, FilterConfigBuilder, MainContainerComponent, TableColumn, TableComponent } from 'ngx-dabd-grupo01';
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
 import { FineStatusEnum } from '../../models/fine-status.enum';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartDataset, ChartOptions } from 'chart.js';
-import {
-  Filter,
-  FilterConfigBuilder,
-} from '../../../../../../../projects/ngx-dabd-grupo01/src/public-api';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 
