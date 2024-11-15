@@ -7,7 +7,7 @@ import { kpiModel } from '../../../models/dashboard/dashboard.model';
   standalone: true,
   imports: [],
   templateUrl: './kpi.component.html',
-  styleUrl: './kpi.component.css'
+  styleUrl: './kpi.component.scss'
 })
 export class KpiComponent {
   @Input() kpi:kpiModel = {} as kpiModel
