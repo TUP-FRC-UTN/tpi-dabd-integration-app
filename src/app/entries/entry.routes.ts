@@ -9,6 +9,7 @@ import { VisitorFormComponent } from "./visitor/features/visitor-form/visitor-fo
 import { QrComponent } from "./qr/qr.component";
 import { EntityFormComponent } from "./entities/features/entity-form/entity-form/entity-form.component";
 import { EntityListComponent } from "./entities/features/entity-list/entity-list/entity-list.component";
+import { GeneralDashboardsComponent } from "./dashboard/general-dashboards/general-dashboards.component";
 
 export const ENTRY_ROUTES: Routes = [
     { path: '', component: EntryHomeComponent },
@@ -47,6 +48,10 @@ export const ENTRY_ROUTES: Routes = [
       {
         path: 'access-form',
         component: AccessFormComponent,
+      },
+      {
+        path: 'dashboard',
+        component: GeneralDashboardsComponent,
       },
       {
         path: '',

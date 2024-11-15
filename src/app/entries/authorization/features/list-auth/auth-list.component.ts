@@ -10,22 +10,18 @@ import {Router} from "@angular/router";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AuthService} from "../../../services/authorized-range/auth.service";
 import {AuthorizerCompleterService} from "../../../services/authorized-range/authorizer-completer.service";
-import {ExcelService} from "../../../services/excel.service";
 import {CadastrePlotFilterButtonsComponent} from "../../../accesses/features/cadastre-access-filter-buttons/cadastre-plot-filter-buttons.component";
 import {Filter, FilterConfigBuilder, MainContainerComponent, ToastService} from "ngx-dabd-grupo01";
 import {NgbModal, NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {AccessActionDictionary, AccessModel} from "../../../models/accesses/access.model";
-import {AccessService} from "../../../services/access/access.service";
 import {TransformResponseService} from "../../../services/transform-response.service";
-import { CadastreExcelService } from '../../../services/cadastre-excel.service';
 import {UserTypeService} from "../../../services/user-type.service";
 import {LoginService} from "../../../services/access/login.service";
-import {RangeModalComponent} from "../authorized-range-form/authorized-range-form.component";
-import {QrComponent} from "../../../old/qr/features/qr/qr.component";
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import {NgClass} from "@angular/common";
 import {DaysOfWeek} from "../../../models/authorization/authorizeRequest.model";
+import { QrComponent } from '../../../qr/qr.component';
 
 @Component({
   selector: 'app-auth-list',

@@ -51,6 +51,10 @@ export class AppComponent {
           label: 'Listado de Autorización',
           routerLink: 'entries/auth-list',
         },
+        {
+          label: 'Dashboards',
+          routerLink: 'entries/dashboard',
+        },
       ],
 
     },

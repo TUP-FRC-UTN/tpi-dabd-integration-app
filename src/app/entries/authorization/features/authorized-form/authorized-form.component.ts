@@ -1,10 +1,8 @@
 import {Component, inject, OnInit,} from '@angular/core';
 import {FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule, FormArray} from '@angular/forms';
 import {CommonModule, NgClass} from '@angular/common';
-import {DaysOfWeek} from '../../../models/authorization/authorizeRequest.model';
 import {AuthService} from "../../../services/authorized-range/auth.service";
 import {LoginService} from "../../../services/access/login.service";
-import Swal from 'sweetalert2';
 import {NgIf} from "@angular/common";
 import {ActivatedRoute, Router} from "@angular/router";
 import {UserTypeService} from "../../../services/user-type.service";
