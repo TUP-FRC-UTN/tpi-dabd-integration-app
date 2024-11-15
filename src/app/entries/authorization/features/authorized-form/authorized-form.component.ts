@@ -32,23 +32,25 @@ export class AuthFormComponent implements OnInit {
   isUpdate = false
   paramRoutes = inject(ActivatedRoute);
   modalService = inject(NgbModal);
-  toastService = inject(ToastService);
+  private toastService = inject(ToastService);
   userType: string = "ADMIN"
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private loginService: LoginService
-    , private router: Router, private userTypeService: UserTypeService) {
- 
+  constructor(private fb: FormBuilder, private authService: AuthService,
+     private loginService: LoginService, private router: Router, 
+     private userTypeService: UserTypeService, private route: ActivatedRoute) {
+  
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
           this.toastService.clear(); // Limpiar los toasts al cambiar de pantalla
       }
   });
-
+  
   }
 
   ngOnInit(): void {
-    this.initPlots();
     this.authForm = this.createForm();
+    this.initPlots()
+
 
     this.userType = this.userTypeService.getType()
     if (this.userType == "OWNER"){
@@ -169,13 +171,14 @@ export class AuthFormComponent implements OnInit {
 
   onSubmit() {
     if (this.authForm.valid) {
-      if(this.authForm.value.visitorType == undefined){
+      if(!this.authForm.value.visitorType){
         this.authForm.value.visitorType = "VISITOR"
       }
-      if(this.authForm.value.plotId == undefined){
+      if(!this.authForm.value.plotId){
         this.authForm.value.plotId = 2
       }
       const formData = this.authForm.value;
+      console.log(formData);
 
       const now = new Date();
 
@@ -199,6 +202,7 @@ export class AuthFormComponent implements OnInit {
       const finalDateFrom = isNewDay ? formatDate(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0)) : dateFrom;
 
       if (formData.authRangeRequest.length === 0) {
+       
         const authRange = {
           dateFrom: finalDateFrom,
           dateTo: formatDate(dateTo),
@@ -229,25 +233,23 @@ export class AuthFormComponent implements OnInit {
         }
         this.authService.createAuth(formData, this.loginService.getLogin().id.toString()).subscribe(data => {
           this.toastService.sendSuccess("Registro exitoso.");
-
+          
         });
       }
       else {
         this.authService.updateAuth(formData, this.loginService.getLogin().id.toString()).subscribe(data => {
           this.toastService.sendSuccess("Autorización exitosa.");
-
+          
         });
       }
       setTimeout(() => {
         this.toastService.remove(this.toastService.toasts[0]);  // Cierra el modal
         this.isUpdate = false;
+        this.router.navigate(['/entries/auth-list']);
       }, 1500);
     } else {
       this.markAllAsTouched();
     }
-
-    this.router.navigate(['/entries/auth-list']);
-
   }
 
   getDayOfWeek(date: Date): string {
@@ -277,38 +279,6 @@ export class AuthFormComponent implements OnInit {
   onCancel() {
     this.router.navigate(['/entries/auth-list']);
   }
-
-  onPlotSelected(selectedPlot: plot | null) {
-    if (selectedPlot) {
-      this.plot = this.plots.find((plot) => plot.id === selectedPlot.id) || null;
-      this.authForm.get('plotId')?.setValue(selectedPlot.id);
-    } else {
-      this.plot = null;
-      this.authForm.get('plotId')?.setValue(null);
-    }
-  }
-
-  private markAllAsTouched(): void {
-    // Marca todos los controles en el formulario principal
-    Object.values(this.authForm.controls).forEach(control => {
-      control.markAsTouched();
-      // Si es un FormGroup, recorre sus controles
-      if (control instanceof FormGroup) {
-        this.markAllAsTouchedRecursive(control);
-      }
-      // Si es un FormArray, recorre sus controles
-      if (control instanceof FormArray) {
-        control.controls.forEach(innerControl => {
-          innerControl.markAsTouched();
-        });
-      }
-    });
-  }
-
-  setPlot(id: number) {
-    this.plot = this.plots.filter(x => x.id == id)[0]
-  }
-
 
   initPlots() {
     this.plots = [
@@ -358,6 +328,31 @@ export class AuthFormComponent implements OnInit {
       },
       { id: 10, desc: 'María José', tel: '555-6780', name: '10 - María José' },
     ];
+  }
+
+  onPlotSelected(selectedPlot: plot) {
+    this.plot = this.plots.find((plot) => plot.id === selectedPlot.id) || null;
+  }
+
+  private markAllAsTouched(): void {
+    // Marca todos los controles en el formulario principal
+    Object.values(this.authForm.controls).forEach(control => {
+      control.markAsTouched();
+      // Si es un FormGroup, recorre sus controles
+      if (control instanceof FormGroup) {
+        this.markAllAsTouchedRecursive(control);
+      }
+      // Si es un FormArray, recorre sus controles
+      if (control instanceof FormArray) {
+        control.controls.forEach(innerControl => {
+          innerControl.markAsTouched();
+        });
+      }
+    });
+  }
+
+  setPlot(id: number) {
+    this.plot = this.plots.filter(x => x.id == id)[0]
   }
 
 // Función recursiva para marcar todos los controles como tocados

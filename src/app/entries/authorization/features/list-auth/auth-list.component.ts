@@ -470,7 +470,7 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
   ];
 
   isDayActive(authRange: AuthRange, day: DaysOfWeek): boolean {
-    return authRange.daysOfWeek.includes(day) && authRange.isActive;
+    return Array.isArray(authRange.daysOfWeek) && authRange.daysOfWeek.includes(day);
   }
 
   // Obtener inicial de cada día
