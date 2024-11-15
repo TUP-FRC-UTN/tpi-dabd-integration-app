@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgClass, NgIf } from '@angular/common';
 import { QrComponent } from '../../../qr/qr.component';
@@ -57,7 +57,14 @@ export class AccessFormComponent implements OnInit {
     private loginService: LoginService,
     private router: Router,
     private visitorService: VisitorService
-  ) {}
+  ) {
+
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+          this.toastService.clear(); // Limpiar los toasts al cambiar de pantalla
+      }
+  });
+  }
 
   openScanner() {
     this.modalService.open(this.scannerModal, { size: 'xl' });
