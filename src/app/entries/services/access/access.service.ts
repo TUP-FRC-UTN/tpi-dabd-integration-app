@@ -10,13 +10,23 @@ import {
   EntryReport,
 } from '../../models/dashboard.model';
 import { environment } from '../../../../environments/environment.prod';
+import { PaginatedResponse } from '../../paginated-response.model';
+
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class AccessService {
+
   //private apiUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/access';
-  private apiUrl = environment.apis.accesses + 'access';
+ // private apiUrl = environment.apis.accesses + 'access';
+
+  //si la variable de produccion es true, entonces se usa la url de produccion (eso lo indica la importacion de environment.prod)
+  private apiUrl: string = environment.production
+  ? `${environment.apis.accesses}access`
+  : 'http://localhost:8001/access';
+
 
   constructor(
     private http: HttpClient,
@@ -50,7 +60,7 @@ export class AccessService {
     const snakeCaseData = this.caseTransformer.toSnakeCase(data);
 
     return this.http
-      .post<AccessModel>(this.apiUrl + '/' + 'authorize', snakeCaseData, {
+      .post<AccessModel>(`${this.apiUrl}/authorize`, snakeCaseData, {
         headers,
       })
       .pipe(map((response) => this.caseTransformer.toCamelCase(response)));
@@ -75,7 +85,7 @@ export class AccessService {
       ));*/
   }
 
-  getByType(
+  /*getByType(
     page: number,
     size: number,
     type: string,
@@ -89,7 +99,21 @@ export class AccessService {
       }))
     );
     //.pipe(map((response) => this.caseTransformer.toCamelCase(response)));
-  }
+  }*/
+
+    getByType(visitorType?: string): Observable<PaginatedResponse<AccessModel>> {
+      let params = new HttpParams();
+      if (visitorType) params = params.set('visitorType', visitorType);
+    
+      return this.http.get<{ items: AccessModel[], total_elements: number }>(this.apiUrl, { params })
+        .pipe(
+          map((response) => ({
+            totalElements: response.total_elements, // Cambia 'totalElements' a 'total_elements' para que coincida con el tipo esperado
+            items: response.items.map(item => this.caseTransformer.toCamelCase(item)),
+          }))
+        );
+    }
+    
 
   getHourlyAccesses(
     from: string,

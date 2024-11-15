@@ -227,7 +227,7 @@ export class AccessListComponent implements OnInit, AfterViewInit {
 
   //#region FILTROS
   filterByVisitorType(type: string) {
-    this.accessService.getByType(this.currentPage, this.pageSize, type, this.retrieveByActive).subscribe(data => {
+    this.accessService.getByType(type).subscribe(data => {
         let response = this.transformResponseService.transformType(data.items,this.currentPage, this.pageSize, type, this.retrieveByActive)
         response.content.forEach(data => {
           if (data.authorizerId != undefined && data.authorizerId < 10){
@@ -240,13 +240,14 @@ export class AccessListComponent implements OnInit, AfterViewInit {
         this.list = response.content;
         this.filteredList = [...this.list]
         this.lastPage = response.last
-        this.totalItems = response.totalElements;
+        this.totalItems = data.totalElements;
       },
       error => {
         console.error('Error getting:', error);
       }
     );
   }
+
   filterByDate(dateFrom: Date, dateTo: Date) {
     console.log(dateFrom , dateTo)
     if((new Date(new Date(dateFrom+"T00:00:00"))) > (new Date(new Date(dateTo+"T00:00:00")))){

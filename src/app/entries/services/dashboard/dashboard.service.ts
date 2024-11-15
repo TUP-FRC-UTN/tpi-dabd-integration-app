@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 import { DashBoardFilters } from '../../models/dashboard/dashboard.model';
+import { environment } from '../../../../environments/environment.prod';
 
 
 export interface dashResponse{
@@ -15,7 +16,14 @@ export interface dashResponse{
 })
 
 export class DashboardService {
-  private apiUrl = 'http://localhost:8001/access';
+
+  //private apiUrl = 'http://localhost:8001/access'; // esta es la url de desarrollo local
+  //private apiProduction = environment.apis.accesses+'access';
+
+  //si la variable de produccion es true, entonces se usa la url de produccion (eso lo indica la importacion de environment.prod.ts)
+  private apiUrl: string = environment.production
+  ? `${environment.apis.accesses}access`
+  : 'http://localhost:8001/access';
 
   constructor(
     private http: HttpClient,
