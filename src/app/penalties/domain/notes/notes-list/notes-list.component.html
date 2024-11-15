@@ -14,7 +14,7 @@
     [headerButtonText]="'Nuevo'"
     (headerButtonClick)="openFormModal()"
     [showSearchBar]="false"
-    [showHeaderButton]="role === 'ADMIN'"
+    [showHeaderButton]="userHasRole('ADMIN')"
   >
   </app-table>
 </div>

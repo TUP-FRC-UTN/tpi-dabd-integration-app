@@ -10,7 +10,6 @@ import { ConstructionService } from '../../services/construction.service';
 import {
   CONSTRUCTION_STATUSES_ENUM,
   CONSTRUCTION_STATUSES,
-  ConstructionRequestDto,
   ConstructionResponseDto,
   ConstructionStatus,
   ConstructionTab,
@@ -36,6 +35,10 @@ import {
   ToastService,
 } from 'ngx-dabd-grupo01';
 import { GetValueByKeyForEnumPipe } from '../../../../shared/pipes/get-value-by-key-for-status.pipe';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-construction-detail',
@@ -77,9 +80,6 @@ export class ConstructionDetailComponent implements OnInit {
   rejectForm: FormGroup;
   mode: 'detail' | 'edit' = 'detail';
 
-  role = '';
-  userId = 0;
-
   constructor(private fb: FormBuilder) {
     this.rejectForm = this.fb.group({
       rejectReason: ['', Validators.required],
@@ -90,14 +90,23 @@ export class ConstructionDetailComponent implements OnInit {
     return this.rejectForm.get('rejectReason');
   }
 
-  ngOnInit(): void {
-    this.roleService.currentRole$.subscribe((role) => {
-      this.role = role;
-    });
+  userDataService = inject(UserDataService);
+  userData!: UserData;
 
-    this.roleService.currentUserId$.subscribe((userId) => {
-      this.userId = userId;
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
     });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
+
+  ngOnInit(): void {
+    this.loadUserData();
 
     this.activatedRoute.params.subscribe((params) => {
       const id = params['id'];
@@ -241,7 +250,7 @@ export class ConstructionDetailComponent implements OnInit {
   onConstructionFinished(constructionId: number): void {
     if (this.construction) {
       this.constructionService
-        .finishConstruction(constructionId, this.userId)
+        .finishConstruction(constructionId, this.userData.id)
         .subscribe(() => {
           if (this.construction) {
             this.construction.construction_status = 'COMPLETED';

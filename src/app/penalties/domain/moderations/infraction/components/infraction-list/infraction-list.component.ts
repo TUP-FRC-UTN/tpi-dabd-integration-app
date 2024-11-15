@@ -1,23 +1,29 @@
 import { Component, inject, TemplateRef, ViewChild } from '@angular/core';
 import { NewInfractionModalComponent } from '../new-infraction-modal/new-infraction-modal.component';
-import { FineService } from '../../../fine/services/fine.service';
 import { NgbDropdownModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import {
-  InfractionDto,
   InfractionResponseDTO,
   InfractionStatusEnum,
 } from '../../models/infraction.model';
 import { InfractionServiceService } from '../../services/infraction-service.service';
-import { Filter, FilterConfigBuilder, MainContainerComponent, TableColumn, TableComponent } from 'ngx-dabd-grupo01';
-import { InfractionListInfoComponent } from '../infraction-list-info/infraction-list-info.component';
+import {
+  Filter,
+  FilterConfigBuilder,
+  MainContainerComponent,
+  TableColumn,
+  TableComponent,
+} from 'ngx-dabd-grupo01';
 import { FormsModule } from '@angular/forms';
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
-import { RoleService } from '../../../../../shared/services/role.service';
 import { Router } from '@angular/router';
 import { ConfirmAlertComponent } from 'ngx-dabd-grupo01';
 import { InfractionBadgeService } from '../../services/infraction-badge.service';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-infraction-list',
@@ -39,7 +45,6 @@ export class InfractionListComponent {
   private infractionService = inject(InfractionServiceService);
   private modalService = inject(NgbModal);
   private router = inject(Router);
-  private roleService = inject(RoleService);
   private infractionBadgeService = inject(InfractionBadgeService);
 
   // Properties:
@@ -52,11 +57,6 @@ export class InfractionListComponent {
   page: number = 1;
   size: number = 10;
   searchParams: { [key: string]: any | any[] } = {};
-
-  // Role
-  role: string = '';
-  userId: number | undefined;
-  userPlotsIds: number[] = [];
 
   // Filtro dinámico
   filterType: string = '';
@@ -72,23 +72,24 @@ export class InfractionListComponent {
 
   columns: TableColumn[] = [];
 
+  userDataService = inject(UserDataService);
+  userData!: UserData;
+
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
+    });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
+
   // Methods:
   ngOnInit(): void {
-    this.roleService.currentUserId$.subscribe((userId: number) => {
-      this.userId = userId;
-      this.loadItems();
-    });
-
-    this.roleService.currentLotes$.subscribe((plots: number[]) => {
-      this.userPlotsIds = plots;
-      this.loadItems();
-    });
-
-    this.roleService.currentRole$.subscribe((role: string) => {
-      this.role = role;
-      this.loadItems();
-    });
-
+    this.loadUserData();
     this.loadItems();
   }
 
@@ -228,11 +229,11 @@ export class InfractionListComponent {
   }
 
   updateFiltersAccordingToUser() {
-    if (this.role !== 'ADMIN') {
+    if (!this.userHasRole('ADMIN')) {
       this.searchParams = {
         ...this.searchParams,
-        plotsIds: this.userPlotsIds,
-        userId: this.userId!,
+        plotsIds: this.userData.plotIds,
+        userId: this.userData.id!,
       };
     } else {
       if (this.searchParams['userId']) {

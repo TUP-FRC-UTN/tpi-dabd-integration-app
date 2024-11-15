@@ -1,4 +1,4 @@
-import { Component, inject, NgModule, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConstructionService } from '../../services/construction.service';
 import { CommonModule } from '@angular/common';
@@ -12,8 +12,11 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { RoleService } from '../../../../shared/services/role.service';
 import { ToastService } from 'ngx-dabd-grupo01';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-construction-form',
@@ -26,9 +29,6 @@ export class ConstructionFormComponent implements OnInit {
   fb = inject(FormBuilder);
   toastService = inject(ToastService);
 
-  roleService = inject(RoleService);
-
-  userPlots: number[] = [];
   constructionForm: FormGroup = new FormGroup(
     {
       plot_id: new FormControl('', [Validators.required]),
@@ -59,11 +59,25 @@ export class ConstructionFormComponent implements OnInit {
   // Properties:
   isButtonOutside: boolean = true;
 
-  ngOnInit(): void {
-    this.roleService.currentLotes$.subscribe((plots) => {
-      this.userPlots = plots;
+  userDataService = inject(UserDataService);
+  userData!: UserData;
+
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
     });
   }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
+
+  ngOnInit(): void {
+    this.loadUserData();
+  }
+
   onSubmit(): void {
     if (this.constructionForm.invalid) {
       this.constructionForm.markAllAsTouched();
@@ -115,16 +129,16 @@ export class ConstructionFormComponent implements OnInit {
     date.setHours(hours, minutes, 0, 0);
     return date;
   }
-  
+
   timeValidation(): ValidatorFn {
     return (form: AbstractControl): { [key: string]: boolean } | null => {
       const startTime = form.get('start_time')?.value;
       const endTime = form.get('end_time')?.value;
-  
+
       if (startTime && endTime) {
         const start = this.convertTimeToDate(startTime);
         const end = this.convertTimeToDate(endTime);
-  
+
         if (start >= end) {
           return { invalidTimeRange: true };
         }
@@ -132,5 +146,4 @@ export class ConstructionFormComponent implements OnInit {
       return null;
     };
   }
-  
 }

@@ -1,10 +1,10 @@
 import { Component, inject, Input } from '@angular/core';
 import { InfractionServiceService } from '../../services/infraction-service.service';
-import { RoleService } from '../../../../../shared/services/role.service';
 import { ToastService } from 'ngx-dabd-grupo01';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, NgClass } from '@angular/common';
+import { UserDataService, UserData } from '../../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-reject-infraction-modal',
@@ -17,16 +17,12 @@ export class RejectInfractionModalComponent {
   @Input() infractionId: number | undefined;
 
   //services
-
   private infractionService = inject(InfractionServiceService);
-  private roleService = inject(RoleService);
 
   private toastService = inject(ToastService);
 
   //variables
   description: string | undefined;
-
-  userId: number | undefined;
 
   //variable para los archivos
   selectedFiles: File[] = [];
@@ -34,19 +30,32 @@ export class RejectInfractionModalComponent {
   // Modal logic
   activeModal = inject(NgbActiveModal);
 
-  ngOnInit() {
-    this.roleService.currentUserId$.subscribe((userId: number) => {
-      this.userId = userId;
+  userDataService = inject(UserDataService);
+  userData!: UserData;
+
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
     });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
+
+  ngOnInit(): void {
+    this.loadUserData();
   }
 
   // Método para enviar el formulario de reclamos
   submit() {
-    if (this.description && this.userId) {
+    if (this.description && this.userData.id) {
       const formData = new FormData();
 
       formData.append('description', 'Rechazo: ' + this.description);
-      formData.append('user_id', this.userId.toString());
+      formData.append('user_id', this.userData.id.toString());
       formData.append('status', 'REJECTED');
 
       this.infractionService

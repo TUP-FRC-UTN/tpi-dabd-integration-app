@@ -19,6 +19,7 @@
     "@angular/platform-browser": "^18.2.0",
     "@angular/platform-browser-dynamic": "^18.2.0",
     "@angular/router": "^18.2.0",
+    "@ckeditor/ckeditor5-angular": "^9.0.0",
     "@ng-bootstrap/ng-bootstrap": "^17.0.1",
     "@ng-select/ng-select": "^13.9.1",
     "@popperjs/core": "^2.11.8",

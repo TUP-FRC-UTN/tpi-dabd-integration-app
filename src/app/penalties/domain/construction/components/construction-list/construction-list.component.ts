@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 import { ConfirmAlertComponent, Filter, FilterConfigBuilder, MainContainerComponent, SidebarComponent, TableColumn, TableComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
 import { FormsModule } from '@angular/forms';
 import { GetValueByKeyForEnumPipe } from '../../../../shared/pipes/get-value-by-key-for-status.pipe';
-import { RoleService } from '../../../../shared/services/role.service';
+import { UserDataService, UserData } from '../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-construction-list',
@@ -60,18 +60,13 @@ export class ConstructionListComponent {
 
   columns: TableColumn[] = [];
 
-  role: string = '';
-  userId: number | undefined;
-  userPlotsIds: number[] = [];
-  roleService = inject(RoleService);
-
   // Methods:
   updateFiltersAccordingToUser() {
-    if (this.role !== 'ADMIN') {
+    if (!this.userHasRole('ADMIN')) {
       this.searchParams = {
         ...this.searchParams,
-        plotsIds: this.userPlotsIds,
-        userId: this.userId!,
+        plotsIds: this.userData.plotIds,
+        userId: this.userData.id,
       };
     } else {
       if (this.searchParams['userId']) {
@@ -83,22 +78,23 @@ export class ConstructionListComponent {
     }
   }
 
+  userDataService = inject(UserDataService);
+  userData!: UserData;
+
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
+    });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
+  
   ngOnInit(): void {
-    this.roleService.currentUserId$.subscribe((userId: number) => {
-      this.userId = userId;
-      this.loadItems();
-    });
-
-    this.roleService.currentLotes$.subscribe((plots: number[]) => {
-      this.userPlotsIds = plots;
-      this.loadItems();
-    });
-
-    this.roleService.currentRole$.subscribe((role: string) => {
-      this.role = role;
-      this.loadItems();
-    });
-
+    this.loadUserData()
     this.loadItems();
   }
 

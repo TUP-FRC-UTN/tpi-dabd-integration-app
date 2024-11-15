@@ -27,7 +27,7 @@
         >
           Ver detalle
         </button>
-        @if(role !== "ADMIN") {
+        @if(!userHasRole('ADMIN')) {
         <button
           ngbDropdownItem
           (click)="goToDetails(item.construction_id, 'edit')"
@@ -54,7 +54,7 @@
     [isLoading]="(isLoading$ | async) || false"
     (searchValueChange)="onSearchValueChange($event)"
     (headerButtonClick)="openFormModal()"
-    [showHeaderButton]="role === 'OWNER'"
+    [showHeaderButton]="userHasRole('OWNER')"
     [tableFilters]="filterConfig"
     (filterValueChange)="onFilterValueChange($event)"
     [showExportPdfButton]="false"

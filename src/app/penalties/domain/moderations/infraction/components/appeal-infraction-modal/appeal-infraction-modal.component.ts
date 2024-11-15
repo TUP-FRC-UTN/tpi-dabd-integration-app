@@ -1,27 +1,13 @@
-import {
-  Component,
-  ElementRef,
-  inject,
-  Input,
-  input,
-  ViewChild,
-} from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { SanctionType } from '../../../sanction-type/models/sanction-type.model';
-import { Plot } from '../../../../cadastre/plot/models/plot.model';
+import { Component, inject, Input } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { CadastreService } from '../../../../cadastre/services/cadastre.service';
-import { ClaimService } from '../../../claim/service/claim.service';
-import { RoleService } from '../../../../../shared/services/role.service';
-import { SanctionTypeService } from '../../../sanction-type/services/sanction-type.service';
 import { ToastService } from 'ngx-dabd-grupo01';
 import { CommonModule, NgClass } from '@angular/common';
 import { InfractionServiceService } from '../../services/infraction-service.service';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-appeal-infraction-modal',
@@ -36,14 +22,11 @@ export class AppealInfractionModalComponent {
   //services
 
   private infractionService = inject(InfractionServiceService);
-  private roleService = inject(RoleService);
 
   private toastService = inject(ToastService);
 
   //variables
   description: string | undefined;
-
-  userId: number | undefined;
 
   //variable para los archivos
   selectedFiles: File[] = [];
@@ -52,10 +35,23 @@ export class AppealInfractionModalComponent {
   private modalService = inject(NgbModal);
   activeModal = inject(NgbActiveModal);
 
-  ngOnInit() {
-    this.roleService.currentUserId$.subscribe((userId: number) => {
-      this.userId = userId;
+  userDataService = inject(UserDataService);
+  userData!: UserData;
+
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
     });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
+
+  ngOnInit(): void {
+    this.loadUserData();
   }
 
   //medotod de agregar archivos
@@ -69,7 +65,7 @@ export class AppealInfractionModalComponent {
 
   // Método para enviar el formulario de reclamos
   submitAppeal() {
-    if (this.description && this.userId) {
+    if (this.description && this.userData.id) {
       const formData = new FormData();
 
       formData.append('description', this.description);
@@ -79,7 +75,7 @@ export class AppealInfractionModalComponent {
         formData.append(`files`, file, file.name);
       });
 
-      formData.append('user_id', this.userId.toString());
+      formData.append('user_id', this.userData.id.toString());
 
       this.infractionService
         .appealInfraction(formData, this.infractionId!)
@@ -89,7 +85,6 @@ export class AppealInfractionModalComponent {
             this.toastService.sendSuccess(
               'Se apelo correctamente a la infracción.'
             );
-   
           },
           error: (error) => {
             this.toastService.sendError('Error en la apelación.');

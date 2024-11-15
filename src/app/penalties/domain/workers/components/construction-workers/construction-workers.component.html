@@ -2,7 +2,7 @@
   <button
     class="btn btn-danger btn-sm me-2"
     (click)="unAssignWorker(item)"
-    [disabled]="role !== 'OWNER'"
+    [disabled]="!userHasRole('OWNER')"
   >
     Remover
   </button>
@@ -21,7 +21,7 @@
     [headerButtonText]="'Nuevo'"
     (headerButtonClick)="openFormModal()"
     [showSearchBar]="false"
-    [showHeaderButton]="role === 'OWNER' && constructionStatus !== 'COMPLETED'"
+    [showHeaderButton]="userHasRole('OWNER') && constructionStatus !== 'COMPLETED'"
   >
   </app-table>
 </div>

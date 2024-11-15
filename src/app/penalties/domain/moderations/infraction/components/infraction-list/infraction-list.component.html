@@ -58,7 +58,7 @@
     (headerButtonClick)="openFormModal()"
     (infoButtonClick)="onInfoButtonClick()"
     [showExportPdfButton]="false"
-    [showHeaderButton]="role === 'ADMIN'"
+    [showHeaderButton]="userHasRole('ADMIN')"
     [headerButtonIcon]="'bi bi-plus'"
     [headerButtonText]="''"
     [tableFilters]="filterConfig"

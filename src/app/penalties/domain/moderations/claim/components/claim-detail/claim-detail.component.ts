@@ -1,5 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ConfirmAlertComponent, MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
+import {
+  ConfirmAlertComponent,
+  MainContainerComponent,
+  ToastService,
+} from 'ngx-dabd-grupo01';
 import { SanctionTypeService } from '../../../sanction-type/services/sanction-type.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
@@ -12,9 +16,12 @@ import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-
 import { SanctionTypeSelectComponent } from '../../../sanction-type/components/sanction-type-select/sanction-type-select.component';
 import { CadastreService } from '../../../../cadastre/services/cadastre.service';
 import { Plot } from '../../../../cadastre/plot/models/plot.model';
-import { RoleService } from '../../../../../shared/services/role.service';
 import { firstValueFrom } from 'rxjs';
 import { ClaimDocumentsComponent } from '../claim-documents/claim-documents.component';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-claim-detail',
@@ -34,7 +41,6 @@ import { ClaimDocumentsComponent } from '../claim-documents/claim-documents.comp
 export class ClaimDetailComponent implements OnInit {
   claimService = inject(ClaimService);
   sanctionTypeService = inject(SanctionTypeService);
-  private roleService = inject(RoleService);
 
   cadastreService = inject(CadastreService);
   private readonly activatedRoute = inject(ActivatedRoute);
@@ -46,23 +52,26 @@ export class ClaimDetailComponent implements OnInit {
   claim: ClaimDTO | undefined;
 
   editing: boolean = false;
-  role: string = '';
-  userId: number | undefined;
-  userPlotsIds: number[] = [];
 
   plots: Plot[] | undefined;
 
-  ngOnInit(): void {
-    this.roleService.currentRole$.subscribe((role: string) => {
-      this.role = role;
-    });
-    this.roleService.currentUserId$.subscribe((userId: number) => {
-      this.userId = userId;
-    });
+  userDataService = inject(UserDataService);
+  userData!: UserData;
 
-    this.roleService.currentLotes$.subscribe((plots: number[]) => {
-      this.userPlotsIds = plots;
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
     });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
+
+  ngOnInit(): void {
+    this.loadUserData();
 
     this.activatedRoute.params.subscribe(async (params) => {
       const mode = params['mode'];
@@ -139,15 +148,19 @@ export class ClaimDetailComponent implements OnInit {
 
     modalRef.result.then((result) => {
       if (result) {
-        this.claimService.updateClaim(this.claim!, this.userId!).subscribe({
-          next: () => {
-            this.toastService.sendSuccess(`Reclamo actualizado exitosamente.`);
-            this.editing = false;
-          },
-          error: () => {
-            this.toastService.sendError(`Error actualizando reclamo.`);
-          },
-        });
+        this.claimService
+          .updateClaim(this.claim!, this.userData.id!)
+          .subscribe({
+            next: () => {
+              this.toastService.sendSuccess(
+                `Reclamo actualizado exitosamente.`
+              );
+              this.editing = false;
+            },
+            error: () => {
+              this.toastService.sendError(`Error actualizando reclamo.`);
+            },
+          });
       }
     });
   }

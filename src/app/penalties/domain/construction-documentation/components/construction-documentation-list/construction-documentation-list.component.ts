@@ -24,7 +24,14 @@ import {
 } from 'ngx-dabd-grupo01';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ConstructionDocumentationService } from '../../services/construction-documentation.service';
-import { RoleService } from '../../../../shared/services/role.service';
+import { SessionService } from '../../../../../users/services/session.service';
+import { User } from '../../../../../users/models/user';
+import { UserService } from '../../../../../users/services/user.service';
+import { OwnerPlotService } from '../../../../../users/services/owner-plot.service';
+import {
+  UserData,
+  UserDataService,
+} from '../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-construction-documentation-list',
@@ -40,7 +47,9 @@ import { RoleService } from '../../../../shared/services/role.service';
   templateUrl: './construction-documentation-list.component.html',
   styleUrl: './construction-documentation-list.component.scss',
 })
-export class ConstructionDocumentationListComponent implements AfterViewInit, OnInit {
+export class ConstructionDocumentationListComponent
+  implements AfterViewInit, OnInit
+{
   // Inputs:
   @Input() construction: any = undefined;
   @Input() currentConstructionStatus!: string;
@@ -55,7 +64,6 @@ export class ConstructionDocumentationListComponent implements AfterViewInit, On
   private modalService = inject(NgbModal);
   constructionDocumentationService = inject(ConstructionDocumentationService);
   toastService = inject(ToastService);
-  roleService = inject(RoleService);
 
   // Properties:
   @ViewChild('revisionTemplate') revisionTemplate!: TemplateRef<any>;
@@ -68,12 +76,23 @@ export class ConstructionDocumentationListComponent implements AfterViewInit, On
 
   columns: TableColumn[] = [];
 
-  role = "";
+  userDataService = inject(UserDataService);
+  userData!: UserData;
+
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
+    });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
 
   ngOnInit(): void {
-    this.roleService.currentRole$.subscribe((role) => {
-      this.role = role;
-    });
+    this.loadUserData()
   }
 
   // Methods:

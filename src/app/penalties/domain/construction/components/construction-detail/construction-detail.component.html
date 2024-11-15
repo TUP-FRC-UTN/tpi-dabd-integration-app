@@ -256,8 +256,8 @@
       <i class="bi bi-exclamation-circle"></i>
       La obra ya fue rechazada }
       <!-- REVIEW -->
-      @else if(construction?.construction_status === 'ON_REVISION' && role ===
-      "OWNER") {
+      @else if(construction?.construction_status === 'ON_REVISION' &&
+      userHasRole('OWNER')) {
       <i class="bi bi-exclamation-circle"></i>
       La obra fue enviada a revisión }
       <!-- ALL APPROVED -->
@@ -275,8 +275,8 @@
     <div>
       @if(mode === "detail") {
       <!-- OWNER -->
-      @if(role === "OWNER" && construction?.construction_status !== "APPROVED"
-      && construction?.construction_status !== "IN_PROGRESS" &&
+      @if(userHasRole("OWNER") && construction?.construction_status !==
+      "APPROVED" && construction?.construction_status !== "IN_PROGRESS" &&
       construction?.construction_status !== "COMPLETED" ) {
       <button
         class="btn btn-success me-2"
@@ -288,15 +288,15 @@
       </button>
       }
       <!--  -->
-      @if(role === "OWNER" && construction?.construction_status === "APPROVED")
-      {
+      @if(userHasRole("OWNER") && construction?.construction_status ===
+      "APPROVED") {
       <button class="btn btn-primary me-2" (click)="onStartConstruction()">
         <i class="bi bi-tools"></i>
         Iniciar obra
       </button>
       }
       <!--  -->
-      @if(role === "OWNER" && construction?.construction_status ===
+      @if(userHasRole("OWNER") && construction?.construction_status ===
       "IN_PROGRESS") {
       <button
         class="btn btn-info me-2 text-white"
@@ -307,7 +307,7 @@
       </button>
       }
       <!-- ADMIN -->
-      @if (role === "ADMIN") {
+      @if (userHasRole("ADMIN")) {
       <button
         class="btn btn-primary me-2"
         (click)="approveConstruction()"
@@ -326,7 +326,7 @@
       >
         <i class="bi bi-clipboard-x"></i> Rechazar obra
       </button>
-      } } @if(mode === "edit" && role === "OWNER") {
+      } } @if(mode === "edit" && userHasRole("OWNER")) {
       <button
         class="btn btn-success me-2"
         [disabled]="!editForm.form.valid"

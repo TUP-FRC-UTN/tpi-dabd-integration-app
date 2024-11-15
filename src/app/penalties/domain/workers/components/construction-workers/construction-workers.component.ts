@@ -18,10 +18,9 @@ import {
   ToastService,
 } from 'ngx-dabd-grupo01';
 import { WorkerService } from '../../services/worker.service';
-import { RoleService } from '../../../../shared/services/role.service';
 import { GetValueByKeyForEnumPipe } from '../../../../shared/pipes/get-value-by-key-for-status.pipe';
 import { DocTypeEnum } from '../../models/worker.model';
-import { isReactive } from '@angular/core/primitives/signals';
+import { UserData, UserDataService } from '../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-construction-workers',
@@ -41,7 +40,6 @@ export class ConstructionWorkersComponent implements AfterViewInit {
   private workerService = inject(WorkerService);
   private constructionService = inject(ConstructionService);
   toastService = inject(ToastService);
-  roleService = inject(RoleService);
   WorkerDocTypeEnum = DocTypeEnum;
 
   // Properties:
@@ -49,9 +47,6 @@ export class ConstructionWorkersComponent implements AfterViewInit {
   @ViewChild('docType') docTypeTemplate!: TemplateRef<any>;
 
   columns: TableColumn[] = [];
-
-  role = '';
-  userId = 0;
 
   // Methods:
 
@@ -96,7 +91,7 @@ export class ConstructionWorkersComponent implements AfterViewInit {
     modalRef.result
       .then((result) => {
         if (result) {
-          this.workerService.unAssignWorker(worker.id, this.userId).subscribe({
+          this.workerService.unAssignWorker(worker.id, this.userData.id).subscribe({
             next: () => {
               this.workers = this.workers.filter((w) => w.id !== worker.id);
               this.toastService.sendSuccess(
@@ -114,13 +109,22 @@ export class ConstructionWorkersComponent implements AfterViewInit {
       });
   }
 
-  ngOnInit() {
-    this.roleService.currentRole$.subscribe((role) => {
-      this.role = role;
-    });
+  userDataService = inject(UserDataService);
+  userData!: UserData;
 
-    this.roleService.currentUserId$.subscribe((user) => {
-      this.userId = user;
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
     });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
+
+  ngOnInit() {
+    this.loadUserData();
   }
 }

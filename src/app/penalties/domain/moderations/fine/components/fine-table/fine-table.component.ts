@@ -33,7 +33,10 @@ import {
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
 import { FineStatusEnum } from '../../models/fine-status.enum';
 import { PdfService } from '../../../../../shared/services/pdf.service';
-import { RoleService } from '../../../../../shared/services/role.service';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-fine-table',
@@ -83,9 +86,6 @@ export class FineTable {
   router = inject(Router);
   private = inject(NgbModal);
   FineStatusEnum = FineStatusEnum;
-  private toastService = inject(ToastService);
-  private pdfService = inject(PdfService);
-  private roleService = inject(RoleService);
   fineService = inject(FineService);
   modalService = inject(NgbModal);
 
@@ -93,20 +93,23 @@ export class FineTable {
   totalItems$: Observable<number> = this.fineService.totalItems$;
   isLoading$: Observable<boolean> = this.fineService.isLoading$;
 
-  ngOnInit() {
-    this.roleService.currentRole$.subscribe((role: string) => {
-      this.role = role;
-      this.loadItems();
-    });
-    this.roleService.currentUserId$.subscribe((userId: number) => {
-      this.userId = userId;
-      this.loadItems();
-    });
+  userDataService = inject(UserDataService);
+  userData!: UserData;
 
-    this.roleService.currentLotes$.subscribe((plots: number[]) => {
-      this.userPlotsIds = plots;
-      this.loadItems();
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
     });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
+
+  ngOnInit() {
+    this.loadUserData();
 
     this.searchSubject
       .pipe(debounceTime(200), distinctUntilChanged())

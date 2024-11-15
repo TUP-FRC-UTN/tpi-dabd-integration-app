@@ -6,12 +6,12 @@ import { Fine } from '../../models/fine.model';
 import { FineStatusEnum } from '../../models/fine-status.enum';
 import { FineService } from '../../services/fine.service';
 import { UpdateFineStateDTO } from '../../models/update-fine-status-dto';
-import { RoleService } from '../../../../../shared/services/role.service';
 import { FineInfractionsListComponent } from '../fine-infractions-list/fine-infractions-list.component';
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
 import { firstValueFrom } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmAlertComponent, MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
+import { UserDataService, UserData } from '../../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-fine-detail',
@@ -30,9 +30,7 @@ import { ConfirmAlertComponent, MainContainerComponent, ToastService } from 'ngx
 export class FineDetailComponent {
   FineStatusEnum = FineStatusEnum;
   fineService = inject(FineService);
-  private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private roleService = inject(RoleService);
   private toastService = inject(ToastService);
   modalService = inject(NgbModal);
   fineId: number | undefined;
@@ -42,22 +40,27 @@ export class FineDetailComponent {
 
   error: string | null = null;
   successMessage: string | null = null;
-  role: string = '';
-  userId: number | undefined;
-  userPlotsIds: number[] = [];
 
+  userDataService = inject(UserDataService);
+  userData!: UserData;
+
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
+    });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
+  
   async ngOnInit() {
+    this.loadUserData()
+    
     let id;
-    this.roleService.currentRole$.subscribe((role: string) => {
-      this.role = role;
-    });
-    this.roleService.currentUserId$.subscribe((userId: number) => {
-      this.userId = userId;
-    });
 
-    this.roleService.currentLotes$.subscribe((plots: number[]) => {
-      this.userPlotsIds = plots;
-    });
     this.route.params.subscribe(async (params) => {
       const mode = params['mode'];
       id = params['id'];
@@ -73,7 +76,7 @@ export class FineDetailComponent {
       );
 
       this.isAdminAndOnAssembly =
-        this.role === 'ADMIN' &&
+        this.userHasRole('ADMIN') &&
         fine!.fine_state === ('ON_ASSEMBLY' as FineStatusEnum);
     } catch (error) {
       console.error(error);
@@ -95,7 +98,7 @@ export class FineDetailComponent {
   save(fineStatus: FineStatusEnum) {
     let fine: UpdateFineStateDTO = {
       id: this.fine?.id,
-      updatedBy: this.userId!,
+      updatedBy: this.userData.id!,
       fineState: fineStatus,
     };
 

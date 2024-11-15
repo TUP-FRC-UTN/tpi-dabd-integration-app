@@ -9,8 +9,16 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SanctionTypeFormComponent } from '../sanction-type-form/sanction-type-form.component';
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
 import { TruncatePipe } from '../../../../../shared/pipes/truncate.pipe';
-import { ConfirmAlertComponent, MainContainerComponent, TableColumn, TableComponent } from 'ngx-dabd-grupo01';
-import { RoleService } from '../../../../../shared/services/role.service';
+import {
+  ConfirmAlertComponent,
+  MainContainerComponent,
+  TableColumn,
+  TableComponent,
+} from 'ngx-dabd-grupo01';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-sanction-type-list',
@@ -30,7 +38,6 @@ export class SanctionTypeListComponent {
   private readonly router = inject(Router);
   private sanctionTypeService = inject(SanctionTypeService);
   private modalService = inject(NgbModal);
-  private roleService = inject(RoleService);
   ChargeTypeEnum = ChargeTypeEnum;
 
   // Properties:
@@ -49,10 +56,25 @@ export class SanctionTypeListComponent {
 
   columns: TableColumn[] = [];
 
-  role: string = '';
+  userDataService = inject(UserDataService);
+  userData!: UserData;
+
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
+    });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
 
   // Methods:
   ngOnInit(): void {
+    this.loadUserData();
+
     this.searchSubject
       .pipe(
         debounceTime(200), // Espera 200 ms después de la última emisión
@@ -63,10 +85,6 @@ export class SanctionTypeListComponent {
         this.page = 1;
         this.loadItems();
       });
-
-    this.roleService.currentRole$.subscribe((role) => {
-      this.role = role;
-    });
 
     this.loadItems();
   }

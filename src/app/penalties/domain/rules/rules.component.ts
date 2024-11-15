@@ -13,8 +13,8 @@ import {
   List,
   Indent,
 } from 'ckeditor5';
-import { RoleService } from '../shared/services/role.service';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
+import { UserDataService, UserData } from '../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-rules',
@@ -25,8 +25,6 @@ import { MainContainerComponent } from 'ngx-dabd-grupo01';
   styleUrl: './rules.component.scss',
 })
 export class RulesComponent {
-  private roleService = inject(RoleService);
-
   public Editor = ClassicEditor;
 
   rulesContent: string = '';
@@ -50,12 +48,23 @@ export class RulesComponent {
     language: { ui: 'en' },
   };
 
-  ngOnInit(): void {
-    this.roleService.currentRole$.subscribe((role: string) => {
-      this.isAdmin = role === "ADMIN";
+  userDataService = inject(UserDataService);
+  userData!: UserData;
+
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
     });
+  }
 
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
 
+  ngOnInit(): void {
+    this.loadUserData();
     this.loadRules();
   }
 

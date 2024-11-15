@@ -8,8 +8,11 @@ import {
 } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TableColumn, TableComponent } from 'ngx-dabd-grupo01';
-import { RoleService } from '../../services/role.service';
 import { CommonModule } from '@angular/common';
+import {
+  UserDataService,
+  UserData,
+} from '../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-notes-list',
@@ -31,14 +34,23 @@ export class NotesListComponent implements OnInit {
 
   columns: TableColumn[] = [];
 
-  roleService = inject(RoleService);
+  userDataService = inject(UserDataService);
+  userData!: UserData;
 
-  role = '';
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
+    });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
 
   ngOnInit(): void {
-    this.roleService.currentRole$.subscribe((role) => {
-      this.role = role;
-    });
+    this.loadUserData();
   }
 
   // Methods:

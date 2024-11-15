@@ -1,7 +1,12 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">Añadir construcción</h5>
-    <button type="button" class="btn-close" aria-label="Close" (click)="onClose()"></button>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="onClose()"
+    ></button>
   </div>
   <div class="modal-body">
     <div class="alert alert-info">
@@ -23,9 +28,9 @@
             'is-valid': constructionForm.controls['plot_id'].valid
           }"
         >
-          @for (plot of userPlots; track $index) {
+          @for (plot of userData.plots; track $index) {
           <option [value]="plot">
-            {{ plot }}
+            {{ plot.plotNumber }} - {{ plot.blockNumber }} - {{ plot.plotType }}
           </option>
           }
         </select>
@@ -110,8 +115,9 @@
             type="time"
             class="form-control"
             [ngClass]="{
-              'is-invalid': constructionForm.controls['start_time'].invalid && 
-                            !constructionForm.controls['start_time'].untouched,
+              'is-invalid':
+                constructionForm.controls['start_time'].invalid &&
+                !constructionForm.controls['start_time'].untouched,
               'is-valid': constructionForm.controls['start_time'].valid
             }"
           />
@@ -124,18 +130,21 @@
             type="time"
             class="form-control"
             [ngClass]="{
-              'is-invalid': constructionForm.controls['end_time'].invalid && 
-                            !constructionForm.controls['end_time'].untouched,
+              'is-invalid':
+                constructionForm.controls['end_time'].invalid &&
+                !constructionForm.controls['end_time'].untouched,
               'is-valid': constructionForm.controls['end_time'].valid
             }"
           />
         </div>
       </div>
-      
-      <div *ngIf="constructionForm.hasError('invalidTimeRange')" class="alert alert-danger mt-2">
+
+      <div
+        *ngIf="constructionForm.hasError('invalidTimeRange')"
+        class="alert alert-danger mt-2"
+      >
         La hora de inicio no puede ser posterior a la de finalización.
       </div>
-      
 
       <div class="mb-3">
         <label for="project_address" class="form-label">Dirección</label>

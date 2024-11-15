@@ -21,9 +21,9 @@ import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-
 import { TruncatePipe } from '../../../../../shared/pipes/truncate.pipe';
 import { ClaimService } from '../../service/claim.service';
 import { ClaimDTO, ClaimStatusEnum } from '../../models/claim.model';
-import { RoleService } from '../../../../../shared/services/role.service';
 import { NewInfractionModalComponent } from '../../../infraction/components/new-infraction-modal/new-infraction-modal.component';
 import { FormsModule } from '@angular/forms';
+import { UserDataService, UserData } from '../../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-claim-list',
@@ -48,7 +48,6 @@ export class ClaimListComponent {
   private modalService = inject(NgbModal);
   private readonly toastService = inject(ToastService);
 
-  private roleService = inject(RoleService);
   ClaimStatusEnum = ClaimStatusEnum;
 
   // Properties:
@@ -58,10 +57,6 @@ export class ClaimListComponent {
   searchSubject: Subject<{ key: string; value: any }> = new Subject();
   checkedClaims: ClaimDTO[] = [];
   claimStatusKeys: string[] = [];
-
-  role: string = '';
-  userId: number | undefined;
-  userPlotsIds: number[] = [];
 
   page: number = 1;
   size: number = 10;
@@ -82,23 +77,24 @@ export class ClaimListComponent {
 
   columns: TableColumn[] = [];
 
+  userDataService = inject(UserDataService);
+  userData!: UserData;
+
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
+    });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
+  
   // Methods:
   ngOnInit(): void {
-    this.roleService.currentUserId$.subscribe((userId: number) => {
-      this.userId = userId;
-      this.loadItems();
-    });
-
-    this.roleService.currentLotes$.subscribe((plots: number[]) => {
-      this.userPlotsIds = plots;
-      this.loadItems();
-    });
-
-    this.roleService.currentRole$.subscribe((role: string) => {
-      this.role = role;
-
-      this.loadItems();
-    });
+    this.loadUserData()
 
     this.claimStatusKeys = Object.keys(ClaimStatusEnum) as Array<
       keyof typeof ClaimStatusEnum
@@ -158,11 +154,11 @@ export class ClaimListComponent {
   }
 
   updateFiltersAccordingToUser() {
-    if (this.role !== 'ADMIN') {
+    if (!this.userHasRole('ADMIN')) {
       this.searchParams = {
         ...this.searchParams,
-        plotsIds: this.userPlotsIds,
-        userId: this.userId!,
+        plotsIds: this.userData.plotIds,
+        userId: this.userData.id!,
       };
     } else {
       if (this.searchParams['userId']) {
@@ -305,7 +301,7 @@ export class ClaimListComponent {
 
     modalRef.result.then((result) => {
       if (result) {
-        this.claimService.disapproveClaim(claimId, this.userId!).subscribe({
+        this.claimService.disapproveClaim(claimId, this.userData.id!).subscribe({
           next: () => {
             this.toastService.sendSuccess(`Reclamo desaprobado exitosamente.`);
             this.loadItems();

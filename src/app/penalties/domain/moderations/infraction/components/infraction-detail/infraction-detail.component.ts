@@ -10,16 +10,19 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonModule, NgClass } from '@angular/common';
 import { InfractionClaimListComponent } from '../infraction-claim-list/infraction-claim-list.component';
 import { FormsModule } from '@angular/forms';
-import { RoleService } from '../../../../../shared/services/role.service';
 import { firstValueFrom } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { InfractionProofListComponent } from '../infraction-proof-list/infraction-proof-list.component';
 import { NotesListComponent } from '../../../../notes/notes-list/notes-list.component';
 import { AppealInfractionModalComponent } from '../appeal-infraction-modal/appeal-infraction-modal.component';
-import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
+import { MainContainerComponent } from 'ngx-dabd-grupo01';
 import { RejectInfractionModalComponent } from '../reject-infraction-modal/reject-infraction-modal.component';
 import { ApproveInfractionModalComponent } from '../approve-infraction-modal/approve-infraction-modal.component';
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-infraction-detail',
@@ -42,31 +45,31 @@ export class InfractionDetailComponent implements OnInit {
   infractionService = inject(InfractionServiceService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private modalService = inject(NgbModal);
-  private toastService = inject(ToastService);
-
-  private roleService = inject(RoleService);
   infractionId: number | undefined;
 
   InfractionStatusEnum = InfractionStatusEnum;
-  role: string = '';
-  userId: number | undefined;
-  userPlotsIds: number[] = [];
 
   activeTab: InfractionTab = 'claims';
 
+  userDataService = inject(UserDataService);
+  userData!: UserData;
+
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
+    });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
+
   async ngOnInit(): Promise<void> {
+    this.loadUserData();
+
     let id;
-    this.roleService.currentRole$.subscribe((role: string) => {
-      this.role = role;
-    });
-    this.roleService.currentUserId$.subscribe((userId: number) => {
-      this.userId = userId;
-    });
-
-    this.roleService.currentLotes$.subscribe((plots: number[]) => {
-      this.userPlotsIds = plots;
-    });
-
     this.activatedRoute.params.subscribe(async (params) => {
       const mode = params['mode'];
       id = params['id'];
@@ -99,7 +102,7 @@ export class InfractionDetailComponent implements OnInit {
   }
   showRejectButton(): boolean {
     return (
-      this.role === 'ADMIN' &&
+      this.userHasRole('ADMIN') &&
       (this.infraction!.infraction_status ===
         ('APPEALED' as InfractionStatusEnum) ||
         this.infraction!.infraction_status ===
@@ -109,14 +112,14 @@ export class InfractionDetailComponent implements OnInit {
 
   showAppealButton(): boolean {
     return (
-      this.role !== 'ADMIN' &&
+      this.userHasRole('ADMIN') &&
       this.infraction!.infraction_status === ('CREATED' as InfractionStatusEnum)
     );
   }
 
   showApproveButton(): boolean {
     return (
-      this.role === 'ADMIN' &&
+      this.userHasRole('ADMIN') &&
       this.infraction!.infraction_status ===
         ('APPEALED' as InfractionStatusEnum)
     );
