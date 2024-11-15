@@ -39,7 +39,6 @@ export class AuthFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.authForm = this.createForm();
-    this.initPlots()
 
 
     this.userType = this.userTypeService.getType()
@@ -237,6 +236,9 @@ export class AuthFormComponent implements OnInit {
     } else {
       this.markAllAsTouched();
     }
+
+    this.router.navigate(['/entries/auth-list']);
+
   }
 
   getDayOfWeek(date: Date): string {
@@ -264,57 +266,7 @@ export class AuthFormComponent implements OnInit {
   }
 
   onCancel() {
-    this.router.navigate(['/auth/list']);
-  }
-
-  initPlots() {
-    this.plots = [
-      {
-        id: 1,
-        desc: 'Andrés Torres',
-        tel: '555-1234',
-        name: '1 - Andrés Torres',
-      },
-      { id: 2, desc: 'Ana María', tel: '555-5678', name: '2 - Ana María' },
-      {
-        id: 3,
-        desc: 'Carlos Pérez',
-        tel: '555-2345',
-        name: '3 - Carlos Pérez',
-      },
-      {
-        id: 4,
-        desc: 'Luisa Fernández',
-        tel: '555-6789',
-        name: '4 - Luisa Fernández',
-      },
-      {
-        id: 5,
-        desc: 'Miguel Ángel',
-        tel: '555-3456',
-        name: '5 - Miguel Ángel',
-      },
-      {
-        id: 6,
-        desc: 'Sofía Martínez',
-        tel: '555-7890',
-        name: '6 - Sofía Martínez',
-      },
-      { id: 7, desc: 'David Gómez', tel: '555-4567', name: '7 - David Gómez' },
-      {
-        id: 8,
-        desc: 'Isabel García',
-        tel: '555-8901',
-        name: '8 - Isabel García',
-      },
-      {
-        id: 9,
-        desc: 'Fernando López',
-        tel: '555-5679',
-        name: '9 - Fernando López',
-      },
-      { id: 10, desc: 'María José', tel: '555-6780', name: '10 - María José' },
-    ];
+    this.router.navigate(['/entries/auth-list']);
   }
 
   onPlotSelected(selectedPlot: plot) {

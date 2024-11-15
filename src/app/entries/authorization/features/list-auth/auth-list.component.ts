@@ -331,32 +331,6 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
     }
   }
 
-  //#endregion
-
-  //#region DELETE
-  /*  assignPlotToDelete(plot: Plot) {
-      //TODO: Este modal se va a modificar por otro mas especifico de Eliminar.
-      const modalRef = this.modalService.open(ConfirmAlertComponent)
-      modalRef.componentInstance.alertTitle = 'Confirmacion';
-      modalRef.componentInstance.alertMessage = `Estas seguro que desea eliminar el lote nro ${plot.plotNumber} de la manzana ${plot.blockNumber}?`;
-
-      modalRef.result.then((result) => {
-        if (result) {
-
-          this.plotService.deletePlot(plot.id, 1).subscribe(
-            response => {
-              this.toastService.sendSuccess('Lote eliminado correctamente.')
-              this.confirmFilter();
-            }, error => {
-              this.toastService.sendError('Error al eliminar lote.')
-            }
-          );
-        }
-      })
-    }*/
-
-  //#endregion
-
   //#region RUTEO
   plotOwners(plotId: number) {
     this.router.navigate(["/owners/plot/" + plotId])
@@ -453,19 +427,6 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
 }
 
 
-  //#endregion
-
-  //#region REACTIVAR
-  /*  reactivatePlot(plotId: number) {
-      this.plotService.reactivatePlot(plotId, 1).subscribe(
-        response => {
-          location.reload();
-        }
-      );
-    }*/
-
-  //#endregion
-
   //#region FUNCIONES PARA PAGINADO
   onItemsPerPageChange() {
     this.confirmFilter();
@@ -543,7 +504,7 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
   }
 
   edit(docNumber: number) {
-    this.router.navigate(['/auth/form'], { queryParams: { authId: docNumber } });
+    this.router.navigate(['/entries/new/auth'], { queryParams: { authId: docNumber } });
   }
 
   disable(authId: number) {

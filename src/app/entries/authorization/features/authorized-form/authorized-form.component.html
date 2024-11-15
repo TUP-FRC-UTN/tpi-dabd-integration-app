@@ -1,28 +1,29 @@
 <app-main-container [title]="isUpdate ? 'Actualizar Autorización' : 'Nueva Autorización'" >
 
 <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="g-3 m-2">
+  
   <div class="row">
+    
     <div class="col-6">
       <div class="row">
         <div class="col-3">
-          <label class="form-label m-0">Número de lote<label class="text-danger">*</label></label>
+          <label for="plot-select" class="form-label m-0">Número de lote <span class="text-danger">*</span></label>
         </div>
         <div class="col-9">
-          <ng-select [items]="plots" bindLabel="name" autofocus bindValue="id" class="w-100" formControlName="plotId"
+          <ng-select id="plot-select" [items]="plots" bindLabel="name" autofocus bindValue="id" class="form-select ms-2 w-100" formControlName="plotId"
                      (change)="onPlotSelected($event)"></ng-select>
-          <div>
-            <div class="ms-1 mt-2">
-              @if (plot != null) {
-                <small>Telefono: {{ plot.tel }}</small>
-              }
-              <small class="text-danger" *ngIf="authForm.get('plotId')?.invalid && authForm.get('plotId')?.touched">
-                Por favor, ingrese un número de lote
-              </small>
-            </div>
+          <div class="ms-1 mt-2">
+            <small *ngIf="plot">Telefono: {{ plot.tel }}</small>
+            <small class="text-danger" *ngIf="authForm.get('plotId')?.invalid && authForm.get('plotId')?.touched">
+              Por favor, ingrese un número de lote
+            </small>
           </div>
         </div>
       </div>
     </div>
+    
+
+    
 
     <div class="col-6">
       <div class="row">

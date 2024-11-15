@@ -1,14 +1,6 @@
 
 <app-main-container title="Lista de Autorizaciones" (infoButtonClick)="onInfoButtonClick()">
   <div class="card-body">
-    <!-- ESTE COMPONENTE LO VAN A TENER QUE MODIFICAR ES EL DEL BUSCAR, EXPORTAR, ETC -->
-    <!-- @param itemList => Mandan la lista con la cual hacen la tabla
-         @param tableName => Mandan el nombre de la tabla el que definen con #
-         @param tableName => Mandan el nombre de la tabla el que definen con #
-         @param formPath => Van a poner la ruta de su formulario para crear uno nuevo
-         @param dictionaries => En caso de usar diccionarios mandenlos, si no los mandan no pasa nada
-         @param objectName => Hace referencia al nombre de su objeto para guardar el archivo pdf o excel. Ej: 25/10/2024_LOTES
-         -->
     <app-cadastre-plot-filter-buttons
       #filterComponent
       [itemsList]="completeList"
@@ -21,48 +13,6 @@
       [dictionaries]="dictionaries"
       objectName="AUTORIZACION">
     </app-cadastre-plot-filter-buttons>
-
-<!--    <div class="d-flex justify-content-between align-items-center mb-3">
-      <div class="btn-group me-5" role="group">
-        <div class="d-flex align-items-center">
-
-          &lt;!&ndash; filtros viejos
-          <div class="btn-group me-2">
-            <button type="button" class="btn btn-outline-danger" (click)="changeFilterMode(filterTypes.NOTHING)">
-              <i class="bi bi-trash-fill"></i> Limpiar filtros
-            </button>
-
-            <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown"
-                    aria-expanded="false">
-              <i class="bi bi-funnel-fill"></i> Filtros
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" (click)="changeFilterMode(filterTypes.VISITOR_TYPE)">Tipo de visitante</a></li>
-              <li><a class="dropdown-item" (click)="changeFilterMode(filterTypes.PLOT_ID)">Nro de lote</a></li>
-            </ul>
-          </div> &ndash;&gt;
-
-          @if (applyFilterWithNumber === true || applyFilterWithCombo === true) {
-            <div class="d-flex">
-              @if (applyFilterWithNumber === true) {
-                <input type="number" class="form-control me-2" id="filter-number" [(ngModel)]="filterInput" name="ngModel"
-                       placeholder="Número">
-              } @else if (applyFilterWithCombo === true) {
-                <select id="content-filter" class="form-select me-2" [(ngModel)]="filterInput" name="ngModel">
-                  <option disabled selected>Selecciona un filtro</option>
-                  @for (content of contentForFilterCombo; track content) {
-                    <option value="{{content}}">{{ content }}</option>
-                  }
-                </select>
-              }
-              <div class="ms-auto">
-                <button class="btn btn-dark" type="button" (click)="confirmFilter()">Buscar</button>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-    </div>-->
 
     <div class="table-container">
       <table class="table table-striped fixed-table"

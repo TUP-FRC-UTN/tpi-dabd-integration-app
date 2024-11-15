@@ -5,6 +5,7 @@ import { VisitorAuthorizationRequest } from '../../models/authorization/authoriz
 import { Auth } from '../../models/authorization/authorize.model';
 import { AccessModel } from '../../models/accesses/access.model';
 import { CaseTransformerService } from '../../services/case-transformer.service';
+import { environment } from '../../../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root',
@@ -69,7 +70,12 @@ export class AuthService {
     return this.http.put<any>(this.apiUrl + '/authorization/activate',null, { headers });
   }*/
 
-  private apiUrl = 'http://localhost:8001/auths';
+  //private apiUrl = 'http://localhost:8001/auths';
+
+  private apiUrl: string = environment.production
+  ? `${environment.apis.accesses+`auths`}`
+  : 'http://localhost:8001/';
+
 
   constructor(
     private http: HttpClient,
