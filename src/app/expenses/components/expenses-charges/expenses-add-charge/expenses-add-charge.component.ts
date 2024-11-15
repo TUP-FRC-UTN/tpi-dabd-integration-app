@@ -196,23 +196,23 @@ export class ExpensesAddChargeComponent implements OnInit{
     }
   }
 
-  // #region Modal
-  openNewCategoryModal() {
-    const modalRef = this.modalService.open(NewCategoryChargeModalComponent, {
-      ariaLabelledBy: 'modal-basic-title',
-    });
+    // #region Modal
+    openNewCategoryModal() {
+      const modalRef = this.modalService.open(NewCategoryChargeModalComponent, {
+        ariaLabelledBy: 'modal-basic-title',
+      });
 
-    modalRef.result.then((result) => {
-      if (result) {
-        if (result.success) {
-          this.toastService.sendSuccess(result.message);
-          this.loadSelect();
-        } else {
-          this.toastService.sendError(result.message);
+      modalRef.result.then((result) => {
+        if (result) {
+          if (result.success) {
+            this.toastService.sendSuccess(result.message);
+            this.loadSelect();
+          } else {
+            this.toastService.sendError(result.message);
+          }
         }
-      }
-    });
-  }
+      });
+    }
 
   camelToSnake(obj: any): any {
     if (Array.isArray(obj)) {
