@@ -61,7 +61,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   //
 
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
 
 
   //

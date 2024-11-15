@@ -132,46 +132,49 @@
                 >
                   Liquidación
                 </button>
+
                 @if ( period.state != 'Cerrado') {
                   <li>
                     <button
-                      class="dropdown-item btn btn-danger"
-                      (click)="newPeriod(period.id, period.month.toString() + '/' + period.year.toString())"
+                    class="dropdown-item btn btn-danger"
+                    (click)="newPeriod(period.id, period.month.toString() + '/' + period.year.toString())"
                     >
-                      Cambiar Fecha de Fin
+                    Cambiar Fecha de Fin
+                  </button>
+                 </li>
+                }
+                @if (rolCode){
+                  @if ( period.state == 'Liquidación Cerrada') {
+                  <li>
+                    <button
+                      class="dropdown-item btn btn-danger"
+                      (click)="open( period.id)"
+                    >
+                      Finalizar
                     </button>
                   </li>
                   }
-                @if ( period.state == 'Liquidación Cerrada') {
-                <li>
-                  <button
-                    class="dropdown-item btn btn-danger"
-                    (click)="open( period.id)"
-                  >
-                    Finalizar
-                  </button>
-                </li>
+                  @if ( period.state !== 'Liquidación Cerrada'&&  period.state !== 'Cerrado') {
+                    <li>
+                      <button
+                        class="dropdown-item btn btn-danger"
+                        (click)="openLiquidationClose( period.id)"
+                      >
+                        Cerrar Liquidación
+                      </button>
+                    </li>
+                  }
+                  @if ( period.state == 'Liquidación Cerrada') {
+                    <li>
+                      <button
+                        class="dropdown-item btn btn-danger"
+                        (click)="openLiquidationOpen( period.id)"
+                      >
+                        Abrir Liquidación
+                      </button>
+                    </li>
+                  }
                 }
-                @if ( period.state !== 'Liquidación Cerrada'&&  period.state !== 'Cerrado') {
-                  <li>
-                    <button
-                      class="dropdown-item btn btn-danger"
-                      (click)="openLiquidationClose( period.id)"
-                    >
-                      Cerrar Liquidación
-                    </button>
-                  </li>
-                 }
-                 @if ( period.state == 'Liquidación Cerrada') {
-                  <li>
-                    <button
-                      class="dropdown-item btn btn-danger"
-                      (click)="openLiquidationOpen( period.id)"
-                    >
-                      Abrir Liquidación
-                    </button>
-                  </li>
-                 }
               </div>
             </div>
           </td>
