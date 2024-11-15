@@ -120,7 +120,8 @@ export class AccessFormComponent implements OnInit {
               Swal.fire({
                 title: text + ' inconsistente',
                 text:
-                  'Con esa patente lo ultimo que se registró fue una ' +
+                  'El ultimo movimiento registrado por '+ this.accessForm.get('firstName')?.value +' '+ this.accessForm.get('lastName')?.value 
+                 +'  fue una ' +
                   text.toLowerCase() +
                   ' está seguro de querer registrar otra ' +
                   text.toLowerCase() +
