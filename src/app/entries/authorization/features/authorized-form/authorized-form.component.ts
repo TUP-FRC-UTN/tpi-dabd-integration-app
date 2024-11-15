@@ -1,4 +1,4 @@
-import {Component, inject, OnInit,} from '@angular/core';
+import {Component, inject, OnInit, TemplateRef, ViewChild,} from '@angular/core';
 import {FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule, FormArray} from '@angular/forms';
 import {CommonModule, NgClass} from '@angular/common';
 import {AuthService} from "../../../services/authorized-range/auth.service";
@@ -46,6 +46,11 @@ export class AuthFormComponent implements OnInit {
   });
   
   }
+
+  @ViewChild('infoModal') infoModal!: TemplateRef<any>;
+  onInfoButtonClick() {
+    this.modalService.open(this.infoModal, { size: 'lg' });
+    }
 
   ngOnInit(): void {
     this.authForm = this.createForm();
@@ -394,3 +399,4 @@ export interface plot {
   tel: string,
   name: string
 }
+
