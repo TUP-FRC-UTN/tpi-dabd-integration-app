@@ -1,0 +1,175 @@
+<app-main-container [title]="'Lista de Accesos'" (infoButtonClick)="onInfoButtonClick()">
+    <div class="card-body">
+        <!-- ESTE COMPONENTE LO VAN A TENER QUE MODIFICAR ES EL DEL BUSCAR, EXPORTAR, ETC -->
+        <!-- @param itemList => Mandan la lista con la cual hacen la tabla
+           @param tableName => Mandan el nombre de la tabla el que definen con #
+           @param tableName => Mandan el nombre de la tabla el que definen con #
+           @param formPath => Van a poner la ruta de su formulario para crear uno nuevo
+           @param dictionaries => En caso de usar diccionarios mandenlos, si no los mandan no pasa nada
+           @param objectName => Hace referencia al nombre de su objeto para guardar el archivo pdf o excel. Ej: 25/10/2024_LOTES
+           -->
+        <app-cadastre-plot-filter-buttons #filterComponent [itemsList]="completeList"
+            [tableName]="tableName.nativeElement" [heads]="heads" [props]="props" formPath="entries/access-form"
+            [tableFilters]="filterConfig" (filterValueChange)="onFilterValueChange($event)"
+            [dictionaries]="dictionaries" objectName="ACCESOS"></app-cadastre-plot-filter-buttons>
+    </div>
+
+    <div class="table-container">
+        <table class="table table-striped fixed-table"
+            style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #table>
+            <thead>
+                <tr>
+                    <th scope="col">Día</th>
+                    <th scope="col">Hora</th>
+                    <th scope="col">Acción</th>
+                    <th scope="col">Vehículo</th>
+                    <th scope="col">Documento</th>
+                    <th scope="col">Visitante</th>
+                    <th scope="col">Autorizador</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (item of (filteredList.length ? filteredList : list); track item) {
+                <tr>
+                    <td>
+                        {{ transformDateTable(item.actionDate) }}
+                    </td>
+                    <td>
+                        {{ transformHourTable(item.actionDate) }}
+                    </td>
+                    <td>
+                        @if (item.action === "ENTRY") {
+                        <span class="badge badge-success badge-outlined">{{ translateTable(item.action,
+                            actionDictionary) }}</span>
+                        } @else {
+                        <span class="badge badge-danger badge-outlined">{{ translateTable(item.action, actionDictionary)
+                            }}</span>
+                        }
+                    </td>
+                    <td>
+                        {{ (item.vehicleReg === "NULL" || item.vehicleReg == undefined || item.vehicleReg == "") ? "N/A"
+                        : item.vehicleReg }}
+                    </td>
+                    <td>
+                        {{ getDocumentAbbreviation(item.docType) + ' ' + item.docNumber }}
+                    </td>
+                    <td>
+                        <!--TODO icono-->
+                        <i [class]="'bi ' + VisitorTypeIconDictionary[item.visitorType]"></i>
+                        {{ transformUpperCamelCase(item.firstName) + ' ' + transformUpperCamelCase(item.lastName) }}
+                    </td>
+                    <td>
+                        <!--TODO icono-->
+                        <i class="bi bi-shield"></i>
+                        {{ item.authorizer?.authFirstName + ' ' + item.authorizer?.authLastName }}
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="form-group mb-3 me-2">
+            <select id="itemsPerPage" class="form-select" [(ngModel)]="pageSize" (change)="onItemsPerPageChange()">
+                @for (option of sizeOptions; track $index) {
+                <option [value]="option">{{ option }} Elementos</option>
+                }
+            </select>
+        </div>
+
+        <div class="ms-auto">
+        </div>
+
+        <div class="d-flex">
+
+            <ngb-pagination [(page)]="currentPage" [pageSize]="pageSize" [collectionSize]="totalItems"
+                (pageChange)="onPageChange($event)" [maxSize]="5" [boundaryLinks]="false"></ngb-pagination>
+
+        </div>
+
+
+    </div>
+
+    <ng-template #infoModal let-modal>
+        <div class="modal-header fs-6 py-1">
+            <h4 class="modal-title">Información de la Lista de Accesos</h4>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+        </div>
+        <div class="modal-body fs-6 py-2">
+            <div class="container-fluid">
+                <!-- Introducción -->
+                <div class="alert alert-info mb-2 py-2">
+                    <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
+                    <p class="mb-0 small">Esta pantalla permite gestionar y visualizar los accesos de visitantes. Aquí
+                        puedes
+                        revisar los detalles de cada acceso, aplicar filtros personalizados, y exportar la información.
+                    </p>
+                </div>
+
+                <!-- Campos Principales -->
+                <div class="card mb-2">
+                    <div class="card-header py-1">
+                        <h5 class="mb-0">Detalles de Accesos</h5>
+                    </div>
+                    <div class="card-body py-2">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item py-1">
+                                <strong>Lista de Accesos:</strong> Muestra información sobre cada visitante, su
+                                documento, tipo, la
+                                acción realizada, hora de acceso, vehículo asociado, comentarios y el nombre del
+                                autorizador.
+                            </li>
+                            <li class="list-group-item py-1">
+                                <strong>Filtros:</strong> Puedes aplicar filtros como "Tipo de visitante" o "Acción"
+                                para localizar
+                                accesos específicos rápidamente.
+                            </li>
+                            <li class="list-group-item py-1">
+                                <strong>Paginación:</strong> Navega entre varias páginas de accesos.
+                            </li>
+                            <li class="list-group-item py-1">
+                                <strong>Exportar:</strong> Puedes exportar la lista de accesos en formato PDF o Excel
+                                para informes o
+                                respaldos.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Acciones -->
+                <div class="card mb-2">
+                    <div class="card-header py-1">
+                        <h5 class="mb-0">Acciones Disponibles</h5>
+                    </div>
+                    <div class="card-body py-2">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item py-1">
+                                <strong>Buscar:</strong> Usa campos de texto o selección para localizar registros de
+                                accesos
+                                específicos.
+                            </li>
+                            <li class="list-group-item py-1">
+                                <strong>Limpiar Filtros:</strong> Restablece los filtros aplicados para ver todos los
+                                registros de
+                                accesos.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Nota (OPCIONAL) -->
+                <div class="alert alert-warning py-2 mb-0">
+                    <h5 class="alert-heading">Nota:</h5>
+                    <p class="mb-0 small">Asegúrate de verificar la precisión de la información antes de modificar o
+                        exportar
+                        datos. Revisa los detalles de los visitantes y el autorizador para garantizar su exactitud.</p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer py-2">
+            <button type="button" class="btn btn-primary" (click)="modal.close()">Entendido</button>
+        </div>
+    </ng-template>
+
+</app-main-container>

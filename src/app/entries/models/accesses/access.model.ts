@@ -15,20 +15,21 @@ export interface AccessModel {
   action: string;
   vehicleType: string;
   carDescription: string | null;
-  vehicleReg: string;          
+  vehicleReg: string;
   actionDate: string;
   vehicleDescription: string;
   comments: string;
+  is_Late: boolean;
 }
 
 export const AccessActionDictionary: { [key: string]: string } = {
-  "Entrada": "ENTRY",
-  "Salida": "EXIT",
+  Entrada: 'ENTRY',
+  Salida: 'EXIT',
 };
 
 export enum AccessFilters {
   NOTHING = 'NOTHING',
   ACTION = 'ACTION',
   DATE = 'DATE',
-  VISITOR_TYPE = 'VISITOR_TYPE'
+  VISITOR_TYPE = 'VISITOR_TYPE',
 }
