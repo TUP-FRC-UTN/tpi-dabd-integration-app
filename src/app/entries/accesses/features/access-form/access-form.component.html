@@ -1,4 +1,5 @@
-<app-main-container title="Nuevo acceso" (infoButtonClick)="openInfo()">
+<app-main-container title="Nuevo acceso" (infoButtonClick)="onInfoButtonClick()">
+
     <form [formGroup]="accessForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
         <h5>Ingresante</h5>
         <hr>
@@ -231,5 +232,83 @@
         </div>
     </ng-template>
     
+
+
+    <ng-template #infoModal let-modal>
+    <div class="modal-header fs-6 py-1">
+        <h4 class="modal-title">Información de Registro de Nuevo Acceso</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body fs-6 py-2">
+        <div class="container-fluid">
+            <!-- Introducción -->
+            <div class="alert alert-info mb-2 py-2">
+                <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
+                <p class="mb-0 small">Esta pantalla permite registrar nuevos accesos de visitantes al predio. Aquí puedes
+                    ingresar los datos del visitante, verificar su autorización y registrar los detalles de su ingreso o
+                    salida.</p>
+            </div>
+
+            <!-- Campos Principales -->
+            <div class="card mb-2">
+                <div class="card-header py-1">
+                    <h5 class="mb-0">Secciones del Formulario</h5>
+                </div>
+                <div class="card-body py-2">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item py-1">
+                            <strong>Datos del Ingresante:</strong> Permite ingresar y verificar el documento del visitante,
+                            consultando su autorización mediante el botón "Consultar" o escaneando un código QR.
+                        </li>
+                        <li class="list-group-item py-1">
+                            <strong>Información Personal:</strong> Muestra el nombre y apellido del visitante una vez
+                            verificada su autorización.
+                        </li>
+                        <li class="list-group-item py-1">
+                            <strong>Detalles del Acceso:</strong> Registra el lote de destino y el tipo de acción (entrada o
+                            salida).
+                        </li>
+                        <li class="list-group-item py-1">
+                            <strong>Información del Vehículo:</strong> Permite registrar el tipo de vehículo, patente y una
+                            descripción detallada si corresponde.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Funcionalidades -->
+            <div class="card mb-2">
+                <div class="card-header py-1">
+                    <h5 class="mb-0">Funcionalidades Principales</h5>
+                </div>
+                <div class="card-body py-2">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item py-1">
+                            <strong>Verificación:</strong> Consulta automática de autorización mediante documento o código QR.
+                        </li>
+                        <li class="list-group-item py-1">
+                            <strong>Registro de Vehículos:</strong> Opciones para diferentes tipos de vehículos y sus
+                            detalles.
+                        </li>
+                        <li class="list-group-item py-1">
+                            <strong>Comentarios:</strong> Campo adicional para agregar observaciones relevantes al acceso.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Nota -->
+            <div class="alert alert-warning py-2 mb-0">
+                <h5 class="alert-heading">Importante:</h5>
+                <p class="mb-0 small">Asegúrate de verificar la autorización del visitante antes de registrar el acceso. Los
+                    campos marcados con (*) son obligatorios y deben completarse correctamente para guardar el registro.</p>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer py-2">
+        <button type="button" class="btn btn-primary" (click)="modal.close()">Entendido</button>
+    </div>
+</ng-template>
+
     <app-toasts></app-toasts>
 </app-main-container>

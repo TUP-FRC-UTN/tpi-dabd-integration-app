@@ -108,7 +108,7 @@ export class AccessService {
       return this.http.get<{ items: AccessModel[], total_elements: number }>(this.apiUrl, { params })
         .pipe(
           map((response) => ({
-            totalElements: response.total_elements, // Cambia 'totalElements' a 'total_elements' para que coincida con el tipo esperado
+            totalElements: response.total_elements, 
             items: response.items.map(item => this.caseTransformer.toCamelCase(item)),
           }))
         );

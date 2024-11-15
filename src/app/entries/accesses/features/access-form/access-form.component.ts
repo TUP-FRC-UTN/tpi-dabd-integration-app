@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgClass, NgIf } from '@angular/common';
@@ -38,6 +38,7 @@ export class AccessFormComponent implements OnInit {
   private url = inject(ActivatedRoute);
   @ViewChild('scannerModal') scannerModal: any;
   @ViewChild('action') action!: NgxScannerQrcodeComponent;
+  @ViewChild('infoModal') infoModal!: TemplateRef<any>;
   private toastService = inject(ToastService);
 
   public qrValue: string | null = null;
@@ -304,7 +305,7 @@ export class AccessFormComponent implements OnInit {
   }
 
 
-  openInfo() {
-    alert('mostrar info')
-    }
+  onInfoButtonClick() {
+    this.modalService.open(this.infoModal, { size: 'lg' });
+  }
 }
