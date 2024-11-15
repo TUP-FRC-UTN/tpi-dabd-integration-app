@@ -52,7 +52,7 @@ export class FineService {
   private _fines$ = new BehaviorSubject<Fine[]>([]);
   private _total$ = new BehaviorSubject<number>(0);
 
-  private apiUrl = environment.apis.moderations;
+  private apiUrl = environment.apis.moderations.slice(0, -1);
 
   private _state: State = {
     page: 1,

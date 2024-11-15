@@ -29,7 +29,6 @@ export class RulesComponent {
 
   rulesContent: string = '';
   editMode: boolean = false;
-  isAdmin: boolean = true;
 
   public config = {
     toolbar: [

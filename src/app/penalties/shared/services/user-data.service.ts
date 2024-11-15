@@ -28,11 +28,43 @@ export class UserDataService {
     const user: User = this.sessionService.getItem('user');
     const userId = user?.id || 1;
 
+    const userData: UserData = {
+      id: user.id || 1,
+      roles: user.roles || [],
+      plots: [
+        {
+          id: 3,
+          balance: 0,
+          blockNumber: '1',
+          builtArea: '0',
+          isActive: true,
+          plotNumber: '1',
+          plotStatus: 'CREATED',
+          plotType: 'PAID',
+          totalArea: '0',
+        },
+        {
+          id: 8,
+          balance: 0,
+          blockNumber: '2',
+          builtArea: '0',
+          isActive: true,
+          plotNumber: '2',
+          plotStatus: 'CREATED',
+          plotType: 'PAID',
+          totalArea: '0',
+        },
+      ],
+      plotIds: [3, 8],
+    };
+
+    return of(userData);
+
     return this.userService.getUserById(userId).pipe(
       map((response) => {
         const userData: UserData = {
-          id: response.id || 1,
-          roles: response.roles || [],
+          id: user.id || 1,
+          roles: user.roles || [],
           plots: [],
           plotIds: [],
         };

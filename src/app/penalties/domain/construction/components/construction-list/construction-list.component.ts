@@ -62,7 +62,7 @@ export class ConstructionListComponent {
 
   // Methods:
   updateFiltersAccordingToUser() {
-    if (!this.userHasRole('ADMIN')) {
+    if (!this.userHasRole('CONSTRUCTION_ADMIN')) {
       this.searchParams = {
         ...this.searchParams,
         plotsIds: this.userData.plotIds,
@@ -153,7 +153,7 @@ export class ConstructionListComponent {
   }
 
   goToDetails = (id: number, mode: 'detail' | 'edit'): void => {
-    this.router.navigate(['constructions', id, mode]);
+    this.router.navigate(['penalties/constructions', id, mode]);
   };
 
   setFilterType(type: string): void {

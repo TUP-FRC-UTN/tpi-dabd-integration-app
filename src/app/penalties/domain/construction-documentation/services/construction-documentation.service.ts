@@ -20,7 +20,7 @@ import { environment } from '../../../../../environments/environment';
   providedIn: 'root',
 })
 export class ConstructionDocumentationService {
-  private apiUrl = environment.apis.constructions;
+  private apiUrl = environment.apis.constructions.slice(0, -1);
 
   private documentationTypesSubject = new BehaviorSubject<
     ConstructionDocumentationTypeResponseDTO[]

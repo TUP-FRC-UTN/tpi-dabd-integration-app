@@ -229,7 +229,7 @@ export class InfractionListComponent {
   }
 
   updateFiltersAccordingToUser() {
-    if (!this.userHasRole('ADMIN')) {
+    if (!this.userHasRole('FINES_ADMIN')) {
       this.searchParams = {
         ...this.searchParams,
         plotsIds: this.userData.plotIds,

@@ -154,7 +154,7 @@ export class ClaimListComponent {
   }
 
   updateFiltersAccordingToUser() {
-    if (!this.userHasRole('ADMIN')) {
+    if (!this.userHasRole('FINES_ADMIN')) {
       this.searchParams = {
         ...this.searchParams,
         plotsIds: this.userData.plotIds,
@@ -195,7 +195,7 @@ export class ClaimListComponent {
   };
 
   goToDetails = (id: number, mode: 'detail' | 'edit'): void => {
-    this.router.navigate(['claim', id, mode]);
+    this.router.navigate(['penalties/claim', id, mode]);
   };
 
   openFormModal(sanctionTypeToEdit: number | null = null): void {

@@ -22,7 +22,7 @@ type OneSanctionType = SanctionType | undefined;
 export class SanctionTypeService {
   private http = inject(HttpClient);
 
-  private apiUrl = environment.apis.moderations;
+  private apiUrl = environment.apis.moderations.slice(0, -1);
 
   private oneSanctionType = new BehaviorSubject<OneSanctionType>(undefined);
   oneSanctionType$ = this.oneSanctionType.asObservable();

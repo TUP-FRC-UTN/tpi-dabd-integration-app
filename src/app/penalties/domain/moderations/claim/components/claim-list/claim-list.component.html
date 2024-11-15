@@ -13,12 +13,12 @@
         <button ngbDropdownItem (click)="goToDetails(item.id, 'detail')">
           Ver detalle
         </button>
-        @if((userHasRole('ADMIN') || userData.id === item.created_by) &&
+        @if((userHasRole('FINES_ADMIN') || userData.id === item.created_by) &&
         item.claim_status === 'SENT') {
         <button ngbDropdownItem (click)="goToDetails(item.id, 'edit')">
           Editar
         </button>
-        } @if((userHasRole('ADMIN') ) && item.claim_status === 'SENT') {
+        } @if((userHasRole('FINES_ADMIN') ) && item.claim_status === 'SENT') {
         <button ngbDropdownItem (click)="disapproveClaim(item.id)">
           Desaprobar
         </button>
@@ -71,7 +71,7 @@
     <div
       class="form-check me-2"
       [ngClass]="{
-        invisible: !(item.claim_status === 'SENT' && userHasRole('ADMIN'))
+        invisible: !(item.claim_status === 'SENT' && userHasRole('FINES_ADMIN'))
       }"
     >
       <input

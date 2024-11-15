@@ -59,6 +59,6 @@ export class FineInfractionsListComponent {
   }
 
   goToInfractionDetail(infractionId: number) {
-    this.router.navigate(['infraction', infractionId]);
+    this.router.navigate(['penalties/infraction', infractionId]);
   }
 }

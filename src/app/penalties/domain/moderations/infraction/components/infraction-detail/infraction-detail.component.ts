@@ -102,7 +102,7 @@ export class InfractionDetailComponent implements OnInit {
   }
   showRejectButton(): boolean {
     return (
-      this.userHasRole('ADMIN') &&
+      this.userHasRole('FINES_ADMIN') &&
       (this.infraction!.infraction_status ===
         ('APPEALED' as InfractionStatusEnum) ||
         this.infraction!.infraction_status ===
@@ -112,14 +112,14 @@ export class InfractionDetailComponent implements OnInit {
 
   showAppealButton(): boolean {
     return (
-      this.userHasRole('ADMIN') &&
+      this.userHasRole('FINES_ADMIN') &&
       this.infraction!.infraction_status === ('CREATED' as InfractionStatusEnum)
     );
   }
 
   showApproveButton(): boolean {
     return (
-      this.userHasRole('ADMIN') &&
+      this.userHasRole('FINES_ADMIN') &&
       this.infraction!.infraction_status ===
         ('APPEALED' as InfractionStatusEnum)
     );

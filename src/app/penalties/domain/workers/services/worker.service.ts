@@ -8,7 +8,7 @@ import { environment } from '../../../../../environments/environment';
   providedIn: 'root',
 })
 export class WorkerService {
-  private apiUrl = environment.apis.constructions;
+  private apiUrl = environment.apis.constructions.slice(0, -1);
 
   private readonly http = inject(HttpClient);
 

@@ -174,7 +174,7 @@ export class ConstructionDetailComponent implements OnInit {
   }
 
   goBack = (): void => {
-    this.router.navigate(['constructions']);
+    this.router.navigate(['penalties/constructions']);
   };
 
   updateStatus(): void {

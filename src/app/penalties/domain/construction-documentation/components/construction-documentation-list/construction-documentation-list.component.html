@@ -19,7 +19,7 @@
     ngbTooltip="Aprobar"
     (click)="approveDocument(item)"
     [disabled]="
-      item.state === 'APPROVED' || currentConstructionStatus !== 'ON_REVISION' || !userHasRole('ADMIN')
+      item.state === 'APPROVED' || currentConstructionStatus !== 'ON_REVISION' || !userHasRole('CONSTRUCTION_ADMIN')
     "
   >
     <i class="bi bi-check-lg"></i>
@@ -30,7 +30,7 @@
     ngbTooltip="Rechazar"
     (click)="rejectDocument(item)"
     [disabled]="
-      item.state === 'REJECTED' || currentConstructionStatus !== 'ON_REVISION' || !userHasRole('ADMIN')
+      item.state === 'REJECTED' || currentConstructionStatus !== 'ON_REVISION' || !userHasRole('CONSTRUCTION_ADMIN')
     "
   >
     <i class="bi bi-x"></i>

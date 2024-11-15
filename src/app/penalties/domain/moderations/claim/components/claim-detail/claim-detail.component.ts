@@ -138,7 +138,7 @@ export class ClaimDetailComponent implements OnInit {
     // this.resetSanctionType();
   }
   goBack() {
-    this.router.navigate(['claim']);
+    this.router.navigate(['penalties/claim']);
   }
 
   saveEdit() {

@@ -17,7 +17,7 @@ import { environment } from '../../../../../../environments/environment';
 })
 export class ClaimService {
   private http = inject(HttpClient);
-  private apiUrl = environment.apis.moderations; // URL de la API
+  private apiUrl = environment.apis.moderations.slice(0, -1); // URL de la API
 
   // private oneClaim = new BehaviorSubject<OneConstruction>(undefined);
   // oneClaim$ = this.oneClaim.asObservable();

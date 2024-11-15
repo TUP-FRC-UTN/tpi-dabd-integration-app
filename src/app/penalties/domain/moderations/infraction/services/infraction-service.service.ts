@@ -13,7 +13,7 @@ import { environment } from '../../../../../../environments/environment';
   providedIn: 'root',
 })
 export class InfractionServiceService {
-  private apiUrl = environment.apis.moderations;
+  private apiUrl = environment.apis.moderations.slice(0, -1);
 
   private itemsSubject = new BehaviorSubject<InfractionResponseDTO[]>([]);
   items$ = this.itemsSubject.asObservable();

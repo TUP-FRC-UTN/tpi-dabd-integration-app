@@ -186,10 +186,11 @@ export class AppComponent {
     },
     {
       label: 'Normas',
+      routerLink: '/penalties/rules',
       sidebarMenu: [
         {
           label: 'Reglamento',
-          routerLink: '/rules',
+          routerLink: '/penalties/rules',
         }
       ]
     },

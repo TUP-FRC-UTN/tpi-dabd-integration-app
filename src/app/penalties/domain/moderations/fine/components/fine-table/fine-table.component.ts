@@ -27,12 +27,10 @@ import {
   MainContainerComponent,
   TableColumn,
   TableComponent,
-  ToastService,
 } from 'ngx-dabd-grupo01';
 
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
 import { FineStatusEnum } from '../../models/fine-status.enum';
-import { PdfService } from '../../../../../shared/services/pdf.service';
 import {
   UserDataService,
   UserData,
@@ -64,10 +62,6 @@ export class FineTable {
   @ViewChild('actionsTemplate') actionsTemplate!: TemplateRef<any>;
   @ViewChild('pdfTemplate', { static: true }) pdfTemplate!: TemplateRef<any>;
   @ViewChild('sanctionType') sanctionType!: TemplateRef<any>;
-
-  role: string = '';
-  userId: number | undefined;
-  userPlotsIds: number[] = [];
 
   columns: TableColumn[] = [];
 
@@ -153,8 +147,8 @@ export class FineTable {
 
   loadItems(): void {
     if (
-      this.role === 'ADMIN' ||
-      (this.role === 'OWNER' && this.userPlotsIds.length !== 0)
+      this.userHasRole('FINES_ADMIN') ||
+      (this.userHasRole('OWNER') && this.userData.plotIds.length !== 0)
     ) {
       this.updateFiltersAccordingToUser();
       this.fineService
@@ -170,10 +164,10 @@ export class FineTable {
   }
 
   updateFiltersAccordingToUser() {
-    if (this.role !== 'ADMIN') {
+    if (!this.userHasRole('FINES_ADMIN')) {
       this.searchParams = {
         ...this.searchParams,
-        plotsIds: this.userPlotsIds,
+        plotsIds: this.userData.plotIds,
       };
     } else {
       if (this.searchParams['plotsIds']) {

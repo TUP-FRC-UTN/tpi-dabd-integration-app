@@ -27,7 +27,7 @@
         >
           Ver detalle
         </button>
-        @if(!userHasRole('ADMIN')) {
+        @if(!userHasRole('CONSTRUCTION_ADMIN')) {
         <button
           ngbDropdownItem
           (click)="goToDetails(item.construction_id, 'edit')"
