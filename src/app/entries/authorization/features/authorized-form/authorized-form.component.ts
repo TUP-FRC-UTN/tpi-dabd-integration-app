@@ -8,7 +8,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {UserTypeService} from "../../../services/user-type.service";
 import {RangeModalComponent} from "../authorized-range-form/authorized-range-form.component";
 import {NgSelectComponent} from "@ng-select/ng-select";
-import { ToastsContainer, ToastService } from "ngx-dabd-grupo01";
+import { ToastsContainer, ToastService, MainContainerComponent} from "ngx-dabd-grupo01";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -19,7 +19,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
     NgIf,
     NgClass,
     NgSelectComponent,
-    ToastsContainer
+    ToastsContainer,
+    MainContainerComponent
   ],
   templateUrl: './authorized-form.component.html'
 })
