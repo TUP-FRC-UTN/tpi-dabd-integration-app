@@ -195,8 +195,8 @@ export class ExpensesAddBillComponent implements OnInit {
   }
   // #region Form Utilities
   resetForm() {
-    this.billForm.reset();
-    this.loadSelectOptions();
+    //this.billForm.reset();
+    //this.loadSelectOptions();
   }
   // #endregion
 
