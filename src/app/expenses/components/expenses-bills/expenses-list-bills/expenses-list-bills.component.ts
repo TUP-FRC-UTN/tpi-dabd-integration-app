@@ -10,6 +10,7 @@ import { BillService } from '../../../services/bill.service';
 import { CategoryService } from '../../../services/category.service';
 import { ProviderService } from '../../../services/provider.service';
 import {
+  FormBuilder,
   FormControl,
   FormGroup,
   FormsModule,
@@ -17,7 +18,6 @@ import {
 } from '@angular/forms';
 import { PeriodService } from '../../../services/period.service';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import BillType from '../../../models/billType';
 import { CommonModule, DatePipe } from '@angular/common';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import * as XLSX from 'xlsx';
@@ -38,7 +38,7 @@ import {
   TableFiltersComponent,
   ToastService,
 } from 'ngx-dabd-grupo01';
-import { of } from 'rxjs';
+import { map, of } from 'rxjs';
 import { DeleteBillModalComponent } from '../../modals/bills/delete-bill-modal/delete-bill-modal.component';
 
 @Component({
@@ -60,10 +60,9 @@ import { DeleteBillModalComponent } from '../../modals/bills/delete-bill-modal/d
   providers: [DatePipe],
 })
 export class ExpensesListBillsComponent implements OnInit {
-  //#region VARIABLES
 
   private readonly toastService = inject(ToastService);
-  
+
   bills: Bill[] = [];
   filteredBills: Bill[] = [];
   currentPage: number = 1;
@@ -74,7 +73,7 @@ export class ExpensesListBillsComponent implements OnInit {
   periodsList: { value: string; label: string }[] = [];
   typesList: { value: string; label: string }[] = [];
 
-
+  private pageSize = 10;
   totalItems = 0;
   page = 1;
   size = 10;
@@ -86,24 +85,25 @@ export class ExpensesListBillsComponent implements OnInit {
   today: Date = new Date();
   fileName: string = `Gastos_${this.today.toLocaleDateString()}.xlsx`;
 
-  // FormGroup for filters
   filters = new FormGroup({
     selectedCategory: new FormControl(0),
     selectedPeriod: new FormControl<number>(0),
     selectedSupplier: new FormControl(0),
-    selectedProvider: new FormControl('SUPPLIER'),
-    selectedStatus: new FormControl('ACTIVE'),
+    selectedProvider: new FormControl(''),
+    selectedStatus: new FormControl(''),
     selectedType: new FormControl(0),
   });
 
   filterTableByText(value: string) {
     const filterValue = value?.toLowerCase() || '';
     if (filterValue === '') {
-      this.filteredBills = this.bills;
+      const startIndex = (this.page - 1) * this.size;
+      const endIndex = startIndex + this.size;
+      this.filteredBills = this.allBills.slice(startIndex, endIndex);
       return;
     }
 
-    this.filteredBills = this.bills.filter(
+    const filtered = this.allBills.filter(
       (bill) =>
         (bill.billType?.name
           ? bill.billType.name.toLowerCase().includes(filterValue)
@@ -115,6 +115,11 @@ export class ExpensesListBillsComponent implements OnInit {
           ? bill.category.name.toLowerCase().includes(filterValue)
           : false)
     );
+
+    this.totalItems = filtered.length;
+    const startIndex = (this.page - 1) * this.size;
+    const endIndex = startIndex + this.size;
+    this.filteredBills = filtered.slice(startIndex, endIndex);
   }
 
   filterTableBySelects(value: Record<string, any>) {
@@ -123,12 +128,10 @@ export class ExpensesListBillsComponent implements OnInit {
     const filterPeriod = value['period.id'] || 0;
     const filterType = value['billType.name'] || 0;
     let filterStatus = '';
-    if (value['isActive'] !== 'undefined') filterStatus = value['isActive'] === 'true' ? 'Activo' : 'Cerrado';
+    if (value['isActive'] !== 'undefined')
+      filterStatus = value['isActive'] === 'true' ? 'Activo' : 'Cerrado';
 
-
-
-
-    this.filteredBills = this.bills.filter((bill) => {
+    const filtered = this.allBills.filter((bill) => {
       const matchesCategory = filterCategory
         ? bill.category?.category_id === filterCategory
         : true;
@@ -141,15 +144,18 @@ export class ExpensesListBillsComponent implements OnInit {
       const matchesType = filterType
         ? bill.billType?.bill_type_id === filterType
         : true;
-
-
       const matchesStatus = filterStatus
         ? bill.status === filterStatus
         : true;
 
-
-      return matchesCategory && matchesSupplier && matchesPeriod && matchesType && matchesStatus;
+      return matchesCategory && matchesSupplier && matchesPeriod &&
+             matchesType && matchesStatus;
     });
+
+    this.totalItems = filtered.length;
+    const startIndex = (this.page - 1) * this.size;
+    const endIndex = startIndex + this.size;
+    this.filteredBills = filtered.slice(startIndex, endIndex);
   }
 
   onSearchValueChange(searchTerm: string) {
@@ -157,10 +163,6 @@ export class ExpensesListBillsComponent implements OnInit {
     this.page = 1;
     this.filterTableByText(searchTerm);
   }
-
-
-
-  //#endregion
 
   @ViewChild('amountTemplate', { static: true })
   amountTemplate!: TemplateRef<any>;
@@ -226,24 +228,29 @@ export class ExpensesListBillsComponent implements OnInit {
   }
 
   onPageChange = (page: number) => {
-    this.page = page ;
-    this.loadBills();
+    this.page = page;
+    const startIndex = (page - 1) * this.size;
+    const endIndex = startIndex + this.size;
+    this.bills = this.allBills.slice(startIndex, endIndex);
+    this.filteredBills = [...this.bills];
   };
 
   onPageSizeChange = (size: number) => {
     this.size = size;
     this.page = 1;
-    this.loadBills();
+    const startIndex = 0;
+    const endIndex = size;
+    this.bills = this.allBills.slice(startIndex, endIndex);
+    this.filteredBills = [...this.bills];
   };
 
-  //#region DEPENDENCY INJECTION
   billService = inject(BillService);
   categoryService = inject(CategoryService);
   periodService = inject(PeriodService);
   providerService = inject(ProviderService);
   modalService = inject(NgbModal);
+  private fb = inject(FormBuilder);
   private router = inject(Router);
-  //#endregion
 
   getCategories() {
     this.categoryService.getAllCategories().subscribe((categories) => {
@@ -251,7 +258,7 @@ export class ExpensesListBillsComponent implements OnInit {
         value: category.category_id,
         label: category.name,
       }));
-      this.initializeFilters(); // Actualiza el filtro después de obtener datos
+      this.initializeFilters();
     });
   }
 
@@ -284,7 +291,7 @@ export class ExpensesListBillsComponent implements OnInit {
       this.initializeFilters();
     });
   }
-  // Initialize filter configurations
+
   initializeFilters(): void {
     this.filterConfig = new FilterConfigBuilder()
       .selectFilter(
@@ -317,15 +324,14 @@ export class ExpensesListBillsComponent implements OnInit {
         { value: 'NEW', label: 'Nuevo' },
         { value: 'undefined', label: 'Todo' },
       ])
-      .radioFilter('Tipo de proveedor', 'supplier.type',[
-        {value: 'SUPPLIER', label: 'Proveedor'},
-        {value: 'EMPLOYEE', label: 'Empleado'}
+      .radioFilter('Tipo de proveedor', 'supplier.type', [
+        { value: 'SUPPLIER', label: 'Proveedor' },
+        { value: 'EMPLOYEE', label: 'Empleado' }
       ])
       .build();
   }
 
   onFilterValueChange($event: Record<string, any>) {
-    console.log($event);
 
     this.filters.patchValue({
       selectedCategory: $event['category.name'] === "" ? undefined : $event['category.name'],
@@ -338,16 +344,16 @@ export class ExpensesListBillsComponent implements OnInit {
     this.loadBills();
   }
 
+  private allBills: Bill[] = [];
 
-  // Load all bills with pagination and filters
   private loadBills(): void {
-
     this.isLoading = true;
     const filters = this.filters.value;
+
     this.billService
       .getAllBillsAndPagination(
-        this.page-1,
-        this.size,
+        0,
+        5000,
         filters.selectedPeriod?.valueOf(),
         filters.selectedCategory?.valueOf(),
         filters.selectedSupplier?.valueOf(),
@@ -357,48 +363,90 @@ export class ExpensesListBillsComponent implements OnInit {
       )
       .subscribe({
         next: (response) => {
-          this.totalItems = response.totalElements;
           this.billService.formatBills(of(response)).subscribe((bills) => {
             if (bills) {
-              this.bills = this.sortBills(bills);
+              this.allBills = this.sortBills(bills);
+
+              this.totalItems = this.allBills.length;
+
+              const startIndex = (this.page - 1) * this.size;
+              const endIndex = startIndex + this.size;
+              this.bills = this.allBills.slice(startIndex, endIndex);
               this.filteredBills = [...this.bills];
             } else {
+              this.allBills = [];
               this.bills = [];
               this.filteredBills = [];
+              this.totalItems = 0;
             }
           });
         },
-        error: (error) => console.error('Error al cargar las facturas:', error),
         complete: () => {
           this.isLoading = false;
-
-        }
-        ,
+        },
       });
   }
 
-  sortBills(bills: Bill[]): Bill[] {
-    return [...bills].sort((a, b) => {
-      const categoryComparison = a.category.name.localeCompare(b.category.name);
-      if (categoryComparison !== 0) return categoryComparison;
-      const supplierComparison = a.supplier.name.localeCompare(b.supplier.name);
-      if (supplierComparison !== 0) return supplierComparison;
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
-      return dateB.getTime() - dateA.getTime();
+  private sortBills(bills: Bill[]): Bill[] {
+    const statusOrder: { [key: string]: number } = {
+        'Nuevo': 1,
+        'Activo': 2,
+        'Cancelado': 3
+    };
+
+    return bills.sort((a, b) => {
+        const statusComparison = (statusOrder[a.status] || 0) - (statusOrder[b.status] || 0);
+        if (statusComparison !== 0) {
+            return statusComparison;
+        }
+
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
-  }
-  //#endregion
+}
 
 
-
-
-  //#endregion
-
-
-  //#region MODAL OPERATIONS
   viewBill(bill: Bill) {
     this.openViewModal(bill);
+  }
+
+  deleteBill(bill: Bill) {
+    const modalRef = this.modalService.open(DeleteBillModalComponent, {
+      backdrop: 'static',
+      keyboard: false
+    });
+    modalRef.componentInstance.bill = bill;
+    modalRef.componentInstance.status = "Cancelado"
+    modalRef.componentInstance.action = 'eliminar'
+    modalRef.result.then(
+      (result) => {
+        if (result.success) {
+          this.toastService.sendSuccess(result.message)
+          window.location.reload();
+        } else {
+          this.toastService.sendError(result.message)
+        }
+      }
+    );
+  }
+
+  activeBill(bill: Bill) {
+    const modalRef = this.modalService.open(DeleteBillModalComponent, {
+      backdrop: 'static',
+      keyboard: false
+    });
+    modalRef.componentInstance.bill = bill;
+    modalRef.componentInstance.status = "Activo"
+    modalRef.componentInstance.action = 'activar'
+    modalRef.result.then(
+      (result) => {
+        if (result.success) {
+          this.toastService.sendSuccess(result.message)
+          window.location.reload();
+        } else {
+          this.toastService.sendError(result.message)
+        }
+      }
+    );
   }
 
   editBill(bill: Bill) {
@@ -425,7 +473,7 @@ export class ExpensesListBillsComponent implements OnInit {
     });
   }
 
-   showInfo(): void {
+  showInfo(): void {
     this.modalService.open(ListBillsInfoComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -435,32 +483,10 @@ export class ExpensesListBillsComponent implements OnInit {
     });
   }
 
-  deleteBill(bill: Bill) {
-    const modalRef = this.modalService.open(DeleteBillModalComponent, {
-      backdrop: 'static',
-      keyboard: false
-    });
-    modalRef.componentInstance.bill = bill;
-    modalRef.result.then(
-      (result) => {
-        if (result.success) {
-          this.toastService.sendSuccess(result.message)
-          window.location.reload();
-        } else {
-          this.toastService.sendError(result.message)
-        }
-      }
-    );
-  }
-
-  //#endregion
-
-  //#region DOCUMENT GENERATION
   imprimir() {
-    console.log('Imprimiendo');
     const doc = new jsPDF();
     doc.setFontSize(18);
-    doc.text('Bills Report', 14, 20);
+    doc.text('Lista de Gastos', 14, 20);
 
     const filters = this.filters.value;
     this.billService
@@ -503,25 +529,55 @@ export class ExpensesListBillsComponent implements OnInit {
         doc.save(
           `Gastos_${this.today.getDay()}-${this.today.getMonth()}-${this.today.getFullYear()}/${this.today.getHours()}hs:${this.today.getMinutes()}min.pdf`
         );
-        console.log('Impreso');
       });
   }
 
-  downloadTable() {
-    const filters = this.filters.value;
-    this.billService
-      .getAllBillsAndPagination(
-        500000,
-        0,
-        filters.selectedPeriod?.valueOf(),
-        filters.selectedCategory?.valueOf(),
-        filters.selectedSupplier?.valueOf(),
-        filters.selectedType?.valueOf(),
-        filters.selectedProvider?.valueOf().toString(),
-        filters.selectedStatus?.valueOf().toString()
-      )
-      .subscribe((bills) => {
-        const data = bills.content.map((bill) => ({
+  // downloadTable() {
+  //   const filters = this.filters.value;
+  //   this.billService
+  //     .getAllBillsAndPaginationAny(
+  //       this.page,
+  //       this.size,
+  //       filters.selectedPeriod?.valueOf(),
+  //       filters.selectedCategory?.valueOf(),
+  //       filters.selectedSupplier?.valueOf(),
+  //       filters.selectedType?.valueOf(),
+  //       filters.selectedProvider?.valueOf().toString(),
+  //       filters.selectedStatus?.valueOf().toString(),
+  //     )
+  //     .subscribe((bills) => {
+  //       const data = bills.content.map((bill) => ({
+  //         Periodo: `${bill?.period?.month} / ${bill?.period?.year}`,
+  //         'Monto Total': `$ ${bill.amount}`,
+  //         Fecha: bill.date,
+  //         Proveedor: bill.supplier?.name,
+  //         Estado: bill.status,
+  //         Categoría: bill.category.name,
+  //         'Tipo de gasto': bill.bill_type?.name,
+  //         Descripción: bill.description,
+  //       }));
+
+  //       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+  //       const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  //       XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
+  //       XLSX.writeFile(wb, this.fileName);
+  //     });
+  // }
+
+
+  getAllItems = () => {
+    return this.billService.getAllBillsAndPaginationAny(
+      0,
+      5000,
+      this.filters.get('selectedPeriod')?.value as number,
+      this.filters.get('selectedCategory')?.value as number,
+      this.filters.get('selectedSupplier')?.value as number,
+      this.filters.get('selectedType')?.value as number,
+      this.filters.get('selectedProvider')?.value as string,
+      this.filters.get('selectedStatus')?.value as string
+    ).pipe(
+      map((response) => {
+        const data = response.content.map((bill) => ({
           Periodo: `${bill?.period?.month} / ${bill?.period?.year}`,
           'Monto Total': `$ ${bill.amount}`,
           Fecha: bill.date,
@@ -536,14 +592,12 @@ export class ExpensesListBillsComponent implements OnInit {
         const wb: XLSX.WorkBook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
         XLSX.writeFile(wb, this.fileName);
-      });
-  }
-  //#endregion
+        return response.content;
+      })
+    );
+  };
 
-  //#region NAVIGATION
   nuevoGasto() {
-    this.router.navigate(['expenses/gastos/nuevo']);
+    this.router.navigate(['expenses//gastos/nuevo']);
   }
-  //#endregion
 }
-
