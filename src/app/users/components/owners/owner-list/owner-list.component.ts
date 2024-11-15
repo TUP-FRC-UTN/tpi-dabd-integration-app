@@ -72,6 +72,7 @@ export class OwnerListComponent implements OnInit {
   dictionaries: Array<{ [key: string]: any }> = [];
   LIMIT_32BITS_MAX = 2147483647;
   headers: string[] = ['Nombre', 'Apellido', 'Documento', 'Tipo propietario'];
+  filters? : Record<string, any>
 
   ownersList!: Owner[];
   private filteredOwnersList = new BehaviorSubject<Owner[]>([]);
@@ -88,7 +89,7 @@ export class OwnerListComponent implements OnInit {
   tableName!: ElementRef<HTMLTableElement>;
 
   ngOnInit(): void {
-    this.getAllOwners();
+    this.confirmSearch();
     this.filteredOwnersList.subscribe(ow => console.log(ow));
 
   }
@@ -206,7 +207,13 @@ export class OwnerListComponent implements OnInit {
     .build();
 
   filterChange($event: Record<string, any>) {
-    this.ownerService.dinamicFilters(0, this.pageSize, $event).subscribe({
+    this.filters = $event;
+    this.currentPage = 0
+    this.confirmSearch();
+  }
+
+  dinamicFilter() {
+    this.ownerService.dinamicFilters(0, this.pageSize, this.filters).subscribe({
       next: (result) => {
         this.ownersList = result.content;
         this.filteredOwnersList.next([...result.content]);
@@ -214,6 +221,16 @@ export class OwnerListComponent implements OnInit {
         this.totalItems = result.totalElements;
       },
     });
+  }
+
+  clearFilter() {
+    this.filters = undefined;
+    this.currentPage = 0
+    this.confirmSearch();
+  }
+
+  confirmSearch() {
+    this.filters === undefined ? this.getAllOwners() : this.dinamicFilter();
   }
 
   /**
@@ -380,16 +397,13 @@ export class OwnerListComponent implements OnInit {
 
   //#region Pageable
   onItemsPerPageChange() {
-    this.currentPage = 1;
-    //this.confirmFilterOwner();
+    this.currentPage = 0;
+    this.confirmSearch()
   }
 
   onPageChange(page: number) {
     this.currentPage = page;
-
-    // this.getAllOwners();
-    // this.filteredOwnersList.subscribe(ow => console.log(ow));
-    //this.confirmFilterOwner();
+    this.confirmSearch()
   }
   //#end region
 
