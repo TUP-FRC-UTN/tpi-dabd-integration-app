@@ -156,7 +156,7 @@ hourRangeValidator: ValidatorFn = (control: AbstractControl): ValidationErrors |
 
   // Valida si hourFrom es mayor o igual a hourTo
   if (hourFrom && hourTo && this.timeToMinutes(hourFrom) >= this.timeToMinutes(hourTo)) {
-    return { 'hourRangeInvalid': true }; // Si la hora de inicio es mayor o igual a la de fin, el validador falla
+    return { 'hourRangeInvalid': true };
   }
 
   return null;
@@ -178,8 +178,8 @@ function formatDate() {
 
 function formatTime(){
   const today = new Date();
-  const hours = today.getHours().toString().padStart(2, '0'); // 00-23
-  const minutes = today.getMinutes().toString().padStart(2, '0'); // 00-59
+  const hours = today.getHours().toString().padStart(2, '0');
+  const minutes = today.getMinutes().toString().padStart(2, '0');
   return `${hours}:${minutes}`; // HH:mm
 
 }

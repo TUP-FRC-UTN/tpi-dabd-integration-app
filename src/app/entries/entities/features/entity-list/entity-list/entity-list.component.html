@@ -28,21 +28,28 @@
           </thead>
           <tbody>
             @for (item of (filteredList.length ? filteredList : list); track item) {
-  
               <tr>
                 <td>
-                  @for (type of item.visitorTypes; track $index){
+                  @if (!item.visitorTypes || item.visitorTypes.length === 0) {
                     <i
-                      [class]="'bi ' + VisitorTypeIconDictionary[type]"
-                      [title]="translateTable(type, typeDictionary)">
+                      [class]="'bi ' + VisitorTypeIconDictionary['VISITOR']"
+                      [title]="translateTable('VISITOR', typeDictionary)">
                     </i>
+                  } @else {
+                   
+                    @for (type of item.visitorTypes; track $index) {
+                      <i
+                        [class]="'bi ' + VisitorTypeIconDictionary[type]"
+                        [title]="translateTable(type, typeDictionary)">
+                      </i>
+                    }
                   }
                   {{ item.name + ' ' + (item.lastName == null ? '' : item.lastName) }}
                 </td>
                 <td>
                   {{ getDocumentAbbreviation(item.docType) + ' ' + item.docNumber }}
                 </td>
-                @if (userType == "ADMIN" || userType == "OWNER"){
+                @if (userType == "ADMIN" || userType == "OWNER") {
                   <td>
                     @if (item.isActive) {
                       <p class="mb-0">
@@ -55,18 +62,24 @@
                     }
                   </td>
                   <td>
-                    <button type="button" class="btn btn-warning"> <i class="bi bi-pencil" (click)="edit(item.visitorId)"></i></button>
+                    <button type="button" class="btn btn-warning">
+                      <i class="bi bi-pencil" (click)="edit(item.visitorId)"></i>
+                    </button>
                     @if (item.isActive) {
-                      <button class="btn btn-danger ms-1" (click)="disable(item.visitorId)"><i class="bi bi-trash"></i></button>
-                      }@else {
-                      <button class="btn btn-success ms-1" (click)="enable(item.visitorId)"><i class="bi bi-check"></i></button>
-                      }
-                    </td>
+                      <button class="btn btn-danger ms-1" (click)="disable(item.visitorId)">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    } @else {
+                      <button class="btn btn-success ms-1" (click)="enable(item.visitorId)">
+                        <i class="bi bi-check"></i>
+                      </button>
+                    }
+                  </td>
                 }
               </tr>
-  
             }
           </tbody>
+          
         </table>
       </div>
   

@@ -4,12 +4,13 @@ import {CommonModule, NgClass} from '@angular/common';
 import {AuthService} from "../../../services/authorized-range/auth.service";
 import {LoginService} from "../../../services/access/login.service";
 import {NgIf} from "@angular/common";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, NavigationStart, Router} from "@angular/router";
 import {UserTypeService} from "../../../services/user-type.service";
 import {RangeModalComponent} from "../authorized-range-form/authorized-range-form.component";
-import {NgSelectComponent} from "@ng-select/ng-select";
+
 import { ToastsContainer, ToastService, MainContainerComponent} from "ngx-dabd-grupo01";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgSelectComponent } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-auth-form',
@@ -22,7 +23,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
     ToastsContainer,
     MainContainerComponent
   ],
-  templateUrl: './authorized-form.component.html'
+  templateUrl: './authorized-form.component.html',
 })
 export class AuthFormComponent implements OnInit {
   authForm: FormGroup = {} as FormGroup;
@@ -31,15 +32,23 @@ export class AuthFormComponent implements OnInit {
   isUpdate = false
   paramRoutes = inject(ActivatedRoute);
   modalService = inject(NgbModal);
-  private toastService = inject(ToastService);
+  toastService = inject(ToastService);
   userType: string = "ADMIN"
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private loginService: LoginService, private router: Router, private userTypeService: UserTypeService, private route: ActivatedRoute) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private loginService: LoginService
+    , private router: Router, private userTypeService: UserTypeService) {
+ 
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+          this.toastService.clear(); // Limpiar los toasts al cambiar de pantalla
+      }
+  });
+
   }
 
   ngOnInit(): void {
+    this.initPlots();
     this.authForm = this.createForm();
-
 
     this.userType = this.userTypeService.getType()
     if (this.userType == "OWNER"){
@@ -269,8 +278,14 @@ export class AuthFormComponent implements OnInit {
     this.router.navigate(['/entries/auth-list']);
   }
 
-  onPlotSelected(selectedPlot: plot) {
-    this.plot = this.plots.find((plot) => plot.id === selectedPlot.id) || null;
+  onPlotSelected(selectedPlot: plot | null) {
+    if (selectedPlot) {
+      this.plot = this.plots.find((plot) => plot.id === selectedPlot.id) || null;
+      this.authForm.get('plotId')?.setValue(selectedPlot.id);
+    } else {
+      this.plot = null;
+      this.authForm.get('plotId')?.setValue(null);
+    }
   }
 
   private markAllAsTouched(): void {
@@ -292,6 +307,57 @@ export class AuthFormComponent implements OnInit {
 
   setPlot(id: number) {
     this.plot = this.plots.filter(x => x.id == id)[0]
+  }
+
+
+  initPlots() {
+    this.plots = [
+      {
+        id: 1,
+        desc: 'Andrés Torres',
+        tel: '555-1234',
+        name: '1 - Andrés Torres',
+      },
+      { id: 2, desc: 'Ana María', tel: '555-5678', name: '2 - Ana María' },
+      {
+        id: 3,
+        desc: 'Carlos Pérez',
+        tel: '555-2345',
+        name: '3 - Carlos Pérez',
+      },
+      {
+        id: 4,
+        desc: 'Luisa Fernández',
+        tel: '555-6789',
+        name: '4 - Luisa Fernández',
+      },
+      {
+        id: 5,
+        desc: 'Miguel Ángel',
+        tel: '555-3456',
+        name: '5 - Miguel Ángel',
+      },
+      {
+        id: 6,
+        desc: 'Sofía Martínez',
+        tel: '555-7890',
+        name: '6 - Sofía Martínez',
+      },
+      { id: 7, desc: 'David Gómez', tel: '555-4567', name: '7 - David Gómez' },
+      {
+        id: 8,
+        desc: 'Isabel García',
+        tel: '555-8901',
+        name: '8 - Isabel García',
+      },
+      {
+        id: 9,
+        desc: 'Fernando López',
+        tel: '555-5679',
+        name: '9 - Fernando López',
+      },
+      { id: 10, desc: 'María José', tel: '555-6780', name: '10 - María José' },
+    ];
   }
 
 // Función recursiva para marcar todos los controles como tocados
