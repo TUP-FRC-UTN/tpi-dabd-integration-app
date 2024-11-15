@@ -1,11 +1,11 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, output} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, output } from '@angular/core';
 
-import {KpiComponent} from "../../commons/kpi/kpi.component";
+import { KpiComponent } from "../../commons/kpi/kpi.component";
 
-import {BarchartComponent} from "../../commons/barchart/barchart.component";
-import {PiechartComponent} from "../../commons/piechart/piechart.component";
+import { BarchartComponent } from "../../commons/barchart/barchart.component";
+import { PiechartComponent } from "../../commons/piechart/piechart.component";
 
-import {ChartType} from "angular-google-charts";
+import { ChartType } from "angular-google-charts";
 import { VisitorTypeAccessDictionary } from '../../../models/authorization/authorize.model';
 import { DashBoardFilters, graphModel, kpiModel } from '../../../models/dashboard/dashboard.model';
 import { DashboardService, dashResponse } from '../../../services/dashboard/dashboard.service';
@@ -22,7 +22,7 @@ import { DashboardService, dashResponse } from '../../../services/dashboard/dash
   styleUrl: './main-dashboard.component.css'
 })
 
-export class MainDashboardComponent implements OnInit{
+export class MainDashboardComponent implements OnInit {
   //inputs
   @Input() filters: DashBoardFilters = {} as DashBoardFilters;
   @Output() notifyParent: EventEmitter<string> = new EventEmitter<string>();
@@ -46,15 +46,15 @@ export class MainDashboardComponent implements OnInit{
   }
   //init
   constructor(private dashBoardService: DashboardService) {
-    this.kpi1 = {title: "Ingresos: Actual/Anterior", desc: "Suma total en el periodo actual vs. anterior", value: "0", icon: "", color: "bg-success"}
-    this.kpi2 = {title: "Tendencia de", desc: "", value: "0%", icon: "bi bi-graph-up", color: "bg-info"}
-    this.kpi3 = {title: "Ingreso/Egreso Más Frecuente", desc: "Tipo más frecuente en el periodo", value: "0", icon: "bi bi-person-circle", color: "bg-warning"}
-    this.kpi4 = {title: "Total de Ingresos/Egresos Inconsistentes", desc: "Cantidad total de inconsistencias en el periodo", value: "0", icon: "bi-exclamation-circle", color: "bg-danger"}
+    this.kpi1 = { title: "Ingresos: Actual/Anterior", desc: "Suma total en el periodo actual vs. anterior", value: "0", icon: "", color: "bg-success" }
+    this.kpi2 = { title: "Tendencia de", desc: "", value: "0%", icon: "bi bi-graph-up", color: "bg-info" }
+    this.kpi3 = { title: "Ingreso/Egreso Más Frecuente", desc: "Tipo más frecuente en el periodo", value: "0", icon: "bi bi-person-circle", color: "bg-warning" }
+    this.kpi4 = { title: "Total de Ingresos/Egresos Inconsistentes", desc: "Cantidad total de inconsistencias en el periodo", value: "0", icon: "bi-exclamation-circle", color: "bg-danger" }
 
-    this.graph1 = {title: "Totales de Ingresos/Egresos por Periodo", subtitle: "", data: [], options: null}
-    this.graph2 = {title: "Empleados con Egreso Tardío", subtitle: "", data: [], options: null}
-    this.graph3 = {title: "Tipos de Ingresos/Egresos", subtitle: "", data: [], options: null}
-    this.graph4 = {title: "Inconsistencias en Ingresos/Egresos", subtitle: "", data: [], options: null}
+    this.graph1 = { title: "Totales de Ingresos/Egresos por Periodo", subtitle: "", data: [], options: null }
+    this.graph2 = { title: "Empleados con Egreso Tardío", subtitle: "", data: [], options: null }
+    this.graph3 = { title: "Tipos de Ingresos/Egresos", subtitle: "", data: [], options: null }
+    this.graph4 = { title: "Inconsistencias en Ingresos/Egresos", subtitle: "", data: [], options: null }
   }
 
   //getData
@@ -78,24 +78,30 @@ export class MainDashboardComponent implements OnInit{
 
     this.columnChartOptions.hAxis.showTextEvery = (this.filters.group == "WEEK" ? 2 : (this.filters.group == "MONTH" || this.filters.group == "YEAR" ? 1 : 3));
 
-    this.graph4.options = {...this.columnChartOptions,
-      colors: ['#e0f59d']}
-    this.graph4.options.chartArea.width='95%';
+    this.graph4.options = {
+      ...this.columnChartOptions,
+      colors: ['#e0f59d']
+    }
+    this.graph4.options.chartArea.width = '95%';
     this.graph4.options.width = 1000;
     this.graph4.options.height = 175;
 
     this.graph3.options = this.pieChartOptions
 
-    this.graph2.options = {...this.columnChartOptions,
-      colors: ['#e0f59d']}
+    this.graph2.options = {
+      ...this.columnChartOptions,
+      colors: ['#e0f59d']
+    }
     this.graph2.options.width = 300;
     this.graph2.options.height = 200;
 
     //obtener filtro
     this.dashBoardService.getPeriod(this.filters).subscribe(data => {
       this.graph1.data = mapColumnData(data)
-      this.graph1.options = {...this.columnChartOptions,
-        colors: [this.filters.action == 'ENTRY' ? '#a2d9a5' : '#ff919e']}
+      this.graph1.options = {
+        ...this.columnChartOptions,
+        colors: [this.filters.action == 'ENTRY' ? '#a2d9a5' : '#ff919e']
+      }
       this.graph1.options.height = 200
       let totalValue1 = 0;
       data.forEach(item => {
@@ -109,10 +115,26 @@ export class MainDashboardComponent implements OnInit{
           totalValue += Number(item.value);
         });
 
+        // Mostrar valores absolutos
         this.kpi1.value = totalValue1.toString() + " / " + totalValue.toString();
-        let kpi2value = ((totalValue - totalValue1 )/ totalValue1) * 100 == Infinity || Number.isNaN((((totalValue - totalValue1) / totalValue1) * 100)) ? 0 : ((totalValue - totalValue1 )/ totalValue1) * 100;
+
+        // Calcular el porcentaje de cambio
+        let kpi2value: number;
+
+        if (totalValue === 0) {
+          // Si el período anterior es 0 y hay valores en el período actual
+          if (totalValue1 > 0) {
+            kpi2value = 100 * totalValue1; // Será 100% por cada unidad es decir si tengo 9 en este periodo y 0 en el anterior dara 900%
+          } else {
+            kpi2value = 0; // Si ambos son 0
+          }
+        } else {
+          // Cálculo normal cuando el período anterior no es 0
+          kpi2value = ((totalValue1 - totalValue) / totalValue) * 100;
+        }
+
         this.kpi2.value = kpi2value.toFixed(2) + "%";
-        this.kpi2.icon = kpi2value > 0 ? "bi bi-graph-up" : "bi bi-graph-down"
+        this.kpi2.icon = kpi2value > 0 ? "bi bi-graph-up" : "bi bi-graph-down";
       })
     })
     //obtener tipos
@@ -124,7 +146,7 @@ export class MainDashboardComponent implements OnInit{
       // Buscar el objeto con el valor más alto
       let maxValueResponse = data[0];
 
-      if (this.filters.action == "EXIT"){
+      if (this.filters.action == "EXIT") {
         for (let i = 1; i < data.length; i++) {
           data[i].value = data[i].secondary_value
         }
@@ -137,11 +159,11 @@ export class MainDashboardComponent implements OnInit{
       }
 
       this.kpi3.value = translateTable(maxValueResponse.key, this.typeDictionary)!.toString();
-      this.graph3.data = mapColumnDataT(data,this.typeDictionary)
+      this.graph3.data = mapColumnDataT(data, this.typeDictionary)
     })
 
-    let inconsistenciesFilter = {...this.filters}
-    inconsistenciesFilter.dataType= "INCONSISTENCIES"
+    let inconsistenciesFilter = { ...this.filters }
+    inconsistenciesFilter.dataType = "INCONSISTENCIES"
     this.dashBoardService.getPeriod(inconsistenciesFilter).subscribe(data => {
       let totalValue1 = 0;
       data.forEach(item => {
@@ -151,30 +173,30 @@ export class MainDashboardComponent implements OnInit{
       this.graph4.data = mapColumnData(data)
     })
 
-    inconsistenciesFilter.dataType= "LATE"
-    inconsistenciesFilter.action= ""
+    inconsistenciesFilter.dataType = "LATE"
+    inconsistenciesFilter.action = ""
     this.dashBoardService.getPeriod(inconsistenciesFilter).subscribe(data => {
       this.graph2.data = mapColumnData(data)
     })
 
   }
 
-  
+
 
   columnChartOptions = {
     backgroundColor: 'transparent',
-    legend: {position: 'none'},
-    chartArea: {width: '80%', height: '60%'},
+    legend: { position: 'none' },
+    chartArea: { width: '80%', height: '60%' },
     vAxis: {
       textStyle: {
         color: '#6c757d',
-        fontSize: 12  
+        fontSize: 12
       },
       // Formato personalizado para mostrar los valores en miles
       format: '#',
     },
     hAxis: {
-      textStyle: {color: '#6c757d'},
+      textStyle: { color: '#6c757d' },
       showTextEvery: 2,
     },
     animation: {
@@ -184,7 +206,7 @@ export class MainDashboardComponent implements OnInit{
     },
     height: 400,
     width: 300,
-    bar: {groupWidth: '70%'}
+    bar: { groupWidth: '70%' }
   };
 
   pieChartOptions = {
@@ -208,9 +230,9 @@ export class MainDashboardComponent implements OnInit{
       color: 'black',
       fontSize: 14
     }
-};
+  };
 
-ngOnInit(): void{
+  ngOnInit(): void {
     this.getData()
   }
 }
@@ -237,7 +259,7 @@ function createPreviousFilter(filters: DashBoardFilters): DashBoardFilters {
   };
 }
 
-function mapColumnData(array:dashResponse[]) : any{
+function mapColumnData(array: dashResponse[]): any {
   return array.map(data => [
     formatDate(data.key),
     data.value || 0
@@ -248,14 +270,14 @@ function mapColumnData(array:dashResponse[]) : any{
 function formatDate(key: string): string {
   let formattedDate: string = '';
 
-  if (/^\d{4}$/.test(key)) { 
-    formattedDate = key; 
+  if (/^\d{4}$/.test(key)) {
+    formattedDate = key;
   } else if (/^\d{4}-\d{2}$/.test(key)) {
     const [year, month] = key.split('-');
-    formattedDate = `${month}/${year}`; 
-  } else if (/^\d{4}-\d{2}-\d{2}$/.test(key)) { 
+    formattedDate = `${month}/${year}`;
+  } else if (/^\d{4}-\d{2}-\d{2}$/.test(key)) {
     const [year, month, day] = key.split('-');
-    formattedDate = `${day}/${month}/${year}`; 
+    formattedDate = `${day}/${month}/${year}`;
   } else {
     throw new Error("Formato de fecha no válido");
   }
@@ -276,7 +298,7 @@ function translateTable(value: any, dictionary: { [key: string]: any }) {
   return;
 }
 
-function mapColumnDataT(array:dashResponse[], dictionary:any ) : any{
+function mapColumnDataT(array: dashResponse[], dictionary: any): any {
   return array.map(data => [
     translateTable(data.key, dictionary),
     data.value || 0
