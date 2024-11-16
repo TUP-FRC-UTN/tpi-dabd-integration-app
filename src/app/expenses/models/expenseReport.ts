@@ -10,4 +10,5 @@ export interface expenseReport {
   averageAmount: number;
   totalPlots: number;
   typesPlots: number;
+  percentages: number[];
 }

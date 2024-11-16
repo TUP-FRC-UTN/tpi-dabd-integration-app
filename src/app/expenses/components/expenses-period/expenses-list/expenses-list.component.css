@@ -6,13 +6,13 @@
 .chart-container {
   position: relative;
   height: 200px;
-width: 100%;
+  width: 100%;
 }
 
 .pie-chart-container {
   position: relative;
-  height: 200px; 
-width: 100%;
+  height: 200px;
+  width: 100%;
 }
 
 .card {
@@ -29,4 +29,9 @@ canvas {
   .pie-chart-container {
     height: 180px;
   }
+}
+
+::ng-deep app-table-filters button {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
 }
