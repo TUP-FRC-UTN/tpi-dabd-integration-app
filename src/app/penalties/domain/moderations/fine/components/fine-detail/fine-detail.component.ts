@@ -1,22 +1,24 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Fine } from '../../models/fine.model';
 import { FineStatusEnum } from '../../models/fine-status.enum';
 import { FineService } from '../../services/fine.service';
 import { UpdateFineStateDTO } from '../../models/update-fine-status-dto';
+import { FineInfractionsListComponent } from '../fine-infractions-list/fine-infractions-list.component';
+import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
+import { firstValueFrom } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {
   ConfirmAlertComponent,
   MainContainerComponent,
   ToastService,
 } from 'ngx-dabd-grupo01';
-import { PdfService } from '../../../../../shared/services/pdf.service';
-import { RoleService } from '../../../../../shared/services/role.service';
-import { FineInfractionsListComponent } from '../fine-infractions-list/fine-infractions-list.component';
-import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
-import { firstValueFrom } from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-fine-detail',
@@ -24,9 +26,10 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
   imports: [
     CommonModule,
     FormsModule,
-    MainContainerComponent,
+    NgClass,
     FineInfractionsListComponent,
     GetValueByKeyForEnumPipe,
+    MainContainerComponent,
   ],
   templateUrl: './fine-detail.component.html',
   styleUrl: './fine-detail.component.scss',
@@ -34,9 +37,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 export class FineDetailComponent {
   FineStatusEnum = FineStatusEnum;
   fineService = inject(FineService);
-  private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private roleService = inject(RoleService);
   private toastService = inject(ToastService);
   modalService = inject(NgbModal);
   fineId: number | undefined;
@@ -46,22 +47,27 @@ export class FineDetailComponent {
 
   error: string | null = null;
   successMessage: string | null = null;
-  role: string = '';
-  userId: number | undefined;
-  userPlotsIds: number[] = [];
+
+  userDataService = inject(UserDataService);
+  userData!: UserData;
+
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
+    });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
 
   async ngOnInit() {
-    let id;
-    this.roleService.currentRole$.subscribe((role: string) => {
-      this.role = role;
-    });
-    this.roleService.currentUserId$.subscribe((userId: number) => {
-      this.userId = userId;
-    });
+    this.loadUserData();
 
-    this.roleService.currentLotes$.subscribe((plots: number[]) => {
-      this.userPlotsIds = plots;
-    });
+    let id;
+
     this.route.params.subscribe(async (params) => {
       const mode = params['mode'];
       id = params['id'];
@@ -77,7 +83,7 @@ export class FineDetailComponent {
       );
 
       this.isAdminAndOnAssembly =
-        this.role === 'ADMIN' &&
+        this.userHasRole('ADMIN') &&
         fine!.fine_state === ('ON_ASSEMBLY' as FineStatusEnum);
     } catch (error) {
       console.error(error);
@@ -99,7 +105,7 @@ export class FineDetailComponent {
   save(fineStatus: FineStatusEnum) {
     let fine: UpdateFineStateDTO = {
       id: this.fine?.id,
-      updatedBy: this.userId!,
+      updatedBy: this.userData.id!,
       fineState: fineStatus,
     };
 
@@ -117,7 +123,7 @@ export class FineDetailComponent {
   changeFineStatus(fineStatus: string) {
     const modalRef = this.modalService.open(ConfirmAlertComponent);
     modalRef.componentInstance.alertTitle = 'Confirmación';
-    modalRef.componentInstance.alertMessage = `¿Estás seguro de que desea modificar la multa?`;
+    modalRef.componentInstance.alertMessage = `¿Estás seguro de que desea modificar la multa?. Esta accion es irreversible`;
 
     modalRef.result.then((result) => {
       if (result) {
@@ -129,4 +135,12 @@ export class FineDetailComponent {
   goBack = (): void => {
     window.history.back();
   };
+
+  infoModal() {
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+    modalRef.componentInstance.alertType = 'info';
+
+    modalRef.componentInstance.alertTitle = 'Ayuda';
+    modalRef.componentInstance.alertMessage = `Esta pantalla proporciona una vista detallada de la multa seleccionada, permitiéndole analizar toda la información relacionada de manera clara y estructurada. En esta sección puede acceder a todos los datos relevantes sobre la multa de forma precisa.`;
+  }
 }

@@ -13,6 +13,8 @@ export class LoadFileService {
 
   private plotUploadUrl: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}plots`;
 
+  private fileUpdateUrl: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}files`;
+
   private sessionService = inject(SessionService);
 
   constructor(private http: HttpClient) {}
@@ -143,7 +145,7 @@ export class LoadFileService {
     });
 
     return this.http.put<Document>(
-      this.plotUploadUrl + '/' + fileId,
+      this.fileUpdateUrl + '/' + fileId,
       formData,
       { headers }
     );

@@ -1,0 +1,66 @@
+<div>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Apelar infracción</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="activeModal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form #claimForm="ngForm" (ngSubmit)="submitAppeal()">
+      <div class="mb-3">
+        <label for="ClaimDescription" class="form-label">Descripción</label>
+        <textarea
+          class="form-control"
+          id="ClaimDescription"
+          rows="3"
+          #descriptionControlClaim="ngModel"
+          [ngClass]="{
+            'is-invalid':
+              descriptionControlClaim.invalid &&
+              (descriptionControlClaim.dirty || descriptionControlClaim.touched)
+          }"
+          [(ngModel)]="description"
+          name="descriptionClaim"
+          required
+        ></textarea>
+        @if (descriptionControlClaim.invalid && (descriptionControlClaim.dirty
+        || descriptionControlClaim.touched)) { @if
+        (descriptionControlClaim.getError('required')) {
+        <div class="invalid-feedback">Este campo es obligatorio</div>
+        } }
+      </div>
+
+      <div class="mb-3">
+        <label for="formFileMultiple" class="form-label">Archivos</label>
+
+        <input
+          class="form-control"
+          type="file"
+          id="formFileMultiple"
+          (change)="onFilesSelected($event)"
+          multiple
+        />
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-success"
+      [disabled]="claimForm.invalid"
+      (click)="submitAppeal()"
+    >
+      Confirmar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="activeModal.dismiss('Cross click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</div>

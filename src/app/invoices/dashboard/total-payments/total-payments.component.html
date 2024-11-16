@@ -1,0 +1,31 @@
+<div class="row mb-3">
+  <div class="col-4 ">
+    <div class="hover-scale">
+      <app-kpi [kpi]="kpi1" ></app-kpi>
+    </div>
+  </div>
+  <div class="col-4 ">
+    <div class="hover-scale">
+      <app-kpi [kpi]="kpi2" ></app-kpi>
+    </div>
+  </div>
+  <div class="col-4 ">
+    <div class="hover-scale h-100">
+      <app-kpi [kpi]="kpi3" (click)="goToPaymentList()"></app-kpi>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-6">
+    <div class="hover-scale">
+      <app-piechart [graphModel]="graph2" ></app-piechart>
+    </div>
+  </div>
+  <div class="col-6">
+    <div class="hover-scale">
+      <app-piechart [graphModel]="graph1"></app-piechart>
+    </div>
+  </div>
+</div>
+
