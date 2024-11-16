@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ConstructionListComponent } from "../construction-list/construction-list.component";
-import { MainContainerComponent } from '../../../../shared/components/main-container/main-container.component';
+import { MainContainerComponent } from '../../../../../../projects/ngx-dabd-grupo01/src/public-api';
 
 @Component({
   selector: 'app-construction-wrapper',
