@@ -32,7 +32,7 @@ export class ChargeService {
   getChargesAll(): Observable<Charge[]> {
     return this.http.get<Charge[]>(this.apiUrl);
   }
-
+  
   getCharges(page: number, size: number, periodId?: number, plotId?: number, categoryId?: number,type?: ChargeType): Observable<Page<Charge>> {
     let params = new HttpParams()
       .set('page', page)
@@ -41,21 +41,21 @@ export class ChargeService {
     if (periodId != undefined || periodId != null ) {
       if(periodId != 0){
         params = params.set('period', periodId.toString());
-      }
+      }      
     }
     if(plotId != undefined || plotId != null ){
       if (plotId) {
         params = params.set('lot', plotId);
       }
     }
-
+    
     if (categoryId != undefined || categoryId != null) {
       if(categoryId != 0){
         params = params.set('category', categoryId.toString());
       }
     }
-
-    if (type != undefined || type != null) {
+    
+    if (type != undefined || type != null) {     
       let tipo = '';
       switch(type){
         case 'Positivo': tipo = 'ABSOLUTE'; break;
@@ -63,12 +63,23 @@ export class ChargeService {
         case 'Negativo': tipo = 'NEGATIVE'; break;
         default : tipo = 'ABSOLUTE'; break;
 
-      }
+      } 
       params = params.set('type', tipo);
-
+      
     }
-    console.log(params);
     return this.http.get<Page<Charge>>(this.apiUrl, { params });
+    /*
+    .pipe(
+      map(page => {
+        // Accede a `content` y asigna valores predeterminados si es necesario
+        page.content = page.content.map(charge => ({
+          ...charge,
+          period: charge.period || { month: 0, year: 0, state: 'UNKNOWN', id: 0 }
+        }));
+        return page;
+      })
+    )
+    */
   }
 
   updateCharge(charge: Charge): Observable<Charge> {
@@ -76,10 +87,11 @@ export class ChargeService {
       'x-user-id': '1'
     });
     return this.http.put<Charge>(`${this.apiUrl}/${charge.chargeId}`, charge, {headers});
-  }
+  }  
 
   deleteCharge(charge: number): Observable<Boolean> {
     return this.http.delete<Boolean>(this.apiUrl + '/' + charge);
+    //return this.http.put<Charge>(`${this.apiUrl}/${charge.charge_id}`, charge);
   }
 
   deleteCharge2(charge: number): Observable<Charge> {
@@ -98,6 +110,7 @@ export class ChargeService {
     params = params.set('status', true);
     params = params.set('excluingFines', excluingFines);
     return this.http.get<CategoryCharge[]>(`${this.categoryChargeUrl}/all`, { params });
+    //return this.http.get<CategoryCharge[]>(`${this.categoryChargeUrl}`);
 
   }
 
@@ -110,6 +123,7 @@ export class ChargeService {
       'x-user-id': '1'
     });
 
+    //categoryCharge.amountSing = ChargeType.ABSOLUTE;
     return this.http.post<CategoryCharge>(this.categoryChargeUrl, categoryCharge, { headers });
   }
 
@@ -134,18 +148,18 @@ export class ChargeService {
     debugger
     let params = new HttpParams()
       .set('page', page)
-      .set('size', size);
+      .set('size', size);    
 
-    if(excluingFines != undefined && excluingFines != null) {
-
+    if(excluingFines != undefined && excluingFines != null) {   
+         
       params = params.set('excluingFines', excluingFines!);
-    }
-    if(status != undefined && status != null) {
-      debugger
+    } 
+    if(status != undefined && status != null) {    
+      debugger  
       params = params.set('status', status!);
     }
-    if (type != undefined && type != null) {
-      debugger
+    if (type != undefined && type != null) {    
+      debugger 
       let tipo = '';
       switch(type){
         case 'Positivo': tipo = 'ABSOLUTE'; break;
@@ -156,7 +170,8 @@ export class ChargeService {
       }
       params = params.set('type', tipo);
     }
-
+    
+       
     return this.http.get<Page<CategoryCharge>>(this.categoryChargeUrl, { params });
   }
 

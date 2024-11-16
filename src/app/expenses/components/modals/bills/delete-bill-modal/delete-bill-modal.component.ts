@@ -12,30 +12,31 @@ import { BillService } from '../../../../services/bill.service';
 })
 export class DeleteBillModalComponent {
   @Input() bill!: Bill;
+  @Input() status!: string;
+  @Input() action!: string;
 
   private readonly billService = inject(BillService);
 
   constructor(
     public activeModal: NgbActiveModal,
-  ) {}
+  ) {
+  }
 
   confirmDelete() {
-    console.log(this.bill.expenditureId);
-
-    this.billService.removeBill(this.bill.expenditureId!)
+    this.billService.patchBill(this.bill.expenditureId!, this.status)
       .subscribe({
         next: (response) => {
           this.activeModal.close({
             success: true,
-            message: 'El gasto ha sido eliminado correctamente.',
+            message: 'La acción ha sido realizada correctamente.',
             data: response
           });
         },
         error: (error) => {
-          console.error('Error al eliminar el gasto:', error);
+          console.error('Error al modificar el gasto:', error);
           this.activeModal.close({
             success: false,
-            message: 'Ha ocurrido un error al eliminar el gasto. Por favor, inténtelo de nuevo.',
+            message: 'Ha ocurrido un error al modificar el gasto. Por favor, inténtelo de nuevo.',
             error: error
           });
         }

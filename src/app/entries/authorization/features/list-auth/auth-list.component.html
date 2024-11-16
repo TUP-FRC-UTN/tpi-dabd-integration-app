@@ -1,0 +1,220 @@
+
+<app-main-container title="Lista de Autorizaciones" (infoButtonClick)="onInfoButtonClick()">
+  <div class="card-body">
+    <app-cadastre-plot-filter-buttons
+      #filterComponent
+      [itemsList]="completeList"
+      [tableName]="tableName.nativeElement"
+      [heads]="heads"
+      [props]="props"
+      formPath="/entries/new/auth"
+      [tableFilters]="filterConfig"
+      (filterValueChange)="onFilterValueChange($event)"
+      [dictionaries]="dictionaries"
+      objectName="AUTORIZACION">
+    </app-cadastre-plot-filter-buttons>
+
+    <div class="table-container">
+      <table class="table table-striped fixed-table"
+             style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #table>
+        <thead>
+        <tr>
+          <th scope="col">Nro de Lote</th>
+          <th scope="col">Visitante</th>
+          <th scope="col">Documento</th>
+          <th scope="col">Horarios</th>
+          <th scope="col">Autorizador</th>
+          @if (userType == "ADMIN" || userType == "OWNER") {
+            <th scope="col">Activo</th>
+            <th scope="col">Acciones</th>
+          }
+        </tr>
+        </thead>
+        <tbody>
+          @for (item of (filteredList.length ? filteredList : list); track item) {
+
+            <tr>
+              <td>
+                {{ item.plotId ? item.plotId : "No aplica" }}
+              </td>
+              <td><i
+                [class]="'bi ' + VisitorTypeIconDictionary[item.visitorType]"
+                [title]="translateTable(item.visitorType, typeDictionary)">
+              </i>
+                {{ transformUpperCamelCase(item.visitor.name) +' '+ transformUpperCamelCase(item.visitor.lastName ? item.visitor.lastName : '') }}
+              </td>
+              <td>
+                  {{ getDocumentAbbreviation(item.visitor.docType) + ' ' + item.visitor.docNumber }}
+              </td>
+              <td>
+                <div *ngFor="let authRange of item.authRanges">
+                    @if (authRange.isActive){
+
+                  <div class="d-flex align-items-center mb-2">
+                    <!-- Barra de días -->
+                    <div class="d-flex days-bar">
+                      <div
+                        *ngFor="let day of daysOfWeek"
+                        class="day"
+                        [ngClass]="{
+            'bg-primary text-white': isDayActive(authRange, day),
+            'bg-light': !isDayActive(authRange, day)
+          }"
+                      >
+                        {{ getDayInitial(day) }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Rango de horario -->
+                  <div class="text-muted">
+                    {{ formatHour(authRange.hourFrom) }} - {{ formatHour(authRange.hourTo) }}
+                  </div>
+                    }
+                </div>
+              </td>
+              <td>
+                <!--TODO icono-->
+                <i class="bi bi-shield"></i>
+                {{ item.authorizer?.authFirstName + ' ' + item.authorizer?.authLastName }}
+              </td>
+              @if (userType == "ADMIN" || userType == "OWNER") {
+                <td>
+                  @if (item.isActive) {
+                    <p class="mb-0">
+                      <i class="bi bi-check2-circle text-success" style="font-size: 1.5rem;"></i>
+                    </p>
+                  } @else {
+                    <p class="mb-0">
+                      <i class="bi bi-x-circle text-danger" style="font-size: 1.5rem;"></i>
+                    </p>
+                  }
+                </td>
+                <td>
+                  <button class="btn btn-warning" type="button" (click)="edit(item.authId)"><i class="bi bi-pencil"></i></button>
+                  @if (item.isActive) {
+                  <button class="btn btn-danger ms-1" type="button" (click)="disable(item.authId)"><i class="bi bi-trash"></i></button>
+                  }@else {
+                  <button class="btn btn-success ms-1" type="button" (click)="enable(item.authId)"><i class="bi bi-check"></i></button>
+                  }
+                    @if (userType == "OWNER") {
+                        <button class="btn btn-info ms-1" type="button" (click)="qr(item.visitor.docNumber)"><i class="bi bi-qr-code"></i></button>
+                    }
+                </td>
+              }
+            </tr>
+
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div class="form-group mb-3 me-2">
+        <select
+          id="itemsPerPage"
+          class="form-select"
+          [(ngModel)]="pageSize"
+          (change)="onItemsPerPageChange()"
+        >
+          @for (option of sizeOptions; track $index) {
+            <option [value]="option">{{ option }} Elementos</option>
+          }
+        </select>
+      </div>
+
+      <div class="ms-auto">
+      </div>
+
+      <div class="d-flex">
+
+        <ngb-pagination
+          [(page)]="currentPage"
+          [pageSize]="pageSize"
+          [collectionSize]="totalItems"
+          (pageChange)="onPageChange($event)"
+          [maxSize]="5"
+          [boundaryLinks]="false"
+        ></ngb-pagination>
+
+      </div>
+
+
+    </div>
+  </div>
+
+  <ng-template #infoModal let-modal>
+    <div class="modal-header fs-6 py-1">
+      <h4 class="modal-title">Información de la Lista de Autorizaciones</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body fs-6 py-2">
+      <div class="container-fluid">
+        <!-- Introducción -->
+        <div class="alert alert-info mb-2 py-2">
+          <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
+          <p class="mb-0 small">Esta pantalla te permite visualizar y gestionar las autorizaciones para visitantes
+            registrados en distintos lotes. Puedes acceder rápidamente a los detalles de cada autorización, aplicar
+            filtros, y realizar acciones específicas sobre cada registro.</p>
+        </div>
+
+        <!-- Campos Principales -->
+        <div class="card mb-2">
+          <div class="card-header py-1">
+            <h5 class="mb-0">Datos de Autorizaciones</h5>
+          </div>
+          <div class="card-body py-2">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item py-1">
+                <strong>Lista de Autorizaciones:</strong> Muestra los detalles de cada autorización, como el número de
+                lote, nombre y apellido del visitante, tipo de documento, tipo de visitante, horarios autorizados y nombre
+                del autorizador.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Filtros:</strong> Puedes aplicar filtros específicos, como el tipo de visitante o el número de
+                lote, para encontrar autorizaciones rápidamente.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Paginación:</strong> Control para navegar entre múltiples páginas de autorizaciones.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Exportar:</strong> Opción para exportar la lista de autorizaciones a formatos PDF o Excel.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="card mb-2">
+          <div class="card-header py-1">
+            <h5 class="mb-0">Acciones Disponibles</h5>
+          </div>
+          <div class="card-body py-2">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item py-1">
+                <strong>Buscar:</strong> Filtra la lista de autorizaciones utilizando campos de texto o selección para
+                localizar registros específicos.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Limpiar Filtros:</strong> Restablece los filtros aplicados para mostrar la lista completa de
+                autorizaciones.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Nota (OPCIONAL) -->
+        <div class="alert alert-warning py-2 mb-0">
+          <h5 class="alert-heading">Nota:</h5>
+          <p class="mb-0 small">Verifica la información antes de realizar cambios o eliminar autorizaciones. Asegúrate de
+            que los datos de los visitantes y autorizadores sean correctos.</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer py-2">
+      <button type="button" class="btn btn-primary" (click)="modal.close()">Entendido</button>
+    </div>
+  </ng-template>
+
+
+</app-main-container>
