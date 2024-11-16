@@ -1,4 +1,4 @@
-<ng-template #confirmAlertContentTemplate (infoButtonClick)="openInfo()">
+<ng-template #confirmAlertContentTemplate>
   <form [formGroup]="noteForm">
     <label for="note" class="form-label">Ingrese una nota</label>
     <input
@@ -19,7 +19,7 @@
 
 
 
-<app-main-container title="Vista de Archivos de Propietario">
+<app-main-container title="Vista de Archivos de Propietario" (infoButtonClick)="openInfo()">
   @if(owner) {
     <div class="d-flex justify-content-between align-items-center m-3">
       <h5>{{owner.firstName}} {{owner.lastName}}</h5>

@@ -22,6 +22,7 @@ export class AccountService {
 
 
   host: string = `${environment.production ? `${environment.apis.accounts}` : `${environment.apis.accounts}`}accounting-concepts`;
+  hostAccount : string = `${environment.production ? `${environment.apis.accounts}` : `${environment.apis.accounts}`}accounts`
 
   getConceptsByPlotId(
     plotId: number,
@@ -106,7 +107,7 @@ export class AccountService {
       params = params.append('isActive', isActive.toString());
     }
 
-    return this.http.get<Account[]>(`http://localhost:8002/accounts`, { params });
+    return this.http.get<Account[]>(this.hostAccount, { params });
   }
 
 
