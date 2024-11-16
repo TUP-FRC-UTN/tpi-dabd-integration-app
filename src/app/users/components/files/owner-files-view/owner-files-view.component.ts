@@ -449,41 +449,12 @@ export class OwnerFilesViewComponent implements OnInit {
         ],
       },
       {
-        title: 'Filtros',
-        content: [
-          {
-            strong: 'Tipo de documento: ',
-            detail: 'Filtra los propietarios por los tipos de documento.'
-          },
-          {
-            strong: 'Tipo de propietario: ',
-            detail: 'Filtra los propietarios por los tipos (Persona, Compañía, Otros).'
-          },
-          {
-            strong: 'Estado del propietario: ',
-            detail: 'Filtra por el estado de validación del propietario.'
-          },
-          {
-            strong: 'Activo: ',
-            detail: 'Filtra por los propietarios si están activos o inactivos.'
-          },
-        ],
-      },
-      {
         title: 'Funcionalidades de los botones',
         content: [
-          {
-            strong: 'Filtros: ',
-            detail:
-              'Botón con forma de tolva que despliega los filtros avanzados.',
-          },
+          
           {
             strong: 'Validar Propietario: ',
             detail: 'Botón azul que permite presionarlo cuando es posible cambiar el estado del Propietario a "Validado". Abre un modal para confirmación.',
-          },
-          {
-            strong: 'Paginación: ',
-            detail: 'Botones para pasar de página en la grilla.',
           },
         ],
       },
