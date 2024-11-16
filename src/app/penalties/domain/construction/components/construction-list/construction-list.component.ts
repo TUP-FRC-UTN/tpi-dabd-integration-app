@@ -9,10 +9,22 @@ import {
 import { ConstructionFormComponent } from '../construction-form/construction-form.component';
 import { ConstructionService } from '../../services/construction.service';
 import { Router } from '@angular/router';
-import { ConfirmAlertComponent, Filter, FilterConfigBuilder, MainContainerComponent, SidebarComponent, TableColumn, TableComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
+import {
+  ConfirmAlertComponent,
+  Filter,
+  FilterConfigBuilder,
+  MainContainerComponent,
+  SidebarComponent,
+  TableColumn,
+  TableComponent,
+  TableFiltersComponent,
+} from 'ngx-dabd-grupo01';
 import { FormsModule } from '@angular/forms';
 import { GetValueByKeyForEnumPipe } from '../../../../shared/pipes/get-value-by-key-for-status.pipe';
-import { UserDataService, UserData } from '../../../../shared/services/user-data.service';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-construction-list',
@@ -57,6 +69,7 @@ export class ConstructionListComponent {
 
   @ViewChild('actionsTemplate') actionsTemplate!: TemplateRef<any>;
   @ViewChild('statusTemplate') statusTemplate!: TemplateRef<any>;
+  @ViewChild('infoModal') infoModal!: TemplateRef<any>;
 
   columns: TableColumn[] = [];
 
@@ -92,9 +105,9 @@ export class ConstructionListComponent {
   userHasRole(role: string): boolean {
     return this.userData.roles.some((userRole) => userRole.name === role);
   }
-  
+
   ngOnInit(): void {
-    this.loadUserData()
+    this.loadUserData();
     this.loadItems();
   }
 
@@ -181,13 +194,8 @@ export class ConstructionListComponent {
     this.searchParams = {};
     this.loadItems();
   }
-  infoModal() {
-    const modalRef = this.modalService.open(ConfirmAlertComponent);
-    modalRef.componentInstance.alertType = 'info';
-
-    modalRef.componentInstance.alertTitle = 'Ayuda';
-    modalRef.componentInstance.alertMessage = `Esta pantalla presenta un listado completo de tus obras en curso. 
-    La pantalla está diseñada para ayudarle a visualizar de manera organizada y estructurada toda la información relevante y, al mismo tiempo, ofrece herramientas que le permiten interactuar con los datos de forma más efectiva, lo cual incluye opciones de filtrado, búsqueda y exportación.`;
+  onInfoButtonClick() {
+    this.modalService.open(this.infoModal, { size: 'lg' });
   }
 
   filterConfig: Filter[] = new FilterConfigBuilder()

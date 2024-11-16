@@ -252,4 +252,18 @@ export class FineService {
       finalize(() => this._loading$.next(false))
     );
   }
+
+  getMostFinedPlots(searchParams: any = {}): Observable<any[]> {
+    let params = new HttpParams();
+
+    Object.keys(searchParams).forEach((key) => {
+      if (searchParams[key]) {
+        params = params.set(key, searchParams[key]);
+      }
+    });
+
+    return this.http.get<any[]>(`${this.apiUrl}/fine/plots/most-fined`, {
+      params,
+    });
+  }
 }

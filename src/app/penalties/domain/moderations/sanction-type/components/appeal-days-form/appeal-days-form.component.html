@@ -1,0 +1,63 @@
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">
+      Periodo de gracia actual: {{ daysToAppeal }} días
+    </h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="maxDaysToAppeal" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="maxDaysId">Días para apelar infracciones</label>
+        <div class="input-group">
+          <input
+            type="number"
+            name="maxDaysNumber"
+            class="form-control"
+            id="maxDaysId"
+            formControlName="days"
+            [ngClass]="{
+              'is-invalid':
+                maxDaysToAppeal.controls['days'].invalid &&
+                !maxDaysToAppeal.controls['days'].untouched,
+              'is-valid': maxDaysToAppeal.controls['days'].valid
+            }"
+          />
+        </div>
+        @if (maxDaysToAppeal.controls['days'].invalid &&
+        !maxDaysToAppeal.controls['days'].untouched) { @if
+        (maxDaysToAppeal.controls['days'].errors?.['required']) {
+        <div class="text-danger">Debe ingresar un número para guardar</div>
+        } @if (maxDaysToAppeal.controls['days'].errors?.['min']) {
+        <div class="text-danger">El valor debe ser mayor a 1</div>
+        } @if (maxDaysToAppeal.controls['days'].errors?.['max']) {
+        <div class="text-danger">El valor no puede exceder los 360</div>
+        } }
+        <p class="mt-3">
+          Esto determina globalmente (para todas las Infracciones), la cantidad
+          de días que tiene un infractor para apelar una infracción antes de que
+          se apruebe automáticamente
+        </p>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      (click)="onSubmit()"
+      [disabled]="!maxDaysToAppeal.valid"
+    >
+      Guardar
+    </button>
+  </div>
+</ng-template>
+<button class="btn btn-outline-primary" (click)="open(content)">
+  <i class="bi bi-gear-fill me-2"></i>
+  Días de apelación
+</button>

@@ -19,6 +19,7 @@ import {
   UserDataService,
   UserData,
 } from '../../../../../shared/services/user-data.service';
+import { AppealDaysFormComponent } from '../appeal-days-form/appeal-days-form.component';
 
 @Component({
   selector: 'app-sanction-type-list',
@@ -29,6 +30,7 @@ import {
     MainContainerComponent,
     GetValueByKeyForEnumPipe,
     TruncatePipe,
+    AppealDaysFormComponent,
   ],
   templateUrl: './sanction-type-list.component.html',
   styleUrl: './sanction-type-list.component.scss',

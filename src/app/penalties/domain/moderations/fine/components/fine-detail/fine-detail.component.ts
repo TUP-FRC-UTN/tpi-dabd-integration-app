@@ -10,8 +10,15 @@ import { FineInfractionsListComponent } from '../fine-infractions-list/fine-infr
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
 import { firstValueFrom } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ConfirmAlertComponent, MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
-import { UserDataService, UserData } from '../../../../../shared/services/user-data.service';
+import {
+  ConfirmAlertComponent,
+  MainContainerComponent,
+  ToastService,
+} from 'ngx-dabd-grupo01';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-fine-detail',
@@ -55,10 +62,10 @@ export class FineDetailComponent {
   userHasRole(role: string): boolean {
     return this.userData.roles.some((userRole) => userRole.name === role);
   }
-  
+
   async ngOnInit() {
-    this.loadUserData()
-    
+    this.loadUserData();
+
     let id;
 
     this.route.params.subscribe(async (params) => {
@@ -128,4 +135,12 @@ export class FineDetailComponent {
   goBack = (): void => {
     window.history.back();
   };
+
+  infoModal() {
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+    modalRef.componentInstance.alertType = 'info';
+
+    modalRef.componentInstance.alertTitle = 'Ayuda';
+    modalRef.componentInstance.alertMessage = `Esta pantalla proporciona una vista detallada de la multa seleccionada, permitiéndole analizar toda la información relacionada de manera clara y estructurada. En esta sección puede acceder a todos los datos relevantes sobre la multa de forma precisa.`;
+  }
 }

@@ -1,5 +1,11 @@
 import { Component, inject, TemplateRef, ViewChild } from '@angular/core';
-import { FilterConfigBuilder, MainContainerComponent, TableColumn, TableComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
+import {
+  FilterConfigBuilder,
+  MainContainerComponent,
+  TableColumn,
+  TableComponent,
+  TableFiltersComponent,
+} from 'ngx-dabd-grupo01';
 import {
   CONSTRUCTION_STATUSES_ENUM,
   ConstructionResponseDto,
@@ -14,6 +20,10 @@ import { BaseChartDirective } from 'ng2-charts';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmAlertComponent } from 'ngx-dabd-grupo01';
 import { FormsModule } from '@angular/forms';
+import { Chart } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+Chart.register(ChartDataLabels);
 
 @Component({
   selector: 'app-construction-report',
@@ -75,12 +85,19 @@ export class ConstructionReportComponent {
 
   // Datos genéricos para gráficos
   public pieChartLegend = true;
-  public pieChartPlugins = [];
+  public pieChartPlugins: any = [ChartDataLabels];
   public pieChartOptions: ChartOptions<'pie'> = {
     responsive: false,
     plugins: {
       legend: {
         position: 'right',
+      },
+      datalabels: {
+        color: '#3d3d3d',
+        font: {
+          size: 24,
+        },
+        formatter: (value: number) => `${value}`,
       },
     },
   };
@@ -97,12 +114,13 @@ export class ConstructionReportComponent {
     {
       data: [],
       backgroundColor: [
-        '#FF6384',
-        '#36A2EB',
-        '#FFCE56',
-        '#4BC0C0',
-        '#9966FF',
-        '#FF9F40',
+        'rgba(255, 245, 157, 1)', // Amarillo
+        'rgba(130, 177, 255, 1)', // Azul
+        'rgba(255, 145, 158, 1)', // Rosa
+        'rgba(187, 131, 209, 1)', // Morado claro
+        'rgba(126, 206, 157, 1)', // Azul celeste
+        'rgba(255, 171, 145, 1)', // Naranja
+        'rgba(98, 182, 143, 1)', // Verde menta
       ],
     },
   ];

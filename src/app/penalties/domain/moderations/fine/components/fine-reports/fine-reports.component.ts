@@ -3,11 +3,12 @@ import { Observable } from 'rxjs';
 import { Fine } from '../../models/fine.model';
 import { FineService } from '../../services/fine.service';
 import { CommonModule } from '@angular/common';
-import { ConfirmAlertComponent, Filter, FilterConfigBuilder, MainContainerComponent, TableColumn, TableComponent } from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, Filter, FilterConfigBuilder, MainContainerComponent, TableColumn, TableComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
 import { FineStatusEnum } from '../../models/fine-status.enum';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartDataset, ChartOptions } from 'chart.js';
+
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 
@@ -21,6 +22,7 @@ import { FormsModule } from '@angular/forms';
     TableComponent,
     GetValueByKeyForEnumPipe,
     BaseChartDirective,
+    TableFiltersComponent,
   ],
   templateUrl: './fine-reports.component.html',
   styleUrl: './fine-reports.component.scss',
@@ -28,8 +30,22 @@ import { FormsModule } from '@angular/forms';
 export class FineReportsComponent {
   fineService = inject(FineService);
 
+  groupedItems: any[] = [];
+
   columns: TableColumn[] = [];
   FineStatusEnum = FineStatusEnum;
+
+  filterConfig: Filter[] = new FilterConfigBuilder()
+    .selectFilter('Estado', 'fineState', 'Seleccione el Estado', [
+      { value: '', label: 'Todos' },
+      { value: 'ON_ASSEMBLY', label: 'En asamblea' },
+      { value: 'REJECTED', label: 'Rechazado' },
+      { value: 'APPROVED', label: 'Aprobado' },
+    ])
+    /* .selectFilter("Tipo de sanción", 'sanction_type', 'Seleccione el Tipo de sanción', [
+
+    ]) */
+    .build();
 
   private modalService = inject(NgbModal);
 
@@ -72,6 +88,7 @@ export class FineReportsComponent {
 
   @ViewChild('fineState') fineStateTemplate!: TemplateRef<any>;
   @ViewChild('fineDate') fineDateTemplate!: TemplateRef<any>;
+  @ViewChild('fineAmount') fineAmountTemplate!: TemplateRef<any>;
 
   // Datos genéricos para gráficos
   public pieChartLegend = true;
@@ -82,6 +99,12 @@ export class FineReportsComponent {
       legend: {
         position: 'right',
       },
+      datalabels: {
+        color: '#3d3d3d',
+        font: {
+          size: 20,
+        },
+      },
     },
   };
 
@@ -89,6 +112,23 @@ export class FineReportsComponent {
   public barChartPlugins = [];
   public barChartOptions: ChartConfiguration<'bar'>['options'] = {
     responsive: false,
+    backgroundColor: [
+      'rgba(255, 245, 157, 1)', // Amarillo
+      'rgba(130, 177, 255, 1)', // Azul
+      'rgba(255, 145, 158, 1)', // Rosa
+      'rgba(187, 131, 209, 1)', // Morado claro
+      'rgba(126, 206, 157, 1)', // Azul celeste
+      'rgba(255, 171, 145, 1)', // Naranja
+      'rgba(98, 182, 143, 1)', // Verde menta
+    ],
+    plugins: {
+      datalabels: {
+        color: '#3d3d3d',
+        font: {
+          size: 20,
+        },
+      },
+    },
   };
 
   // Datos para el gráfico de torta de multas por tipo de sanción
@@ -97,12 +137,13 @@ export class FineReportsComponent {
     {
       data: [],
       backgroundColor: [
-        '#FF6384',
-        '#36A2EB',
-        '#FFCE56',
-        '#4BC0C0',
-        '#9966FF',
-        '#FF9F40',
+        'rgba(255, 245, 157, 1)', // Amarillo
+        'rgba(130, 177, 255, 1)', // Azul
+        'rgba(255, 145, 158, 1)', // Rosa
+        'rgba(187, 131, 209, 1)', // Morado claro
+        'rgba(126, 206, 157, 1)', // Azul celeste
+        'rgba(255, 171, 145, 1)', // Naranja
+        'rgba(98, 182, 143, 1)', // Verde menta
       ],
     },
   ];
@@ -124,12 +165,13 @@ export class FineReportsComponent {
     {
       data: [],
       backgroundColor: [
-        '#FF6384',
-        '#36A2EB',
-        '#FFCE56',
-        '#4BC0C0',
-        '#9966FF',
-        '#FF9F40',
+        'rgba(255, 245, 157, 1)', // Amarillo
+        'rgba(130, 177, 255, 1)', // Azul
+        'rgba(255, 145, 158, 1)', // Rosa
+        'rgba(187, 131, 209, 1)', // Morado claro
+        'rgba(126, 206, 157, 1)', // Azul celeste
+        'rgba(255, 171, 145, 1)', // Naranja
+        'rgba(98, 182, 143, 1)', // Verde menta
       ],
     },
   ];
@@ -148,32 +190,16 @@ export class FineReportsComponent {
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.columns = [
-        { headerName: 'Nº', accessorKey: 'id' },
-        { headerName: 'Lote', accessorKey: 'plot_id' },
+        { headerName: 'Nº de Lote', accessorKey: 'plot_id' },
         {
-          headerName: 'Tipo',
-          accessorKey: 'type',
-          cellRenderer: this.fineStateTemplate,
-        },
-        {
-          headerName: 'Alta',
-          accessorKey: 'type',
-          cellRenderer: this.fineDateTemplate,
+          headerName: 'Cantidad',
+          accessorKey: 'fine_amount',
+          cellRenderer: this.fineAmountTemplate,
         },
       ];
     });
 
-    const startDate = new Date();
-    startDate.setMonth(startDate.getMonth() - 24);
-    const endDate = new Date();
-
-    const startDateString = startDate.toISOString().split('T')[0];
-    const endDateString = endDate.toISOString().split('T')[0];
-
-    this.dateFilter = {
-      startDate: startDateString,
-      endDate: endDateString,
-    };
+    this.resetDateFilter();
 
     this.loadItems();
 
@@ -192,12 +218,23 @@ export class FineReportsComponent {
   loadItems(): void {
     this.fineService
       .getPaginatedFines(1, 1000, {
+        ...this.searchParams,
         startDate: this.dateFilter.startDate,
         endDate: this.dateFilter.endDate,
       })
       .subscribe((response) => {
         this.fineService.setItems(response.items);
         this.fineService.setTotalItems(response.total);
+      });
+
+    this.fineService
+      .getMostFinedPlots({
+        ...this.searchParams,
+        startDate: this.dateFilter.startDate,
+        endDate: this.dateFilter.endDate,
+      })
+      .subscribe((data) => {
+        this.groupedItems = data;
       });
   }
 
@@ -259,12 +296,22 @@ export class FineReportsComponent {
       monthlyCounts[month] = (monthlyCounts[month] || 0) + 1;
     });
 
+    const sortedMonthlyCounts = this.MONTH_NAMES.filter(
+      (month) => monthlyCounts[month]
+    ) // Filtrar solo los meses presentes en monthlyCounts
+      .reduce(
+        (acc, month) => {
+          acc.labels.push(`${month[0].toUpperCase()}${month.slice(1)}`);
+          acc.data.push(monthlyCounts[month]);
+          return acc;
+        },
+        { labels: [], data: [] } as { labels: string[]; data: number[] }
+      );
+
     this.barChartMonthlyData = {
-      labels: Object.keys(monthlyCounts).map(
-        (key) => `${key[0].toUpperCase()}${key.slice(1)}`
-      ),
+      labels: sortedMonthlyCounts.labels,
       datasets: [
-        { data: Object.values(monthlyCounts), label: 'Cantidad de Multas' },
+        { data: sortedMonthlyCounts.data, label: 'Cantidad de Multas' },
       ],
     };
   }
@@ -286,17 +333,30 @@ export class FineReportsComponent {
     };
   }
 
-  filterConfig: Filter[] = new FilterConfigBuilder()
-    .dateFilter('Fecha desde', 'startDate', 'Placeholder')
-    .dateFilter('Fecha hasta', 'endDate', 'Placeholder')
-    .build();
-
   onFilterValueChange(filters: Record<string, any>) {
     this.searchParams = {
       ...filters,
     };
 
     this.loadItems();
+  }
+
+  resetDateFilter() {
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 24);
+    const endDate = new Date();
+
+    const startDateString = startDate.toISOString().split('T')[0];
+    const endDateString = endDate.toISOString().split('T')[0];
+
+    this.dateFilter = {
+      startDate: startDateString,
+      endDate: endDateString,
+    };
+  }
+
+  onFilterValueClear() {
+    this.resetDateFilter();
   }
 
   onDateFilterChange() {

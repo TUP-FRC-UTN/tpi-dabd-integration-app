@@ -69,6 +69,7 @@ export class InfractionListComponent {
   @ViewChild('dateTemplate') dateTemplate!: TemplateRef<any>;
   @ViewChild('fineTemplate') fineTemplate!: TemplateRef<any>;
   @ViewChild('sanctionType') sanctionType!: TemplateRef<any>;
+  @ViewChild('infoModal') infoModal!: TemplateRef<any>;
 
   columns: TableColumn[] = [];
 
@@ -194,11 +195,7 @@ export class InfractionListComponent {
   }
 
   onInfoButtonClick() {
-    const modalRef = this.modalService.open(ConfirmAlertComponent);
-    modalRef.componentInstance.alertType = 'info';
-
-    modalRef.componentInstance.alertTitle = 'Ayuda';
-    modalRef.componentInstance.alertMessage = `Esta pantalla te permite consultar tus infracciones recibidos, y al administrador gestionarlo para generar multas. \n Considerá que de tener mas multas que las configuradas para cada tipo, entonces serás multado, podes ver mas en "Tipos de sanciones"`;
+    this.modalService.open(this.infoModal, { size: 'lg' });
   }
 
   filterConfig: Filter[] = new FilterConfigBuilder()

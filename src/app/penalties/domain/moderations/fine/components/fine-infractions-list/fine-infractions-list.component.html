@@ -20,6 +20,88 @@
     [headerButtonText]="'Nuevo'"
     [showSearchBar]="false"
     [showHeaderButton]="false"
+    (infoButtonClick)="onInfoButtonClick()"
   >
   </app-table>
 </div>
+
+<ng-template #infoModal let-modal>
+  <div class="modal-header fs-6 py-1">
+    <h4 class="modal-title">Información de la Lista de Infracciones</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss()"
+    ></button>
+  </div>
+  <div class="modal-body fs-6 py-2">
+    <div class="container-fluid">
+      <!-- Introducción -->
+      <div class="alert alert-info mb-2 py-2">
+        <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
+        <p class="mb-0 small">
+          Esta pantalla permite a los usuarios visualizar y gestionar la lista
+          de infracciones, proporcionando detalles clave y opciones de acción. A
+          continuación, se describen las funcionalidades principales
+          disponibles:
+        </p>
+      </div>
+
+      <!-- Campos Principales -->
+      <div class="card mb-2">
+        <div class="card-header py-1">
+          <h5 class="mb-0">Datos de Infracciones</h5>
+        </div>
+        <div class="card-body py-2">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item py-1">
+              <strong>Lista de Infracciones:</strong> Muestra los detalles de
+              cada infracción, incluyendo el ID de la infracción, fecha de
+              creación y tipo de infracción.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Fecha:</strong> Visualiza la fecha en que se creó cada
+              infracción, facilitando su seguimiento.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Acciones:</strong> Cada infracción incluye un botón de
+              acción para ver su detalle completo.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="card mb-2">
+        <div class="card-header py-1">
+          <h5 class="mb-0">Acciones Disponibles</h5>
+        </div>
+        <div class="card-body py-2">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item py-1">
+              <strong>Ver Detalle:</strong> Accede a información completa de
+              cada infracción seleccionando el botón de ojo en la columna de
+              acciones.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Nota -->
+      <div class="alert alert-warning py-2 mb-0">
+        <h5 class="alert-heading">Nota:</h5>
+        <p class="mb-0 small">
+          Revisa la información de cada infracción antes de tomar decisiones o
+          aplicar sanciones. Asegúrate de que los datos sean correctos y estén
+          actualizados.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer py-2">
+    <button type="button" class="btn btn-primary" (click)="modal.close()">
+      Entendido
+    </button>
+  </div>
+</ng-template>

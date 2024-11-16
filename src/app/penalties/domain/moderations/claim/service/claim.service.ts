@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { InfractionDto } from '../../infraction/models/infraction.model';
 import {
   BehaviorSubject,
@@ -47,13 +47,19 @@ export class ClaimService {
   }
 
   updateClaim(claimDTO: ClaimDTO, userId: number): Observable<ClaimDTO> {
+    const headers = new HttpHeaders({
+      'x-user-id': userId.toString(),
+    });
     return this.http
-      .put<ClaimDTO>(`${this.apiUrl}/claims/${claimDTO.id}`, {
-        description: claimDTO.description,
-        plot_id: claimDTO.plot_id,
-        sanction_type_entity_id: claimDTO.sanction_type.id,
-        user_id: userId,
-      })
+      .put<ClaimDTO>(
+        `${this.apiUrl}/claims/${claimDTO.id}`,
+        {
+          description: claimDTO.description,
+          plot_id: claimDTO.plot_id,
+          sanction_type_entity_id: claimDTO.sanction_type.id,
+        },
+        { headers }
+      )
       .pipe(
         map((newItem) => {
           return newItem;
@@ -65,10 +71,16 @@ export class ClaimService {
   }
 
   disapproveClaim(claimId: number, userId: number): Observable<ClaimDTO> {
+    const headers = new HttpHeaders({
+      'x-user-id': userId.toString(),
+    });
+
     return this.http
-      .put<ClaimDTO>(`${this.apiUrl}/claims/${claimId}/disapprove`, {
-        user_id: userId,
-      })
+      .put<ClaimDTO>(
+        `${this.apiUrl}/claims/${claimId}/disapprove`,
+        {},
+        { headers }
+      )
       .pipe(
         map((newItem) => {
           return newItem;
@@ -78,7 +90,6 @@ export class ClaimService {
         })
       );
   }
-
 
   getAllItems(page: number, limit: number) {
     let params = new HttpParams()
@@ -164,8 +175,6 @@ export class ClaimService {
   }
 
   getClaimByInfractionId(id: number): Observable<ClaimDTO[]> {
-    return this.http.get<ClaimDTO[]>(
-      `${this.apiUrl}/claims/infraction/${id}`
-    );
+    return this.http.get<ClaimDTO[]>(`${this.apiUrl}/claims/infraction/${id}`);
   }
 }

@@ -12,12 +12,13 @@ import {
 } from '../../../infraction/models/infraction.model';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { TableColumn, TableComponent } from 'ngx-dabd-grupo01';
+import { MainContainerComponent, TableColumn, TableComponent } from 'ngx-dabd-grupo01';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-fine-infractions-list',
   standalone: true,
-  imports: [TableComponent, DatePipe],
+  imports: [TableComponent, DatePipe,MainContainerComponent],
   templateUrl: './fine-infractions-list.component.html',
   styleUrl: './fine-infractions-list.component.scss',
 })
@@ -30,6 +31,7 @@ export class FineInfractionsListComponent {
   @ViewChild('actionsTemplate') actionsTemplate!: TemplateRef<any>;
 
   @ViewChild('date') dateTemplate!: TemplateRef<any>;
+  @ViewChild('infoModal') infoModal!: TemplateRef<any>;
 
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -60,5 +62,10 @@ export class FineInfractionsListComponent {
 
   goToInfractionDetail(infractionId: number) {
     this.router.navigate(['penalties/infraction', infractionId]);
+  }
+  constructor(private modalService: NgbModal) { }
+
+  onInfoButtonClick() {
+    this.modalService.open(this.infoModal, { size: 'lg' });
   }
 }

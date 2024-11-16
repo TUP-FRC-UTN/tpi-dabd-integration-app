@@ -40,6 +40,10 @@
     [headerButtonText]="''"
     [showHeaderButton]="userHasRole('FINES_ADMIN')"
     [showExportOptions]="false"
+    [showTableFiltersButton]="false"
   >
+    @if (userHasRole('FINES_ADMIN')){
+    <app-appeal-days-form></app-appeal-days-form>
+    }
   </app-table>
 </app-main-container>

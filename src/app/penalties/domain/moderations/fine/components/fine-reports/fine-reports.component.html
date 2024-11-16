@@ -1,3 +1,5 @@
+<ng-template #fineAmount let-item> {{ item.fine_amount }} multas </ng-template>
+
 <app-main-container title="Reporte de Multas" (infoButtonClick)="infoModal()">
   <!-- Filters  -->
   <div class="card">
@@ -21,9 +23,13 @@
             (ngModelChange)="onDateFilterChange()"
           />
         </div>
-        <!-- <div class="ps-3" style="border-left: 2px solid #e0e0e0">
-          <app-table-filters></app-table-filters>
-        </div> -->
+        <div class="ps-3" style="border-left: 2px solid #e0e0e0">
+          <app-table-filters
+            [filters]="filterConfig"
+            (filterValueChange)="onFilterValueChange($event)"
+            (filterValueClear)="onFilterValueClear()"
+          ></app-table-filters>
+        </div>
       </div>
     </div>
   </div>
@@ -164,20 +170,16 @@
     <div class="mt-3 d-flex gap-3">
       <div class="card w-50">
         <div class="card-body">
-          <div class="w-100 d-flex flex-column align-items-center">
-            <h5 class="">Multas por Lote</h5>
-            <canvas
-              width="500px"
-              height="240px"
-              baseChart
-              [data]="barChartPlotData"
-              [options]="barChartOptions"
-              [plugins]="barChartPlugins"
-              [legend]="barChartLegend"
-              [type]="'bar'"
-            >
-            </canvas>
-          </div>
+          <h5 class="">Lotes con más multas</h5>
+          <app-table
+            [items]="groupedItems"
+            [columns]="columns"
+            [isLoading]="(isLoading$ | async) || false"
+            [showHeaderButton]="false"
+            [showExportOptions]="false"
+            [showSearchBar]="false"
+            height="360px"
+          ></app-table>
         </div>
       </div>
       <div class="card w-50">
@@ -185,7 +187,7 @@
           <div class="w-100 d-flex flex-column align-items-center">
             <h5 class="">Multas por Mes</h5>
             <canvas
-              width="500px"
+              width="640px"
               height="240px"
               baseChart
               [data]="barChartMonthlyData"

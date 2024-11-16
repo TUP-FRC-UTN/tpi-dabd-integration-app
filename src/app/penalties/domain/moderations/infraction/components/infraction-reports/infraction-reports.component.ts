@@ -1,5 +1,12 @@
 import { Component, inject, TemplateRef, ViewChild } from '@angular/core';
-import { ConfirmAlertComponent, Filter, FilterConfigBuilder, MainContainerComponent, TableColumn, TableComponent } from 'ngx-dabd-grupo01';
+import {
+  ConfirmAlertComponent,
+  Filter,
+  FilterConfigBuilder,
+  MainContainerComponent,
+  TableColumn,
+  TableComponent,
+} from 'ngx-dabd-grupo01';
 import { Observable } from 'rxjs';
 import {
   InfractionResponseDTO,
@@ -59,27 +66,49 @@ export class InfractionReportsComponent {
       legend: {
         position: 'right',
       },
+      datalabels: {
+        color: '#3d3d3d',
+        font: {
+          size: 16,
+        },
+      },
     },
   };
-
   public barChartLegend = true;
   public barChartPlugins = [];
   public barChartOptions: ChartConfiguration<'bar'>['options'] = {
     responsive: false,
+    backgroundColor: [
+      'rgba(255, 245, 157, 1)', // Amarillo
+      'rgba(130, 177, 255, 1)', // Azul
+      'rgba(255, 145, 158, 1)', // Rosa
+      'rgba(187, 131, 209, 1)', // Morado claro
+      'rgba(126, 206, 157, 1)', // Azul celeste
+      'rgba(255, 171, 145, 1)', // Naranja
+      'rgba(98, 182, 143, 1)', // Verde menta
+    ],
+    plugins: {
+      datalabels: {
+        color: '#3d3d3d',
+        font: {
+          size: 20,
+        },
+      },
+    },
   };
-
   // Datos para el gráfico de torta de infracciones por tipo de sanción
   public pieChartStatusLabels: string[] = [];
   public pieChartStatusDatasets: ChartDataset<'pie', number[]>[] = [
     {
       data: [],
       backgroundColor: [
-        '#FF6384',
-        '#36A2EB',
-        '#FFCE56',
-        '#4BC0C0',
-        '#9966FF',
-        '#FF9F40',
+        'rgba(255, 245, 157, 1)', // Amarillo
+        'rgba(130, 177, 255, 1)', // Azul
+        'rgba(255, 145, 158, 1)', // Rosa
+        'rgba(187, 131, 209, 1)', // Morado claro
+        'rgba(126, 206, 157, 1)', // Azul celeste
+        'rgba(255, 171, 145, 1)', // Naranja
+        'rgba(98, 182, 143, 1)', // Verde menta
       ],
     },
   ];

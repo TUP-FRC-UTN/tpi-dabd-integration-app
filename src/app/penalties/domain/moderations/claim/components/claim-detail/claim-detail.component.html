@@ -1,4 +1,8 @@
-<app-main-container title="Reclamo" subTitle="{{ claim?.id }}" (infoButtonClick)="infoModal()">
+<app-main-container
+  title="Reclamo"
+  subTitle="{{ claim?.id }}"
+  (infoButtonClick)="infoModal()"
+>
   <form
     #sanctionTypeForm="ngForm"
     class="row"

@@ -31,7 +31,7 @@
 <app-main-container
   title="Multas"
   id="pdf-template"
-  (infoButtonClick)="infoModal()"
+  (infoButtonClick)="onInfoButtonClick()"
 >
   <app-table
     [items]="(items$ | async) || []"
@@ -47,7 +47,7 @@
     (searchValueChange)="onSearchValueChange('partialName', $event)"
     [showHeaderButton]="false"
     [showSearchBar]="false"
-    (infoButtonClick)="infoModal()"
+    (infoButtonClick)="onInfoButtonClick()"
     [getAllItems]="getAllFines"
     [showExportPdfButton]="false"
   >
@@ -129,3 +129,80 @@
     </div>
   </app-table>
 </app-main-container>
+
+<ng-template #infoModal let-modal>
+  <div class="modal-header fs-6 py-1">
+    <h4 class="modal-title">Información de la Lista de Multas</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss()"
+    ></button>
+  </div>
+  <div class="modal-body fs-6 py-2">
+    <div class="container-fluid">
+      <!-- Introducción -->
+      <div class="alert alert-info mb-2 py-2">
+        <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
+        <p class="mb-0 small">
+          Esta pantalla permite a los usuarios visualizar y gestionar la lista de multas, 
+          proporcionando detalles clave y opciones de acción. A continuación, se describen las principales funcionalidades disponibles:
+        </p>
+      </div>
+
+      <!-- Campos Principales -->
+      <div class="card mb-2">
+        <div class="card-header py-1">
+          <h5 class="mb-0">Datos de Multas</h5>
+        </div>
+        <div class="card-body py-2">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item py-1">
+              <strong>Lista de Multas:</strong> Muestra los detalles de cada multa, incluyendo la fecha de creación, estado de la multa, y el tipo de sanción aplicada.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Fecha:</strong> La fecha en que se creó cada multa, facilitando el seguimiento temporal.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Estado:</strong> Indica el estado de la multa, como "Aprobado", "Rechazado" o "En Revisión".
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="card mb-2">
+        <div class="card-header py-1">
+          <h5 class="mb-0">Acciones Disponibles</h5>
+        </div>
+        <div class="card-body py-2">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item py-1">
+              <strong>Ver Detalle:</strong> Accede a la información completa de cada multa seleccionando el botón de "ojo" en la columna de acciones.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Filtrar:</strong> Aplica filtros específicos por fecha o estado para encontrar multas que cumplen con ciertos criterios.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Limpiar Filtros:</strong> Restablece los filtros aplicados para ver la lista completa de multas.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Nota -->
+      <div class="alert alert-warning py-2 mb-0">
+        <h5 class="alert-heading">Nota:</h5>
+        <p class="mb-0 small">
+          Verifica los datos antes de realizar cualquier acción sobre las multas. Asegúrate de que la información esté actualizada y sea correcta.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer py-2">
+    <button type="button" class="btn btn-primary" (click)="modal.close()">
+      Entendido
+    </button>
+  </div>
+</ng-template>

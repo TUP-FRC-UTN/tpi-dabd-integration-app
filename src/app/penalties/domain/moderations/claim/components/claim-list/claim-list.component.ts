@@ -23,7 +23,10 @@ import { ClaimService } from '../../service/claim.service';
 import { ClaimDTO, ClaimStatusEnum } from '../../models/claim.model';
 import { NewInfractionModalComponent } from '../../../infraction/components/new-infraction-modal/new-infraction-modal.component';
 import { FormsModule } from '@angular/forms';
-import { UserDataService, UserData } from '../../../../../shared/services/user-data.service';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-claim-list',
@@ -72,6 +75,7 @@ export class ClaimListComponent {
   @ViewChild('date') date!: TemplateRef<any>;
   @ViewChild('claimStatus') claimStatus!: TemplateRef<any>;
   @ViewChild('infraction') infraction!: TemplateRef<any>;
+  @ViewChild('infoModal') infoModal!: TemplateRef<any>;
 
   @ViewChild('check') check!: TemplateRef<any>;
 
@@ -91,10 +95,10 @@ export class ClaimListComponent {
   userHasRole(role: string): boolean {
     return this.userData.roles.some((userRole) => userRole.name === role);
   }
-  
+
   // Methods:
   ngOnInit(): void {
-    this.loadUserData()
+    this.loadUserData();
 
     this.claimStatusKeys = Object.keys(ClaimStatusEnum) as Array<
       keyof typeof ClaimStatusEnum
@@ -288,12 +292,9 @@ export class ClaimListComponent {
     this.loadItems();
   }
   onInfoButtonClick() {
-    const modalRef = this.modalService.open(ConfirmAlertComponent);
-    modalRef.componentInstance.alertType = 'info';
-
-    modalRef.componentInstance.alertTitle = 'Ayuda';
-    modalRef.componentInstance.alertMessage = `Esta pantalla te permite consultar tus reclamos recibidos y realizado, y al administrador gestionarlo para generar multas. \n Considerá que depende del administrador rechazar un reclamo o agrupar alguno de ellos para generar una infracción para el lote.`;
+    this.modalService.open(this.infoModal, { size: 'lg' });
   }
+
   disapproveClaim(claimId: number) {
     const modalRef = this.modalService.open(ConfirmAlertComponent);
     modalRef.componentInstance.alertTitle = 'Confirmación';
@@ -301,15 +302,19 @@ export class ClaimListComponent {
 
     modalRef.result.then((result) => {
       if (result) {
-        this.claimService.disapproveClaim(claimId, this.userData.id!).subscribe({
-          next: () => {
-            this.toastService.sendSuccess(`Reclamo desaprobado exitosamente.`);
-            this.loadItems();
-          },
-          error: () => {
-            this.toastService.sendError(`Error desaprobando reclamo.`);
-          },
-        });
+        this.claimService
+          .disapproveClaim(claimId, this.userData.id!)
+          .subscribe({
+            next: () => {
+              this.toastService.sendSuccess(
+                `Reclamo desaprobado exitosamente.`
+              );
+              this.loadItems();
+            },
+            error: () => {
+              this.toastService.sendError(`Error desaprobando reclamo.`);
+            },
+          });
       }
     });
   }

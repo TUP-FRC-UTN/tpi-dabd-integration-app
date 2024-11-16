@@ -15,7 +15,10 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { InfractionProofListComponent } from '../infraction-proof-list/infraction-proof-list.component';
 import { NotesListComponent } from '../../../../notes/notes-list/notes-list.component';
 import { AppealInfractionModalComponent } from '../appeal-infraction-modal/appeal-infraction-modal.component';
-import { MainContainerComponent } from 'ngx-dabd-grupo01';
+import {
+  ConfirmAlertComponent,
+  MainContainerComponent,
+} from 'ngx-dabd-grupo01';
 import { RejectInfractionModalComponent } from '../reject-infraction-modal/reject-infraction-modal.component';
 import { ApproveInfractionModalComponent } from '../approve-infraction-modal/approve-infraction-modal.component';
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
@@ -163,5 +166,13 @@ export class InfractionDetailComponent implements OnInit {
         }
       })
       .catch(() => {});
+  }
+
+  infoModal() {
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+    modalRef.componentInstance.alertType = 'info';
+
+    modalRef.componentInstance.alertTitle = 'Ayuda';
+    modalRef.componentInstance.alertMessage = `Esta pantalla proporciona una vista detallada de la infracción seleccionada, permitiéndole analizar toda la información relacionada de manera clara y estructurada. En esta sección puede acceder a todos los datos relevantes sobre la infracción de forma precisa.`;
   }
 }

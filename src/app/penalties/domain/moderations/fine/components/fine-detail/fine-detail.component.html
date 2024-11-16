@@ -1,4 +1,4 @@
-<app-main-container title="Detalle de Multa">
+<app-main-container title="Detalle de Multa" (infoButtonClick)="infoModal()">
   @if (fine == undefined) {
   <div class="spinner-border" role="status">
     <span class="visually-hidden">Cargando</span>
