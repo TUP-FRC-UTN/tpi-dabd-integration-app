@@ -16,7 +16,7 @@
             (input)="onFilterTextBoxChanged($event)"
             placeholder="Buscar..."
           />
-          <app-table-filters style="z-index: 1;" [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
+          <app-table-filters style="z-index: 1;" [filters]="filterConfig" (filterValueChange)="filterChange($event)" (filterValueClear)="clearFilter()"></app-table-filters>
         </div>
       </div>
     </div>

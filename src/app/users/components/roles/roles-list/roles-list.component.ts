@@ -73,6 +73,8 @@ export class RolesListComponent implements OnInit {
   private filteredRoles = new BehaviorSubject<Role[]>([]);
   filter$ = this.filteredRoles.asObservable();
 
+  filters? : Record<string, any>
+
   private excelService = inject(CadastreExcelService);
   private roleService = inject(RoleService);
   private router = inject(Router);
@@ -102,9 +104,9 @@ export class RolesListComponent implements OnInit {
   }
 
   //#region Role crud
-  getAllRoles() {
+  getAllRoles(isActive?: boolean) {
     this.roleService
-      .getAllRoles(this.currentPage, this.pageSize, this.retrieveRolesByActive)
+      .getAllRoles(this.currentPage, this.pageSize, isActive)
       .subscribe({
         next: (response: any) => {
           this.roles = response.content;
@@ -192,6 +194,27 @@ export class RolesListComponent implements OnInit {
   }
 
   filterChange($event: Record<string, any>) {
+    this.filters = $event;
+
+    console.log(this.filters);
+    
+    
+    this.currentPage = 0
+    this.dinamicFilter();
+  }
+
+  dinamicFilter() {
+    this.roleService.dinamicFilters(0, this.pageSize, this.filters?.['isActive']).subscribe({
+      next: (result) => {
+        this.roles = result.content;
+        this.filteredRoles.next([...result.content]);
+        this.lastPage = result.last;
+        this.totalItems = result.totalElements;
+      },
+    });
+  }
+
+/*   filterChange($event: Record<string, any>) {
     this.roleService.dinamicFilters(0, this.pageSize, $event).subscribe({
       next: (result) => {
         this.roles = result.content;
@@ -200,6 +223,12 @@ export class RolesListComponent implements OnInit {
         this.totalItems = result.totalElements;
       },
     });
+  } */
+
+  clearFilter() {
+    this.filters = undefined;
+    this.getAllRoles();
+    
   }
 
 
@@ -224,6 +253,7 @@ export class RolesListComponent implements OnInit {
 
   onPageChange(page: number) {
     this.currentPage = page;
+    this.getAllRoles();
     // this.confirmFilterPlot(); funcion para filtrar roles
   }
   //#end region

@@ -35,9 +35,9 @@ export class RoleService {
       .set('page', page >= 0 ? page.toString() : '0')
       .set('size', size.toString());
 
-    if (isActive !== undefined) {
-      params = params.append('isActive', isActive);
-    }
+      if (typeof isActive === 'boolean' && !isActive) {
+        params = params.append('is_active', isActive.toString());
+      }
 
     const headers = new HttpHeaders({
       'x-user-id': this.sessionService.getItem('user').id.toString()
