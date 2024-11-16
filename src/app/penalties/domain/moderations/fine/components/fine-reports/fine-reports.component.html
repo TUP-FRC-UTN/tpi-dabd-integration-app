@@ -1,0 +1,205 @@
+<ng-template #fineAmount let-item> {{ item.fine_amount }} multas </ng-template>
+
+<app-main-container title="Reporte de Multas" (infoButtonClick)="infoModal()">
+  <!-- Filters  -->
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex gap-3">
+        <div class="form-group d-flex flex-row align-items-center">
+          <label class="form-label m-0 me-3">Desde:</label>
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="dateFilter.startDate"
+            (ngModelChange)="onDateFilterChange()"
+          />
+        </div>
+        <div class="form-group d-flex flex-row align-items-center">
+          <label class="form-label m-0 me-3">Hasta:</label>
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="dateFilter.endDate"
+            (ngModelChange)="onDateFilterChange()"
+          />
+        </div>
+        <div class="ps-3" style="border-left: 2px solid #e0e0e0">
+          <app-table-filters
+            [filters]="filterConfig"
+            (filterValueChange)="onFilterValueChange($event)"
+            (filterValueClear)="onFilterValueClear()"
+          ></app-table-filters>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- KPIs -->
+  <div class="mt-3 d-flex gap-3">
+    <!-- Total de multas aprobadas -->
+    <div class="card w-25">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div
+            class="bg-success text-white me-3 d-flex justify-content-center align-items-center rounded-circle"
+            style="height: 36px; width: 36px"
+          >
+            <i class="bi bi-file-earmark-check"></i>
+          </div>
+          <h6 class="card-subtitle text-muted mb-0">
+            Total de multas aprobadas
+          </h6>
+        </div>
+        <h2 class="card-title mb-0 text-secondary">
+          {{ totalApprovedFines }}
+        </h2>
+        <small class="text-muted"
+          >Cantidad total de multas aprobadas en el periodo seleccionado</small
+        >
+      </div>
+    </div>
+    <!-- Total de multas invalidas -->
+    <div class="card w-25">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div
+            class="bg-danger text-white me-3 d-flex justify-content-center align-items-center rounded-circle"
+            style="height: 36px; width: 36px"
+          >
+            <i class="bi bi-file-earmark-x"></i>
+          </div>
+          <h6 class="card-subtitle text-muted mb-0">
+            Total de multas inválidas
+          </h6>
+        </div>
+        <h2 class="card-title mb-0 text-secondary">
+          {{ totalRejectedFines }}
+        </h2>
+        <small class="text-muted"
+          >Cantidad total de multas rechazadas en el periodo seleccionado</small
+        >
+      </div>
+    </div>
+    <!-- Tiempo promedio de resolución -->
+    <div class="card w-25">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div
+            class="bg-primary text-white me-3 d-flex justify-content-center align-items-center rounded-circle"
+            style="height: 36px; width: 36px"
+          >
+            <i class="bi bi-clock"></i>
+          </div>
+          <h6 class="card-subtitle text-muted mb-0">
+            Tiempo promedio de resolución (días)
+          </h6>
+        </div>
+        <h2 class="card-title mb-0 text-secondary">
+          {{ fineResolutionAverage }} días
+        </h2>
+        <small class="text-muted"
+          >Tiempo promedio que tarda una multa en ser resuelta</small
+        >
+      </div>
+    </div>
+    <!-- Cantidad de multas en relación al último mes -->
+    <div class="card w-25">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div
+            class="bg-primary text-white me-3 d-flex justify-content-center align-items-center rounded-circle"
+            style="height: 36px; width: 36px"
+          >
+            <i class="bi bi-graph-up-arrow"></i>
+          </div>
+          <h6 class="card-subtitle text-muted mb-0">
+            Variación de multas en el último mes
+          </h6>
+        </div>
+        <h2 class="card-title mb-0 text-secondary">
+          {{ monthlyFineGrowthRate }}%
+        </h2>
+        <small class="text-muted"
+          >Incremento de multas en {{ currentMonth }}, en relación a
+          {{ previousMonth }}.</small
+        >
+      </div>
+    </div>
+  </div>
+  <!-- Gráficos -->
+  <div class="div">
+    <!-- Fila 1 -->
+    <div class="mt-3 d-flex gap-3">
+      <div class="card w-50">
+        <div class="card-body">
+          <div class="w-100 d-flex flex-column align-items-center">
+            <h5 class="">Multas por Tipo de Sanción</h5>
+            <canvas
+              baseChart
+              height="200px"
+              [type]="'pie'"
+              [datasets]="pieChartSanctionTypeDatasets"
+              [labels]="pieChartSanctionTypeLabels"
+              [options]="pieChartOptions"
+              [plugins]="pieChartPlugins"
+              [legend]="pieChartLegend"
+            >
+            </canvas>
+          </div>
+        </div>
+      </div>
+      <div class="card w-50">
+        <div class="card-body">
+          <div class="w-100 d-flex flex-column align-items-center">
+            <h5 class="">Multas por Estado</h5>
+            <canvas
+              height="200px"
+              baseChart
+              [type]="'pie'"
+              [datasets]="pieChartStatusDatasets"
+              [labels]="pieChartStatusLabels"
+              [options]="pieChartOptions"
+              [plugins]="pieChartPlugins"
+              [legend]="pieChartLegend"
+            >
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Fila 2 -->
+    <div class="mt-3 d-flex gap-3">
+      <div class="card w-50">
+        <div class="card-body">
+          <h5 class="">Lotes con más multas</h5>
+          <app-table
+            [items]="groupedItems"
+            [columns]="columns"
+            [isLoading]="(isLoading$ | async) || false"
+            [showHeaderButton]="false"
+            [showExportOptions]="false"
+            [showSearchBar]="false"
+            height="360px"
+          ></app-table>
+        </div>
+      </div>
+      <div class="card w-50">
+        <div class="card-body">
+          <div class="w-100 d-flex flex-column align-items-center">
+            <h5 class="">Multas por Mes</h5>
+            <canvas
+              width="640px"
+              height="240px"
+              baseChart
+              [data]="barChartMonthlyData"
+              [options]="barChartOptions"
+              [plugins]="barChartPlugins"
+              [legend]="barChartLegend"
+              [type]="'bar'"
+            >
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-main-container>

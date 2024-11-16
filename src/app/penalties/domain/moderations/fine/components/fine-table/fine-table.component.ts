@@ -27,13 +27,14 @@ import {
   MainContainerComponent,
   TableColumn,
   TableComponent,
-  ToastService,
 } from 'ngx-dabd-grupo01';
 
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
 import { FineStatusEnum } from '../../models/fine-status.enum';
-import { PdfService } from '../../../../../shared/services/pdf.service';
-import { RoleService } from '../../../../../shared/services/role.service';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-fine-table',
@@ -50,12 +51,7 @@ import { RoleService } from '../../../../../shared/services/role.service';
     NgbDatepickerModule,
     TableComponent,
     GetValueByKeyForEnumPipe,
-    CommonModule,
-    TableComponent,
-    MainContainerComponent,
-    GetValueByKeyForEnumPipe,
     NgbDropdownModule,
-    FormsModule,
   ],
   templateUrl: './fine-table.component.html',
   providers: [FineService],
@@ -65,10 +61,8 @@ export class FineTable {
   @ViewChild('fineDate') fineDateTemplate!: TemplateRef<any>;
   @ViewChild('actionsTemplate') actionsTemplate!: TemplateRef<any>;
   @ViewChild('pdfTemplate', { static: true }) pdfTemplate!: TemplateRef<any>;
-
-  role: string = '';
-  userId: number | undefined;
-  userPlotsIds: number[] = [];
+  @ViewChild('sanctionType') sanctionType!: TemplateRef<any>;
+  @ViewChild('infoModal') infoModal!: TemplateRef<any>;
 
   columns: TableColumn[] = [];
 
@@ -87,31 +81,30 @@ export class FineTable {
   router = inject(Router);
   private = inject(NgbModal);
   FineStatusEnum = FineStatusEnum;
-  private toastService = inject(ToastService);
-  private pdfService = inject(PdfService);
-  private roleService = inject(RoleService);
   fineService = inject(FineService);
   modalService = inject(NgbModal);
-
 
   items$: Observable<Fine[]> = this.fineService.items$;
   totalItems$: Observable<number> = this.fineService.totalItems$;
   isLoading$: Observable<boolean> = this.fineService.isLoading$;
 
-  ngOnInit() {
-    this.roleService.currentRole$.subscribe((role: string) => {
-      this.role = role;
-      this.loadItems();
-    });
-    this.roleService.currentUserId$.subscribe((userId: number) => {
-      this.userId = userId;
-      this.loadItems();
-    });
+  userDataService = inject(UserDataService);
+  userData!: UserData;
 
-    this.roleService.currentLotes$.subscribe((plots: number[]) => {
-      this.userPlotsIds = plots;
-      this.loadItems();
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
     });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
+
+  ngOnInit() {
+    this.loadUserData();
 
     this.searchSubject
       .pipe(debounceTime(200), distinctUntilChanged())
@@ -131,6 +124,11 @@ export class FineTable {
         { headerName: 'Lote', accessorKey: 'plot_id' },
         {
           headerName: 'Tipo',
+          accessorKey: 'sanction_type.name',
+          cellRenderer: this.sanctionType,
+        },
+        {
+          headerName: 'Estado',
           accessorKey: 'type',
           cellRenderer: this.fineStateTemplate,
         },
@@ -150,8 +148,8 @@ export class FineTable {
 
   loadItems(): void {
     if (
-      this.role === 'ADMIN' ||
-      (this.role === 'OWNER' && this.userPlotsIds.length !== 0)
+      this.userHasRole('FINES_ADMIN') ||
+      (this.userHasRole('OWNER') && this.userData.plotIds.length !== 0)
     ) {
       this.updateFiltersAccordingToUser();
       this.fineService
@@ -167,10 +165,10 @@ export class FineTable {
   }
 
   updateFiltersAccordingToUser() {
-    if (this.role !== 'ADMIN') {
+    if (!this.userHasRole('FINES_ADMIN')) {
       this.searchParams = {
         ...this.searchParams,
-        plotsIds: this.userPlotsIds,
+        plotsIds: this.userData.plotIds,
       };
     } else {
       if (this.searchParams['plotsIds']) {
@@ -184,11 +182,11 @@ export class FineTable {
   }
 
   goToFineDetail(id: number) {
-    this.router.navigate([`/fine/${id}/detail`]);
+    this.router.navigate([`/penalties/fine/${id}/detail`]);
   }
 
   goToFineEdit(id: number) {
-    this.router.navigate([`/fine/${id}/edit`]);
+    this.router.navigate([`/penalties/fine/${id}/edit`]);
   }
 
   onPageChange = (page: number): void => {
@@ -204,12 +202,9 @@ export class FineTable {
   onSearchValueChange = (key: string, searchValue: any): void => {
     this.searchSubject.next({ key, value: searchValue });
   };
-  onExportToExcel = (): void => {
-    try {
-      this.fineService.onExportToExcel();
-    } catch (error) {
-      this.toastService.sendError('Sucedió un error al generar el excel');
-    }
+
+  getAllFines = () => {
+    return this.fineService.findAll();
   };
 
   applyFilters(): void {
@@ -238,14 +233,7 @@ export class FineTable {
     this.loadItems();
   }
 
-
-  infoModal() {
-    const modalRef = this.modalService.open(ConfirmAlertComponent);
-    modalRef.componentInstance.alertType = 'info';
-
-    modalRef.componentInstance.alertTitle = 'Ayuda';
-    modalRef.componentInstance.alertMessage = `Esta pantalla te permite consultar tus reclamos realizados y recibidos, y al administrador gestionarlo para generar multas `;
-
-
+  onInfoButtonClick() {
+    this.modalService.open(this.infoModal, { size: 'lg' });
   }
 }
