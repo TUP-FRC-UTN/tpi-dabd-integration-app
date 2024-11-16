@@ -1,0 +1,12 @@
+<div class="card h-100">
+  <div class="card-body">
+    <div class="d-flex align-items-center mb-2">
+      <div class="icon-circle text-white p-3" [class]="kpi.color">
+        <i [class]="kpi.icon"></i>
+      </div>
+      <h6 class="card-subtitle text-muted mb-0 ms-2">{{ kpi.title }}</h6>
+    </div>
+    <h3 class="card-title mb-0">{{ kpi.value }}</h3>
+    <small class="text-muted">{{ kpi.desc }}</small>
+  </div>
+</div>
