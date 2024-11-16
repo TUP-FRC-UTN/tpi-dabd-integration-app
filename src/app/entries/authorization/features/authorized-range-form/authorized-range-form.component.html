@@ -52,11 +52,6 @@
             <div class="col-md-6">
               <label>Fecha desde</label>
               <input type="date" class="form-control" formControlName="dateFrom">
-
-              @if(rangeForm.controls['dateFrom'].hasError('errorFechaInicio')){
-                <small class="text-danger mb-1"> La fecha de entrada debe ser posterior a la fecha actual.</small>
-              }
-
             </div>
             <div class="col-md-6">
               <label>Fecha hasta</label>

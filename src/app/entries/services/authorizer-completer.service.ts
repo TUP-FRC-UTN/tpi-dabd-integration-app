@@ -12,7 +12,7 @@ import { PaginatedResponse } from '../../users/models/api-response';
   providedIn: 'root',
 })
 export class AuthorizerCompleterService {
-  authorizers: Authorizer[] = [
+  /*authorizers: Authorizer[] = [
     {
       authId: 1,
       authFirstName: 'Ana',
@@ -87,7 +87,7 @@ export class AuthorizerCompleterService {
 
   completeAuthorizer(id: number): Authorizer {
     return this.authorizers.find((x) => x.authId == id)!;
-  }
+  }*/
 
     // obtencion de owner y plots
 

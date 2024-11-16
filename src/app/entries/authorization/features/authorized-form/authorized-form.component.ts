@@ -188,7 +188,7 @@ export class AuthFormComponent implements OnInit {
       const now = new Date();
 
       const formatDate = (date: Date) => {
-        const day = String(date.getDate()).padStart(2, '0');
+        const day = String(date.getDate()+ 1 ).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         return `${day}-${month}-${year}`;
@@ -220,6 +220,8 @@ export class AuthFormComponent implements OnInit {
         formData.authRangeRequest = [authRange];
       } else{
         for (let range of formData.authRangeRequest) {
+          console.log('rango antes de convertir = ' + range.dateFrom + ' '+range.dateTo);
+
           range.dateFrom = formatDate(new Date(range.dateFrom));
           range.dateTo = formatDate(new Date(range.dateTo));
 
@@ -229,6 +231,8 @@ export class AuthFormComponent implements OnInit {
           if(range.hourTo.length< 8){
             range.hourTo = range.hourTo + ':00';
           }
+          console.log('rango DESPUES de convertir = ' + range.dateFrom + ' '+range.dateTo);
+
         }
       }
 

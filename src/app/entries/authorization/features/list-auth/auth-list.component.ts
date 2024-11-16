@@ -138,12 +138,12 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
       }
 
       // Procesar los datos filtrados
-      filteredData.forEach(date => {
+    /*  filteredData.forEach(date => {
         date.authorizer = this.authorizerCompleterService.completeAuthorizer(date.authorizerId);
         if (date.authorizer === undefined) {
           date.authorizer = this.authorizerCompleterService.completeAuthorizer(1);
         }
-      });
+      });*/
 
       // Transformar y actualizar la vista
       this.completeList = this.transformLotListToTableData(filteredData);
@@ -243,7 +243,6 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
             date.authorizer = this.authorizerCompleterService.completeAuthorizer(1)
           }
         })*/
-
         this.completeList = this.transformLotListToTableData(data);
         let response = this.transformResponseService.transformResponse(data,this.currentPage, this.pageSize, this.retrieveByActive)
 
@@ -265,9 +264,9 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
         data = data.filter(x => (x.visitor.name.toLowerCase().includes(filter) || x.visitor.lastName?.toLowerCase().includes(filter)
         || x.visitor.docNumber.toString().includes(filter)))
         let response = this.transformResponseService.transformResponse(data,this.currentPage, this.pageSize, this.retrieveByActive)
-        response.content.forEach(data => {
-          data.authorizer = this.authorizerCompleterService.completeAuthorizer(data.authorizerId)
-        })
+     /*   response.content.forEach(data => {
+          data.authorizer = 
+        })*/
 
         this.list = response.content;
         this.filteredList = [...this.list]
@@ -288,9 +287,9 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
     this.authService.getAll(this.currentPage, this.pageSize, this.retrieveByActive).subscribe(data => {
       data = data.filter(x => x.visitorType == type)
         let response = this.transformResponseService.transformResponse(data,this.currentPage, this.pageSize, this.retrieveByActive)
-        response.content.forEach(data => {
+        /*response.content.forEach(data => {
           data.authorizer = this.authorizerCompleterService.completeAuthorizer(data.authorizerId)
-        })
+        })*/
 
         this.list = response.content;
         this.filteredList = [...this.list]
@@ -307,9 +306,9 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
     this.authService.getAll(this.currentPage, this.pageSize, this.retrieveByActive).subscribe(data => {
         data = data.filter(x => x.plotId == plot)
         let response = this.transformResponseService.transformResponse(data,this.currentPage, this.pageSize, this.retrieveByActive)
-        response.content.forEach(data => {
+      /*  response.content.forEach(data => {
           data.authorizer = this.authorizerCompleterService.completeAuthorizer(data.authorizerId)
-        })
+        })*/
 
         this.list = response.content;
         this.filteredList = [...this.list]
