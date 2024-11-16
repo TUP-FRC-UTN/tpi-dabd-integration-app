@@ -103,16 +103,6 @@
     </table>
   </div>
   <div class="d-flex justify-content-between align-items-center mt-3">
-    <ngb-pagination
-      [(page)]="currentPage"
-      [pageSize]="pageSize"
-      [collectionSize]="totalItems"
-      (pageChange)="onPageChange($event)"
-      [maxSize]="5"
-      [boundaryLinks]="false"
-    ></ngb-pagination>
-    <div class="ms-auto">
-    </div>
 
     <div class="form-group mb-3 me-2">
       <select
@@ -126,5 +116,17 @@
         }
       </select>
     </div>
+
+    <div class="ms-auto"></div>
+
+    <ngb-pagination
+      [(page)]="currentPage"
+      [pageSize]="pageSize"
+      [collectionSize]="totalItems"
+      (pageChange)="onPageChange($event)"
+      [maxSize]="5"
+      [boundaryLinks]="false"
+    ></ngb-pagination>
+
   </div>
 </app-main-container>
