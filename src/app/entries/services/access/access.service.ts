@@ -13,8 +13,6 @@ import { environment } from '../../../../environments/environment.prod';
 import { PaginatedResponse } from '../../paginated-response.model';
 import { SessionService } from '../../../users/services/session.service';
 
-
-
 @Injectable({
   providedIn: 'root',
 })
@@ -27,7 +25,6 @@ export class AccessService {
  
   sessionService = inject(SessionService);
 
-
   constructor(
     private http: HttpClient,
     private caseTransformer: CaseTransformerService
@@ -38,25 +35,35 @@ export class AccessService {
     size: number,
     isActive?: boolean
   ): Observable<{ items: AccessModel[] }> {
+    const currentUser = this.sessionService.getItem('user');
+    
+    if (!currentUser || !currentUser?.roles) {
+      return new Observable(subscriber => subscriber.next({ items: [] }));
+    }
+
+    const isOwner = currentUser.roles.some((role: { name: string; }) => role.name === 'OWNER');
     return this.http
       .get<{ items: AccessModel[] }>(this.apiUrl, {
         params: { size: 1000000 },
       })
       .pipe(
-        map((response) => ({
-          //items: this.caseTransformer.toCamelCase(response.items),
-          items: response.items.map((item) =>
+        map((response) => {
+          let items = response.items.map((item) =>
             this.caseTransformer.toCamelCase(item)
-          ),
-        }))
+          );
+
+          console.log(items)
+          if (isOwner) {
+            items = items.filter(item => item.authorizerId === currentUser.id);
+          }
+          return { items };
+        })
       );
   }
 
   createAccess(data: any): Observable<AccessModel> {
-    
     const user = this.sessionService.getItem('user');
-    console.log('service' + user.id);
-
+    
     if(!user) {
       console.error('Error: user es nulo o undefined');
     }
@@ -68,7 +75,7 @@ export class AccessService {
     const snakeCaseData = this.caseTransformer.toSnakeCase(data);
 
     return this.http
-      .post<AccessModel>(`${this.apiUrl}/authorize`, snakeCaseData, { headers,})
+      .post<AccessModel>(`${this.apiUrl}/authorize`, snakeCaseData, { headers })
       .pipe(map((response) => this.caseTransformer.toCamelCase(response)));
   }
 
@@ -78,28 +85,47 @@ export class AccessService {
     type: string,
     isActive?: boolean
   ): Observable<{ items: AccessModel[] }> {
-    return this.http.get<{ items: AccessModel[] }>(this.apiUrl).pipe(
-      map((response) => ({
-        items: response.items.map((item) =>
-          this.caseTransformer.toCamelCase(item)
-        ),
-      }))
-    );
+    const currentUser = this.sessionService.getItem('user');
+    const isOwner = currentUser?.roles?.some((role: { name: string; }) => role.name === 'OWNER');
 
+    return this.http.get<{ items: AccessModel[] }>(this.apiUrl).pipe(
+      map((response) => {
+        let items = response.items.map((item) =>
+          this.caseTransformer.toCamelCase(item)
+        );
+
+        if (isOwner) {
+          items = items.filter(item => item.authorizerId === currentUser.id);
+        }
+
+        return { items };
+      })
+    );
   }
 
-    getByType(visitorType?: string): Observable<PaginatedResponse<AccessModel>> {
-      let params = new HttpParams();
-      if (visitorType) params = params.set('visitorType', visitorType);
+  getByType(visitorType?: string): Observable<PaginatedResponse<AccessModel>> {
+    const currentUser = this.sessionService.getItem('user');
+    const isOwner = currentUser?.roles?.some((role: { name: string; }) => role.name === 'OWNER');
     
-      return this.http.get<{ items: AccessModel[], total_elements: number }>(this.apiUrl, { params })
-        .pipe(
-          map((response) => ({
-            totalElements: response.total_elements, 
-            items: response.items.map(item => this.caseTransformer.toCamelCase(item)),
-          }))
-        );
-    }
+    let params = new HttpParams();
+    if (visitorType) params = params.set('visitorType', visitorType);
+  
+    return this.http.get<{ items: AccessModel[], total_elements: number }>(this.apiUrl, { params })
+      .pipe(
+        map((response) => {
+          let items = response.items.map(item => this.caseTransformer.toCamelCase(item));
+          
+          if (isOwner) {
+            items = items.filter(item => item.authorizerId === currentUser.id);
+          }
+          
+          return {
+            totalElements: items.length, 
+            items: items,
+          };
+        })
+      );
+  }
     
 
   getHourlyAccesses(
