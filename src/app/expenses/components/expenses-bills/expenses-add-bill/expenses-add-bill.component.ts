@@ -20,6 +20,7 @@ import { BillService } from '../../../services/bill.service';
 import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
 import BillType from '../../../models/billType';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { Router, RouterLink } from '@angular/router';
 import { BillInfoComponent } from '../../modals/info/bill-info/bill-info.component';
 import { NewCategoryModalComponent } from '../../modals/bills/new-category-modal/new-category-modal.component';
@@ -54,6 +55,7 @@ export class ExpensesAddBillComponent implements OnInit {
   private billService = inject(BillService);
   private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
+  private router = inject(Router);
   // #endregion
 
   // #region Form Groups and ViewChild
@@ -69,8 +71,6 @@ export class ExpensesAddBillComponent implements OnInit {
   providers: Observable<Provider[]> | undefined;
   periods: Observable<Period[]> | undefined;
   types: Observable<BillType[]> | undefined;
-
-  private readonly router = inject(Router);
   // #endregion
 
   constructor() {
@@ -132,7 +132,7 @@ export class ExpensesAddBillComponent implements OnInit {
   loadSelectOptions() {
     this.categories = this.categoryService.getAllCategories();
     this.providers = this.providerService.getAllProviders();
-    this.periods = this.periodService.get();
+    this.periods = this.periodService.getOpenPeriods();
     this.types = this.billService.getBillTypes();
   }
   // #endregion
@@ -154,6 +154,7 @@ export class ExpensesAddBillComponent implements OnInit {
             billRequest.description = formValue.description;
             billRequest.amount = Number(formValue.amount);
             billRequest.date = `${formValue.date}T00:00:00Z`;
+            //billRequest.status = 'Nuevo';
             billRequest.supplierId = Number(formValue.supplierId);
             billRequest.supplierEmployeeType = 'SUPPLIER';
             billRequest.typeId = Number(formValue.typeId);
@@ -165,14 +166,13 @@ export class ExpensesAddBillComponent implements OnInit {
         )
         .subscribe({
           next: (response: any) => {
-            console.log('Añadido correctamente', response);
             this.toastService.sendSuccess(
               'El gasto se ha añadido correctamente.'
             );
             this.resetForm();
+            this.router.navigate([`expenses/gastos`]);
           },
           error: (error: any) => {
-            console.error('Error en el post', error);
             if (error.status === 409) {
               this.toastService.sendError(
                 'Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.'
@@ -183,7 +183,6 @@ export class ExpensesAddBillComponent implements OnInit {
           },
         });
     } else {
-      console.log('Formulario inválido');
       this.toastService.sendError(
         'Por favor, complete todos los campos requeridos correctamente.'
       );
@@ -194,12 +193,10 @@ export class ExpensesAddBillComponent implements OnInit {
   onBack() {
     this.router.navigate([`expenses/gastos`]);
   }
-
   // #region Form Utilities
   resetForm() {
-    this.billForm.reset();
-    this.loadSelectOptions();
-    this.onBack()
+    //this.billForm.reset();
+    //this.loadSelectOptions();
   }
   // #endregion
 

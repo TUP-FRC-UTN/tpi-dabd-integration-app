@@ -40,16 +40,20 @@ export class AppComponent {
       routerLink: 'entries',
       sidebarMenu: [
         {
-          label: 'Entidades',
+          label: 'Listado de Entidades',
           routerLink: 'entries/entity/list',
         },
         {
-          label: 'Consulta de Accesos',
+          label: 'Listado de Accesos',
           routerLink: 'entries/access-query',
         },
         {
           label: 'Listado de Autorizaciónes',
           routerLink: 'entries/auth-list',
+        },
+        {
+          label: 'Dashboards',
+          routerLink: 'entries/dashboard',
         },
       ],
     },
@@ -135,7 +139,7 @@ export class AppComponent {
           label: 'Gastos',
           subMenu: [
             { label: 'Lista de gastos', routerLink: 'expenses/gastos' },
-            { label: 'Categoria de gastos', routerLink: 'expenses/gastos/categorias' },
+            { label: 'Categorias de gastos', routerLink: 'expenses/gastos/categorias' },
             { label: 'Reporte de gastos', routerLink: 'expenses/gastos/report' },
 
           ],
@@ -150,8 +154,8 @@ export class AppComponent {
         {
           label: 'Periodo',
           subMenu: [
-            { label: 'Lista', routerLink: 'expenses/periodo' },
-            { label: 'Historico de expensas', routerLink: 'expenses/expenses' },
+            { label: 'Lista de periodos', routerLink: 'expenses/periodo' },
+            { label: 'Histórico de expensas', routerLink: 'expenses/expenses' },
             { label: 'Reporte de expensas', routerLink: 'expenses/expenses/report' },
           ]
         },

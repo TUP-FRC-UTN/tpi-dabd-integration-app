@@ -38,7 +38,6 @@ import { CadastrePlotFilterButtonsComponent } from '../../../../accesses/feature
     NgbPagination,
     ReactiveFormsModule,
     FormsModule,
-    RouterLink,
   ],
   templateUrl: './entity-list.component.html'
 })
@@ -368,13 +367,14 @@ export class EntityListComponent implements OnInit, AfterViewInit {
 
     // Suscribirse al evento 'entitySaved' del modal para recargar la lista
     modalRef.componentInstance.entitySaved.subscribe(() => {
-      this.ngOnInit()
+      this.getAll();
     });
   }
   // aca escucho el evento de que una entidad fue creada en el modal y actualizo la lista
   updateEntityList() {
-    this.ngOnInit()
+    this.getAll();
   }
+
 
   disable(visitorId: number) {
     this.visitorService.delete(visitorId,this.loginService.getLogin().id).subscribe(data => {

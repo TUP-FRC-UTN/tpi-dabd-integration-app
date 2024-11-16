@@ -28,13 +28,12 @@ import { User } from '../../../models/user';
 @Component({
   selector: 'app-expenses-add-charge',
   standalone: true,
-  imports: [ReactiveFormsModule, PeriodSelectComponent,CommonModule,NgModalComponent, MainContainerComponent, NgSelectComponent,
-    NgOptionComponent],
+  imports: [ReactiveFormsModule, CommonModule, MainContainerComponent, NgSelectComponent ],
   templateUrl: './expenses-add-charge.component.html',
   styleUrl: './expenses-add-charge.component.css',
 })
 export class ExpensesAddChargeComponent implements OnInit{
-  // chargeForm: FormGroup;
+  //chargeForm: FormGroup;
   private fb: FormBuilder = inject(FormBuilder);
   private chargeService = inject(ChargeService);
   private modalService = inject(NgbModal);
@@ -88,13 +87,32 @@ export class ExpensesAddChargeComponent implements OnInit{
     });
 
     this.chargeService.getCategoriesExcFines().subscribe((data: CategoryCharge[]) => {
-      this.categoriaCargos = data;
+      this.categoriaCargos = this.keysToCamel(data);
     });
   }
 
   comparePeriodFn(period1: any, period2: any) {
     return period1 && period2 ? period1.id === period2.id : period1 === period2;
   }
+
+  toCamel(s: string) {
+    return s.replace(/([-_][a-z])/ig, ($1) => {
+      return $1.toUpperCase()
+        .replace('-', '')
+        .replace('_', '');
+    });
+  }
+
+  keysToCamel(o: any): any {
+    if (o === Object(o) && !Array.isArray(o) && typeof o !== 'function') {
+      const n: {[key: string]: any} = {};       Object.keys(o).forEach((k) => {
+        n[this.toCamel(k)] = this.keysToCamel(o[k]);
+      });       return n;
+    } else if (Array.isArray(o)) {
+      return o.map((i) => {         return this.keysToCamel(i);       });
+    }     return o;
+  }
+
 
   chargeForm: FormGroup;
 
@@ -103,43 +121,45 @@ export class ExpensesAddChargeComponent implements OnInit{
       lotId: ['', Validators.required],
       date: ['', Validators.required],
       periodId: ['', Validators.required],
-      amount: ['', [Validators.required,this.amountValidator]],
+      amount: ['', [Validators.required]],
       categoryChargeId: ['', Validators.required],
       description:['']
     });
+    this.chargeForm.get('categoryChargeId')?.valueChanges.subscribe(() => {
+      let id :Number = this.chargeForm.get('categoryChargeId')?.value;
+
+      this.ValidarMonto(this.categoriaCargos.find(c => c.categoryChargeId === id) as CategoryCharge);
+    });
+  }
+  ValidarMonto(categoryCharge : CategoryCharge) {
+
+    switch(categoryCharge.amountSign) {
+      case ('Positivo'):
+        this.chargeForm.get('amount')?.setValidators([
+          Validators.required,
+          Validators.min(0),
+        ]);
+        this.chargeForm.get('amount')?.updateValueAndValidity();
+        break;
+      case ChargeType.PERCENTAGE:
+        break;
+      case ChargeType.NEGATIVE:
+        this.chargeForm.get('amount')?.setValidators([
+          Validators.required,
+          Validators.max(0),
+        ]);
+        this.chargeForm.get('amount')?.updateValueAndValidity();
+
+        break;
+      default:
+        console.log('Default' + categoryCharge)
+        break;
+
+    }
+    this.chargeForm.get('amount')?.updateValueAndValidity();
+    console.log(this.chargeForm.get('amount'))
   }
 
-
-  amountValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const amount = control.value;
-      const categoryChargeId = this.chargeForm.get('categoryChargeId')?.value;
-      if (categoryChargeId === null) return null;
-
-      const categoryCharge = this.categoriaCargos.find(c => c.categoryChargeId === categoryChargeId);
-      const tipo = categoryCharge?.amountSign;
-
-      if (tipo === ChargeType.ABSOLUTE) {
-        // Error si el monto no es positivo
-        return amount > 0 ? null : { positiveOnly: true };
-      } else if (tipo === ChargeType.NEGATIVE) {
-        // Error si el monto no es negativo
-        return amount < 0 ? null : { negativeOnly: true };
-      } else if (tipo === ChargeType.PERCENTAGE) {
-        // Error si el monto no está entre 0 y 100 con hasta dos decimales
-        const isPercentage = amount >= 0 && amount <= 100 && /^\d+(\.\d{1,2})?$/.test(amount);
-        return isPercentage ? null : { percentageOnly: true };
-      }
-
-      return null;
-    };
-  }
-
-  ngOnInit(): void {
-    this.storage.saveToStorage(this.userLoggin,'user');
-    this.loadSelect();
-    let user = this.storage.getFromSessionStorage('user') as User;
-  }
 
   onBack() {
     this.router.navigate([`expenses/cargos`]);
@@ -207,6 +227,12 @@ export class ExpensesAddChargeComponent implements OnInit{
       }, {} as any);
     }
     return obj;
+  }
+
+  ngOnInit(): void {
+    this.storage.saveToStorage(this.userLoggin,'user');
+    this.loadSelect();
+    let user = this.storage.getFromSessionStorage('user') as User;
   }
 
 
