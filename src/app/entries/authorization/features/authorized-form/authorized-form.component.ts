@@ -236,13 +236,13 @@ export class AuthFormComponent implements OnInit {
         if(formData.visitorRequest.birthDate){
           formData.visitorRequest.birthDate = formatFormDate(formData.visitorRequest.birthDate);
         }
-        this.authService.createAuth(formData, this.loginService.getLogin().id.toString()).subscribe(data => {
+        this.authService.createAuth(formData).subscribe(data => {
           this.toastService.sendSuccess("Registro exitoso.");
           
         });
       }
       else {
-        this.authService.updateAuth(formData, this.loginService.getLogin().id.toString()).subscribe(data => {
+        this.authService.updateAuth(formData).subscribe(data => {
           this.toastService.sendSuccess("Autorización exitosa.");
           
         });

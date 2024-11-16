@@ -203,11 +203,13 @@ export class AccessListComponent implements OnInit, AfterViewInit {
   //#region NgOnInit | BUSCAR
   ngOnInit() {
     this.confirmFilter();
+    this.getAll();
   }
 
   ngAfterViewInit(): void {
     this.filterComponent.filter$.subscribe((filter: string) => {
       this.getAllFiltered(filter)
+      
     });
   }
 
@@ -231,6 +233,7 @@ export class AccessListComponent implements OnInit, AfterViewInit {
         this.filteredList = [...this.list]
         this.lastPage = response.last
         this.totalItems = response.totalElements;
+        console.log(this.list)
       },
       error => {
         console.error('Error getting:', error);

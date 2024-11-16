@@ -66,7 +66,7 @@ export class EntityFormComponent {
         formData.birthDate = formatFormDate(formData.birthDate);
       }
   
-      this.visitorService.upsertVisitor(formData, this.loginService.getLogin().id, this.visitorId).subscribe({
+      this.visitorService.upsertVisitor(formData, this.visitorId).subscribe({
         next: (response) => {
           this.toastService.clear();
           

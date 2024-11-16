@@ -139,7 +139,7 @@ export class AccessFormComponent implements OnInit {
                   this.accessService
                     .createAccess(
                       formData,
-                      this.loginService.getLogin().id.toString()
+              //        this.loginService.getLogin().id.toString()
                     )
                     .subscribe((data) => {
                       this.toastService.sendSuccess('Registro exitoso!');
@@ -151,7 +151,7 @@ export class AccessFormComponent implements OnInit {
               this.accessService
                 .createAccess(
                   formData,
-                  this.loginService.getLogin().id.toString()
+                //  this.loginService.getLogin().id.toString()
                 )
                 .subscribe((data) => {
                   this.toastService.sendSuccess('Registro exitoso!');
@@ -171,7 +171,7 @@ export class AccessFormComponent implements OnInit {
   }
 
   onCancel() {
-    this.router.navigate(['/access/list']);
+    this.router.navigate(['/entries/access-query']);
   }
 
   onDocNumberChange(event: any) {

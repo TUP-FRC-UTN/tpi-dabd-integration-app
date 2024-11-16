@@ -1,80 +1,23 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { VisitorAuthorizationRequest } from '../../models/authorization/authorizeRequest.model';
 import { Auth } from '../../models/authorization/authorize.model';
 import { AccessModel } from '../../models/accesses/access.model';
 import { CaseTransformerService } from '../../services/case-transformer.service';
 import { environment } from '../../../../environments/environment.prod';
+import { SessionService } from '../../../users/services/session.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  /*private apiUrl = 'http://localhost:8001/auths';
-
-  constructor(private http: HttpClient) { }
-
-  createAuth(ownerData: any, userId: string): Observable<VisitorAuthorizationRequest> {
-    const headers = new HttpHeaders({
-      'x-user-id': userId
-    });
-
-    return this.http.post<VisitorAuthorizationRequest>(this.apiUrl + '/authorization', ownerData, { headers });
-  }
-
-  updateAuth(ownerData: any, userId: string): Observable<VisitorAuthorizationRequest> {
-    const headers = new HttpHeaders({
-      'x-user-id': userId
-    });
-
-    return this.http.put<VisitorAuthorizationRequest>(this.apiUrl + '/authorization', ownerData, { headers });
-  }
-
-  getAll(page: number, size: number, isActive?: boolean): Observable<Auth[]> {
-    return this.http.get<Auth[]>(this.apiUrl, {
-      params: { size: 1000000 }
-    });
-  }
-
-  getValid(document: number): Observable<Auth[]> {
-    return this.http.get<Auth[]>(this.apiUrl + '/authorization/' + document.toString());
-  }
-
-  getValidAuths(document: number): Observable<Auth[]> {
-    return this.http.get<Auth[]>(this.apiUrl + '/valid?docNumber=' + document.toString());
-  }
-
-  getByDocument(document: number): Observable<Auth[]> {
-    return this.http.get<Auth[]>(this.apiUrl + '?docNumber=' + document.toString());
-  }
-  getById(document: number): Observable<Auth[]> {
-    return this.http.get<Auth[]>(this.apiUrl + '?id=' + document.toString());
-  }
-
-  delete(authId: number, userId: number): Observable<any> {
-    const headers = new HttpHeaders({
-      'x-user-id': userId,
-      'auth-id': authId
-    });
-
-    return this.http.delete<any>(this.apiUrl + '/authorization', { headers });
-  }
-
-  enable(authId: number, userId: number): Observable<any> {
-    const headers = new HttpHeaders({
-      'x-user-id': userId,
-      'auth-id': authId
-    });
-
-    return this.http.put<any>(this.apiUrl + '/authorization/activate',null, { headers });
-  }*/
-
-  //private apiUrl = 'http://localhost:8001/auths';
-
+ 
   private apiUrl: string = environment.production
   ? `${environment.apis.accesses+`auths`}`
   : 'http://localhost:8001/';
+  
+  sessionService = inject(SessionService);
 
 
   constructor(
@@ -83,13 +26,14 @@ export class AuthService {
   ) {}
 
   createAuth(
-    ownerData: any,
-    userId: string
+    ownerData: any
   ): Observable<VisitorAuthorizationRequest> {
-    const headers = new HttpHeaders({
-      'x-user-id': userId,
-    });
 
+    const user = this.sessionService.getItem('user');
+    const headers = new HttpHeaders({
+      'x-user-id': user.id.toString(),
+    })
+    
     const snakeCaseData = this.caseTransformer.toSnakeCase(ownerData);
 
     return this.http
@@ -102,13 +46,13 @@ export class AuthService {
   }
 
   updateAuth(
-    ownerData: any,
-    userId: string
+    ownerData: any
   ): Observable<VisitorAuthorizationRequest> {
-    const headers = new HttpHeaders({
-      'x-user-id': userId,
-    });
 
+    const user = this.sessionService.getItem('user');
+    const headers = new HttpHeaders({
+      'x-user-id': user.id.toString(),
+    })
     const snakeCaseData = this.caseTransformer.toSnakeCase(ownerData);
 
     return this.http
@@ -122,7 +66,7 @@ export class AuthService {
 
   getAll(page: number, size: number, isActive?: boolean): Observable<Auth[]> {
     const params = this.caseTransformer.toSnakeCase({
-      size: 1000000,
+      size: 100000,
       isActive,
     });
 
@@ -185,22 +129,41 @@ export class AuthService {
       );
   }
 
-  delete(authId: number, userId: number): Observable<any> {
-    const headers = new HttpHeaders({
-      'x-user-id': userId.toString(),
+  delete(authId: number): Observable<any> {
+    let headers = new HttpHeaders({
       'auth-id': authId.toString(),
     });
-
+  
+    const user = this.sessionService.getItem('user');
+    console.log('service' + user);
+  
+    if (user) {
+      console.log('service =' + user.id);
+      headers = headers.set('x-user-id', user.id.toString());
+    } else {
+      console.log('no user');
+    }
+  
     return this.http
       .delete<any>(`${this.apiUrl}/authorization`, { headers })
       .pipe(map((response) => response));
   }
+  
 
-  enable(authId: number, userId: number): Observable<any> {
-    const headers = new HttpHeaders({
-      'x-user-id': userId.toString(),
+  enable(authId: number): Observable<any> {
+    let headers = new HttpHeaders({
       'auth-id': authId.toString(),
     });
+
+    const user = this.sessionService.getItem('user');
+      console.log('service' + user);
+    if (user) {
+      console.log('service =' + user.id);
+      headers = headers.set('x-user-id', user.id.toString());
+    } else {
+      console.log('no user');
+    }
+  
 
     return this.http
       .put<any>(`${this.apiUrl}/authorization/activate`, null, { headers })

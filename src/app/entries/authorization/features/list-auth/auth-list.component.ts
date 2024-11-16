@@ -22,6 +22,7 @@ import { NgModule } from '@angular/core';
 import {NgClass} from "@angular/common";
 import {DaysOfWeek} from "../../../models/authorization/authorizeRequest.model";
 import { QrComponent } from '../../../qr/qr.component';
+import { SessionService } from '../../../../users/services/session.service';
 
 @Component({
   selector: 'app-auth-list',
@@ -40,6 +41,20 @@ import { QrComponent } from '../../../qr/qr.component';
 })
 export class AuthListComponent  implements OnInit, AfterViewInit {
 
+  @ViewChild('filterComponent') filterComponent!: CadastrePlotFilterButtonsComponent<AccessModel>;
+  @ViewChild('table', {static: true}) tableName!: ElementRef<HTMLTableElement>;
+  @ViewChild('infoModal') infoModal!: TemplateRef<any>;
+
+  //#region SERVICIOS
+  private router = inject(Router)
+  private authService = inject(AuthService)
+  private transformResponseService = inject(TransformResponseService)
+  private authorizerCompleterService = inject(AuthorizerCompleterService)
+  private toastService = inject(ToastService)
+  private modalService = inject(NgbModal)
+  private userTypeService = inject(UserTypeService)
+  private loginService = inject(LoginService)
+  //#endregion
 
   //#region FILTRADO
 
@@ -148,20 +163,6 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
     });
   }
 
-  @ViewChild('filterComponent') filterComponent!: CadastrePlotFilterButtonsComponent<AccessModel>;
-  @ViewChild('table', {static: true}) tableName!: ElementRef<HTMLTableElement>;
-  @ViewChild('infoModal') infoModal!: TemplateRef<any>;
-
-  //#region SERVICIOS
-  private router = inject(Router)
-  private authService = inject(AuthService)
-  private transformResponseService = inject(TransformResponseService)
-  private authorizerCompleterService = inject(AuthorizerCompleterService)
-  private toastService = inject(ToastService)
-  private modalService = inject(NgbModal)
-  private userTypeService = inject(UserTypeService)
-  private loginService = inject(LoginService)
-  //#endregion
 
   //#region ATT de PAGINADO
   currentPage: number = 0
@@ -234,12 +235,15 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
             if(this.userType === "GUARD"){
                 data = data.filter(x => x.isActive)
             }
-        data.forEach(date => {
+            console.log(data)
+        
+            /*data.forEach(date => {
           date.authorizer = this.authorizerCompleterService.completeAuthorizer(date.authorizerId)
           if (date.authorizer === undefined){
             date.authorizer = this.authorizerCompleterService.completeAuthorizer(1)
           }
-        })
+        })*/
+
         this.completeList = this.transformLotListToTableData(data);
         let response = this.transformResponseService.transformResponse(data,this.currentPage, this.pageSize, this.retrieveByActive)
 
@@ -489,7 +493,9 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
 
   //#endregion
   transformLotListToTableData(list: any) {
-    return list.map((item: { plotId: any; visitor: { name: any; lastName: any; docType: any; docNumber: any; }; visitorType: any; authRanges: AuthRange[]; authFirstName: any; authLastName: any  }) => ({
+    return list.map((item: { plotId: any;
+       visitor: { name: any; lastName: any; docType: any; docNumber: any; }; 
+       visitorType: any; authRanges: AuthRange[]; authFirstName: any; authLastName: any}) => ({
       'Nro de Lote': item.plotId || 'No aplica', // Manejo de 'No aplica' para plotId
       Visitante: `${item.visitor.name} ${item.visitor.lastName || ''}`, // Combina el nombre y el apellido
       Documento: `${(item.visitor.docType === "PASSPORT" ? "PASAPORTE" : item.visitor.docType)} ${item.visitor.docNumber}`, // Combina el tipo de documento y el número
@@ -551,7 +557,7 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
   }
 
   disable(authId: number) {
-  this.authService.delete(authId,this.loginService.getLogin().id).subscribe(data => {
+  this.authService.delete(authId).subscribe(data => {
     this.confirmFilter();
   })
   }
@@ -560,7 +566,7 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
     modalRef.componentInstance.docNumber = doc
   }
   enable(authId: number) {
-    this.authService.enable(authId,this.loginService.getLogin().id).subscribe(data => {
+    this.authService.enable(authId).subscribe(data => {
       this.confirmFilter();
     })
   }

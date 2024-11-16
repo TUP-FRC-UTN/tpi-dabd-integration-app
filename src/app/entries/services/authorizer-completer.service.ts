@@ -1,5 +1,12 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Authorizer } from '../models/authorization/authorize.model';
+import { HttpClient } from '@angular/common/http';
+import { OwnerPlotService } from '../../users/services/owner-plot.service';
+import { PlotService } from '../../users/services/plot.service';
+import { Plot } from '../../users/models/plot';
+import { forkJoin, map, Observable, switchMap } from 'rxjs';
+import { Contact } from '../../users/models/owner';
+import { PaginatedResponse } from '../../users/models/api-response';
 
 @Injectable({
   providedIn: 'root',
@@ -81,4 +88,68 @@ export class AuthorizerCompleterService {
   completeAuthorizer(id: number): Authorizer {
     return this.authorizers.find((x) => x.authId == id)!;
   }
+
+    // obtencion de owner y plots
+
+private plotService = inject(PlotService);
+private ownerPlotService = inject(OwnerPlotService);
+
+getPlotsWithOwnerInfo(page: number, size: number): Observable<PaginatedResponse<PlotOwnerInfo>> {
+  debugger
+  return this.plotService.getAllPlots(page, size).pipe(
+    switchMap((plotsResponse: PaginatedResponse<Plot>) => {
+      // Crear un array de observables para obtener los datos del propietario de cada plot
+      const ownerRequests = plotsResponse.content.map(plot => 
+        this.ownerPlotService.giveActualOwner(plot.id).pipe(
+          map(owner => ({
+            plotId: plot.id,
+            plotData: plot,
+            ownerName: `${owner.firstName} ${owner.lastName}`,
+            ownerContact: this.getMainContact(owner.contacts)
+          }))
+        )
+      );
+
+      // Combinar todos los resultados
+      return forkJoin(ownerRequests).pipe(
+        map(combinedData => ({
+          content: combinedData,
+          totalElements: plotsResponse.totalElements,
+          totalPages: plotsResponse.totalPages,
+          size: plotsResponse.size,
+          number: plotsResponse.number,
+          first: plotsResponse.number === 0,
+          last: plotsResponse.number === plotsResponse.totalPages - 1
+        } as PaginatedResponse<PlotOwnerInfo>))
+      );
+    })
+  );
 }
+
+private getMainContact(contacts: Contact[] | Contact | null): string {
+  if (!contacts) return 'Sin contacto';
+  
+  if (Array.isArray(contacts)) {
+    // Buscar primero un email
+    const emailContact = contacts.find(contact => 
+      contact?.contactType?.toLowerCase() === 'email');
+    if (emailContact) return emailContact.contactValue || emailContact.value || 'Sin contacto';
+
+    // Si no hay email, devolver el primer contacto disponible
+    return contacts[0]?.contactValue || contacts[0]?.value || 'Sin contacto';
+  } else if (contacts) {
+    // Si es un único contacto
+    return contacts.contactValue || contacts.value || 'Sin contacto';
+  }
+  return 'Sin contacto';
+}
+
+}
+
+interface PlotOwnerInfo {
+  plotId: number;
+  plotData: Plot;
+  ownerName: string;
+  ownerContact: string;
+}
+

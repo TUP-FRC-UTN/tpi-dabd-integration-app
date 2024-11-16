@@ -1,13 +1,6 @@
 <app-main-container [title]="'Lista de Accesos'" (infoButtonClick)="onInfoButtonClick()">
     <div class="card-body">
-        <!-- ESTE COMPONENTE LO VAN A TENER QUE MODIFICAR ES EL DEL BUSCAR, EXPORTAR, ETC -->
-        <!-- @param itemList => Mandan la lista con la cual hacen la tabla
-           @param tableName => Mandan el nombre de la tabla el que definen con #
-           @param tableName => Mandan el nombre de la tabla el que definen con #
-           @param formPath => Van a poner la ruta de su formulario para crear uno nuevo
-           @param dictionaries => En caso de usar diccionarios mandenlos, si no los mandan no pasa nada
-           @param objectName => Hace referencia al nombre de su objeto para guardar el archivo pdf o excel. Ej: 25/10/2024_LOTES
-           -->
+        
         <app-cadastre-plot-filter-buttons #filterComponent [itemsList]="completeList"
             [tableName]="tableName.nativeElement" [heads]="heads" [props]="props" formPath="entries/access-form"
             [tableFilters]="filterConfig" (filterValueChange)="onFilterValueChange($event)"
