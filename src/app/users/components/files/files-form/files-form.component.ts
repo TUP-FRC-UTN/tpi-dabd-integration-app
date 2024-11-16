@@ -312,6 +312,8 @@ export class FilesFormComponent implements OnInit {
             complete: () => {
               this.toastService.sendSuccess('Archivos cargados exitosamente');
               this.isUploading = false;
+              this.plotFiles = [];
+              this.getOwnerPlots();
             }
           });
         } else {

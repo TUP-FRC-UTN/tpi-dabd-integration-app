@@ -2,7 +2,7 @@
 
 
   <h2>Seleccione un propietario</h2>
-  <app-table-filters style="z-index: 1;" [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
+  <app-table-filters style="z-index: 1;" [filters]="filterConfig" (filterValueChange)="filterChange($event)" (filterValueClear)="clearFilter()"></app-table-filters>
 
 
   <!-- Lista de dueños -->
@@ -143,10 +143,10 @@
             @if (plotForm.get('plotNumber')?.hasError('serverError')) {
               <small class="text-danger">Error en el servidor, por favor intenta nuevamente</small>
             }
-            @if (plotForm.get('plotNumber')?.hasError('plotExists')) {
+            @if (plotForm.get('plotNumber')?.hasError('plotNotExists')) {
               <small class="text-danger ms-2">No existe un lote con ese número en esa manzana</small>
             }
-            @if (plotForm.get('plotNumber')?.hasError('plotWithNoOwner')) {
+            @if (plotForm.get('plotNumber')?.hasError('plotHaveOwner')) {
               <small class="text-danger ms-2">Ese lote tiene un dueño asociado</small>
             }
           }

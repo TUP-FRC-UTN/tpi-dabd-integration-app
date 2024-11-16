@@ -73,6 +73,8 @@ export class RolesListComponent implements OnInit {
   private filteredRoles = new BehaviorSubject<Role[]>([]);
   filter$ = this.filteredRoles.asObservable();
 
+  filters? : Record<string, any>
+
   private excelService = inject(CadastreExcelService);
   private roleService = inject(RoleService);
   private router = inject(Router);
@@ -81,7 +83,7 @@ export class RolesListComponent implements OnInit {
 
   filterConfig: Filter[] = new FilterConfigBuilder()
     .textFilter('Codigo', 'code', 'Codigo')
-    .selectFilter('Activo', 'isActive', '', [
+    .selectFilter('Activo', 'is_active', '', [
       { value: 'true', label: 'Activo' },
       { value: 'false', label: 'Inactivo' },
       { value: '', label: 'Todo' },
@@ -102,20 +104,16 @@ export class RolesListComponent implements OnInit {
   }
 
   //#region Role crud
-  getAllRoles() {
-    this.roleService
-      .getAllRoles(this.currentPage, this.pageSize, this.retrieveRolesByActive)
-      .subscribe({
-        next: (response: any) => {
-          this.roles = response.content;
-          this.filteredRoles.next([...this.roles]);
-          this.lastPage = response.last;
-          this.totalItems = response.totalElements;
-        },
-        error: (err) => {
-          console.error('Error fetching roles:', err);
-        },
-      });
+  getAllRoles(isActive?: boolean) {
+    let filter: Record<string, any> = { "is_active" : true }
+    this.roleService.dinamicFilters(this.currentPage - 1, this.pageSize, filter).subscribe({
+      next: (result) => {
+        this.roles = result.content;
+        this.filteredRoles.next([...result.content]);
+        this.lastPage = result.last;
+        this.totalItems = result.totalElements;
+      },
+    });
   }
 
   assignPlotToDelete(role: Role) {
@@ -192,6 +190,27 @@ export class RolesListComponent implements OnInit {
   }
 
   filterChange($event: Record<string, any>) {
+    this.filters = $event;
+    this.currentPage = 0
+    this.confirmSearch()
+  }
+
+  dinamicFilter() {
+    this.roleService.dinamicFilters(this.currentPage - 1, this.pageSize, this.filters).subscribe({
+      next: (result) => {
+        this.roles = result.content;
+        this.filteredRoles.next([...result.content]);
+        this.lastPage = result.last;
+        this.totalItems = result.totalElements;
+      },
+    });
+  }
+
+  confirmSearch() {
+    this.filters == undefined ? this.getAllRoles() : this.dinamicFilter();
+  }
+
+/*   filterChange($event: Record<string, any>) {
     this.roleService.dinamicFilters(0, this.pageSize, $event).subscribe({
       next: (result) => {
         this.roles = result.content;
@@ -200,6 +219,11 @@ export class RolesListComponent implements OnInit {
         this.totalItems = result.totalElements;
       },
     });
+  } */
+
+  clearFilter() {
+    this.filters = undefined;
+    this.confirmSearch()
   }
 
 
@@ -219,12 +243,12 @@ export class RolesListComponent implements OnInit {
   //#region Pageable
   onItemsPerPageChange() {
     this.currentPage = 1;
-    // this.confirmFilterPlot(); funcion para filtrar roles
+    this.confirmSearch()
   }
 
   onPageChange(page: number) {
     this.currentPage = page;
-    // this.confirmFilterPlot(); funcion para filtrar roles
+    this.confirmSearch()
   }
   //#end region
 
@@ -235,7 +259,7 @@ export class RolesListComponent implements OnInit {
    */
   exportToPdf() {
     const doc = new jsPDF();
-  
+
     doc.setFontSize(18);
     doc.text('Roles', 14, 20);
 
@@ -269,7 +293,7 @@ export class RolesListComponent implements OnInit {
           'Código': role.code,
           'Nombre': role.name,
           'Nombre especial': role.prettyName,
-          'Descripción': role.description,  
+          'Descripción': role.description,
           'Activo': role.active? 'Activo' : 'Inactivo'
         }));
         const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);
