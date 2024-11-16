@@ -95,7 +95,7 @@ private plotService = inject(PlotService);
 private ownerPlotService = inject(OwnerPlotService);
 
 getPlotsWithOwnerInfo(page: number, size: number): Observable<PaginatedResponse<PlotOwnerInfo>> {
-  debugger
+
   return this.plotService.getAllPlots(page, size).pipe(
     switchMap((plotsResponse: PaginatedResponse<Plot>) => {
       // Crear un array de observables para obtener los datos del propietario de cada plot
@@ -104,8 +104,8 @@ getPlotsWithOwnerInfo(page: number, size: number): Observable<PaginatedResponse<
           map(owner => ({
             plotId: plot.id,
             plotData: plot,
-            ownerName: `${owner.firstName} ${owner.lastName}`,
-            ownerContact: this.getMainContact(owner.contacts)
+            ownerName: `${owner?.firstName} ${owner?.lastName}`,
+            ownerContact: this.getMainContact(owner?.contacts)
           }))
         )
       );

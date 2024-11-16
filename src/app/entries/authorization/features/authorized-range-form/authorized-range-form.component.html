@@ -1,104 +1,114 @@
-<div class="row g-3 m-2">
-    <div class="modal-header">
-      <h5 class="modal-title">Horarios</h5>
-      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="close()"></button>
-    </div>
+<div class="container-fluid px-2 py-3">
+  <div class="modal-header">
+    <h5 class="modal-title">Horarios</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="close()"></button>
+  </div>
 
-    <div class="modal-body">
-      <div class="row">
-        <!-- Columna izquierda: lista de rangos -->
-        <div class="col-md-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4>Horarios</h4>
-            <button class="btn btn-outline-primary" id="addRangeButton" (click)="addRange()">Nuevo</button>
-          </div>
-          <select class="form-select" id="rangeSelect" (change)="selectRangeEvent()" [(ngModel)]="selectedRange">
-            @for (range of ranges; track $index){
-              <option value="{{$index}}">Horario {{$index+1}}</option>
-            }
-          </select>
+  <div class="modal-body">
+    <!-- Sección de selección de rango -->
+    <div class="row mb-4">
+      <div class="col-12 col-sm-4 col-md-4 mb-3 mb-sm-0">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h4 class="fs-5 m-0">Horarios</h4>
+          <button class="btn btn-outline-primary btn-sm" id="addRangeButton" (click)="addRange()">Nuevo</button>
         </div>
+        <select class="form-select form-select-sm" id="rangeSelect" (change)="selectRangeEvent()" [(ngModel)]="selectedRange">
+          @for (range of ranges; track $index){
+            <option value="{{$index}}">Horario {{$index+1}}</option>
+          }
+        </select>
+      </div>
 
-        <!-- Columna derecha: detalles del rango seleccionado -->
-        <div class="col-md-8">
-          <form [formGroup]="rangeForm" (ngSubmit)="onSubmit()" class="row">
-          <div class="form-group">
-            <label>Días de la semana:</label><br>
-            <div class="d-flex justify-content-around m-2">
-              <label><input type="checkbox"
-                            [checked]="containsDay('MONDAY')"
-                            (change)="toggleDay('MONDAY', $event)"> Lunes</label>
-              <label><input type="checkbox"
-                            [checked]="containsDay('TUESDAY')"
-                            (change)="toggleDay('TUESDAY', $event)"> Martes</label>
-              <label><input type="checkbox"
-                            [checked]="containsDay('WEDNESDAY')"
-                            (change)="toggleDay('WEDNESDAY', $event)"> Miércoles</label>
-              <label><input type="checkbox"
-                            [checked]="containsDay('THURSDAY')"
-                            (change)="toggleDay('THURSDAY', $event)"> Jueves</label>
-              <label><input type="checkbox"
-                            [checked]="containsDay('FRIDAY')"
-                            (change)="toggleDay('FRIDAY', $event)"> Viernes</label>
-              <label><input type="checkbox"
-                            [checked]="containsDay('SATURDAY')"
-                            (change)="toggleDay('SATURDAY', $event)"> Sábado</label>
-              <label><input type="checkbox"
-                            [checked]="containsDay('SUNDAY')"
-                            (change)="toggleDay('SUNDAY', $event)"> Domingo</label>
+      <!-- Formulario detallado -->
+      <div class="col-12 col-sm-8 col-md-8">
+        <form [formGroup]="rangeForm" (ngSubmit)="onSubmit()" class="row g-2">
+          <!-- Días de la semana -->
+          <div class="col-12">
+            <label class="form-label small">Días de la semana:</label>
+            <div class="d-flex flex-wrap gap-2 gap-sm-3 justify-content-start my-2">
+              <div class="form-check form-check-sm">
+                <input type="checkbox" class="form-check-input" [checked]="containsDay('MONDAY')" (change)="toggleDay('MONDAY', $event)">
+                <label class="form-check-label small">Lunes</label>
+              </div>
+              <div class="form-check form-check-sm">
+                <input type="checkbox" class="form-check-input" [checked]="containsDay('TUESDAY')" (change)="toggleDay('TUESDAY', $event)">
+                <label class="form-check-label small">Martes</label>
+              </div>
+              <div class="form-check form-check-sm">
+                <input type="checkbox" class="form-check-input" [checked]="containsDay('WEDNESDAY')" (change)="toggleDay('WEDNESDAY', $event)">
+                <label class="form-check-label small">Miércoles</label>
+              </div>
+              <div class="form-check form-check-sm">
+                <input type="checkbox" class="form-check-input" [checked]="containsDay('THURSDAY')" (change)="toggleDay('THURSDAY', $event)">
+                <label class="form-check-label small">Jueves</label>
+              </div>
+              <div class="form-check form-check-sm">
+                <input type="checkbox" class="form-check-input" [checked]="containsDay('FRIDAY')" (change)="toggleDay('FRIDAY', $event)">
+                <label class="form-check-label small">Viernes</label>
+              </div>
+              <div class="form-check form-check-sm">
+                <input type="checkbox" class="form-check-input" [checked]="containsDay('SATURDAY')" (change)="toggleDay('SATURDAY', $event)">
+                <label class="form-check-label small">Sábado</label>
+              </div>
+              <div class="form-check form-check-sm">
+                <input type="checkbox" class="form-check-input" [checked]="containsDay('SUNDAY')" (change)="toggleDay('SUNDAY', $event)">
+                <label class="form-check-label small">Domingo</label>
+              </div>
             </div>
           </div>
-          <div class="form-group row mb-2">
-            <div class="col-md-6">
-              <label>Fecha desde</label>
-              <input type="date" class="form-control" formControlName="dateFrom">
-            </div>
-            <div class="col-md-6">
-              <label>Fecha hasta</label>
-              <input type="date" class="form-control" formControlName="dateTo">
-            </div>
 
-            @if(rangeForm.hasError('dateRangeInvalid')){
-              <small class="text-danger mb-1">
-                La fecha de salida debe ser posterior a la fecha de entrada.
-              </small>
+          <!-- Fechas -->
+          <div class="col-12 col-sm-6">
+            <label class="form-label small">Fecha desde</label>
+            <input type="date" class="form-control form-control-sm" formControlName="dateFrom">
+          </div>
+          <div class="col-12 col-sm-6">
+            <label class="form-label small">Fecha hasta</label>
+            <input type="date" class="form-control form-control-sm" formControlName="dateTo">
+          </div>
+          @if(rangeForm.hasError('dateRangeInvalid')){
+            <div class="col-12">
+              <small class="text-danger fs-sm">La fecha de salida debe ser posterior a la fecha de entrada.</small>
+            </div>
+          }
+
+          <!-- Horas -->
+          <div class="col-12 col-sm-6">
+            <label class="form-label small">Hora desde</label>
+            <input type="time" class="form-control form-control-sm" formControlName="hourFrom">
+          </div>
+          <div class="col-12 col-sm-6">
+            <label class="form-label small">Hora hasta</label>
+            <input type="time" class="form-control form-control-sm" formControlName="hourTo">
+            @if(rangeForm.hasError('hourTooLateForWorker') && rangeForm.touched){
+              <small class="text-danger fs-sm">La hora de salida de un trabajador debe ser antes de las 18:30hs.</small>
             }
           </div>
-          <div class="form-group row">
-            <div class="col-md-6">
-              <label>Hora desde</label>
-              <input type="time" class="form-control" formControlName="hourFrom">
+          @if(rangeForm.hasError('hourRangeInvalid') && rangeForm.touched){
+            <div class="col-12">
+              <small class="text-danger fs-sm">La hora de salida debe ser posterior a la hora de entrada.</small>
             </div>
-            <div class="col-md-6">
-              <label>Hora hasta</label>
-              <input type="time" class="form-control" formControlName="hourTo">
+          }
 
-              @if(rangeForm.hasError('hourTooLateForWorker') && rangeForm.touched){
-                <small class="text-danger mb-1">La hora de salida de un trabajador debe ser antes de las 18:30hs.</small>
-              }
-            </div>
-
-            @if(rangeForm.hasError('hourRangeInvalid') && rangeForm.touched){
-              <small class="text-danger mb-1"> La hora de salida debe ser posterior a la hora de entrada.</small>
-            }
+          <!-- Comentarios y Estado -->
+          <div class="col-12 col-sm-7">
+            <label class="form-label small">Comentarios</label>
+            <input type="text" class="form-control form-control-sm" formControlName="comment">
           </div>
-          <div class="form-group row mt-2">
-            <div class="col-md-6">
-              <label>Comentarios</label>
-              <input type="text" class="form-control" formControlName="comment">
-            </div>
-            <div class="col-md-6 align-content-center">
-              <label><input type="checkbox" class="ms-2" formControlName="isActive"> Activo?</label>
+          <div class="col-12 col-sm-5 d-flex align-items-end mb-2">
+            <div class="form-check form-check-sm">
+              <input type="checkbox" class="form-check-input" formControlName="isActive">
+              <label class="form-check-label small">Activo?</label>
             </div>
           </div>
-          </form>
-        </div>
+        </form>
       </div>
     </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="close()">Cancelar</button>
-      <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="!rangeForm.valid">Guardar</button>
-    </div>
-</div>
+  </div>
 
-  
+  <!-- Footer -->
+  <div class="modal-footer">
+    <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal" (click)="close()">Cancelar</button>
+    <button type="button" class="btn btn-sm btn-primary" (click)="onSubmit()" [disabled]="!rangeForm.valid">Guardar</button>
+  </div>
+</div>

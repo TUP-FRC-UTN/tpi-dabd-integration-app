@@ -7,7 +7,7 @@
             [dictionaries]="dictionaries" objectName="ACCESOS"></app-cadastre-plot-filter-buttons>
     </div>
 
-    <div class="table-container">
+    <div class="table-container table-responsive">
         <table class="table table-striped fixed-table"
             style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #table>
             <thead>
@@ -54,7 +54,7 @@
                     <td>
                         <!--TODO icono-->
                         <i class="bi bi-shield"></i>
-                        {{ item.authorizer?.authFirstName + ' ' + item.authorizer?.authLastName }}
+                        {{ item.authFirstName + ' ' + item.authLastName }}
                     </td>
                 </tr>
                 }

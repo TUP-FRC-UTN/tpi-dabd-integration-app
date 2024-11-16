@@ -1,22 +1,25 @@
-// environment.ts (desarrollo local)
+
+// environment.prod.ts producción con nginx segun backend 
+const API_URL = 'https://lbsm4xgt-8080.brs.devtunnels.ms/';
+
 export const environment = {
   production: true,
   apis: {
-    // URLs directas a los servicios de cada grupo con su docker-compose
-    accesses: 'http://localhost:8001/',
-    accounts: 'http://localhost:8002/',
-    addresses: 'http://localhost:8003/',
-    cadastre: 'http://localhost:8004/',
-    constructions: 'http://localhost:8005/',
-    contacts: 'http://localhost:8006/',
-    employees: 'http://localhost:8007/',
-    expenses: 'http://localhost:8008/',
-    inventory: 'http://localhost:8009/',
-    moderations: 'http://localhost:8010/',
-    notifications: 'http://localhost:8011/',
-    payments: 'http://localhost:8012/',
-    suppliers: 'http://localhost:8013/',
-    tickets: 'http://localhost:8014/',
-    users: 'http://localhost:8015/'
+    // URLs a través del nginx reverse proxy según backend
+    accesses: `${API_URL}accesses/`,
+    accounts: `${API_URL}accounts/`,
+    addresses: `${API_URL}addresses/`,
+    cadastre: `${API_URL}cadastre/`,
+    constructions: `${API_URL}constructions/`,
+    contacts: `${API_URL}contacts/`,
+    employees: `${API_URL}employees/`,
+    expenses: `${API_URL}expenses/`,
+    inventory: `${API_URL}inventory/`,
+    moderations: `${API_URL}moderations/`,
+    notifications: `${API_URL}notifications/`,
+    payments: `${API_URL}payments/`,
+    suppliers: `${API_URL}suppliers/`,
+    tickets: `${API_URL}tickets/`,
+    users: `${API_URL}users/`
   }
 };

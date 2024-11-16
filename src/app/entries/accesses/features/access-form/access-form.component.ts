@@ -138,8 +138,7 @@ export class AccessFormComponent implements OnInit {
                 if (result.isDismissed) {
                   this.accessService
                     .createAccess(
-                      formData,
-              //        this.loginService.getLogin().id.toString()
+                      formData
                     )
                     .subscribe((data) => {
                       this.toastService.sendSuccess('Registro exitoso!');
@@ -152,16 +151,24 @@ export class AccessFormComponent implements OnInit {
                 .createAccess(
                   formData,
                 //  this.loginService.getLogin().id.toString()
-                )
-                .subscribe((data) => {
-                  this.toastService.sendSuccess('Registro exitoso!');
-                  if (data.is_Late) {
-                    this.toastService.sendSuccess(
-                      'Se ha notificado la salida tardía'
-                    );
+                ).subscribe({
+                  next: (data) => {
+                    this.toastService.sendSuccess('Registro exitoso!');
+                    
+                    if(data.is_Late){
+                      this.toastService.sendSuccess('Se ha notificado la salida tardía');
+                    }
+                    this.ngOnInit();
+                  },
+                  error : (err)=>{
+
+                    if(err.error.status >= 400  || err.error.status <= 409){
+                      this.toastService.sendError(err.error.message);
+                      
+                    }
                   }
-                  this.ngOnInit();
-                });
+                })
+              
             }
           });
       }

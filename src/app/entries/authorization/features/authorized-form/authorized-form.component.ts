@@ -11,6 +11,7 @@ import {RangeModalComponent} from "../authorized-range-form/authorized-range-for
 import { ToastsContainer, ToastService, MainContainerComponent} from "ngx-dabd-grupo01";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
+import { AuthorizerCompleterService } from '../../../services/authorizer-completer.service';
 
 @Component({
   selector: 'app-auth-form',
@@ -34,6 +35,7 @@ export class AuthFormComponent implements OnInit {
   modalService = inject(NgbModal);
   private toastService = inject(ToastService);
   userType: string = "ADMIN"
+  ownerPlotService = inject(AuthorizerCompleterService);
 
   constructor(private fb: FormBuilder, private authService: AuthService,
      private loginService: LoginService, private router: Router, 
@@ -53,10 +55,9 @@ export class AuthFormComponent implements OnInit {
     }
 
   ngOnInit(): void {
-    this.authForm = this.createForm();
     this.initPlots()
-
-
+    this.authForm = this.createForm();
+  
     this.userType = this.userTypeService.getType()
     if (this.userType == "OWNER"){
       this.authForm.get('plotId')?.setValue(2)
@@ -290,7 +291,7 @@ export class AuthFormComponent implements OnInit {
   }
 
   initPlots() {
-    this.plots = [
+    /*this.plots = [
       {
         id: 1,
         desc: 'Andrés Torres',
@@ -336,10 +337,31 @@ export class AuthFormComponent implements OnInit {
         name: '9 - Fernando López',
       },
       { id: 10, desc: 'María José', tel: '555-6780', name: '10 - María José' },
-    ];
+    ];*/
+    
+    this.ownerPlotService.getPlotsWithOwnerInfo(0, 1000).subscribe({
+      next: (data) => {
+        console.log('Datos recibidos:', data); // Añadir log para debug
+        if (data && data.content) {
+          this.plots = data.content.map(element => ({
+            id: element.plotId,
+            desc: element.ownerName,
+            tel: element.ownerContact,
+            name: `${element.plotId} - ${element.ownerName}`
+          }));
+          console.log('Plots procesados:', this.plots); // Añadir log para debug
+        }
+      },
+      error: (err) => {
+        console.error('Error al obtener plots:', err);
+        this.toastService.sendError('Error al cargar los lotes');
+      }
+    });
+    
   }
 
   onPlotSelected(selectedPlot: plot) {
+    console.log('Plot seleccionado:', selectedPlot);
     this.plot = this.plots.find((plot) => plot.id === selectedPlot.id) || null;
   }
 
