@@ -8,7 +8,7 @@ import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { SendVisitor, Visitor } from '../../models/visitors/visitor.model';
 import { CaseTransformerService } from '../case-transformer.service';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../../environments/environment.prod';
 
 export interface VisitorFilter {
   active?: boolean;
@@ -24,9 +24,16 @@ interface PaginatedResponse<T> {
   providedIn: 'root',
 })
 export class VisitorService {
-  private apiUrl = 'http://localhost:8080/visitors';
+  //private apiUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/visitors';
+ // private baseUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/';
 
-  private urlEnvironment = environment.apis.accesses; //8080
+//  private urlEnvironment = environment.apis.accesses; //8080
+
+  //si la variable de produccion es true, entonces se usa la url de produccion (eso lo indica la importacion de environment.prod.ts)
+  private apiUrl: string = environment.production
+  ? `${environment.apis.accesses}`
+  : 'http://localhost:8001/';
+
 
   constructor(
     private http: HttpClient,
@@ -45,7 +52,7 @@ export class VisitorService {
     });
 
     return this.http
-      .get<{ items: Visitor[] }>(this.urlEnvironment + 'visitors', {
+      .get<{ items: Visitor[] }>(this.apiUrl + 'visitors', {
         params: params as any,
       })
       .pipe(
@@ -70,7 +77,7 @@ export class VisitorService {
 
     return this.http
       .get<{ items: Visitor[]; total_elements: number }>(
-        this.urlEnvironment + 'visitors',
+        this.apiUrl + 'visitors',
         { params: snakeCaseParams as any }
       )
       .pipe(
@@ -92,7 +99,7 @@ export class VisitorService {
     // Llamada al backend con los parámetros de filtro y sin la paginación
     return this.http
       .get<{ items: Visitor[]; total_elements: number }>(
-        this.urlEnvironment + 'visitors',
+        this.apiUrl + 'visitors',
         { params: filterParams }
       )
       .pipe(
@@ -110,7 +117,7 @@ export class VisitorService {
   getVisitor(docNumber: number): Observable<HttpResponse<Visitor>> {
     return this.http
       .get<Visitor>(
-        `${this.urlEnvironment}visitors/by-doc-number/${docNumber}`,
+        `${this.apiUrl}visitors/by-doc-number/${docNumber}`,
         {
           observe: 'response',
         }
@@ -133,7 +140,7 @@ export class VisitorService {
 
   getVisitorById(visitorId: number): Observable<HttpResponse<Visitor>> {
     return this.http
-      .get<Visitor>(`${this.urlEnvironment}visitors/${visitorId}`, {
+      .get<Visitor>(`${this.apiUrl}visitors/${visitorId}`, {
         observe: 'response',
       })
       .pipe(
@@ -171,7 +178,7 @@ export class VisitorService {
     console.log('params: ', params.toString()); // Verificar qué parámetros se están enviando
 
     return this.http
-      .put<Visitor>(this.urlEnvironment + 'visitors', snakeCaseVisitor, {
+      .put<Visitor>(this.apiUrl + 'visitors', snakeCaseVisitor, {
         observe: 'response',
         headers,
         params,
@@ -197,7 +204,7 @@ export class VisitorService {
       .set('carPlate', plate)
       .set('action', action);
 
-    return this.http.get<Boolean>(`${this.urlEnvironment}access/check-access`, {
+    return this.http.get<Boolean>(`${this.apiUrl}access/check-access`, {
       params,
     });
   }
@@ -208,7 +215,7 @@ export class VisitorService {
     });
 
     return this.http
-      .put<any>(`${this.urlEnvironment}visitors/${visitorId}/activate`, null, {
+      .put<any>(`${this.apiUrl}visitors/${visitorId}/activate`, null, {
         headers,
       })
       .pipe(map((response) => this.caseTransformer.toCamelCase(response)));
@@ -220,7 +227,7 @@ export class VisitorService {
     });
 
     return this.http
-      .delete<any>(`${this.urlEnvironment}visitors/${visitorId}`, { headers })
+      .delete<any>(`${this.apiUrl}visitors/${visitorId}`, { headers })
       .pipe(map((response) => response));
   }
 }

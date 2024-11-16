@@ -1,91 +1,109 @@
-<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #000000;">
-    <div class="card p-4 m-3" style="max-width: 600px; width: 100%; border-radius: 15px;">
-        <h4 class="text-center mb-4">Registrar Rango Autorizado</h4>
-        <form (ngSubmit)="onSubmit()">
-            <div class="row">
-                <div class="col-lg-6 col-sm-12">
-                    <div class="form-group mb-3">
-                        <label for="authEntityId" class="form-label">ID de la Entidad de Autorización</label>
-                        <input type="number" class="form-control" id="authEntityId"
-                            [(ngModel)]="authorizedRange.auth_entity_id" name="authEntityId" required
-                            placeholder="ID de la Entidad de Autorización">
-                    </div>
-                </div>
+<div class="row g-3 m-2">
+    <div class="modal-header">
+      <h5 class="modal-title">Horarios</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="close()"></button>
+    </div>
 
-                <div class="col-lg-6 col-sm-12">
-                    <div class="form-group mb-3">
-                        <label for="visitorId" class="form-label">ID del Visitante</label>
-                        <input type="number" class="form-control" id="visitorId"
-                            [(ngModel)]="authorizedRange.visitor_id" name="visitorId" required
-                            placeholder="ID del Visitante">
-                    </div>
-                </div>
+    <div class="modal-body">
+      <div class="row">
+        <!-- Columna izquierda: lista de rangos -->
+        <div class="col-md-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4>Horarios</h4>
+            <button class="btn btn-outline-primary" id="addRangeButton" (click)="addRange()">Nuevo</button>
+          </div>
+          <select class="form-select" id="rangeSelect" (change)="selectRangeEvent()" [(ngModel)]="selectedRange">
+            @for (range of ranges; track $index){
+              <option value="{{$index}}">Horario {{$index+1}}</option>
+            }
+          </select>
+        </div>
 
-                <div class="col-lg-6 col-sm-12">
-                    <div class="form-group mb-3">
-                        <label for="dateFrom" class="form-label">Fecha Desde</label>
-                        <input type="date" class="form-control" id="dateFrom" [(ngModel)]="authorizedRange.date_from"
-                            name="dateFrom" required>
-                    </div>
-                </div>
+        <!-- Columna derecha: detalles del rango seleccionado -->
+        <div class="col-md-8">
+          <form [formGroup]="rangeForm" (ngSubmit)="onSubmit()" class="row">
+          <div class="form-group">
+            <label>Días de la semana:</label><br>
+            <div class="d-flex justify-content-around m-2">
+              <label><input type="checkbox"
+                            [checked]="containsDay('MONDAY')"
+                            (change)="toggleDay('MONDAY', $event)"> Lunes</label>
+              <label><input type="checkbox"
+                            [checked]="containsDay('TUESDAY')"
+                            (change)="toggleDay('TUESDAY', $event)"> Martes</label>
+              <label><input type="checkbox"
+                            [checked]="containsDay('WEDNESDAY')"
+                            (change)="toggleDay('WEDNESDAY', $event)"> Miércoles</label>
+              <label><input type="checkbox"
+                            [checked]="containsDay('THURSDAY')"
+                            (change)="toggleDay('THURSDAY', $event)"> Jueves</label>
+              <label><input type="checkbox"
+                            [checked]="containsDay('FRIDAY')"
+                            (change)="toggleDay('FRIDAY', $event)"> Viernes</label>
+              <label><input type="checkbox"
+                            [checked]="containsDay('SATURDAY')"
+                            (change)="toggleDay('SATURDAY', $event)"> Sábado</label>
+              <label><input type="checkbox"
+                            [checked]="containsDay('SUNDAY')"
+                            (change)="toggleDay('SUNDAY', $event)"> Domingo</label>
+            </div>
+          </div>
+          <div class="form-group row mb-2">
+            <div class="col-md-6">
+              <label>Fecha desde</label>
+              <input type="date" class="form-control" formControlName="dateFrom">
 
-                <div class="col-lg-6 col-sm-12">
-                    <div class="form-group mb-3">
-                        <label for="dateTo" class="form-label">Fecha Hasta</label>
-                        <input type="date" class="form-control" id="dateTo" [(ngModel)]="authorizedRange.date_to"
-                            name="dateTo" required>
-                    </div>
-                </div>
+              @if(rangeForm.controls['dateFrom'].hasError('errorFechaInicio')){
+                <small class="text-danger mb-1"> La fecha de entrada debe ser posterior a la fecha actual.</small>
+              }
 
-                <div class="col-lg-6 col-sm-12">
-                    <div class="form-group mb-3">
-                        <label for="hourFrom" class="form-label">Hora Desde</label>
-                        <input type="time" class="form-control" id="hourFrom" [(ngModel)]="authorizedRange.hour_from"
-                            name="hourFrom" required>
-                    </div>
-                </div>
-
-                <div class="col-lg-6 col-sm-12">
-                    <div class="form-group mb-3">
-                        <label for="hourTo" class="form-label">Hora Hasta</label>
-                        <input type="time" class="form-control" id="hourTo" [(ngModel)]="authorizedRange.hour_to"
-                            name="hourTo" required>
-                    </div>
-                </div>
-
-                <div class="col-lg-6 col-sm-12">
-                    <div class="form-group mb-3">
-                        <label for="dayOfWeeks" class="form-label">Días de la Semana</label>
-                        <select multiple class="form-control" id="dayOfWeeks" [(ngModel)]="authorizedRange.day_of_weeks"
-                            name="dayOfWeeks" required>
-                            @for (day of daysOfWeek; track day) {
-                            <option [ngValue]="day">{{ day }}</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-
-                <div class="col-lg-6 col-sm-12">
-                    <div class="form-group mb-3">
-                        <label for="plotId" class="form-label">ID de la Parcela</label>
-                        <input type="number" class="form-control" id="plotId" [(ngModel)]="authorizedRange.plot_id"
-                            name="plotId" required placeholder="ID de la Parcela">
-                    </div>
-                </div>
-
-                <div class="col-lg-12">
-                    <div class="form-group mb-3">
-                        <label for="comment" class="form-label">Comentarios</label>
-                        <textarea class="form-control" id="comment" [(ngModel)]="authorizedRange.comment" name="comment"
-                            placeholder="Comentarios"></textarea>
-                    </div>
-                </div>
+            </div>
+            <div class="col-md-6">
+              <label>Fecha hasta</label>
+              <input type="date" class="form-control" formControlName="dateTo">
             </div>
 
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary py-2">Registrar</button>
-                <button type="button" class="btn btn-secondary py-2" routerLink="/cancelar">Cancelar</button>
+            @if(rangeForm.hasError('dateRangeInvalid')){
+              <small class="text-danger mb-1">
+                La fecha de salida debe ser posterior a la fecha de entrada.
+              </small>
+            }
+          </div>
+          <div class="form-group row">
+            <div class="col-md-6">
+              <label>Hora desde</label>
+              <input type="time" class="form-control" formControlName="hourFrom">
             </div>
-        </form>
+            <div class="col-md-6">
+              <label>Hora hasta</label>
+              <input type="time" class="form-control" formControlName="hourTo">
+
+              @if(rangeForm.hasError('hourTooLateForWorker') && rangeForm.touched){
+                <small class="text-danger mb-1">La hora de salida de un trabajador debe ser antes de las 18:30hs.</small>
+              }
+            </div>
+
+            @if(rangeForm.hasError('hourRangeInvalid') && rangeForm.touched){
+              <small class="text-danger mb-1"> La hora de salida debe ser posterior a la hora de entrada.</small>
+            }
+          </div>
+          <div class="form-group row mt-2">
+            <div class="col-md-6">
+              <label>Comentarios</label>
+              <input type="text" class="form-control" formControlName="comment">
+            </div>
+            <div class="col-md-6 align-content-center">
+              <label><input type="checkbox" class="ms-2" formControlName="isActive"> Activo?</label>
+            </div>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="close()">Cancelar</button>
+      <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="!rangeForm.valid">Guardar</button>
     </div>
 </div>
+
+  
