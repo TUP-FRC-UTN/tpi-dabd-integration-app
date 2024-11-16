@@ -1,7 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, input, Input, OnInit, SimpleChanges } from '@angular/core';
 import { ExpenseServiceService } from '../../../services/expense.service';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import Expense from '../../../models/expense';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import Expense, { ExpenseFilters } from '../../../models/expense';
 import { FormsModule } from '@angular/forms';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import Period from '../../../models/period';
@@ -16,9 +16,10 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import {NgPipesModule} from "ngx-pipes";
 import {
-  TableComponent,
+  TableColumn, TableComponent, ConfirmAlertComponent,
+
   MainContainerComponent,
-  TableFiltersComponent, Filter, FilterOption, SelectFilter
+  ToastService, TableFiltersComponent, Filter, FilterConfigBuilder, FilterOption, SelectFilter
 } from "ngx-dabd-grupo01" ;
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {InfoExpensesListComponent} from "../../modals/info-expenses-list/info-expenses-list.component";
@@ -82,7 +83,6 @@ export class ExpensesListComponent implements OnInit{
       this.selectedPeriodId = Number(this.periodPath)
     }
     this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
-      console.log(data.content)
       this.expenses = data.content.map(expense => {
         const expenses = this.keysToCamel(expense) as Expense;
         return {
@@ -126,7 +126,6 @@ export class ExpensesListComponent implements OnInit{
   onPageChange(page: number): void {
     if (page >= 0 && page < this.totalPages) {
 
-      console.log('Cargando página ' + page);
       this.loadExpenses(page, this.pageSize);
       this.updateVisiblePages();
       this.currentPage = page;
@@ -229,7 +228,6 @@ export class ExpensesListComponent implements OnInit{
 
 
   imprimir() {
-    console.log('Imprimiendo')
     const doc = new jsPDF();
 
     // Título del PDF
@@ -253,7 +251,6 @@ export class ExpensesListComponent implements OnInit{
       });
       // Guardar el PDF después de agregar la tabla
       doc.save('expenses_report.pdf');
-      console.log('Impreso')
     });
   }
 

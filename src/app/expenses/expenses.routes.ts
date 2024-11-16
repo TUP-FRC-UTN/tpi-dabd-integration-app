@@ -21,38 +21,178 @@ import {
 } from "./components/expenses-period/expenses-report/expenses-report/expenses-report.component";
 
 import { ExpensesListBillsComponent } from './components/expenses-bills/expenses-list-bills/expenses-list-bills.component';
-import { ExpensesReportChargesComponent } from './components/expenses-charges/expenses-report-charges/expenses-report-charges/expenses-report-charges.component';
+import {authGuard} from '../users/guards/auth.guard';
+import {hasRoleCodeGuard} from '../users/guards/has-role-code.guard';
+import {URLTargetType} from '../users/models/role';
 import { ExpensesListCategoryChargesComponent } from './components/expenses-charges/expenses-list-category-charges/expenses-list-categorycharge.component';
-import { ExpensesPeriodReportComponent } from './components/expenses-period/expenses-period-report/expenses-period-report.component';
-import { TopSupliersComponent } from './components/expenses-period/top-supliers/top-supliers.component';
 
 export const EXPENSES_ROUTES: Routes = [
   // Ruta periodos - manejo del estado del periodo
-  { path: 'periodo', component: ExpensesPeriodListComponent },
-  { path: 'periodo/:period_id/expensas', component: ExpensesListComponent },
-  { path: 'periodo/:period_id/liquidacion', component: ExpensesLiquidationComponent },
-  { path: 'periodo/:period_id/gastos', component: LiquidationExpenseDetailsComponent },
+  {
+    path: '',
+    component: ExpensesReportComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
+  {
+    path: 'periodo',
+    component: ExpensesPeriodListComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
+  {
+    path: 'periodo/:period_id/expensas',
+    component: ExpensesListComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
+  {
+    path: 'periodo/:period_id/liquidacion',
+    component: ExpensesLiquidationComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
+  {
+    path: 'periodo/:period_id/gastos',
+    component: LiquidationExpenseDetailsComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
 
   // Ruta expenses - CRUD de expensas
-  { path: 'expenses', component: ExpensesListComponent },
-  { path: 'expenses/report', component: ExpensesReportComponent},
-  { path: 'expenses/nuevo', component: ExpensesListChargesComponent },
-  { path: 'expenses/modificar/:id', component: ExpensesListChargesComponent },
+  { path: 'expenses',
+    component: ExpensesListComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
+  {
+    path: 'expenses/report',
+    component: ExpensesReportComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
+  {
+    path: 'expenses/nuevo',
+    component: ExpensesListChargesComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
+  {
+    path: 'expenses/modificar/:id',
+    component: ExpensesListChargesComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
 
   // Rutas cargos - CRUD de cargos
-  { path: 'cargos', component: ExpensesListChargesComponent },
-  { path: 'cargos/nuevo', component: ExpensesAddChargeComponent },
-  { path: 'cargos/modificar/:id', component: LiquidationExpenseDetailsComponent },
-  { path: 'cargos/categorias', component: ExpensesListCategoryChargesComponent },
-  { path: 'cargos/reportes', component: ExpensesReportChargesComponent },
-
+  {
+    path: 'cargos', component: ExpensesListChargesComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
+  {
+    path: 'cargos/nuevo',
+    component: ExpensesAddChargeComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
+  {
+    path: 'cargos/modificar/:id',
+    component: LiquidationExpenseDetailsComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
+  {
+    path: 'cargos/categorias',
+    component: ExpensesListCategoryChargesComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
 
   // Ruta bills - CRUD de gastos
-  { path: 'gastos', component: ExpensesListBillsComponent },
-  { path: 'gastos/nuevo', component: ExpensesAddBillComponent },
-  { path: 'gastos/modificar/:id', component: ExpensesAddBillComponent },
-  { path: 'gastos/categorias', component: ExpensesCategoryBillComponent },
-  { path: 'gastos/report', component: ExpensesPeriodReportComponent },
-  { path: 'gastos/top-proveedores', component: TopSupliersComponent },
+  {
+    path: 'gastos',
+    component: ExpensesListBillsComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
+  {
+    path: 'gastos/nuevo',
+    component: ExpensesAddBillComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
+  {
+    path: 'gastos/report',
+    component: ExpensesReportComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
+  {
+    path: 'gastos/modificar/:id',
+    component: ExpensesAddBillComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
+  {
+    path: 'gastos/categorias',
+    component: ExpensesCategoryBillComponent,
+    canActivate: [authGuard],
+    canMatch: [hasRoleCodeGuard],
+    data: {
+      allowedRoleCodes: [URLTargetType.SUPERADMIN, URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT]
+    }
+  },
 ];
 

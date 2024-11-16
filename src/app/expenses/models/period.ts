@@ -9,6 +9,7 @@ export default class Period {
   end_date: Date = new Date();
   extraordinary?: PeriodLiquidationExpense = {name: "", amount: 0};
   ordinary?: PeriodLiquidationExpense = {name: "", amount: 0};
+  monthName?:string=""
 }
 
 

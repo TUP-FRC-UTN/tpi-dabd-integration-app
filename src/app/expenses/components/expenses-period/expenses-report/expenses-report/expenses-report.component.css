@@ -1,1 +1,35 @@
+.icon-circle {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px; /* Tamaño del círculo */
+  height: 40px;
+  border-radius: 50%; /* Hace el contenedor redondo */
+  color: white; /* Color del ícono */
+  font-size: 24px; /* Tamaño del ícono */
+}
 
+/* Clases de fondo de ejemplo */
+.bg-cash {
+  background-color: #28a745; /* Color de fondo verde */
+}
+
+.bg-house {
+  background-color: #ffc107; /* Color de fondo amarillo */
+}
+
+.bg-houses {
+  background-color: #17a2b8; /* Color de fondo amarillo */
+}
+
+.bg-info {
+  background-color: #17a2b8; /* Color de fondo azul */
+}
+::ng-deep app-table-filters button {
+  height: 2rem; /* Con esto fuerzo al boton que esta dentro del app-table-filters al tamaño que quiero */
+  width: 3rem;
+  padding: 0.5rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  border-radius: 0.2rem;
+}
