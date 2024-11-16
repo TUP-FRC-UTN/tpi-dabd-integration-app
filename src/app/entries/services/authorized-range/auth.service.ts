@@ -7,6 +7,7 @@ import { AccessModel } from '../../models/accesses/access.model';
 import { CaseTransformerService } from '../../services/case-transformer.service';
 import { environment } from '../../../../environments/environment.prod';
 import { SessionService } from '../../../users/services/session.service';
+import { Role } from '../../../users/models/role';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +19,6 @@ export class AuthService {
   : 'http://localhost:8001/';
   
   sessionService = inject(SessionService);
-
 
   constructor(
     private http: HttpClient,
@@ -65,6 +65,14 @@ export class AuthService {
   }
 
   getAll(page: number, size: number, isActive?: boolean): Observable<Auth[]> {
+    const currentUser = this.sessionService.getItem('user');
+    
+    if (!currentUser || !currentUser.roles) {
+      return new Observable<Auth[]>(subscriber => subscriber.next([]));
+    }
+
+    const isOwner = currentUser.roles.some((role: Role) => role.name === 'OWNER');
+    
     const params = this.caseTransformer.toSnakeCase({
       size: 100000,
       isActive,
@@ -75,9 +83,15 @@ export class AuthService {
         params: params as any,
       })
       .pipe(
-        map((response) =>
-          response.map((item) => this.caseTransformer.toCamelCase(item))
-        )
+        map((response) => {
+          let auths = response.map((item) => this.caseTransformer.toCamelCase(item));
+          
+          if (isOwner) {
+            auths = auths.filter(auth => auth.authorizerId === currentUser.id);
+          }
+          
+          return auths;
+        })
       );
   }
 
