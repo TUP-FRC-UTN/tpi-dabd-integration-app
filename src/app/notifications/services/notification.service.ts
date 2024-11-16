@@ -6,6 +6,7 @@ import { forkJoin, map, Observable, switchMap } from 'rxjs';
 import { NotificationFilter } from '../models/notifications/filters/notificationFilter';
 import { PageRequest } from '../models/pagination/PageRequest';
 import { Page } from '../models/pagination/Page';
+import { SessionService } from '../../users/services/session.service';
 
 
 @Injectable({
@@ -15,15 +16,22 @@ export class NotificationService {
 
   private apiUrl: string;
 
-  constructor() {
-
+  constructor(private sessionService : SessionService) {
+    
     this.apiUrl = environment.apis.notifications.url;
   }
 
   private http: HttpClient = inject(HttpClient)
 
   getNotificationByContact() {
-    const params = new HttpParams().set('contactId', 1);
+    const user = this.sessionService.getItem('user');
+    const contactId = user?.contactId; 
+
+    if (!contactId) {
+      throw new Error('No contact ID found in session.');
+    }
+
+    const params = new HttpParams().set('contactId', contactId);
     const url = `${this.apiUrl}/notifications`;
 
     return this.http.get<Notification[]>(url, { params }).pipe(
