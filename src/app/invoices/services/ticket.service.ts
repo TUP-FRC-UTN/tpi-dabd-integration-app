@@ -5,6 +5,7 @@ import { TicketDto } from '../models/TicketDto';
 import { tick } from '@angular/core/testing';
 import { PaginatedResponse } from '../models/api-response';
 import { TransformTicketPipe } from '../pipes/ticket-mapper.pipe';
+import { RequestTicket, RequestTicketOwner } from '../models/RequestTicket';
 
 @Injectable({
   providedIn: 'root'
@@ -34,13 +35,12 @@ export class TicketService {
       );
     }
     
-
-    getAll(page : number, size : number): Observable<PaginatedResponse<TicketDto>> {
+    getAll(requestTicket: RequestTicket, page : number, size : number): Observable<PaginatedResponse<TicketDto>> {
       let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
         
-      return this.http.get<PaginatedResponse<TicketDto>>(this.apiGetAll, { params }).pipe(
+      return this.http.post<PaginatedResponse<TicketDto>>(this.apiGetAll, requestTicket, { params }).pipe(
         map((response: PaginatedResponse<any>) => {
           const transformPipe = new TransformTicketPipe();
           const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
@@ -51,6 +51,23 @@ export class TicketService {
         })
       );
     }
+  
+    // getAll(page : number, size : number): Observable<PaginatedResponse<TicketDto>> {
+    //   let params = new HttpParams()
+    //   .set('page', page.toString())
+    //   .set('size', size.toString());
+        
+    //   return this.http.get<PaginatedResponse<TicketDto>>(this.apiGetAll, { params }).pipe(
+    //     map((response: PaginatedResponse<any>) => {
+    //       const transformPipe = new TransformTicketPipe();
+    //       const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
+    //       return {
+    //         ...response,
+    //         content: transformedPlots 
+    //       };
+    //     })
+    //   );
+    // }
 
     // filterTicketByStatus(page : number, size : number, plotType : string) {
     //   let params = new HttpParams()
@@ -73,13 +90,13 @@ export class TicketService {
 
     // getAllForPDFUser()
 
-    getAllByOwner(page : number, size : number): Observable<PaginatedResponse<TicketDto>> {
+    getAllByOwner(requestTicket: RequestTicketOwner, page : number, size : number): Observable<PaginatedResponse<TicketDto>> {
+      requestTicket.ownerId = 1;
       let params = new HttpParams()
-      .set('ownerId', 1)
       .set('page', page.toString())
       .set('size', size.toString());
         
-      return this.http.get<PaginatedResponse<TicketDto>>(this.apiGetAllByOwner, { params }).pipe(
+      return this.http.post<PaginatedResponse<TicketDto>>(this.apiGetAllByOwner, requestTicket, { params }).pipe(
         map((response: PaginatedResponse<any>) => {
           const transformPipe = new TransformTicketPipe();
           const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
@@ -139,22 +156,15 @@ export class TicketService {
 
   getAllWithFilters(page: number, size: number, status?: string, lotId?:string, firstPeriod?: string, lastPeriod?: string, ownerId?: number): Observable<PaginatedResponse<TicketDto>> {
     let params = new HttpParams();
-      // .set('page', page.toString()) //comentamos para el filtro del controlador
-      // .set('size', size.toString());
-    if(ownerId){
-      params = params.set('ownerId', /*ownerId.toString()*/'1');
-    }
-    if (status) {
-      params = params.set('status', status);
-    }
-    if (firstPeriod) {
-      params = params.set('firstPeriod', firstPeriod);
-    }
-    if (lastPeriod) {
-      params = params.set('lastPeriod', lastPeriod);
-    }
+      params.set('page', page.toString())
+      .set('size', size.toString());
+    console.log(params);
+      
+    
+      const request = this.buildRequestTicket(status, firstPeriod, lastPeriod);      
+    
 
-    return this.http.get<PaginatedResponse<TicketDto>>(this.apiGetAll, { params }).pipe(
+    return this.http.post<PaginatedResponse<TicketDto>>(this.apiGetAll, request ,{ params }).pipe(
       map((response: PaginatedResponse<any>) => {
         const transformPipe = new TransformTicketPipe();
         const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
@@ -167,7 +177,22 @@ export class TicketService {
   }
 
 
+  buildRequestTicket(status?: string, firstPeriod?: string, lastPeriod?: string): RequestTicket { 
+    return { 
+      status: status ?? null, 
+      firstPeriod: firstPeriod ?? null, 
+      lastPeriod: lastPeriod ?? null 
+    };
+  }
 
+  buildRequestTicketOwner(ownerId: number, status?: string, firstPeriod?: string, lastPeriod?: string): RequestTicketOwner { 
+    return { 
+      ownerId, 
+      status: status ?? null, 
+      firstPeriod: firstPeriod ?? null, 
+      lastPeriod: lastPeriod ?? null 
+    };
+  }
 
   updateTicketStatus(id: number, status: string): Observable<TicketDto> {
     const url = `${this.baseUrl}/updateTicketStatus/${id}`;
@@ -183,9 +208,9 @@ export class TicketService {
       return '';
     }
     const yearStr = year.toString();
-    if(yearStr != '' && yearStr.startsWith('20')) {
-      return yearStr.slice(2);
-    }
+    // if(yearStr != '' && yearStr.startsWith('20')) {
+    //   return yearStr.slice(2);
+    // }
     if(yearStr != '' && Number(yearStr) < 2000){
       alert('El año ingresado no es valido');
     }

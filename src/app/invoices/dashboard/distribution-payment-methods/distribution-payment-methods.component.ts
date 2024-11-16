@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { PeriodRequest } from '../../models/stadistics';
+import { TicketFilter } from '../../models/stadistics';
 // import { DashBoardFilters } from '../../models/dashboard.model';
 
 @Component({
@@ -10,5 +10,5 @@ import { PeriodRequest } from '../../models/stadistics';
   styleUrl: './distribution-payment-methods.component.scss'
 })
 export class DistributionPaymentMethodsComponent {
-  @Input() filters: PeriodRequest = {} as PeriodRequest;
+  @Input() filters: TicketFilter = {} as TicketFilter;
 }

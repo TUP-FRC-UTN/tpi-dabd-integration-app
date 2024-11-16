@@ -37,6 +37,9 @@ import { forkJoin, mergeMap } from 'rxjs';
 import { ExpenseServiceService } from '../../../services/expense.service';
 import { DatePeriodModalComponent } from '../../modals/periods/date-period-modal/date-period-modal.component';
 import { InfoPeriodComponent } from '../../modals/info/info-period/info-period.component';
+import { User } from '../../../models/user';
+import { StorageService } from '../../../services/storage.service';
+import { URLTargetType } from '../../../../users/models/role';
 
 @Component({
   selector: 'app-expenses-period-list',
@@ -70,6 +73,9 @@ export class ExpensesPeriodListComponent implements OnInit {
   private readonly expensesService: ExpenseServiceService = inject(
     ExpenseServiceService
   );
+  private storage = inject(StorageService);
+
+  rolCode: boolean= false;
 
   listOpenPeriod: Period[] = [];
   listPeriod: Period[] = [];
@@ -84,6 +90,9 @@ export class ExpensesPeriodListComponent implements OnInit {
   month: number | null = null;
 
   ngOnInit(): void {
+    let user = this.storage.getFromSessionStorage('user') as User;
+    
+    this.rolCode = user.value.roles.filter(rol => rol.code === URLTargetType.FINANCE).length == 1 ? true : false
     this.loadPaged(1);
   }
   searchTerm = '';

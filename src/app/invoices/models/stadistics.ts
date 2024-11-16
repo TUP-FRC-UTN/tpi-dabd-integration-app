@@ -17,10 +17,16 @@ export interface TicketInfo {
 //   totalAmount: number;
 // }
 
-export interface PeriodRequest  {
+export interface PaymentFilter {
   startCreatedAt: string;
   endCreatedAt: string;
   paymentMethod: string;
+  status: string;
+}
+
+export interface TicketFilter {
+  startExpirationDate: string;
+  endExpirationDate: string;
   status: string;
 }
 

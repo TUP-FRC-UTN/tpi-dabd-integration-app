@@ -51,6 +51,7 @@ import { CurrencyFormatPipe } from '../pipes/currency-format.pipe';
 import { PaymentServiceService } from '../services/payment-service.service';
 import { PaymentDto } from '../models/PaymentDto';
 import { FilesServiceService } from '../services/files.service.service';
+import { RequestTicket } from '../models/RequestTicket';
 registerLocaleData(localeEs, 'es');
 @Component({
   selector: 'app-admin-list-expensas',
@@ -109,6 +110,13 @@ export class AdminListExpensasComponent implements OnInit {
       value: TicketStatus[key as keyof typeof TicketStatus],
     }));
   }
+
+  requestTicket: RequestTicket = {
+    status: null,
+    firstPeriod: null,
+    lastPeriod: null,
+  }
+
 
   filterType: string = '';
   ticketStatusOptions: { key: string; value: string }[] = [];
@@ -210,7 +218,7 @@ export class AdminListExpensasComponent implements OnInit {
 
   // Método para obtener todos los tickets usando el servicio
   getTickets(): void {
-    this.ticketService.getAll(this.currentPage, this.pageSize).subscribe({
+    this.ticketService.getAll(this.requestTicket, this.currentPage, this.pageSize).subscribe({
       next: (response: PaginatedResponse<TicketDto>) => {
         console.log('Tickets received:', response.content);
         this.listallticket = response.content;

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { OtherReport, PeriodRequest, TicketInfo, Top5, TopPayments } from '../models/stadistics';
+import { OtherReport, TicketFilter, TicketInfo, Top5, TopPayments } from '../models/stadistics';
 import { PaymentReportDto } from '../models/payments.report.model';
 import { TicketReportDto } from '../models/ticket.report.model';
 
@@ -22,25 +22,25 @@ export class StadisticsService {
 
   }
 
-  getBaseReport(fechas: PeriodRequest): Observable<Top5> {
+  getBaseReport(fechas: TicketFilter): Observable<Top5> {
     return this.http.post<Top5>(this.apiUrl + '/top5', fechas);
   }
 
-  getOtherReport(fechas: PeriodRequest): Observable<OtherReport> {
+  getOtherReport(fechas: TicketFilter): Observable<OtherReport> {
     return this.http.post<OtherReport>(this.apiUrl + '/otherReports', fechas);
   }
 
-  getAmountByDate(fechas: PeriodRequest): Observable<TicketInfo[]> {
+  getAmountByDate(fechas: TicketFilter): Observable<TicketInfo[]> {
     return this.http.post<TicketInfo[]>(this.apiUrl + '/totalPayments', fechas);
   }
 
-  getPreferredApproved(fechas: PeriodRequest): Observable<TopPayments> {
+  getPreferredApproved(fechas: TicketFilter): Observable<TopPayments> {
     console.log(fechas);
 
     return this.http.post<TopPayments>(this.baseUrlpaymentsReport + '/topPaymentsApproved', fechas);
   }
 
-  getPreferredRejected(fechas: PeriodRequest): Observable<TopPayments> {
+  getPreferredRejected(fechas: TicketFilter): Observable<TopPayments> {
     return this.http.post<TopPayments>(this.baseUrlpaymentsReport + '/topPaymentsRejected', fechas);
   }
 
@@ -53,17 +53,23 @@ export class StadisticsService {
       }
     }
 
-    return this.http.get<PaymentReportDto[]>(this.baseUrlpaymentsReport + '/filters');
+    return this.http.get<PaymentReportDto[]>(this.baseUrlpaymentsReport + '/filters', {params: httpParams});
   }
 
   getDinamycFilterTickets(filters: any) : Observable<TicketReportDto[]> {
-    let httpParams = new HttpParams()
+
+    // ESTO CAUSA EL CICLO WHILE ???
+    // if (filters.startExpirationDate != null && filters.endExpirationDate != null) {
+    //   filters.startExpirationDate = filters.startExpirationDate + '-01';
+    //   filters.endExpirationDate = filters.endExpirationDate + '-01';
+    // }
+    let params = new HttpParams()
     for (const key in filters) {
       if (filters.hasOwnProperty(key) && filters[key] !== undefined && filters[key] !== '') {
-        httpParams = httpParams.set(key, filters[key].toString());
+        params = params.set(key, filters[key].toString());
       }
     }
-    return this.http.get<TicketReportDto[]>(this.baseUrlTicket + '/filters');
-  }
 
+    return this.http.get<TicketReportDto[]>(this.baseUrlTicket + '/filters', {params});
+  }
 }

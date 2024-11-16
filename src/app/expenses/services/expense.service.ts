@@ -28,6 +28,7 @@ export class ExpenseServiceService {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
+    // Parámetros adicionales
     if (periodId !== undefined && periodId !== 0 && periodId != null ) {
       params = params.set('periodId', periodId.toString());
     }
@@ -86,17 +87,19 @@ export class ExpenseServiceService {
     if (periodId !== undefined && periodId !== 0 && periodId !== null) {
       params = params.set('periodId', periodId.toString());
     }
+    if(periodId == 0 || isNaN(periodId)) {
+      params = params.delete('periodId')
+    }
     if(quantity == 0) {
-      console.log('Aca deberia')
       quantity = 10
     }
     if (quantity !== undefined && quantity !== 0 && quantity !== null) {
       params = params.set('quantity', quantity.toString());
     }
-
+    console.log(periodId)
     return this.http.get<expenseReport>(`${PORT}report/expense?top=` + top.toString(), {params});
   }
   getLotPercentage() : Observable<number[]> {
-    return this.http.get<number[]>(`${PORT}report/lot`)
+    return this.http.get<number[]>(`${PORT}/report/lot`)
   }
 }

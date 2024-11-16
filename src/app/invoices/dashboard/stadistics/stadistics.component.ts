@@ -6,7 +6,7 @@ import { GoogleChartsModule } from "angular-google-charts";
 import { KpiComponent } from "../commons/kpi/kpi.component";
 
 import { CommonModule, NgClass } from "@angular/common";
-import { DashboardStatus, PeriodRequest } from '../../models/stadistics';
+import {DashboardStatus, PaymentFilter, TicketFilter} from '../../models/stadistics';
 import { MainDashboardComponent } from '../main-dashboard/main-dashboard.component';
 import { BarchartComponent } from '../commons/barchart/barchart.component';
 import { StadisticsService } from '../../services/stadistics.service';
@@ -36,7 +36,8 @@ import { TotalPaymentsComponent } from '../total-payments/total-payments.compone
 export class StadisticsComponent implements OnInit {
 
   //filters
-  filters: PeriodRequest = {} as PeriodRequest
+  ticketFilter: TicketFilter = {} as TicketFilter
+  paymentFilter: PaymentFilter = {} as PaymentFilter
   // filters: DashBoardFilters = {} as DashBoardFilters;
 
   //dashboard settings
@@ -49,14 +50,14 @@ export class StadisticsComponent implements OnInit {
 
   //Childs
   @ViewChild(MainDashboardComponent) main!: MainDashboardComponent;
-  @ViewChild(DistributionPaymentMethodsComponent) distribution!: DistributionPaymentMethodsComponent;
-  @ViewChild(TotalPaymentsComponent) total!: TotalPaymentsComponent;
+  @ViewChild(TotalPaymentsComponent) payments!: TotalPaymentsComponent;
 
 
   @ViewChild(BarchartComponent) barchartComponent!: BarchartComponent;
 
   @ViewChild('infoModal') infoModal!: TemplateRef<any>
   dateFilterForm: FormGroup;
+  dateFilterFormPayments: FormGroup;
 
 
   constructor(private fb: FormBuilder,
@@ -64,6 +65,10 @@ export class StadisticsComponent implements OnInit {
     @Inject(ChangeDetectorRef) private cdr: ChangeDetectorRef) {
 
     this.dateFilterForm = this.fb.group({
+      firstDate: [''],
+      lastDate: ['']
+    });
+    this.dateFilterFormPayments = this.fb.group({
       firstDate: [''],
       lastDate: ['']
     });
@@ -79,49 +84,42 @@ export class StadisticsComponent implements OnInit {
 
 
     this.dateFilterForm.get('firstDate')?.valueChanges.subscribe(value => {
-      console.log('Cambio en la fecha de inicio:', value);
-      this.filterData();
+      // this.filterData();
     });
 
     this.dateFilterForm.get('lastDate')?.valueChanges.subscribe(value => {
-      console.log('Cambio en la fecha de fin:', value);
-      this.filterData();
+      // this.filterData();
     });
 
     this.dateFilterForm.valueChanges.subscribe(values => {
-      console.log('Cambio en el formulario:', values);
-      this.filterData();
+      // this.filterData();
     });
   }
 
+  ngAfterViewInit(): void {
+    this.filterData();
+    this.filterDataPayment()
+    this.cdr.detectChanges(); // Fuerza la detección de cambios
+  }
+
+  onDateChange(){
+    this.filterData();
+  }
 
   initializeDefaultDates() {
-    const now = new Date();
+      // this.dateFilterForm.patchValue({
+      //   firstDate: "2024-01",
+      //   lastDate: "2024-03"
+      // })
 
-    const month = (now.getMonth() + 1).toString().padStart(2, '0'); // `padStart` asegura que el mes tenga dos dígitos
-    const year = now.getFullYear().toString();
+      this.ticketFilter = {
+        status: "",
+        startExpirationDate: "",
+        endExpirationDate: ""
+      };
 
-    // Asigna las fechas en formato MM-YYYY
-    this.filters.startCreatedAt = `${'01'}/${year.slice(2)}`;
-    this.filters.endCreatedAt = `${'03'}/${year.slice(2)}`;
-    // this.filters = {
-    //   firstDate: this.formatMonthYear(this.filters.firstDate),
-    //   lastDate: this.formatMonthYear(this.filters.lastDate),
-    //   paymentType: '', // Add appropriate default value
-    //   status: '' // Add appropriate default value
-    // };
-
-    this.filterData()
-  }
-
-  formatMonthYear(dateString: string): string {
-    const [year, month] = dateString.split('-');
-    return `${month}/${year.slice(2)}`; // Formato "MM/YY" para la API
-  }
-
-  onInfoButtonClick() {
-    this.modalService.open(this.infoModal, { size: 'lg' });
-  }
+      this.filterData();
+    }
 
   resetFilters() {
     this.initializeDefaultDates();
@@ -130,27 +128,29 @@ export class StadisticsComponent implements OnInit {
 
   filterData() {
     this.main.getData()
-    this.total.getData()
   }
 
+  filterDataPayment() {
+    this.payments.getData()
+  }
 
+  resetFiltersPayment() {
+    this.initializeDefaultDatesPayment();
+  }
 
-  changeMode(event: any) {
-    const statusKey = Object.keys(DashboardStatus).find(key => DashboardStatus[key as keyof typeof DashboardStatus] === event);
-
-    if (statusKey) {
-      this.status = DashboardStatus[statusKey as keyof typeof DashboardStatus];
-    } else {
-      console.error('Valor no válido para el enum');
+  initializeDefaultDatesPayment() {
+    this.paymentFilter = {
+      status: "",
+      paymentMethod: "",
+      startCreatedAt: "",
+      endCreatedAt: ""
     }
+
+    this.filterDataPayment()
   }
 
   protected readonly DashboardStatus = DashboardStatus;
 
-  ngAfterViewInit(): void {
-    this.filterData();
-    this.cdr.detectChanges(); // Fuerza la detección de cambios
-  }
 
   // ACA SE ABRE EL MODAL DE INFO
   showInfo(): void {
@@ -161,5 +161,10 @@ export class StadisticsComponent implements OnInit {
       centered: true,
       scrollable: true,
     });
+  }
+
+
+  onInfoButtonClick() {
+    this.modalService.open(this.infoModal, { size: 'lg' });
   }
 }

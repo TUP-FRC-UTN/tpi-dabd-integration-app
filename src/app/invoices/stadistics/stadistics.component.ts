@@ -7,7 +7,7 @@ import { MainContainerComponent } from 'ngx-dabd-grupo01';
 import { InfoComponent } from '../info/info.component';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { StadisticsService } from '../services/stadistics.service';
-import { OtherReport, PeriodRequest, TicketInfo, Top5, TopPayments } from '../models/stadistics';
+import { OtherReport, TicketFilter, TicketInfo, Top5, TopPayments } from '../models/stadistics';
 
 @Component({
   selector: 'app-stadistics',
@@ -127,7 +127,7 @@ export class StadisticsComponent implements OnInit {
   async buscar() {
 
     const fechas = this.dateForm.value;
-    const periodRequest: PeriodRequest = {
+    const periodRequest: TicketFilter = {
       firstDate: this.formatMonthYear(fechas.startDate),
       lastDate: this.formatMonthYear(fechas.endDate)
     };
@@ -186,7 +186,7 @@ export class StadisticsComponent implements OnInit {
     this.cantidadCancelados = this.OtherReports.canceled;
   }
 
-  getReportDataTop5(periodRequest: PeriodRequest): Promise<void> {
+  getReportDataTop5(periodRequest: TicketFilter): Promise<void> {
     return new Promise((resolve, reject) => {
       this.stadisticsService.getBaseReport(periodRequest).subscribe(
         (data: Top5) => {
@@ -201,7 +201,7 @@ export class StadisticsComponent implements OnInit {
     });
   }
 
-  getOtherReport(periodRequest: PeriodRequest): Promise<void> {
+  getOtherReport(periodRequest: TicketFilter): Promise<void> {
     return new Promise((resolve, reject) => {
       this.stadisticsService.getOtherReport(periodRequest).subscribe(
         (data: OtherReport) => {
@@ -217,7 +217,7 @@ export class StadisticsComponent implements OnInit {
   }
 
   //Se obtienen los totales cobrados en cada periodo para el grafico de comparacion
-  getPeriodAmount(periodRequest: PeriodRequest): Promise<void> {
+  getPeriodAmount(periodRequest: TicketFilter): Promise<void> {
     return new Promise((resolve, reject) => {
       this.stadisticsService.getAmountByDate(periodRequest).subscribe(
         (data: TicketInfo[]) => {
@@ -232,7 +232,7 @@ export class StadisticsComponent implements OnInit {
     });
   }
 
-  getReportDataTopPreferred(periodRequest: PeriodRequest): Promise<void> {
+  getReportDataTopPreferred(periodRequest: TicketFilter): Promise<void> {
     return new Promise((resolve, reject) => {
       this.stadisticsService.getPreferred(periodRequest).subscribe(
         (data: TopPayments) => {

@@ -42,6 +42,7 @@ import { FilesServiceService } from '../services/files.service.service';
 import { PeriodToMonthYearPipe } from '../pipes/period-to-month-year.pipe';
 import { CurrencyFormatPipe } from '../pipes/currency-format.pipe';
 import { PaymentServiceService } from '../services/payment-service.service';
+import { RequestTicketOwner } from '../models/RequestTicket';
 
 registerLocaleData(localeEs, 'es');
 @Component({
@@ -132,6 +133,13 @@ export class OwnerListExpensasComponent {
     period:''
   };
   isFilter: boolean = false; // to keep the status to avoid load all values from backend
+
+  requestTicketOwner: RequestTicketOwner = {
+    ownerId: 1,
+    status: null,
+    firstPeriod: null,
+    lastPeriod: null,
+  };
 
   // Método que detecta cambios en los filtros
   filterChange($event: Record<string, any>) {
@@ -224,7 +232,7 @@ export class OwnerListExpensasComponent {
     });
   }
   ngOnInit() {
-    this.ticketService.getAllByOwner(this.currentPage, this.pageSize).subscribe(
+    this.ticketService.getAllByOwner(this.requestTicketOwner, this.currentPage, this.pageSize).subscribe(
       (response) => {
         console.log('Tickets del propietario:', response);
         this.ticketOwnerList = response.content; // Lista original de tickets
@@ -414,7 +422,7 @@ export class OwnerListExpensasComponent {
   // Método para obtener todos los tickets usando el servicio
   getTickets(): void {
     this.ticketService
-      .getAllByOwner(this.currentPage, this.pageSize)
+      .getAllByOwner(this.requestTicketOwner, this.currentPage, this.pageSize)
       .subscribe({
         next: (response: PaginatedResponse<TicketDto>) => {
           console.log('Tickets received:', response.content);
