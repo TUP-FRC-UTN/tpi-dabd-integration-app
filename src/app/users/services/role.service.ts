@@ -33,11 +33,7 @@ export class RoleService {
   ): Observable<PaginatedResponse<Role>> {
     let params = new HttpParams()
       .set('page', page >= 0 ? page.toString() : '0')
-      .set('size', size.toString());
-
-      if (typeof isActive === 'boolean' && !isActive) {
-        params = params.append('is_active', isActive.toString());
-      }
+      .set('size', size.toString())
 
     const headers = new HttpHeaders({
       'x-user-id': this.sessionService.getItem('user').id.toString()
