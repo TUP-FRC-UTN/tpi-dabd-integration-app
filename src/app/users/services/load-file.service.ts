@@ -13,7 +13,7 @@ export class LoadFileService {
 
   private plotUploadUrl: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}plots`;
 
-  private fileUpdateUrl: string = `${environment.production ? `${environment.apis.cadastre}files` : `${environment.apis.cadastre}`}files`;
+  private fileUpdateUrl: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}files`;
 
   private sessionService = inject(SessionService);
 
