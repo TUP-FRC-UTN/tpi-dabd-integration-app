@@ -1,11 +1,10 @@
 import { NgClass, NgIf } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastsContainer, ToastService } from 'ngx-dabd-grupo01';
 import { VisitorService } from '../../../../services/visitors/visitor.service';
-
 import { LoginModel } from '../../../../models/login.model';
 import { LoginService } from '../../../../services/access/login.service';
 
@@ -38,7 +37,8 @@ export class EntityFormComponent {
   loginService = inject(LoginService);
   visitorService = inject(VisitorService);
 
- 
+  constructor() {
+  }
 
   ngOnInit(): void {
     if (this.visitorId) {
@@ -55,7 +55,6 @@ export class EntityFormComponent {
   }
 
   onCancel() {
-    this.router.navigate(['/entity/list']);
     this.activeModal.dismiss(); // Cierra el modal
   }
 
@@ -69,6 +68,8 @@ export class EntityFormComponent {
   
       this.visitorService.upsertVisitor(formData, this.loginService.getLogin().id, this.visitorId).subscribe({
         next: (response) => {
+          this.toastService.clear();
+          
           if (this.isUpdate) {
             this.toastService.sendSuccess("Actualización exitosa!");
           } else {
@@ -78,15 +79,15 @@ export class EntityFormComponent {
   
           this.entitySaved.emit(true);
   
-          // aca cerramos el modal después de mostrar el toast
           setTimeout(() => {
             this.activeModal.close();
-            this.toastService.remove(this.toastService.toasts[0]);  
-            this.isUpdate = false; 
-          }, 1500); 
+            this.isUpdate = false;
+            this.toastService.clear();  
+          }, 1500);
         },
         error: (error) => {
           console.log(error);
+          this.toastService.clear(); // Limpia los toasts previos
           if (error.status === 400) {
             this.toastService.sendError("Error, Documento ya registrado.");
           } else {
@@ -98,7 +99,8 @@ export class EntityFormComponent {
       this.markAllAsTouched();
     }
   }
-
+  
+  
   private markAllAsTouched(): void {
     Object.values(this.entityForm.controls).forEach((control) => {
       control.markAsTouched();
@@ -129,7 +131,7 @@ export class EntityFormComponent {
     });
   }
 
-  getLogin():LoginModel{
+  getLogin(): LoginModel {
     return {
       birthDate: "", docNumber: 0, docType: "", id: 2, lastName: "R.", name: "Juan"
     }

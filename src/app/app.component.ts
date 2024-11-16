@@ -40,16 +40,20 @@ export class AppComponent {
       routerLink: 'entries',
       sidebarMenu: [
         {
-          label: 'Entidades',
+          label: 'Listado de Entidades',
           routerLink: 'entries/entity/list',
         },
         {
-          label: 'Consulta de Accesos',
+          label: 'Listado de Accesos',
           routerLink: 'entries/access-query',
         },
         {
           label: 'Listado de Autorizaciónes',
           routerLink: 'entries/auth-list',
+        },
+        {
+          label: 'Dashboards',
+          routerLink: 'entries/dashboard',
         },
       ],
     },
