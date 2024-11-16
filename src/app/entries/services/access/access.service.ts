@@ -154,7 +154,7 @@ export class AccessService {
     const params = new HttpParams().set('from', from).set('to', to);
 
     return this.http
-      .get<EntryReport>(`${this.apiUrl}/getAccessCounts`, {
+      .get<EntryReport>(`${this.apiUrl}/counts`, {
         params,
       })
       .pipe(map((response) => this.caseTransformer.toCamelCase(response)));
