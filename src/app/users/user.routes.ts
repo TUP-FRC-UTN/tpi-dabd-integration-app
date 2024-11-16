@@ -41,7 +41,7 @@ export const USER_ROUTES: Routes = [
   //{ path: '', component: UserHomeComponent },
   {
     path: '',
-    redirectTo: '/owner/reports',
+    redirectTo: '/home',
     pathMatch: 'full' /* canActivate: [authGuard] */,
   },
   {
