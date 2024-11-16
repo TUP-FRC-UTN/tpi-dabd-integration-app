@@ -79,7 +79,7 @@ export class CadastreOwnerAssignPlotComponent {
   ownerTypeDictionary = OwnerTypeDictionary;
 
   ngOnInit() {
-    this.getAllOwners()
+    this.confirmSearch();
   }
 
   getAllOwners(isActive?: boolean) {
@@ -105,24 +105,37 @@ export class CadastreOwnerAssignPlotComponent {
     return;
   }
 
-  onItemsPerPageChange() {
-    this.currentPage = 1;
-    this.getAllOwners()
-  }
-
   onPageChange(page: number) {
     this.currentPage = page;
-    this.getAllOwners()
+    this.confirmSearch();
   }
 
-  filterChange($event: Record<string, any>) {
-    this.ownerService.dinamicFilters(0, this.pageSize, $event).subscribe({
+  dinamicFilter() {
+    this.ownerService.dinamicFilters(this.currentPage - 1, this.pageSize, this.filters).subscribe({
       next : (result) => {
         this.owners = result.content;
         this.lastPage = result.last
         this.totalItems = result.totalElements;
       }
     })
+  }
+
+  filters?: Record<string, any>
+
+  filterChange($event: Record<string, any>) {
+    this.filters = $event;
+    this.currentPage = 0
+    this.confirmSearch();
+  }
+
+  confirmSearch() {
+    this.filters == undefined ? this.getAllOwners() : this.dinamicFilter();
+  }
+
+  clearFilter() {
+    this.filters = undefined
+    this.currentPage = 0
+    this.confirmSearch();
   }
 
   selectOwner(owner: Owner): void {
@@ -212,7 +225,7 @@ export class CadastreOwnerAssignPlotComponent {
             detail: 'Estado de activo o inactivo del propietario.',
           }
         ],
-      },      
+      },
       {
         title: 'Filtros',
         content: [

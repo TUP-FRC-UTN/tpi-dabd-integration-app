@@ -367,6 +367,19 @@ export class OwnerFormComponent implements OnInit {
 
   }
 
+  setContactType(contactType: string | undefined) {
+    switch(contactType){
+      case "PHONE":
+        return "Teléfono";
+      case "EMAIL":
+        return "Email";
+      case "SOCIAL_MEDIA_LINK":
+        return "Link red social";
+      default:
+        return "Otro";
+    }
+  }
+
   birthdateValidation(control: AbstractControl): ValidationErrors | null {
     const fechaNacimiento = new Date(control.value);
     const fechaActual = new Date();

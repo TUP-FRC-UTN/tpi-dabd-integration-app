@@ -25,7 +25,7 @@ export class OwnerPlotService {
       .set('page', page.toString())
       .set('size', size.toString());
 
-    return this.http.get<PaginatedResponse<OwnerPlotHistoryDTO>>(`${this.host}/owner/plot/${plotId}`, { params }).pipe(
+    return this.http.get<PaginatedResponse<OwnerPlotHistoryDTO>>(`${this.host}owner/plot/${plotId}`, { params }).pipe(
       map((response: PaginatedResponse<any>) => {
         const transformPipe = new TransformOwnerPlotHistoryPipe();
         const transformedOwners = response.content.map((owner: any) => transformPipe.transform(owner));

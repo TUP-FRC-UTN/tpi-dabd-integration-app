@@ -64,7 +64,7 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      console.log("loginForm: ", this.loginForm.value);
+      
       this.loginService
         .login(this.loginForm.value)
         .pipe(

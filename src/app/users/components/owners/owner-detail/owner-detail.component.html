@@ -238,7 +238,7 @@
       @for(contact of contacts; track $index) {
         <div class="row">
           <div class="col-9">
-            {{ contact.contact_type }} - {{ contact.contact_value }}
+            {{ setContactType(contact.contact_type) }} - {{ contact.contact_value }}
           </div>
         </div>
       }

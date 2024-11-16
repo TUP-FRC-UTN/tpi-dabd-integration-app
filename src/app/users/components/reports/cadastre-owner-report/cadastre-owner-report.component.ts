@@ -263,6 +263,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
   resetDateFilter() {
     this.dateFilterFrom = ""
     this.dateFilterTo = ""
+    this.chartFilters = {}
   }
 
 
@@ -277,7 +278,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
       .dinamicFilters(0, 2147483647, cleanFilters)
       .pipe(
         map((response: PaginatedResponse<Owner>) => {
-          console.log("Resp filterReports ", response.content)
+          
           this.owners = response.content;
           this.updateOwnerCharts();
           this.calculateKPIs();

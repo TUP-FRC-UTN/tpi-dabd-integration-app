@@ -149,9 +149,6 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
   }
 
   loadData(filters: Record<string, any> = {}): void {
-    console.log('estos son los filtros');
-    console.log(filters);
-    console.log('--------------------------------------------');
     
     
     this.userService
@@ -248,8 +245,6 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
 
   filterReports(): void {
     const cleanFilters = this.cleanFilters(this.chartFilters)
-    console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-    console.log(cleanFilters);
     
     this.userService
       .dinamicFilters(0, 1000, cleanFilters)
