@@ -1,23 +1,172 @@
-<div class="modal-header">
-  <h4 class="modal-title">Añadir construcción</h4>
-  <button
-    type="button"
-    class="btn-close"
-    aria-label="Close"
-    (click)="activeModal.dismiss('Cross click')"
-  ></button>
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">Añadir construcción</h5>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="onClose()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="alert alert-info">
+      Una vez creada la obra será necesario modificarla para agregar la
+      documentación correspondiente.
+    </div>
+    <!-- Mueve el botón de submit dentro del formulario -->
+    <form [formGroup]="constructionForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="plot_id" class="form-label">Lote</label>
+        <select
+          formControlName="plot_id"
+          id="plot_id"
+          class="form-select"
+          [ngClass]="{
+            'is-invalid':
+              constructionForm.controls['plot_id'].invalid &&
+              !constructionForm.controls['plot_id'].untouched,
+            'is-valid': constructionForm.controls['plot_id'].valid
+          }"
+        >
+          @for (plot of userData.plots; track $index) {
+          <option [value]="plot">
+            {{ plot.plotNumber }} - {{ plot.blockNumber }} - {{ plot.plotType }}
+          </option>
+          }
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="description" class="form-label">Descripción</label>
+        <input
+          formControlName="description"
+          id="description"
+          type="text"
+          class="form-control"
+          [ngClass]="{
+            'is-invalid':
+              constructionForm.controls['description'].invalid &&
+              !constructionForm.controls['description'].untouched,
+            'is-valid': constructionForm.controls['description'].valid
+          }"
+        />
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label for="planned_start_date" class="form-label"
+            >Fecha de inicio</label
+          >
+          <input
+            formControlName="planned_start_date"
+            id="planned_start_date"
+            type="date"
+            class="form-control"
+            [ngClass]="{
+              'is-invalid':
+                constructionForm.get('planned_start_date')?.invalid &&
+                constructionForm.get('planned_start_date')?.touched,
+              'is-valid':
+                constructionForm.get('planned_start_date')?.valid &&
+                constructionForm.get('planned_start_date')?.touched
+            }"
+          />
+          @if(constructionForm.get('planned_start_date')?.hasError('invalidStartDate')
+          && constructionForm.get('planned_start_date')?.touched) {
+          <div class="invalid-feedback">
+            La fecha de inicio debe ser posterior a hoy.
+          </div>
+          }
+        </div>
+
+        <div class="col">
+          <label for="planned_end_date" class="form-label"
+            >Fecha de finalización</label
+          >
+          <input
+            formControlName="planned_end_date"
+            id="planned_end_date"
+            type="date"
+            class="form-control"
+            [ngClass]="{
+              'is-invalid':
+                constructionForm.hasError('invalidEndDate') &&
+                constructionForm.get('planned_end_date')?.touched,
+              'is-valid':
+                constructionForm.get('planned_end_date')?.valid &&
+                constructionForm.get('planned_end_date')?.touched
+            }"
+          />
+          @if(constructionForm.hasError('invalidEndDate') &&
+          constructionForm.get('planned_end_date')?.touched) {
+          <div class="invalid-feedback">
+            La fecha de finalización debe ser posterior a la de inicio.
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col">
+          <label for="start_time" class="form-label">Hora de inicio</label>
+          <input
+            formControlName="start_time"
+            id="start_time"
+            type="time"
+            class="form-control"
+            [ngClass]="{
+              'is-invalid':
+                constructionForm.controls['start_time'].invalid &&
+                !constructionForm.controls['start_time'].untouched,
+              'is-valid': constructionForm.controls['start_time'].valid
+            }"
+          />
+        </div>
+        <div class="col">
+          <label for="end_time" class="form-label">Hora de finalización</label>
+          <input
+            formControlName="end_time"
+            id="end_time"
+            type="time"
+            class="form-control"
+            [ngClass]="{
+              'is-invalid':
+                constructionForm.controls['end_time'].invalid &&
+                !constructionForm.controls['end_time'].untouched,
+              'is-valid': constructionForm.controls['end_time'].valid
+            }"
+          />
+        </div>
+      </div>
+
+      <div
+        *ngIf="constructionForm.hasError('invalidTimeRange')"
+        class="alert alert-danger mt-2"
+      >
+        La hora de inicio no puede ser posterior a la de finalización.
+      </div>
+
+      <div class="mb-3">
+        <label for="project_address" class="form-label">Dirección</label>
+        <input
+          formControlName="project_address"
+          id="project_address"
+          type="text"
+          class="form-control"
+        />
+      </div>
+
+      <!-- Botón de submit dentro del formulario -->
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Confirmar</button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="activeModal.dismiss()"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
-<div class="modal-body">
-  <p class="alert alert-info">Una vez creada la obra será necesario modificarla para agregar la documentación correspondiente.</p>
-  <app-form-fields
-    [formConfig]="constructionFormConfig"
-    [isButtonOutside]="isButtonOutside"
-    [onSubmit]="onSubmit"
-  ></app-form-fields>
-</div>
-@if(isButtonOutside) {
-<div class="modal-footer">
-  <button class="btn btn-success" (click)="submitForm()">Confirmar</button>
-  <button class="btn btn-danger" (click)="activeModal.dismiss('Cross click')">Cancelar</button>
-</div>
-}

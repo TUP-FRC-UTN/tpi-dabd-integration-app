@@ -7,6 +7,7 @@ import {
   ConstructionUpdateRequestDto,
   ConstructionUpdateStatusRequestDto,
 } from '../models/construction.model';
+import { environment } from '../../../../../environments/environment';
 
 type OneConstruction = ConstructionResponseDto | undefined;
 
@@ -14,7 +15,7 @@ type OneConstruction = ConstructionResponseDto | undefined;
   providedIn: 'root',
 })
 export class ConstructionService {
-  private apiUrl = 'http://localhost:8080/constructions';
+  private apiUrl = environment.apis.constructions.slice(0, -1) + '/constructions';
 
   private oneConstruction = new BehaviorSubject<OneConstruction>(undefined);
   oneConstruction$ = this.oneConstruction.asObservable();
@@ -29,6 +30,10 @@ export class ConstructionService {
   isLoading$ = this.isLoadingSubject.asObservable();
 
   private readonly http = inject(HttpClient);
+
+  getAllItems(): Observable<ConstructionResponseDto[]> {
+    return this.http.get<ConstructionResponseDto[]>(this.apiUrl);
+  }
 
   getAllConstructions(
     page: number,
@@ -71,7 +76,9 @@ export class ConstructionService {
     construction: ConstructionRequestDto
   ): Observable<ConstructionResponseDto> {
     return this.http
-      .post<ConstructionResponseDto>(this.apiUrl, construction)
+      .post<ConstructionResponseDto>(this.apiUrl, construction, {
+        headers: { 'Content-Type': 'application/json' },
+      })
       .pipe(
         map((newItem) => {
           const updatedItems = [...this.itemsSubject.value, newItem];
@@ -115,6 +122,25 @@ export class ConstructionService {
     );
   }
 
+  startConstruction(id: number): Observable<ConstructionResponseDto> {
+    return this.http.put<ConstructionResponseDto>(
+      `${this.apiUrl}/start/${id}`,
+      {}
+    );
+  }
+
+  finishConstruction(
+    id: number,
+    userId: number
+  ): Observable<ConstructionResponseDto> {
+    const params = new HttpParams().set('userId', userId);
+    return this.http.put<ConstructionResponseDto>(
+      `${this.apiUrl}/complete/${id}`,
+      {},
+      { params }
+    );
+  }
+
   onReviewConstruction(id: number): Observable<ConstructionResponseDto> {
     return this.http.put<ConstructionResponseDto>(
       `${this.apiUrl}/review/${id}`,
@@ -130,6 +156,18 @@ export class ConstructionService {
       `${this.apiUrl}/reject/${id}`,
       { rejectionReason: reason }
     );
+  }
+
+  getMonthlyConstructionStats(searchParams: any = {}): Observable<any[]> {
+    let params = new HttpParams();
+
+    Object.keys(searchParams).forEach((key) => {
+      if (searchParams[key]) {
+        params = params.set(key, searchParams[key]);
+      }
+    });
+
+    return this.http.get<any[]>(`${this.apiUrl}/stats/monthly`, { params });
   }
 
   /* rejectConstruction(id: number): Observable<ConstructionResponseDto> {

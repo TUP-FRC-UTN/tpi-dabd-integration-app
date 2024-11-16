@@ -11,7 +11,6 @@ import { SessionService } from './users/services/session.service';
 import { LoginService } from './users/services/login.service';
 import { ForgotPasswordComponent } from './users/components/forgot-password/forgot-password.component';
 import { BehaviorSubject, Observable } from 'rxjs';
-import {RoleSelectorComponent} from './penalties/shared/components/role-selector/role-selector.component';
 import { filter, map } from 'rxjs/operators';
 
 @Component({
@@ -25,7 +24,6 @@ import { filter, map } from 'rxjs/operators';
     AsyncPipe,
     LoginComponent,
 	ForgotPasswordComponent,
-	RoleSelectorComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -74,13 +72,14 @@ export class AppComponent {
     },
     {
       label: 'Construcciones',
+      routerLink: '/penalties/constructions',
       sidebarMenu: [
         {
           label: 'Administración',
           subMenu: [
             {
               label: 'Obras',
-              routerLink: '/constructions',
+              routerLink: '/penalties/constructions',
             },
           ],
         },
@@ -89,7 +88,7 @@ export class AppComponent {
           subMenu: [
             {
               label: 'Gráficos de obras',
-              routerLink: '/constructions-report',
+              routerLink: '/penalties/constructions-report',
             },
           ],
         },
@@ -191,10 +190,11 @@ export class AppComponent {
     },
     {
       label: 'Normas',
+      routerLink: '/penalties/rules',
       sidebarMenu: [
         {
           label: 'Reglamento',
-          routerLink: '/rules',
+          routerLink: '/penalties/rules',
         }
       ]
     },
@@ -234,22 +234,23 @@ export class AppComponent {
     },
     {
       label: 'Moderación',
+      routerLink: '/penalties/fine',
       sidebarMenu: [
         {
           label: 'Administración',
           subMenu: [
-            { label: 'Multas', routerLink: '/fine' },
-            { label: 'Infracciones', routerLink: '/infraction' },
-            { label: 'Reclamos', routerLink: '/claim' },
-            { label: 'Tipos de Sanciones', routerLink: '/sanctionType' },
+            { label: 'Multas', routerLink: '/penalties/fine' },
+            { label: 'Infracciones', routerLink: '/penalties/infraction' },
+            { label: 'Reclamos', routerLink: '/penalties/claim' },
+            { label: 'Tipos de Sanciones', routerLink: '/penalties/sanctionType' },
           ],
         },
         {
           label: 'Reportes',
           subMenu: [
-            { label: 'Gráficos de Multas', routerLink: '/fine-report' },
-            { label: 'Gráficos de Infracciones', routerLink: '/infraction-report' },
-            { label: 'Gráficos de Reclamos', routerLink: '/claim-report' },
+            { label: 'Gráficos de Multas', routerLink: '/penalties/fine-report' },
+            { label: 'Gráficos de Infracciones', routerLink: '/penalties/infraction-report' },
+            { label: 'Gráficos de Reclamos', routerLink: '/penalties/claim-report' },
           ],
         },
       ],

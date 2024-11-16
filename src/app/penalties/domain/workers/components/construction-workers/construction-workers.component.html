@@ -2,10 +2,14 @@
   <button
     class="btn btn-danger btn-sm me-2"
     (click)="unAssignWorker(item)"
-    [disabled]="role !== 'OWNER'"
+    [disabled]="!userHasRole('OWNER')"
   >
     Remover
   </button>
+</ng-template>
+
+<ng-template #docType let-item>
+  {{ item.doc_type | getValueByKeyForEnum : WorkerDocTypeEnum }}
 </ng-template>
 
 <div class="px-5 py-4 border border-top-0">
@@ -14,10 +18,13 @@
     [items]="workers || []"
     [columns]="columns"
     [showExportOptions]="false"
-    [headerButtonText]="'Nuevo'"
     (headerButtonClick)="openFormModal()"
     [showSearchBar]="false"
-    [showHeaderButton]="role === 'OWNER'"
+    [showHeaderButton]="
+      userHasRole('OWNER') && constructionStatus !== 'COMPLETED'
+    "
+    [headerButtonIcon]="'bi bi-plus'"
+    [headerButtonText]="''"
   >
   </app-table>
 </div>
