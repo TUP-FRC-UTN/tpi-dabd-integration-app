@@ -48,7 +48,7 @@ export const PENALTY_ROUTES: Routes = [
     component: ClaimListComponent,
   },
   { path: 'claim/:id/:mode', component: ClaimDetailComponent },
-  { path: 'rules', component: RulesComponent },
+  // { path: 'rules', component: RulesComponent },
   {
     path: 'constructions-report',
     component: ConstructionReportComponent,
@@ -65,8 +65,8 @@ export const PENALTY_ROUTES: Routes = [
     path: 'claim-report',
     component: ClaimReportsComponent,
   },
-  {
-    path: 'rules',
-    component: RulesComponent,
-  },
+  // {
+  //   path: 'rules',
+  //   component: RulesComponent,
+  // },
 ];

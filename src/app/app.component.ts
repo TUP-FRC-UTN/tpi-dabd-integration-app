@@ -188,16 +188,16 @@ export class AppComponent {
         }
       ]
     },
-    {
-      label: 'Normas',
-      routerLink: '/penalties/rules',
-      sidebarMenu: [
-        {
-          label: 'Reglamento',
-          routerLink: '/penalties/rules',
-        }
-      ]
-    },
+    // {
+    //   label: 'Normas',
+    //   routerLink: '/penalties/rules',
+    //   sidebarMenu: [
+    //     {
+    //       label: 'Reglamento',
+    //       routerLink: '/penalties/rules',
+    //     }
+    //   ]
+    // },
     {
       label: 'Notificaciones',
       routerLink: 'notifications/send-email',
