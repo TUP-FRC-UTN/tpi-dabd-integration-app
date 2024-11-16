@@ -26,8 +26,9 @@ import { CategoryCharge, ChargeType } from '../../../../../models/charge';
   styleUrl: './new-categoryCharge-modal.component.css'
 })
 export class NewCategoryChargeModalComponent {
-  newCategoryForm: FormGroup;
-  chargeType : ChargeType[] = [ChargeType.ABSOLUTE,ChargeType.PERCENTAGE,ChargeType.NEGATIVE];
+  newCategoryForm: FormGroup; 
+  /** */
+  chargeType : ChargeType[] = [ChargeType.ABSOLUTE,ChargeType.NEGATIVE];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -48,7 +49,7 @@ export class NewCategoryChargeModalComponent {
   private validatorMulta(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const name = control.value?.trim().toLowerCase();
-
+  
       // Si el nombre incluye "multa", devuelve un error
       return name && name.includes("multa") ? { isFine: true } : null;
     };
@@ -63,13 +64,13 @@ export class NewCategoryChargeModalComponent {
           observer.complete();
         });
       }
-
+  
       return this.chargeService.validateCategoryName(name).pipe(
         map(exists => (exists ? { nameExists: true } : null))
       );
     };
   }
-
+  
 
   saveNewCategory() {
     if (this.newCategoryForm.valid) {
@@ -77,7 +78,6 @@ export class NewCategoryChargeModalComponent {
       newCategory.name = newCategory.name?.trim();
       newCategory.description = newCategory.description?.trim();
       newCategory.amountSign = newCategory.amountSign;
-      
       this.chargeService.addCategory(newCategory).subscribe({
         next: (response: any) => {
           this.activeModal.close({
