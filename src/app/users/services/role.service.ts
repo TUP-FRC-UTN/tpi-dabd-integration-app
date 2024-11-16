@@ -12,9 +12,8 @@ import { SessionService } from './session.service';
   providedIn: 'root',
 })
 export class RoleService {
-  host: string = `${
-    environment.production ? environment.apis.users : 'https://f81hvhvc-8080.brs.devtunnels.ms'
-  }/roles`;
+
+  host: string = `${environment.production ? `${environment.apis.users}` : `${environment.apis.users}`}roles`;
   private sessionService = inject(SessionService);
 
   constructor(private http: HttpClient) {}

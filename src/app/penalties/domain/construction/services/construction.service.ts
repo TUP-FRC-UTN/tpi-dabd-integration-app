@@ -14,7 +14,7 @@ type OneConstruction = ConstructionResponseDto | undefined;
   providedIn: 'root',
 })
 export class ConstructionService {
-  private apiUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/constructions';
+  private apiUrl = 'http://localhost:8080/constructions';
 
   private oneConstruction = new BehaviorSubject<OneConstruction>(undefined);
   oneConstruction$ = this.oneConstruction.asObservable();

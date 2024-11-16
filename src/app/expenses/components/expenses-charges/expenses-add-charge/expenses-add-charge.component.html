@@ -27,38 +27,6 @@
 
     <div class="col-md-6">
       <div class="d-flex align-items-center">
-        <label for="lotId" class="col-sm-2 col-form-label">Lote<span class="text-danger">*</span></label>
-        <div class="col-sm-10">
-          <div class="input-group">
-            <ng-select
-              id="lotId"
-              [items]="lots"
-              bindLabel="plot_number"
-              bindValue="id"
-              formControlName="lotId"
-              [placeholder]="chargeForm.get('lotId')?.value ? '' : 'Seleccione un lote'"
-              [appendTo]="'body'"
-              [ngClass]="{
-                'is-invalid': chargeForm.get('lotId')?.invalid && (chargeForm.get('lotId')?.dirty || chargeForm.get('lotId')?.touched),
-                'is-valid': chargeForm.get('lotId')?.valid && (chargeForm.get('lotId')?.dirty || chargeForm.get('lotId')?.touched)
-              }"
-              [searchable]="true"
-              notFoundText="No se encontraron lotes"
-              class="form-select"
-            >
-            </ng-select>
-            @if(chargeForm.controls['lotId'].touched && chargeForm.controls['lotId'].hasError('required')){
-              <div class="invalid-feedback">
-                El lote es obligatorio.
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6">
-      <div class="d-flex align-items-center">
         <label for="categoryChargeId" class="col-sm-2 col-form-label">Categoría<span class="text-danger">*</span></label>
         <div class="col-sm-10">
           <div class="input-group">
@@ -136,9 +104,22 @@
             'is-invalid': chargeForm.get('amount')?.invalid && (chargeForm.get('amount')?.dirty || chargeForm.get('amount')?.touched),
             'is-valid': chargeForm.get('amount')?.valid && (chargeForm.get('amount')?.dirty || chargeForm.get('amount')?.touched)
           }">
-          <div class="invalid-feedback">
-            El monto es obligatorio.
-          </div>
+          @if(chargeForm.get('amount')?.errors?.['required'] &&
+          (chargeForm.get('amount')?.dirty || chargeForm.get('amount')?.touched)){
+            <div class="invalid-feedback">
+              El monto es obligatorio.
+            </div>
+          }
+          @if(chargeForm.get('amount')?.errors?.['min']){
+            <div class="invalid-feedback">
+              Solo se permiten montos positivos.
+            </div>
+          }
+          @if(chargeForm.get('amount')?.errors?.['max']){
+            <div class="invalid-feedback">
+              Solo se permiten montos negativos.
+            </div>
+          }
         </div>
       </div>
     </div>
@@ -154,6 +135,7 @@
         </div>
       </div>
     </div>
+
 
     <!-- Fila de botones -->
     <div class="col-12 d-flex justify-content-end">

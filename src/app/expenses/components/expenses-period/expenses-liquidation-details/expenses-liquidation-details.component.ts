@@ -3,7 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, DatePipe } from '@angular/common';
 import { CurrencyPipe } from '@angular/common';
 import { NgbActiveModal, NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { FormsModule } from '@angular/forms';
+import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
+import LiquidationExpense from '../../../models/liquidationExpense';
+import { FormsModule, NgControl, ReactiveFormsModule } from '@angular/forms';
 import { InfoModalComponent } from '../../modals/info-modal/info-modal.component';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { BillService } from '../../../services/bill.service';
@@ -14,7 +16,7 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import moment from 'moment';
-import { ConfirmAlertComponent, MainContainerComponent, TableFiltersComponent, TableComponent, Filter, SelectFilter, FilterOption, TableColumn, ToastService} from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, MainContainerComponent, TableFiltersComponent, TableComponent, Filter, SelectFilter, FilterOption, TableColumn, ToastService, RadioFilter} from 'ngx-dabd-grupo01';
 import { ProviderService } from '../../../services/provider.service';
 import Period from '../../../models/period';
 import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal/edit-bill-modal.component';
@@ -46,13 +48,11 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   //
   //  Services
   //
-
+  private readonly toastService = inject(ToastService)
   private readonly billsService = inject(BillService);
   private readonly categoryService = inject(CategoryService);
   private readonly supplierService = inject(ProviderService);
   private readonly billTypeService = inject(BillService);
-
-  private readonly toastService = inject(ToastService)
 
   private modalService = inject(NgbModal);
 
@@ -98,7 +98,13 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   filters: Filter[] = [
     new SelectFilter('Categoría', 'category', 'Seleccione la categoría', this.categories),
     new SelectFilter('Proveedor', 'supplier', 'Seleccione el proveedor', this.suppliers),
-    new SelectFilter('Tipo', 'type', 'Seleccione el tipo', this.billTypes)
+    new SelectFilter('Tipo', 'type', 'Seleccione el tipo', this.billTypes),
+    new RadioFilter('Activo', 'isActive', [
+      { value: 'ACTIVE', label: 'Activo' },
+      { value: 'CANCELLED', label: 'Inactivo' },
+      { value: 'NEW', label: 'Nuevo' },
+      { value: 'undefined', label: 'Todo' },
+    ])
   ];
 
   // pagination
@@ -240,8 +246,12 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
     this.filterCategory = value['category']?.toLowerCase() || null;
     this.filterSupplier = value['supplier']?.toLowerCase() || null;
     this.filterType = value['type']?.toLowerCase() || null;
+    let filterStatus = value['isActive'] || null;
 
-    if (this.filterCategory === null && this.filterSupplier === null && this.filterType === null) {
+    if (filterStatus === 'undefined') filterStatus = null;
+
+
+    if (this.filterCategory === null && this.filterSupplier === null && this.filterType === null && filterStatus === null) {
       this.billsFiltered = this.originalBills;
       this.totalItems = this.originalTotalItems
       return;
@@ -254,7 +264,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
         this.periodId,
         this.filterCategory,
         this.filterType,
-        null,
+        filterStatus,
         this.filterSupplier
       )
       .subscribe((data) => {
@@ -283,7 +293,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
   onPageSizeChange = (size: number) => {
     this.size = size;
-    this.page = 1;
+    this.page = 0;
     if (this.isFiltering) return;
 
     this.loadLiquidationExpenseDetails();
@@ -304,7 +314,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
     }));
 
     const fecha = new Date();
-    console.log(fecha);
     const finalFileName =
       this.fileName + '-' + moment(fecha).format('DD-MM-YYYY_HH-mm');
 
@@ -316,7 +325,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   }
 
   imprimir() {
-    console.log('Imprimiendo');
     const doc = new jsPDF();
 
     // Título del PDF
@@ -346,14 +354,12 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
     // Guardar el PDF después de agregar la tabla
     const fecha = new Date();
-    console.log(fecha);
     const finalFileName =
       this.fileName +
       '-' +
       moment(fecha).format('DD-MM-YYYY_HH-mm') +
       '.pdf';
     doc.save(finalFileName);
-    console.log('Impreso');
   }
 
 
@@ -365,7 +371,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
     modalRef.componentInstance.alertTitle = 'Acerca de Gastos de expensa'
     modalRef.componentInstance.alertMessage =
-      'En esta pantalla se desplliegan los gastos de la expensa previamente seleccionada. Los gastos puede ser filtrada tanto por categoría o por sus proveedores y presentan botones para ver la factura del pago o para editarla.';
+      'En esta pantalla se despliegan los gastos de la expensa previamente seleccionada. Los gastos puede ser filtrada tanto por categoría o por sus proveedores y presentan botones para ver la factura del pago o para editarla.';
     modalRef.componentInstance.alertType = 'info';
   }
 
@@ -391,6 +397,28 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
       keyboard: false
     });
     modalRef.componentInstance.bill = bill;
+    modalRef.componentInstance.status = "Cancelado"
+    modalRef.componentInstance.action = 'eliminar'
+    modalRef.result.then(
+      (result) => {
+        if (result.success) {
+          this.toastService.sendSuccess(result.message)
+          window.location.reload();
+        } else {
+          this.toastService.sendError(result.message)
+        }
+      }
+    );
+  }
+
+  activeBill(bill: Bill) {
+    const modalRef = this.modalService.open(DeleteBillModalComponent, {
+      backdrop: 'static',
+      keyboard: false
+    });
+    modalRef.componentInstance.bill = bill;
+    modalRef.componentInstance.status = "Activo"
+    modalRef.componentInstance.action = 'activar'
     modalRef.result.then(
       (result) => {
         if (result.success) {

@@ -8,7 +8,7 @@ import { AccessDTO } from '../../models/accesses/access-record.model';
   providedIn: 'root',
 })
 export class AuthRangeService {
-  private url = 'https://f81hvhvc-8080.brs.devtunnels.ms/auths';
+  private url = 'http://localhost:8080/auths';
 
   constructor(private http: HttpClient) {}
 

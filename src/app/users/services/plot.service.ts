@@ -16,9 +16,7 @@ export class PlotService {
   private http = inject(HttpClient)
   private sessionService = inject(SessionService);
 
-  host: string = `${environment.production 
-  ? environment.apis.cadastre 
-  : 'http://localhost:8004'}/plots`;
+  host: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}plots`;
 
   getAllPlots(page : number, size : number, isActive? : boolean): Observable<PaginatedResponse<Plot>> {
     let params = new HttpParams()

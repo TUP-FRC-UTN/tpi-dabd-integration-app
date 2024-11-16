@@ -10,10 +10,9 @@ import { environment } from '../../../environments/environment';
 })
 export class LoginService {
 
-  private apiUrl: string = environment.production
-  ? `${environment.apis.users}authentications`
-  : 'https://f81hvhvc-8080.brs.devtunnels.ms/authentications';
-  
+
+  host: string = `${environment.production ? `${environment.apis.users}` : `${environment.apis.users}`}authentications`;
+
 
   constructor(private http: HttpClient,
     private sessionService: SessionService
@@ -30,7 +29,7 @@ export class LoginService {
       'Content-Type': 'application/json',
     });
 
-    return this.http.post<number>(`${this.apiUrl}/login`, loginRequest, {
+    return this.http.post<number>(`${this.host}/login`, loginRequest, {
       headers,
     });
   }
@@ -42,5 +41,5 @@ export class LoginService {
     this.sessionService.logout();
   }
 
-  
+
 }

@@ -1,8 +1,11 @@
 import { Component, inject, OnInit } from '@angular/core';
 import {
+  AbstractControl,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { ChargeService } from '../../../services/charge.service';
@@ -20,19 +23,22 @@ import { ChargeInfoComponent } from '../../modals/info/charge-info/charge-info.c
 import { NgSelectComponent, NgOptionComponent } from '@ng-select/ng-select';
 import { map } from 'rxjs';
 import { NewCategoryChargeModalComponent } from '../../modals/charges/category/new-categoryCharge-modal/new-categoryCharge-modal.component';
+import { StorageService } from '../../../services/storage.service';
+import { User } from '../../../models/user';
 @Component({
   selector: 'app-expenses-add-charge',
   standalone: true,
-  imports: [ReactiveFormsModule, PeriodSelectComponent,CommonModule,NgModalComponent, MainContainerComponent, NgSelectComponent,
-    NgOptionComponent],
+  imports: [ReactiveFormsModule, CommonModule, MainContainerComponent, NgSelectComponent ],
   templateUrl: './expenses-add-charge.component.html',
   styleUrl: './expenses-add-charge.component.css',
 })
 export class ExpensesAddChargeComponent implements OnInit{
+  //chargeForm: FormGroup;
   private fb: FormBuilder = inject(FormBuilder);
   private chargeService = inject(ChargeService);
   private modalService = inject(NgbModal);
   private router = inject(Router);
+  private storage = inject(StorageService);
   toastService:ToastService = inject(ToastService)
   lots : Lot[] = []
 
@@ -48,7 +54,7 @@ export class ExpensesAddChargeComponent implements OnInit{
 
   onCancel() {
     this.chargeForm.reset();
-    this.router.navigate([`expense/cargos`])
+    this.router.navigate([`expenses/cargos`])
   }
 
   showInfo(){
@@ -81,13 +87,32 @@ export class ExpensesAddChargeComponent implements OnInit{
     });
 
     this.chargeService.getCategoriesExcFines().subscribe((data: CategoryCharge[]) => {
-      this.categoriaCargos = data;
+      this.categoriaCargos = this.keysToCamel(data);
     });
   }
 
   comparePeriodFn(period1: any, period2: any) {
     return period1 && period2 ? period1.id === period2.id : period1 === period2;
   }
+
+  toCamel(s: string) {
+    return s.replace(/([-_][a-z])/ig, ($1) => {
+      return $1.toUpperCase()
+        .replace('-', '')
+        .replace('_', '');
+    });
+  }
+
+  keysToCamel(o: any): any {
+    if (o === Object(o) && !Array.isArray(o) && typeof o !== 'function') {
+      const n: {[key: string]: any} = {};       Object.keys(o).forEach((k) => {
+        n[this.toCamel(k)] = this.keysToCamel(o[k]);
+      });       return n;
+    } else if (Array.isArray(o)) {
+      return o.map((i) => {         return this.keysToCamel(i);       });
+    }     return o;
+  }
+
 
   chargeForm: FormGroup;
 
@@ -96,21 +121,52 @@ export class ExpensesAddChargeComponent implements OnInit{
       lotId: ['', Validators.required],
       date: ['', Validators.required],
       periodId: ['', Validators.required],
-      amount: ['', Validators.required],
+      amount: ['', [Validators.required]],
       categoryChargeId: ['', Validators.required],
       description:['']
     });
+    this.chargeForm.get('categoryChargeId')?.valueChanges.subscribe(() => {
+      let id :Number = this.chargeForm.get('categoryChargeId')?.value;
+
+      this.ValidarMonto(this.categoriaCargos.find(c => c.categoryChargeId === id) as CategoryCharge);
+    });
+  }
+  ValidarMonto(categoryCharge : CategoryCharge) {
+
+    switch(categoryCharge.amountSign) {
+      case ('Positivo'):
+        this.chargeForm.get('amount')?.setValidators([
+          Validators.required,
+          Validators.min(0),
+        ]);
+        this.chargeForm.get('amount')?.updateValueAndValidity();
+        break;
+      case ChargeType.PERCENTAGE:
+        break;
+      case ChargeType.NEGATIVE:
+        this.chargeForm.get('amount')?.setValidators([
+          Validators.required,
+          Validators.max(0),
+        ]);
+        this.chargeForm.get('amount')?.updateValueAndValidity();
+
+        break;
+      default:
+        console.log('Default' + categoryCharge)
+        break;
+
+    }
+    this.chargeForm.get('amount')?.updateValueAndValidity();
+    console.log(this.chargeForm.get('amount'))
   }
 
-  ngOnInit(): void {
-    this.loadSelect();
-  }
 
   onBack() {
-    this.router.navigate([`expense/cargos`]);
+    this.router.navigate([`expenses/cargos`]);
   }
 
   onSubmit(): void {
+
     if (this.chargeForm.valid) {
       const formValue = this.chargeForm.value;
       const charge: Charge = {
@@ -128,10 +184,9 @@ export class ExpensesAddChargeComponent implements OnInit{
         (response) => {
           this.toastService.sendSuccess("El cargo se ha registrado correctamente");
 
-          console.log('Cargo registrado exitosamente:', response);
-
+          //('Cargo registrado exitosamente');
           this.chargeForm.reset();
-          this.router.navigate([`expense/cargos`]);
+          this.router.navigate([`expenses/cargos`]);
         },
         (error) => {
           this.toastService.sendError("Error al registrar el cargo");
@@ -173,5 +228,43 @@ export class ExpensesAddChargeComponent implements OnInit{
     }
     return obj;
   }
+
+  ngOnInit(): void {
+    this.storage.saveToStorage(this.userLoggin,'user');
+    this.loadSelect();
+    let user = this.storage.getFromSessionStorage('user') as User;
+  }
+
+
+
+  userLoggin = {
+    "value": {
+      "id": 1,
+      "first_name": "Super",
+      "last_name": "Admin",
+      "user_name": "superadmin",
+      "email": "superadmin@example.com",
+      "is_active": true,
+      "owner_id": 1,
+      "plot_id": 1,
+      "addresses": null,
+      "contacts": null,
+      "roles": [
+        {
+          "id": 1,
+          "code": 999,
+          "name": "SUPERADMIN",
+          "description": "Nivel más alto de acceso",
+          "pretty_name": "Superadministrador",
+          "is_active": true
+        }
+      ],
+      "created_date": "12/11/2024 09:53 p. m.",
+      "document_number": "12345678",
+      "document_type": "DNI",
+      "birthdate": "01/01/1990"
+    },
+    "expirationTime": 1731545612929
+  };
 
 }

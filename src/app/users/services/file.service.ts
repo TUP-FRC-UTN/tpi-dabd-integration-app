@@ -8,15 +8,12 @@ import { SessionService } from './session.service';
   providedIn: 'root',
 })
 export class FileService {
-  private apiUrl: string = environment.production
-    ? `${environment.apis.cadastre}files`
-    : 'http://localhost:8004/files';
+  host: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}files`;
   private sessionService = inject(SessionService);
-
   constructor(private http: HttpClient) {}
 
   getFileById(fileId: number): Observable<any> {
-    return this.http.get<any>(this.apiUrl + `/${fileId}`).pipe(
+    return this.http.get<any>(this.host + `/${fileId}`).pipe(
       map((response: any) => {
         return response;
       })
@@ -34,7 +31,7 @@ export class FileService {
       review_note: note,
     };
 
-    return this.http.patch<any>(this.apiUrl + `/${fileId}`, change, {
+    return this.http.patch<any>(this.host + `/${fileId}`, change, {
       headers,
     });
   }
