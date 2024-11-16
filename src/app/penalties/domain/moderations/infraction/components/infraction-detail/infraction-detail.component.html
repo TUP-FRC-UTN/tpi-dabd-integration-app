@@ -1,7 +1,7 @@
-<app-main-container title="Detalle Infracción">
+<app-main-container title="Detalle Infracción" (infoButtonClick)="infoModal()">
   <div class="row">
     <div class="mb-3 col-6 d-flex align-items-center gap-3">
-      <label for="name" class="form-label text-nowrap mb-0"
+      <label for="name" class="form-label text-nowrap mb-0" style="width: 15%"
         >N.° Infracción</label
       >
       <input
@@ -13,7 +13,9 @@
       />
     </div>
     <div class="mb-3 col-6 d-flex align-items-center gap-3">
-      <label for="name" class="form-label text-nowrap mb-0">N.° Lote</label>
+      <label for="name" class="form-label text-nowrap mb-0" style="width: 15%"
+        >N.° Lote</label
+      >
       <input
         id="name"
         name="name"
@@ -23,19 +25,21 @@
       />
     </div>
     <div class="mb-3 col-6 d-flex align-items-center gap-3">
-      <label for="name" class="form-label text-nowrap mb-0"
+      <label for="name" class="form-label text-nowrap mb-0" style="width: 15%"
         >Fecha de alta</label
       >
       <input
         id="name"
         name="name"
         class="form-control"
-        value="{{ infraction?.created_date }}"
+        value="{{ infraction?.created_date | date : 'dd/MM/yyyy HH:mm' }}"
         disabled
       />
     </div>
     <div class="mb-3 col-6 d-flex align-items-center gap-3">
-      <label for="name" class="form-label text-nowrap mb-0">Descripción</label>
+      <label for="name" class="form-label text-nowrap mb-0" style="width: 15%"
+        >Descripción</label
+      >
       <input
         id="name"
         name="name"
@@ -45,7 +49,9 @@
       />
     </div>
     <div class="mb-3 col-6 d-flex align-items-center gap-3">
-      <label for="name" class="form-label text-nowrap mb-0">N.° de Multa</label>
+      <label for="name" class="form-label text-nowrap mb-0" style="width: 15%"
+        >N.° de Multa</label
+      >
       <input
         id="name"
         name="name"
@@ -55,27 +61,96 @@
       />
     </div>
     <div class="mb-3 col-6 d-flex align-items-center gap-3">
-      <label for="name" class="form-label text-nowrap mb-0">Estado</label>
+      <label for="name" class="form-label text-nowrap mb-0" style="width: 15%"
+        >Estado</label
+      >
       <input
         id="name"
         name="name"
         class="form-control"
-        value="{{ infraction?.infraction_state }}"
+        [ngClass]="{
+          'border-success bg-success-subtle text-success':
+            infraction!.infraction_status.toString() === 'APPROVED',
+          'border-warning bg-warning-subtle text-warning':
+            infraction!.infraction_status.toString() === 'APPEALED',
+          'border-danger bg-danger-subtle text-danger':
+            infraction!.infraction_status.toString() === 'REJECTED'
+        }"
+        value="{{
+          infraction!.infraction_status
+            | getValueByKeyForEnum : InfractionStatusEnum
+        }}"
         disabled
       />
     </div>
   </div>
   <hr style="color: #808080" />
-  <div class="d-grid gap-2 d-md-flex justify-content-end">
-    <button class="btn btn-secondary" (click)="goBack()">Volver</button>
+  <div class="row d-flex justify-content-end g-2 mt-3">
+    <div class="d-flex justify-content-end">
+      @if(showRejectButton()){
+      <button class="btn btn-danger me-2" (click)="rejectInfraction()">
+        <i class="bi bi-clipboard-x"></i> Rechazar</button
+      >} @if(showApproveButton()){
+      <button class="btn btn-primary me-2" (click)="approveInfraction()">
+        <i class="bi bi-clipboard-check"></i> Aprobar</button
+      >} @if(showAppealButton()){
+      <button class="btn btn-warning me-2" (click)="appealInfraction()">
+        <i class="bi bi-exclamation-circle-fill"></i> Apelar</button
+      >}
+
+      <button class="btn btn-secondary" (click)="goBack()">Volver</button>
+    </div>
   </div>
+
   <hr style="color: #808080" />
   <ul class="nav nav-tabs">
     <li class="nav-item">
-      <button class="nav-link active">Infracciones</button>
+      <button
+        class="nav-link"
+        [ngClass]="{ active: activeTab === 'claims' }"
+        (click)="setActiveTab('claims')"
+      >
+        Reclamos
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [ngClass]="{ active: activeTab === 'proofs' }"
+        (click)="setActiveTab('proofs')"
+      >
+        Pruebas de apelación
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [ngClass]="{ active: activeTab === 'notes' }"
+        (click)="setActiveTab('notes')"
+      >
+        Notas
+      </button>
     </li>
   </ul>
+
+  @switch (activeTab) {
+  <!-- Claims -->
+  @case ('claims') {
   <app-infraction-claim-list
     [claims]="infraction?.claims || []"
   ></app-infraction-claim-list>
+  }
+  <!-- Proofs -->
+  @case ('proofs') {
+
+  <app-infraction-proof-list
+    [infraction]="infraction"
+  ></app-infraction-proof-list>
+
+  }
+  <!-- Notes -->
+  @case ('notes') {
+  <app-notes-list [notes]="infraction?.notes!"></app-notes-list>
+
+  } }
 </app-main-container>

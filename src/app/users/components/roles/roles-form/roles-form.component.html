@@ -1,4 +1,4 @@
-<app-main-container title="Registrar Rol">
+<app-main-container title="Registrar Rol" (infoButtonClick)="openInfo()">
     <form [formGroup]="roleForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
       <div class="row">
         <div class="col-2">
@@ -44,7 +44,9 @@
                     'is-valid': roleForm.get('prettyNameControl')?.valid && roleForm.get('prettyNameControl')?.touched}"/>
             @if (roleForm.get('prettyNameControl')?.invalid &&
             roleForm.get('prettyNameControl')?.touched) {
-              @if (roleForm.get('prettyNameControl')?.errors?.['maxlength']) {
+              @if(roleForm.get('prettyNameControl')?.errors?.['required']){
+                <p class="text-danger">Debe especificar el nombre específico del rol</p>
+              }@else if (roleForm.get('prettyNameControl')?.errors?.['maxlength']) {
                 <p class="text-danger">Máximo 25 caracteres</p>
               }
             }

@@ -20,11 +20,11 @@ import {
   SortColumn,
   SortDirection,
 } from '../components/fine-table/sortable.directive';
-import { environment } from './../../../../environments/environment';
 import jsPDF from 'jspdf';
 import { DatePipe } from '@angular/common';
 import { ExcelExportService } from 'ngx-dabd-grupo01';
 import { ClaimDTO } from '../../claim/models/claim.model';
+import { environment } from '../../../../../../environments/environment';
 
 interface SearchResult {
   fines: Fine[];
@@ -52,7 +52,7 @@ export class FineService {
   private _fines$ = new BehaviorSubject<Fine[]>([]);
   private _total$ = new BehaviorSubject<number>(0);
 
-  private apiUrl = environment.moderationApiUrl;
+  private apiUrl = environment.apis.moderations.slice(0, -1);
 
   private _state: State = {
     page: 1,
@@ -253,31 +253,17 @@ export class FineService {
     );
   }
 
-  onExportToExcel(): void {
-    this.findAll().subscribe((fines) => {
-      const columns = [
-        { header: 'ID Multa', accessor: (fine: Fine) => fine.id },
-        {
-          header: 'Fecha de Creación',
-          accessor: (fine: Fine) => fine.created_date,
-        },
-        { header: 'Lote', accessor: (fine: Fine) => fine.plot_id },
-        { header: 'Tipo', accessor: (fine: Fine) => fine.sanction_type.name },
-        {
-          header: 'Estado de Multa',
-          accessor: (fine: Fine) =>
-            this.getValueByKeyForStatusEnum(fine.fine_state),
-        },
-        {
-          header: 'ID Infracción',
-          accessor: (fine: Fine) =>
-            fine.infractions.length > 0
-              ? fine.infractions.map((inf) => inf.id).join(', ')
-              : 'N/A',
-        },
-      ];
+  getMostFinedPlots(searchParams: any = {}): Observable<any[]> {
+    let params = new HttpParams();
 
-      this.excelService.exportToExcel(fines, columns, 'multas', 'Multas');
+    Object.keys(searchParams).forEach((key) => {
+      if (searchParams[key]) {
+        params = params.set(key, searchParams[key]);
+      }
+    });
+
+    return this.http.get<any[]>(`${this.apiUrl}/fine/plots/most-fined`, {
+      params,
     });
   }
 }

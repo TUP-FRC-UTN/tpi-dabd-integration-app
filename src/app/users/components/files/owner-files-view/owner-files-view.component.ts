@@ -264,12 +264,12 @@ export class OwnerFilesViewComponent implements OnInit {
         this.fileService.updateFileStatus(file.id, status, this.noteForm.value.note).subscribe({
           next: (response) => {
             console.log(response);
-            this.toastService.sendSuccess('Estado cambiado correctamente.')
+            this.toastService.sendSuccess('Estado cambiado correctamente')
             this.getAllFiles(this.owner);
           },
           error: (error) => {
             console.error('Error al aprobar el file:', error);
-            this.toastService.sendError('Error al cambiar el estado.')
+            this.toastService.sendError('Error al cambiar el estado')
           },
         })
         modalRef.close();
