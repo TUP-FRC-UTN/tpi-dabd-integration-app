@@ -1,0 +1,31 @@
+<div class="card">
+    <div class="card-body p-3">
+        <h5 class="card-title">Distribución de tipos</h5>
+        @if (chartState.hasData) {
+        <div class="position-relative" style="height: 300px;">
+            <canvas baseChart [type]="'pie'" [data]="chartData" [options]="chartOptions">
+            </canvas>
+        </div>
+        <!-- Leyenda personalizada -->
+        <div class="mt-3">
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+                @for (item of legendItems; track item.day) {
+                <div class="d-flex align-items-center">
+                    <div class="me-2" [style.width]="'12px'" [style.height]="'12px'"
+                        [style.background-color]="item.color">
+                    </div>
+                    <span>{{item.day}}: {{item.percentage}}%</span>
+                </div>
+                }
+            </div>
+        </div>
+        } @else {
+        <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
+            <div class="text-center">
+                <i class="bi bi-pie-chart text-muted mb-2" style="font-size: 2rem;"></i>
+                <p class="text-muted mb-0">{{chartState.message}}</p>
+            </div>
+        </div>
+        }
+    </div>
+</div>

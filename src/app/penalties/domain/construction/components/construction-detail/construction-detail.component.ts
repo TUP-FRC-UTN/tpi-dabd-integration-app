@@ -10,7 +10,6 @@ import { ConstructionService } from '../../services/construction.service';
 import {
   CONSTRUCTION_STATUSES_ENUM,
   CONSTRUCTION_STATUSES,
-  ConstructionRequestDto,
   ConstructionResponseDto,
   ConstructionStatus,
   ConstructionTab,
@@ -27,7 +26,7 @@ import {
 } from '@angular/forms';
 import { NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { ConstructionDocumentationListComponent } from '../../../construction-documentation/components/construction-documentation-list/construction-documentation-list.component';
-import { ConstructionNotesListComponent } from '../../../note/components/construction-notes-list/construction-notes-list.component';
+import { NotesListComponent } from '../../../notes/notes-list/notes-list.component';
 import { WorkerService } from '../../../workers/services/worker.service';
 import {
   ConfirmAlertComponent,
@@ -36,7 +35,10 @@ import {
   ToastService,
 } from 'ngx-dabd-grupo01';
 import { GetValueByKeyForEnumPipe } from '../../../../shared/pipes/get-value-by-key-for-status.pipe';
-import { RoleService } from '../../../../shared/services/role.service';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-construction-detail',
@@ -50,7 +52,7 @@ import { RoleService } from '../../../../shared/services/role.service';
     ConstructionWorkersComponent,
     NgbTooltipModule,
     ConstructionDocumentationListComponent,
-    ConstructionNotesListComponent,
+    NotesListComponent,
     GetValueByKeyForEnumPipe,
   ],
   templateUrl: './construction-detail.component.html',
@@ -64,7 +66,6 @@ export class ConstructionDetailComponent implements OnInit {
   private workerService = inject(WorkerService);
   private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
-  private roleService = inject(RoleService);
 
   // Properties:
   editConstruction!: ConstructionUpdateRequestDto;
@@ -79,8 +80,6 @@ export class ConstructionDetailComponent implements OnInit {
   rejectForm: FormGroup;
   mode: 'detail' | 'edit' = 'detail';
 
-  role = '';
-
   constructor(private fb: FormBuilder) {
     this.rejectForm = this.fb.group({
       rejectReason: ['', Validators.required],
@@ -91,10 +90,23 @@ export class ConstructionDetailComponent implements OnInit {
     return this.rejectForm.get('rejectReason');
   }
 
-  ngOnInit(): void {
-    this.roleService.currentRole$.subscribe((role) => {
-      this.role = role;
+  userDataService = inject(UserDataService);
+  userData!: UserData;
+
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
     });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
+
+  ngOnInit(): void {
+    this.loadUserData();
 
     this.activatedRoute.params.subscribe((params) => {
       const id = params['id'];
@@ -147,6 +159,8 @@ export class ConstructionDetailComponent implements OnInit {
           description: construction?.project_description || '',
           planned_start_date: planned_start_date,
           planned_end_date: planned_end_date,
+          start_time: construction?.start_time,
+          end_time: construction?.end_time,
         };
       });
   }
@@ -160,7 +174,7 @@ export class ConstructionDetailComponent implements OnInit {
   }
 
   goBack = (): void => {
-    this.router.navigate(['constructions']);
+    this.router.navigate(['penalties/constructions']);
   };
 
   updateStatus(): void {
@@ -191,6 +205,7 @@ export class ConstructionDetailComponent implements OnInit {
             this.toastService.sendSuccess(
               'Los datos se actualizaron correctamente'
             );
+            this.mode = 'detail';
           },
           error: (err) => {
             console.error('Error al actualizar los datos', err);
@@ -211,6 +226,36 @@ export class ConstructionDetailComponent implements OnInit {
             this.construction.construction_status = 'APPROVED';
             this.toastService.sendSuccess(
               'Se aprobó la construcción correctamente'
+            );
+          }
+        });
+    }
+  }
+
+  onConstructionStarted(constructionId: number): void {
+    if (this.construction) {
+      this.constructionService
+        .startConstruction(constructionId)
+        .subscribe(() => {
+          if (this.construction) {
+            this.construction.construction_status = 'IN_PROGRESS';
+            this.toastService.sendSuccess(
+              'Se inició la construcción correctamente'
+            );
+          }
+        });
+    }
+  }
+
+  onConstructionFinished(constructionId: number): void {
+    if (this.construction) {
+      this.constructionService
+        .finishConstruction(constructionId, this.userData.id)
+        .subscribe(() => {
+          if (this.construction) {
+            this.construction.construction_status = 'COMPLETED';
+            this.toastService.sendSuccess(
+              'Se terminó la construcción correctamente'
             );
           }
         });
@@ -278,10 +323,10 @@ export class ConstructionDetailComponent implements OnInit {
 
   isConstructionAbleToReview() {
     if (
-      this.construction?.construction_documentation &&
-      this.construction.construction_documentation.length > 0 &&
-      this.construction?.construction_status === "LOADING" ||
-      this.construction?.construction_status === "REJECTED"
+      (this.construction?.construction_documentation &&
+        this.construction.construction_documentation.length > 0 &&
+        this.construction?.construction_status === 'LOADING') ||
+      this.construction?.construction_status === 'REJECTED'
     ) {
       return true;
     } else {
@@ -341,5 +386,43 @@ export class ConstructionDetailComponent implements OnInit {
         }
       })
       .catch(() => {});
+  }
+
+  onStartConstruction() {
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+    modalRef.componentInstance.alertTitle = 'Confirmación';
+    modalRef.componentInstance.alertMessage = `¿Está seguro de que desea iniciar esta obra?`;
+    modalRef.componentInstance.alertType = 'info';
+
+    modalRef.result
+      .then((result) => {
+        if (result) {
+          this.onConstructionStarted(this.construction?.construction_id || 0);
+        }
+      })
+      .catch(() => {});
+  }
+
+  onFinishConstruction() {
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+    modalRef.componentInstance.alertTitle = 'Confirmación';
+    modalRef.componentInstance.alertMessage = `¿Está seguro de que desea terminar esta obra? Los accesos se darán de baja y no podrá interactuar más con este registro`;
+    modalRef.componentInstance.alertType = 'warning';
+
+    modalRef.result
+      .then((result) => {
+        if (result) {
+          this.onConstructionFinished(this.construction?.construction_id || 0);
+        }
+      })
+      .catch(() => {});
+  }
+
+  infoModal() {
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+    modalRef.componentInstance.alertType = 'info';
+
+    modalRef.componentInstance.alertTitle = 'Ayuda';
+    modalRef.componentInstance.alertMessage = `Esta pantalla proporciona una vista detallada de la obra seleccionada, permitiéndole analizar toda la información relacionada de manera clara y estructurada. En esta sección puede acceder a todos los datos relevantes sobre la obra de forma precisa.`;
   }
 }

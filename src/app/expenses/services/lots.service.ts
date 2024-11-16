@@ -13,7 +13,6 @@ export class LotsService {
 
   private apiUrl = "https://my-json-server.typicode.com/RamiroRomera/fake_api_plots/plots";
   get(): Observable<Lots[]>{
-    console.log('cargando todas')
     return this.http.get<Lots[]>(`${this.apiUrl}`)
     
   }

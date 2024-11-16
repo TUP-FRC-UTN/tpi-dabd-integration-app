@@ -1,8 +1,7 @@
 export interface WorkerRequestDto {
   construction_id: number;
   address: string;
-  contact: { contact_value: string };
-  cuil: string;
+  doc_type: DocTypeEnum;
   document: string;
   last_name: string;
   name: string;
@@ -12,4 +11,11 @@ export interface WorkerRequestDto {
 
 export interface WorkerResponseDTO {
   id: number;
+}
+
+export enum DocTypeEnum {
+  DNI = 'DNI',
+  PASSPORT = 'Pasaporte',
+  CUIL = 'CUIL',
+  CUIT = 'CUIT',
 }

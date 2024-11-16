@@ -17,9 +17,11 @@ import { environment } from '../../../environments/environment';
 export class AccountService {
   private http = inject(HttpClient);
 
-  host: string = environment.production 
-  ? `${environment.apis.accounts}accounting-concepts/` 
-  : 'http://localhost:8002/accounting-concepts/';
+  // host: string =
+  //   environment.production ? `${environment.apis.accounts}accounting-concepts/` : 'http://localhost:8002/accounting-concepts/';
+
+
+  host: string = `${environment.production ? `${environment.apis.accounts}` : `${environment.apis.accounts}`}accounting-concepts`;
 
   getConceptsByPlotId(
     plotId: number,
@@ -99,13 +101,13 @@ export class AccountService {
       .set('size', size.toString())
       .set('sort', sortProperty)
       .set('sort_direction', sortDirection);
-  
+
     if (isActive !== undefined) {
       params = params.append('isActive', isActive.toString());
     }
-  
+
     return this.http.get<Account[]>(`http://localhost:8002/accounts`, { params });
   }
-  
-  
+
+
 }

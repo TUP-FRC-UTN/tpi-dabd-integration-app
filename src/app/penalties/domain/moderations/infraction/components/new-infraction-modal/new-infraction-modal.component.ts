@@ -108,11 +108,7 @@ export class NewInfractionModalComponent {
           this.toastService.sendSuccess(
             'Infracción ' + response.id + ' creada exitosamente'
           );
-          if (response.fine_id !== null) {
-            this.toastService.sendSuccess(
-              'Multa ' + response.fine_id + ' creada exitosamente'
-            );
-          }
+ 
           this.activeModal.close(response);
         },
         error: (error) => {

@@ -1,0 +1,20 @@
+<ng-template #actionsTemplate let-item>
+  <button class="btn btn-primary btn-sm me-2">Ver más</button>
+</ng-template>
+
+<ng-template #dateTemplate let-item>
+  {{ item.created_date | date : "dd/MM/yyyy HH:mm" }}
+</ng-template>
+<div class="px-5 py-4 border border-top-0">
+  <app-table
+    [height]="'200px'"
+    [items]="notes || []"
+    [columns]="columns"
+    [showExportOptions]="false"
+    [headerButtonText]="'Nuevo'"
+    (headerButtonClick)="openFormModal()"
+    [showSearchBar]="false"
+    [showHeaderButton]="userHasRole('FINES_ADMIN')"
+  >
+  </app-table>
+</div>
