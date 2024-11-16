@@ -79,6 +79,6 @@ export class InfractionClaimListComponent implements AfterViewInit {
   }
 
   goToClaimDetail(claimId: number) {
-    this.router.navigate(['claim', claimId, 'detail']);
+    this.router.navigate(['penalties/claim', claimId, 'detail']);
   }
 }

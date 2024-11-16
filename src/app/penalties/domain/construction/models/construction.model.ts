@@ -11,6 +11,8 @@ export interface ConstructionUpdateRequestDto {
   planned_start_date: string;
   planned_end_date: string;
   project_name: string;
+  start_time: string;
+  end_time: string;
 }
 
 export interface ConstructionResponseDto {
@@ -28,6 +30,8 @@ export interface ConstructionResponseDto {
   notes: any[];
   construction_documentation: any[];
   workers: any[];
+  start_time: any;
+  end_time: any;
 }
 
 export interface ConstructionUpdateStatusRequestDto {
@@ -38,7 +42,7 @@ export interface ConstructionUpdateStatusRequestDto {
 export type ConstructionTab = 'documentation' | 'workers' | 'notes';
 
 export type ConstructionStatus =
-    'ON_REVISION'
+  | 'ON_REVISION'
   | 'PLANNED'
   | 'APPROVED'
   | 'IN_PROGRESS'
