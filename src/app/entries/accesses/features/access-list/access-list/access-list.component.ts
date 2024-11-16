@@ -10,8 +10,6 @@ import { AccessService } from '../../../../services/access/access.service';
 import { TransformResponseService } from '../../../../services/transform-response.service';
 import { CadastrePlotFilterButtonsComponent } from '../../cadastre-access-filter-buttons/cadastre-plot-filter-buttons.component';
 import { AuthorizerCompleterService } from '../../../../services/authorizer-completer.service';
-import { UserType, UserTypeService } from '../../../../services/user-type.service';
-import { SessionService } from '../../../../../users/services/session.service';
 
 @Component({
   selector: 'app-access-list',
@@ -38,8 +36,6 @@ export class AccessListComponent implements OnInit, AfterViewInit {
   private accessService = inject(AccessService)
   private transformResponseService = inject(TransformResponseService)
   private authorizerCompleterService = inject(AuthorizerCompleterService)
-  private userTypeService = inject(UserTypeService);
-  private sessionService = inject(SessionService);
   //private toastService = inject(ToastService)
   private modalService = inject(NgbModal)
   //#endregion
@@ -155,14 +151,6 @@ export class AccessListComponent implements OnInit, AfterViewInit {
   // Obtener todos los datos
   this.accessService.getAll(this.currentPage, this.pageSize, this.retrieveByActive).subscribe(data => {
     let filteredData = [...data.items];
-    const userType = this.userTypeService.getType();
-
-    // Aplicar filtro de OWNER primero
-    if(userType === UserType.OWNER) {
-      const currentUser = this.sessionService.getItem('user');
-      filteredData = filteredData.filter(x => x.authorizerId === currentUser.id);
-    }
-
 
     // Aplicar todos los filtros activos
     if (this.searchParams['visitorTypes']) {
@@ -230,15 +218,7 @@ export class AccessListComponent implements OnInit, AfterViewInit {
   //#region GET_ALL
   getAll() {
     this.accessService.getAll(this.currentPage, this.pageSize, this.retrieveByActive).subscribe(data => {
-      
-      const userType = this.userTypeService.getType();
-      
-      if (userType === UserType.OWNER) {
-        const currentUser = this.sessionService.getItem('user');
-        data.items = data.items.filter((x) => x.authorizerId === currentUser.id);
-      }
-      
-      /* data.items.forEach(date => {
+       /* data.items.forEach(date => {
           if (date.authorizerId != undefined && date.authorizerId< 10){
             date.authorizer = this.authorizerCompleterService.completeAuthorizer(date.authorizerId)
           } else {
@@ -263,15 +243,6 @@ export class AccessListComponent implements OnInit, AfterViewInit {
   //#region GET_ALL
   getAllFiltered(filter: string) {
     this.accessService.getAll(this.currentPage, this.pageSize, this.retrieveByActive).subscribe(data => {
-
-      const userType = this.userTypeService.getType();
-    
-      // Aplicar filtro de OWNER primero
-      if(userType === UserType.OWNER) {
-        const currentUser = this.sessionService.getItem('user');
-        data.items = data.items.filter(x => x.authorizerId === currentUser.id);
-      }
-
       data.items = data.items.filter(x => (x.firstName?.toLowerCase().includes(filter)
       || x.lastName?.toLowerCase().includes(filter) || x.docNumber?.toString().includes(filter) || x.vehicleReg?.toLowerCase().includes(filter)))
         let response = this.transformResponseService.transformResponse(data.items,this.currentPage, this.pageSize, this.retrieveByActive)
@@ -299,15 +270,6 @@ export class AccessListComponent implements OnInit, AfterViewInit {
   //#region FILTROS
   filterByVisitorType(type: string) {
     this.accessService.getByType(type).subscribe(data => {
-
-      const userType = this.userTypeService.getType();
-    
-      // Aplicar filtro de OWNER primero
-      if(userType === UserType.OWNER) {
-        const currentUser = this.sessionService.getItem('user');
-        data.items = data.items.filter(x => x.authorizerId === currentUser.id);
-      }
-
         let response = this.transformResponseService.transformType(data.items,this.currentPage, this.pageSize, type, this.retrieveByActive)
         /*response.content.forEach(data => {
           if (data.authorizerId != undefined && data.authorizerId < 10){
@@ -335,15 +297,6 @@ export class AccessListComponent implements OnInit, AfterViewInit {
       return
     }
     this.accessService.getAll(this.currentPage, this.pageSize, this.retrieveByActive).subscribe(data => {
-
-      const userType = this.userTypeService.getType();
-    
-      // Aplicar filtro de OWNER primero
-      if(userType === UserType.OWNER) {
-        const currentUser = this.sessionService.getItem('user');
-        data.items = data.items.filter(x => x.authorizerId === currentUser.id);
-      }
-  
         data.items = data.items.filter(x =>
           (new Date(new Date(x.actionDate).setHours(0,0,0,0))
           >= new Date(new Date(dateFrom+"T00:00:00").setHours(0,0,0,0))
@@ -367,15 +320,6 @@ export class AccessListComponent implements OnInit, AfterViewInit {
 
   filterByAction(action: string) {
     this.accessService.getByAction(this.currentPage, this.pageSize, action, this.retrieveByActive).subscribe(data => {
-
-      const userType = this.userTypeService.getType();
-    
-    // Aplicar filtro de OWNER primero
-    if(userType === UserType.OWNER) {
-      const currentUser = this.sessionService.getItem('user');
-      data.items = data.items.filter(x => x.authorizerId === currentUser.id);
-    }
-
       let response = this.transformResponseService.transformAction(data.items,this.currentPage, this.pageSize, action, this.retrieveByActive)
         /*response.content.forEach(data => {
           data.authorizer = this.authorizerCompleterService.completeAuthorizer(data.authorizerId)

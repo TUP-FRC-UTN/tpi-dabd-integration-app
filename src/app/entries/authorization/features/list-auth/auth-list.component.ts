@@ -15,7 +15,7 @@ import {Filter, FilterConfigBuilder, MainContainerComponent, ToastService} from 
 import {NgbModal, NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {AccessActionDictionary, AccessModel} from "../../../models/accesses/access.model";
 import {TransformResponseService} from "../../../services/transform-response.service";
-import {UserType, UserTypeService} from "../../../services/user-type.service";
+import {UserTypeService} from "../../../services/user-type.service";
 import {LoginService} from "../../../services/access/login.service";
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
@@ -54,7 +54,6 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
   private modalService = inject(NgbModal)
   private userTypeService = inject(UserTypeService)
   private loginService = inject(LoginService)
-  private sessionService = inject(SessionService);
   //#endregion
 
   //#region FILTRADO
@@ -115,14 +114,6 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
     // Obtener todos los datos primero
     this.authService.getAll(this.currentPage, this.pageSize, this.retrieveByActive).subscribe(data => {
       let filteredData = [...data];
-
-      const userType = this.userTypeService.getType();
-
-      // Aplicar filtro de OWNER
-      if(userType === UserType.OWNER) {
-        const currentUser = this.sessionService.getItem('user');
-        filteredData = filteredData.filter(x => x.authorizerId === currentUser.id);
-      }
 
       // Aplicar filtro por tipo de visitante
       if (this.searchParams['visitorType']) {
@@ -238,21 +229,11 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
   //#region GET_ALL
   getAll() {
     this.authService.getAll(this.currentPage, this.pageSize, this.retrieveByActive).subscribe(data => {
-            /*if(this.userType === "OWNER"){
+            if(this.userType === "OWNER"){
                 data = data.filter(x => x.plotId == 2)
             }
             if(this.userType === "GUARD"){
                 data = data.filter(x => x.isActive)
-            }*/
-            const userType = this.userTypeService.getType();
-      
-            if(userType === UserType.OWNER) {
-              const currentUser = this.sessionService.getItem('user');
-              data = data.filter(x => x.authorizerId === currentUser.id);
-            }
-      
-            if(userType === UserType.GUARD) {
-              data = data.filter(x => x.isActive);
             }
             console.log(data)
         
@@ -280,18 +261,6 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
 
   getAllFiltered(filter: string) {
     this.authService.getAll(this.currentPage, this.pageSize, this.retrieveByActive).subscribe(data => {
-
-      const userType = this.userTypeService.getType();
-      
-      if(userType === UserType.OWNER) {
-        const currentUser = this.sessionService.getItem('user');
-        data = data.filter(x => x.authorizerId === currentUser.id);
-      }
-
-      if(userType === UserType.GUARD) {
-        data = data.filter(x => x.isActive);
-      }
-
         data = data.filter(x => (x.visitor.name.toLowerCase().includes(filter) || x.visitor.lastName?.toLowerCase().includes(filter)
         || x.visitor.docNumber.toString().includes(filter)))
         let response = this.transformResponseService.transformResponse(data,this.currentPage, this.pageSize, this.retrieveByActive)
@@ -316,19 +285,6 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
   //#region FILTROS
   filterByVisitorType(type: string) {
     this.authService.getAll(this.currentPage, this.pageSize, this.retrieveByActive).subscribe(data => {
-
-      const userType = this.userTypeService.getType();
-      
-      // Aplicar filtro de OWNER
-      if(userType === UserType.OWNER) {
-        const currentUser = this.sessionService.getItem('user');
-        data = data.filter(x => x.authorizerId === currentUser.id);
-      }
-
-      if(userType === UserType.GUARD) {
-        data = data.filter(x => x.isActive);
-      }
-
       data = data.filter(x => x.visitorType == type)
         let response = this.transformResponseService.transformResponse(data,this.currentPage, this.pageSize, this.retrieveByActive)
         /*response.content.forEach(data => {

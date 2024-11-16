@@ -126,7 +126,6 @@ export const ENTRY_ROUTES: Routes = [
       allowedRoleCodes: [
         URLTargetType.SUPERADMIN,
         URLTargetType.SECURITY_GUARD,
-        URLTargetType.OWNER,
       ],
     },
   },

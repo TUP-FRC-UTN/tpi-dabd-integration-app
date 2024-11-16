@@ -48,7 +48,7 @@ export class AppComponent {
           routerLink: 'entries/access-query',
         },
         {
-          label: 'Listado de Autorizaciones',
+          label: 'Listado de Autorizaciónes',
           routerLink: 'entries/auth-list',
         },
         {
