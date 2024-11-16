@@ -1,55 +1,95 @@
 <app-main-container title="Enviar una Notificación" (infoButtonClick)="showInfo()">
-  <form [formGroup]="emailForm" (ngSubmit)="enviar()">
+  <form [formGroup]="emailForm" (ngSubmit)="submit()">
+    <!-- Campo de correo electrónico -->
     <div class="mb-3">
       <label class="form-label">Enviar a:</label>
       <input type="email" class="form-control" formControlName="email" style="max-width: 400px;"
-      [ngClass]="{'is-invalid' : emailForm.get('email')?.invalid && (emailForm.get('email')?.dirty || emailForm.get('email')?.touched)}"/>
-
-      @if (emailForm.get('email')?.invalid && (emailForm.get('email')?.dirty ||
-      emailForm.get('email')?.touched)) { 
-        @if (emailForm.get('email')?.hasError('required')) {
-      <div class="text-danger">Campo Obligatorio</div>
-      } 
-      @if (emailForm.get('email')?.hasError('email')) {
-      <div class="text-danger">Correo Inválido</div>
-      } 
-    }
+        [ngClass]="{'is-invalid': emailForm.get('email')?.invalid && (emailForm.get('email')?.dirty || emailForm.get('email')?.touched)}" />
+      <div
+        *ngIf="emailForm.get('email')?.invalid && (emailForm.get('email')?.dirty || emailForm.get('email')?.touched)">
+        <div *ngIf="emailForm.get('email')?.hasError('required')">
+          <div class="text-danger">Campo Obligatorio</div>
+        </div>
+        <div *ngIf="emailForm.get('email')?.hasError('email')">
+          <div class="text-danger">Correo Inválido</div>
+        </div>
+      </div>
     </div>
+
+    <!-- Campo de asunto -->
     <div class="mb-3">
       <label class="form-label">Asunto:</label>
       <input type="text" class="form-control" formControlName="subject" style="max-width: 400px;"
-      [ngClass]="{'is-invalid' : emailForm.get('subject')?.invalid && (emailForm.get('subject')?.dirty || emailForm.get('subject')?.touched)}"/>
-      @if (emailForm.get('subject')?.invalid && (emailForm.get('subject')?.dirty || emailForm.get('subject')?.touched)) {
-        @if(emailForm.get('subject')?.hasError('minlength')) {
+        [ngClass]="{'is-invalid': emailForm.get('subject')?.invalid && (emailForm.get('subject')?.dirty || emailForm.get('subject')?.touched)}" />
+      <div
+        *ngIf="emailForm.get('subject')?.invalid && (emailForm.get('subject')?.dirty || emailForm.get('subject')?.touched)">
+        <div *ngIf="emailForm.get('subject')?.hasError('minlength')">
           <div class="text-danger">Debe contener mínimo tres caracteres</div>
-        }
-        @if(emailForm.get('subject')?.hasError('required')) {
+        </div>
+        <div *ngIf="emailForm.get('subject')?.hasError('required')">
           <div class="text-danger">Campo Obligatorio</div>
-        }
-      }
+        </div>
+      </div>
     </div>
 
-    <div>
-      <h6>Plantillas</h6>
-      <select class="form-select" formControlName="templateID" style="max-width: 400px;"
-      [ngClass]="{'is-invalid' : emailForm.get('templateID')?.invalid && (emailForm.get('templateID')?.dirty || emailForm.get('templateID')?.touched)}">
-        @for (item of templates; track $index) {
-        <option [value]="item.id">{{ item.name }}</option>
-        }
-      </select>
-      @if (emailForm.get('templateID')?.invalid && (emailForm.get('templateID')?.dirty || emailForm.get('templateID')?.touched)) {
-        @if (emailForm.get('templateID')?.hasError('required')) {
-          <div class="text-danger">
-            Campo Obligatorio
+    <!-- Variables -->
+    <h6>Variables:</h6>
+    <button type="button" class="btn btn-secondary mb-3" (click)="addVariable()">+</button>
+
+    <div formArrayName="variables">
+      <div class="row mb-3" *ngFor="let variable of variables.controls; let i = index">
+        <div [formGroupName]="i">
+          <div class="col-6">
+            <label class="form-label">Nombre:</label>
+            <input type="text" class="form-control" formControlName="key" />
+            <div *ngIf="variable.get('key')?.invalid && (variable.get('key')?.touched)">
+              <div *ngIf="variable.get('key')?.hasError('required')">
+                <div class="text-danger">Campo Obligatorio</div>
+              </div>
+            </div>
           </div>
-        }
-      }
+  
+          <div class="col-6">
+            <label class="form-label">Valor:</label>
+            <input type="text" class="form-control" formControlName="value" />
+            <div *ngIf="variable.get('value')?.invalid && (variable.get('value')?.touched)">
+              <div *ngIf="variable.get('value')?.hasError('required')">
+                <div class="text-danger">Campo Obligatorio</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 mt-2">
+          <button type="button" class="btn btn-danger" (click)="removeVariable(i)">Eliminar</button>
+        </div>
+      </div>
     </div>
-    @if (emailForm.get('templateID')?.value !== null) {
-      <button type="button" class="btn btn-secondary mt-3" (click)="previewSelectedTemplate()">
+
+
+    <!-- Plantillas -->
+    <div class="mb-3">
+      <label class="form-label">Plantillas:</label>
+      <select class="form-select" formControlName="templateID" style="max-width: 400px;"
+        [ngClass]="{'is-invalid': emailForm.get('templateID')?.invalid && (emailForm.get('templateID')?.dirty || emailForm.get('templateID')?.touched)}">
+        <option *ngFor="let item of templates" [value]="item.id">{{ item.name }}</option>
+      </select>
+      <div
+        *ngIf="emailForm.get('templateID')?.invalid && (emailForm.get('templateID')?.dirty || emailForm.get('templateID')?.touched)">
+        <div *ngIf="emailForm.get('templateID')?.hasError('required')">
+          <div class="text-danger">Campo Obligatorio</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón para previsualizar plantilla -->
+    <div *ngIf="emailForm.get('templateID')?.value !== null">
+      <button type="button" class="btn btn-secondary mb-3" (click)="previewSelectedTemplate()">
         Previsualizar
       </button>
-    }
+    </div>
+
+    <!-- Botón de Enviar -->
     <div class="row">
       <div class="col-1"></div>
       <div class="col-1"></div>
@@ -63,16 +103,19 @@
       <div class="col-1"></div>
       <div class="col-1"></div>
       <div class="col-1">
-        <button type="submit" class="btn btn-primary" [disabled]="emailForm.invalid || isLoading">
-          <ng-container *ngIf="isLoading; else sendButton">
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            Enviando...
-          </ng-container>
-          <ng-template #sendButton>Enviar</ng-template>
-        </button>
+        <div class="row">
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary" [disabled]="emailForm.invalid || isLoading || variables.invalid">
+              <ng-container *ngIf="isLoading; else sendButton">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Enviando...
+              </ng-container>
+              <ng-template #sendButton>Enviar</ng-template>
+            </button>            
+          </div>
+        </div>
       </div>
     </div>
-    
   </form>
 </app-main-container>
 
@@ -89,7 +132,7 @@
   </div>
 </div>
 
-<!-- Modal de informacion -->
+<!-- Modal de información -->
 <div [class.show]="isModalOpen" [style.display]="isModalOpen ? 'block' : 'none'" class="modal fade" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -99,7 +142,6 @@
       </div>
       <div class="modal-body">
         <div class="container-fluid">
-          <!-- Introducción -->
           <div class="alert alert-info mb-2">
             <h5 class="alert-heading">
               Información sobre el Envío de Notificaciones
@@ -111,7 +153,6 @@
             </p>
           </div>
 
-          <!-- Descripción de los campos -->
           <div class="card mb-2">
             <div class="card-header">
               <h5 class="mb-0">Descripción de los Campos</h5>
@@ -134,7 +175,6 @@
             </div>
           </div>
 
-          <!-- Nota (OPCIONAL) -->
           <div class="alert alert-warning mb-0">
             <h5 class="alert-heading">Nota:</h5>
             <p class="mb-0 small">
