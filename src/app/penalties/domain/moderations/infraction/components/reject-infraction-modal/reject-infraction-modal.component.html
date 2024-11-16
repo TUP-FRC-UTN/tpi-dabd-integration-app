@@ -1,0 +1,54 @@
+<div>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Rechazar infracción</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="activeModal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form #claimForm="ngForm" (ngSubmit)="submit()">
+      <div class="mb-3">
+        <label for="ClaimDescription" class="form-label">Descripción</label>
+        <textarea
+          class="form-control"
+          id="ClaimDescription"
+          rows="3"
+          #descriptionControl="ngModel"
+          [ngClass]="{
+            'is-invalid':
+              descriptionControl.invalid &&
+              (descriptionControl.dirty || descriptionControl.touched)
+          }"
+          [(ngModel)]="description"
+          name="descriptionClaim"
+          required
+        ></textarea>
+        @if (descriptionControl.invalid && (descriptionControl.dirty
+        || descriptionControl.touched)) { @if
+        (descriptionControl.getError('required')) {
+        <div class="invalid-feedback">Este campo es obligatorio</div>
+        } }
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-success"
+      [disabled]="claimForm.invalid"
+      (click)="submit()"
+    >
+      Confirmar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="activeModal.dismiss('Cross click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</div>
