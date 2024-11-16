@@ -26,8 +26,7 @@ export class NotificationsComponent implements OnInit {
   clickCount = 0;
   showNotification = false;
 
-  notificationService = new NotificationService();
-  constructor(private router: Router) {}
+  constructor(private router: Router, private notificationService: NotificationService) {}
 
   @ViewChild('iframePreview', { static: false }) iframePreview!: ElementRef;
 
@@ -107,21 +106,13 @@ export class NotificationsComponent implements OnInit {
     }, 5);
   }
 
-  handleDoubleClick() {
-    this.clickCount++;
-    if (this.clickCount === 2) {
-      console.log("doble click")
-      this.router.navigate(['/my-notification']);
-      this.clickCount = 0;
-      console.log(this.clickCount)
-    }
-  }
+
 
   loadMoreNotifications(){
     const nextNotifications = this.remainingNotifications.slice(0, 5);
     this.displayedNotifications = [...this.displayedNotifications, ...nextNotifications];
     this.remainingNotifications = this.remainingNotifications.slice(5); // Elimina las cargadas
-    this.handleDoubleClick();
+    this.router.navigate(['notifications/my-notification']);
 
   }
 }
