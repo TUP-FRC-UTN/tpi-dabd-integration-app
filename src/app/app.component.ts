@@ -86,7 +86,7 @@ export class AppComponent {
           label: 'Administración',
           subMenu: [
             {
-              label: 'Obras',
+              label: 'Listado de Obras',
               routerLink: '/penalties/constructions',
             },
           ],
@@ -258,9 +258,9 @@ export class AppComponent {
         {
           label: 'Administración',
           subMenu: [
-            { label: 'Multas', routerLink: '/penalties/fine' },
-            { label: 'Infracciones', routerLink: '/penalties/infraction' },
-            { label: 'Reclamos', routerLink: '/penalties/claim' },
+            { label: 'Listado de Multas', routerLink: '/penalties/fine' },
+            { label: 'Listado de Infracciones', routerLink: '/penalties/infraction' },
+            { label: 'Listado de Reclamos', routerLink: '/penalties/claim' },
             {
               label: 'Tipos de Sanciones',
               routerLink: '/penalties/sanctionType',
