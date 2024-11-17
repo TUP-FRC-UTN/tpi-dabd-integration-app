@@ -92,7 +92,7 @@ export class ConstructionDocumentationListComponent
   }
 
   ngOnInit(): void {
-    this.loadUserData()
+    this.loadUserData();
   }
 
   // Methods:
@@ -131,6 +131,7 @@ export class ConstructionDocumentationListComponent
     );
     modalRef.componentInstance.constructionId =
       this.construction.construction_id;
+    modalRef.componentInstance.userId = this.userData.id;
 
     modalRef.result
       .then((result) => {

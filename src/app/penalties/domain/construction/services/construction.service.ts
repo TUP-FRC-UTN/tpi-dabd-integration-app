@@ -149,11 +149,10 @@ export class ConstructionService {
     id: number,
     userId: number
   ): Observable<ConstructionResponseDto> {
-    const params = new HttpParams().set('userId', userId);
     return this.http.put<ConstructionResponseDto>(
       `${this.apiUrl}/complete/${id}`,
       {},
-      { params, headers: this.getHeaders() }
+      { headers: this.getHeaders() }
     );
   }
 
