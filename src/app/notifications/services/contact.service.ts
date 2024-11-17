@@ -1,10 +1,12 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { ContactModel } from '../models/contacts/contactModel';
 import { environment } from '../environments/environment';
-import { Observable, map } from 'rxjs';
+import { Observable, debounceTime, first, map, of, switchMap } from 'rxjs';
 import { SubscriptionMod } from '../models/suscriptions/subscription';
 import { ContactType } from '../models/contacts/contactAudit';
+import { PaginatedContacts } from '../models/contacts/paginated/PaginatedContact';
+import { AsyncValidator, AsyncValidatorFn } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +25,50 @@ export class ContactService {
 
   }
 
+
+  private transformToContact(data: any): ContactModel {
+    return {
+      id: data.id,
+      subscriptions: data.subscriptions || [],
+      contactValue: data.contact_value,
+      contactType: this.mapContactType(data.contact_type),
+      active: data.active,
+      showSubscriptions: false
+    };
+  };
+
+
+  getPaginatedContacts(page: number, size: number, active?: boolean, search_term?: string, contact_type?: string) : Observable<PaginatedContacts>{
+  //  let params = new HttpParams().set('page', page).set('size', size);
+
+  let params = new HttpParams();
+
+
+
+
+    if(active !== undefined) params = params.set('active', active.toString());
+    if(search_term) params = params.set('search_term', search_term);
+    if(contact_type) params = params.set('contact_type', contact_type);
+
+    params = params.set('page', page).set('size', size);
+
+    return this.http.get<PaginatedContacts>(`${this.apiUrl}/contacts/pageable`, {params}).pipe(
+      map(response => ({
+        ...response,
+        content: response.content.map(contact => ({
+          ...this.transformToContact(contact),
+          subscriptions: contact.subscriptions.map(subscription => 
+            this.getSubscriptionNameInSpanish(subscription)
+          )
+        }))
+      }))
+    )
+
+   };
+
+
+
+
   getAllContacts(): Observable<ContactModel[]> {
     return this.http.get<ContactModel[]>(`${this.apiUrl}/contacts`).pipe(
       map(contacts => contacts.map(contact => ({
@@ -32,7 +78,17 @@ export class ContactService {
         )
       })))
     );
+  };
+
+  checkContactExists(contactValue: string): Observable<boolean> {
+    return this.getAllContacts().pipe(
+      map(contacts => contacts.some(contact => contact.contactValue === contactValue))
+    );
   }
+
+  
+
+
   getFilteredContactsFromBackend(active: boolean  | undefined, searchText: string = '', contactType?: string): Observable<ContactModel[]> {
 
     let url = `${this.apiUrl}/contacts?active=${active}`;
@@ -104,16 +160,7 @@ export class ContactService {
     return this.http.delete<void>(`${this.apiUrl}/contacts/${id}`);
   }
 
-  private transformToContact(data: any): ContactModel {
-    return {
-      id: data.id,
-      subscriptions: data.subscriptions || [],
-      contactValue: data.contact_value,
-      contactType: this.mapContactType(data.contact_type),
-      active: data.active,
-      showSubscriptions: false
-    };
-  };
+
 
   private transformToApiContactToPost(contact: ContactModel): any {
     return [{
@@ -132,7 +179,7 @@ export class ContactService {
   private mapContactType(contactType: ContactType): string {
     switch (contactType) {
       case ContactType.EMAIL:
-        return 'Correo eléctronico';
+        return 'Correo electrónico';
       case ContactType.PHONE:
         return 'Teléfono';
       case ContactType.SOCIAL_MEDIA_LINK:

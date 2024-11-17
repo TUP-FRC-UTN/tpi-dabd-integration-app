@@ -8,3 +8,9 @@ export interface SubscriptionMod {
     subscriptionId : number
     subscriptionValue : Boolean
 }
+
+export interface SubscriptionStat {
+  subscribed: number;
+  unsubscribed: number;
+  total: number;
+}
