@@ -13,7 +13,9 @@ export class PaymentServiceService {
   // private readonly baseUrl = 'http://localhost:8090/payments';//DEV
   userId : Number;
   constructor(private http: HttpClient) {
-    this.userId = sessionStorage.getItem('userId') ? Number(sessionStorage.getItem('userId')) : 1;
+    let session = JSON.parse(sessionStorage.getItem('user')!)
+    this.userId = session.value.id;
+    console.log(this.userId);
   }
 
   getPaymentByTicketId(ticketId: Number) {
@@ -21,7 +23,7 @@ export class PaymentServiceService {
       'x-user-id': this.userId.toString(),
     };
     // const url = `${this.baseUrl}/ticket/${ticketId}`;
-    const url = `${this.baseUrl}ticket/${ticketId}`; //prod
+    const url = `${this.baseUrl}payments/ticket/${ticketId}`; //prod
     return this.http.get<PaymentDto>(url, {
       headers: headers,
     });
