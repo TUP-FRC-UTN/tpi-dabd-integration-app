@@ -140,13 +140,11 @@
 
   <div class="row d-flex justify-content-end " style="margin-right: 20px;">
     <div class="col">
-      <!-- <label for="rowsPerPageSelect">Mostrar </label> -->
       <select class="form-select m-lg-1 w-auto d-inline" [(ngModel)]="pageSize" (ngModelChange)="changesPageSize($event)">
         <option value=10>10</option>
         <option value=25>25</option>
         <option value=50>50</option>
       </select>
-      <!-- <span> registros por página de {{this.totalItems}}</span> -->
     </div>
     <div class=" col">
       <nav aria-label="Page navigation example" style="cursor: pointer;">
@@ -172,26 +170,8 @@
     </div>
   </div>
 
-  <!--POSIBLE IMPLEMENTACIÓN-->
-
 </app-main-container>
-<!-- <app-table
-  [items]="chargesCompleted"
-  [columns]="columns"
-  [showSearchBar]="true"
-  [showHeaderButton]="true"
-  (excelButtonClick)="downloadTable()"
-  (pdfButtonClick)="imprimir()"
-  [tableFilters]="filters"
-  [pagination]="{
-      totalItems: totalItems,
-      page: currentPage,
-      size: pageSize,
-      onPageChange: onPageChange,
-      onPageSizeChange: changesPageSize
-    }"
->
-</app-table> -->
+
 
 
 <ng-template #modalTemplate let-modal >
