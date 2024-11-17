@@ -1,13 +1,15 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import {
-  PlotFilters,
-  PlotStatusDictionary,
-  PlotTypeDictionary,
-  TicketDetail,
-  TicketDto,
-  TicketStatus,
-} from '../models/TicketDto';
-import { CommonModule } from '@angular/common';
+  Component,
+  ElementRef,
+  inject,
+  LOCALE_ID,
+  Input,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
+import { TicketDetail, TicketDto, TicketStatus } from '../models/TicketDto';
+import { CommonModule, DatePipe } from '@angular/common';
 import { MercadoPagoServiceService } from '../services/mercado-pago-service.service';
 import { TicketPayDto } from '../models/TicketPayDto';
 import {
@@ -18,10 +20,39 @@ import {
 } from '@angular/forms';
 import { TicketService } from '../services/ticket.service';
 import { HttpClient } from '@angular/common/http';
-import { TicketPaymentFilterButtonsComponent } from '../ticket-payment-filter-buttons/ticket-payment-filter-buttons.component';
-import { MainContainerComponent, TableComponent } from 'ngx-dabd-grupo01';
-import { NgbPagination } from '@ng-bootstrap/ng-bootstrap';
+import {
+  Filter,
+  FilterConfigBuilder,
+  FilterOption,
+  MainContainerComponent,
+  TableComponent,
+  TableFiltersComponent,
+} from 'ngx-dabd-grupo01';
+import {
+  NgbDropdownModule,
+  NgbModal,
+  NgbModalRef,
+  NgbModule,
+  NgbPagination,
+} from '@ng-bootstrap/ng-bootstrap';
 import { TranslateStatusTicketPipe } from '../pipes/translate-status-ticket.pipe';
+import { PaginatedResponse } from '../models/api-response';
+import { InfoComponent } from '../info/info.component';
+import { Subject } from 'rxjs';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { PaymentExcelService } from '../services/payment-excel.service';
+
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
+import { PeriodToMonthYearPipe } from '../pipes/period-to-month-year.pipe';
+import { CapitalizePipe } from '../pipes/capitalize.pipe';
+import { CurrencyFormatPipe } from '../pipes/currency-format.pipe';
+import { PaymentServiceService } from '../services/payment-service.service';
+import { PaymentDto } from '../models/PaymentDto';
+import { FilesServiceService } from '../services/files.service.service';
+import { RequestTicket } from '../models/RequestTicket';
+registerLocaleData(localeEs, 'es');
 @Component({
   selector: 'app-admin-list-expensas',
   standalone: true,
@@ -29,56 +60,72 @@ import { TranslateStatusTicketPipe } from '../pipes/translate-status-ticket.pipe
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    TicketPaymentFilterButtonsComponent,
     NgbPagination,
-    TranslateStatusTicketPipe
+    TranslateStatusTicketPipe,
+    MainContainerComponent,
+    TableFiltersComponent,
+    NgbDropdownModule,
+    NgbModule,
+    PeriodToMonthYearPipe,
+    CapitalizePipe,
+    CurrencyFormatPipe,
   ],
   templateUrl: './admin-list-expensas.component.html',
   styleUrls: ['./admin-list-expensas.component.css'],
+  providers: [DatePipe, { provide: LOCALE_ID, useValue: 'es' }],
 })
 export class AdminListExpensasComponent implements OnInit {
+  selectedState: string = ''; // Variable para almacenar el valor seleccionado
+
+  //#region MODALES
+
+  @ViewChild('statusModal') statusModal!: TemplateRef<any>;
+  @ViewChild('confirmModal') confirmModal!: TemplateRef<any>;
+
+  private statusModalRef!: NgbModalRef;
+  private confirmModalRef!: NgbModalRef;
+
+  //--------------------------------------------------------------------------------
+
   //#region ATT de PAGINADO
   currentPage: number = 0;
   pageSize: number = 10;
   sizeOptions: number[] = [10, 25, 50];
-  plotsList: TicketDto[] = [];
-  filteredPlotsList: TicketDto[] = [];
+  ticketList: TicketDto[] = [];
+  filteredTicketList: TicketDto[] = [];
+
+  isFilter: boolean = false; // to keep the status to avoid load all values from backend
+
   lastPage: boolean | undefined;
   totalItems: number = 0;
+  payment: PaymentDto = {
+    id: 0,
+    receiptUrl: '',
+  };
   //#endregion
   //#region NgOnInit | BUSCAR
-  ngOnInit() {
-    this.confirmFilterPlot();
+  ngOnInit(): void {
+    this.ticketStatusOptions = Object.keys(TicketStatus).map((key) => ({
+      key: key,
+      value: TicketStatus[key as keyof typeof TicketStatus],
+    }));
   }
 
-  ngAfterViewInit(): void {
-    this.filterComponent.filter$.subscribe((filteredList: TicketDto[]) => {
-      this.filteredPlotsList = filteredList;
-      this.currentPage = 0;
-    });
+  requestTicket: RequestTicket = {
+    status: null,
+    firstPeriod: null,
+    lastPeriod: null,
   }
 
-  //#region ATT de DICCIONARIOS
-  plotTypeDictionary = PlotTypeDictionary;
-  plotStatusDictionary = PlotStatusDictionary;
-  plotDictionaries = [this.plotTypeDictionary, this.plotStatusDictionary];
-  //#endregion
 
-  //#region ATT de ACTIVE
-  retrievePlotsByActive: boolean | undefined = true;
-  //#endregion
+  filterType: string = '';
+  ticketStatusOptions: { key: string; value: string }[] = [];
+  filterInput: TicketStatus | null = null;
+  fechaInicio: Date | null = null;
+  fechaFin: Date | null = null;
 
-  //#region ATT de FILTROS
-  applyFilterWithNumber: boolean = false;
-  applyFilterWithCombo: boolean = false;
-  contentForFilterCombo: string[] = [];
-  actualFilter: string | undefined = PlotFilters.NOTHING;
-  filterTypes = PlotFilters;
-  filterInput: string = '';
-  //#endregion
+  eventSaved!: Record<string, any>;
 
-  @ViewChild('filterComponent')
-  filterComponent!: TicketPaymentFilterButtonsComponent<TicketDto>;
   @ViewChild('ticketsTable', { static: true })
   tableName!: ElementRef<HTMLTableElement>;
   requestData: TicketPayDto = {
@@ -86,6 +133,8 @@ export class AdminListExpensasComponent implements OnInit {
     title: '',
     description: '',
     totalPrice: 0,
+    adminNameWhoApproves: '',
+    period:''
   };
 
   ticketSelectedModal: TicketDto = {
@@ -97,17 +146,29 @@ export class AdminListExpensasComponent implements OnInit {
     status: TicketStatus.PENDING,
     ticketDetails: [],
     lotId: 0,
+    urlTicket: '',
+    period: '',
   };
 
   listallticket: TicketDto[] = [];
   searchText = '';
   filteredTickets: TicketDto[] = [];
   fechasForm: FormGroup;
+  totalTicketSelected: number = 0;
+
+  LIMIT_32BITS_MAX = 2147483647;
+
+  @Input() objectName: string = '';
 
   constructor(
     private mercadopagoservice: MercadoPagoServiceService,
     private formBuilder: FormBuilder,
-    private ticketservice: TicketService
+    private ticketService: TicketService,
+    private modalService: NgbModal,
+    private excelService: PaymentExcelService,
+    private datePipe: DatePipe,
+    private paymentService: PaymentServiceService,
+    private fileService : FilesServiceService
   ) {
     this.fechasForm = this.formBuilder.group({
       fechaInicio: [''],
@@ -115,12 +176,55 @@ export class AdminListExpensasComponent implements OnInit {
     });
   }
 
+  // Metodo para verificar si el boton debería estar habilitado
+  isStateSelected(): boolean {
+    return (
+      this.selectedState === '1' ||
+      this.selectedState === '2' ||
+      this.selectedState === '3'
+    );
+  }
+
+  selectedStateChange() {
+    if (this.selectedState == '1') return 'PENDIENTE';
+    if (this.selectedState == '2') return 'PAGADO';
+    if (this.selectedState == '3') return 'ANULADO';
+    return '';
+  }
+
+  setFilterType(type: string) {
+    this.filterType = type;
+    console.log(this.filterType);
+  }
+
+  buscar() {
+    if (this.filterType === 'estado' && this.filterInput) {
+      // Lógica para filtrar por estado
+      console.log('Filtrar por estado:', this.filterInput);
+    } else if (
+      this.filterType === 'fecha' &&
+      this.fechaInicio &&
+      this.fechaFin
+    ) {
+      // Lógica para filtrar por fecha
+      console.log(
+        'Filtrar por fecha desde',
+        this.fechaInicio,
+        'hasta',
+        this.fechaFin
+      );
+    }
+  }
+
   // Método para obtener todos los tickets usando el servicio
   getTickets(): void {
-    this.ticketservice.getAllTickets().subscribe({
-      next: (tickets: TicketDto[]) => {
-        this.listallticket = tickets;
-        this.filteredTickets = tickets;
+    this.ticketService.getAll(this.requestTicket, this.currentPage, this.pageSize).subscribe({
+      next: (response: PaginatedResponse<TicketDto>) => {
+        console.log('Tickets received:', response.content);
+        this.listallticket = response.content;
+        this.filteredTickets = response.content;
+        this.lastPage = response.last;
+        this.totalItems = response.totalElements;
       },
       error: (error) => {
         console.error('Error al obtener los tickets:', error);
@@ -134,7 +238,7 @@ export class AdminListExpensasComponent implements OnInit {
   enviarFechas() {
     const fechas = this.fechasForm.value;
     console.log('Fechas Enviadas:', fechas);
-    this.ticketservice.filtrarfechas(fechas).subscribe(
+    this.ticketService.filtrarfechas(fechas).subscribe(
       (filteredTickets: TicketDto[]) => {
         this.filteredTickets = filteredTickets;
       },
@@ -145,34 +249,38 @@ export class AdminListExpensasComponent implements OnInit {
   }
   onPageChange(page: number) {
     this.currentPage = --page;
-    this.confirmFilterPlot();
+    if (!this.isFilter) {
+      this.getTickets();
+    } else {
+      this.filterChange(this.eventSaved);
+    }
+    this.currentPage++;
   }
   onItemsPerPageChange() {
     --this.currentPage;
-    this.confirmFilterPlot();
   }
-  searchTable() {
-    const searchTextLower = this.searchText.toLowerCase();
-    const searchNumber = parseFloat(this.searchText);
+  // searchTable() {
+  //   const searchTextLower = this.searchText.toLowerCase();
+  //   const searchNumber = parseFloat(this.searchText);
 
-    this.filteredTickets = this.listallticket.filter(
-      (ticket) =>
-        ticket.ownerId.toString().includes(this.searchText) ||
-        ticket.ticketDetails.some((item) =>
-          item.description.toLowerCase().includes(searchTextLower)
-        ) ||
-        ticket.status
-          .toString()
-          .includes(searchTextLower.toLocaleUpperCase()) ||
-        this.formatDate2(ticket.issueDate, 'MM/YYYY').includes(
-          searchTextLower
-        ) ||
-        this.formatDate2(ticket.expirationDate, 'MM/YYYY').includes(
-          searchTextLower
-        ) ||
-        (!isNaN(searchNumber) && this.calculateTotal(ticket) === searchNumber)
-    );
-  }
+  //   this.filteredTickets = this.listallticket.filter(
+  //     (ticket) =>
+  //       ticket.ownerId.toString().includes(this.searchText) ||
+  //       ticket.ticketDetails.some((item) =>
+  //         item.description.toLowerCase().includes(searchTextLower)
+  //       ) ||
+  //       ticket.status
+  //         .toString()
+  //         .includes(searchTextLower.toLocaleUpperCase()) ||
+  //       this.formatDate2(ticket.issueDate, 'MM/YYYY').includes(
+  //         searchTextLower
+  //       ) ||
+  //       this.formatDate2(ticket.expirationDate, 'MM/YYYY').includes(
+  //         searchTextLower
+  //       ) ||
+  //       (!isNaN(searchNumber) && this.calculateTotal(ticket) === searchNumber)
+  //   );
+  // }
 
   formatDate2(date: Date, format: string): string {
     const pad = (num: number) => (num < 10 ? '0' + num : num.toString());
@@ -196,9 +304,19 @@ export class AdminListExpensasComponent implements OnInit {
     return total;
   }
 
+  
+
   selectTicket(ticket: TicketDto) {
     this.ticketSelectedModal = ticket;
     console.log('Ticket seleccionado:', this.ticketSelectedModal);
+
+    this.totalTicketSelected = this.calculateTotal(ticket);
+
+    //aca se deberia llamar para obtener el recibo
+    this.paymentService.getPaymentByTicketId(ticket.id).subscribe((payment) => {
+      this.payment = payment;
+      console.log("pago:", this.payment)
+    });
   }
 
   formatDate(date: Date): string {
@@ -235,102 +353,318 @@ export class AdminListExpensasComponent implements OnInit {
     throw new Error('Method not implemented.');
   }
 
-  // downloadPdf(ticketId: Number): void {
-  //   this.ticketservice.downloadPdf(ticketId).subscribe(
-  //     (blob) => {
-  //       const url = window.URL.createObjectURL(blob);
-  //       const link = document.createElement('a');
-  //       link.href = url;
-  //       link.download = 'example.pdf'; // Nombre del archivo descargado
-  //       link.click();
-  //       window.URL.revokeObjectURL(url); // Limpia la URL del blob después de la descarga
-  //     },
-  //     (error) => {
-  //       console.error('Error al descargar el PDF:', error);
-  //     }
-  //   );
-  // }
-
-  //#region APLICACION DE FILTROS
-  changeActiveFilter(isActive?: boolean) {
-    this.retrievePlotsByActive = isActive;
-    this.confirmFilterPlot();
+  openConfirmModal() {
+    if (this.statusModalRef) {
+      this.statusModalRef.close();
+    }
+    this.confirmModalRef = this.modalService.open(this.confirmModal, {
+      size: 'lg',
+    });
   }
 
-  confirmFilterPlot() {
-    switch (this.actualFilter) {
-      case 'NOTHING':
-        this.getAllPlots();
-        break;
+  selectedStateEnum() {
+    if (this.selectedState == '1') return 'PENDING';
+    if (this.selectedState == '2') return 'PAID';
+    if (this.selectedState == '3') return 'CANCELED';
+    return '';
+  }
+  confirmChange() {
+    // aca va el cambio de estado.
+    this.ticketService
+      .updateTicketStatus(this.ticketSelectedModal.id, this.selectedStateEnum())
+      .subscribe(
+        (response) => {
+          console.log('Estado actualizado:', response);
+          this.getTickets();
+          this.closeAllModals();
+        },
+        (error) => {
+          console.error('Error al actualizar el estado:', error);
+        }
+      );
 
-      case 'BLOCK_NUMBER':
-        // this.filterPlotByBlock(this.filterInput);
-        break;
+    if (this.confirmModalRef) {
+      this.confirmModalRef.close();
+    }
 
-      case 'PLOT_STATUS':
-        // this.filterPlotByStatus(this.translateCombo(this.filterInput, this.plotStatusDictionary));
-        break;
+    this.selectedState = '';
+  }
 
-      case 'PLOT_TYPE':
-        // this.filterPlotByType(this.translateCombo(this.filterInput, this.plotTypeDictionary));
-        break;
+  closeAllModals() {
+    if (this.confirmModalRef) {
+      this.confirmModalRef.close();
+    }
+    if (this.statusModalRef) {
+      this.statusModalRef.close();
+    }
+    this.selectedState = '';
+  }
 
-      default:
-        break;
+  // ACA SE ABRE EL MODAL DE INFO
+  showInfo(): void {
+    const modalRef = this.modalService.open(InfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true,
+    });
+
+    modalRef.componentInstance.data = { role: 'admin' };
+  }
+
+  onFilterTextBoxChanged(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const filterText = target.value.toLowerCase();
+
+    if (filterText.length <= 2) {
+      // Restaura la lista completa si el texto del filtro tiene menos de 3 caracteres
+      this.filteredTickets = [...this.listallticket];
+    } else {
+      // Filtra los tickets visibles en la tabla
+      this.filteredTickets = this.listallticket.filter((ticket) =>
+        this.matchVisibleFields(ticket, filterText)
+      );
     }
   }
 
-  getAllPlots() {
-    this.ticketservice.getAll(this.currentPage, this.pageSize).subscribe(
-      (response) => {
-        console.log('Types retrieved succesfully:', response);
-        this.plotsList = response.content;
-        this.filteredPlotsList = [...this.plotsList];
-        this.lastPage = response.last;
-        this.totalItems = response.totalElements;
-      },
-      (error) => {
-        console.error('Error getting plots:', error);
-      }
+  // Función de coincidencia solo en los campos visibles
+  matchVisibleFields(ticket: TicketDto, filterText: string): boolean {
+    // Combina las propiedades visibles en un solo texto y verifica si contiene el filtro
+    const propietario =
+      `${ticket.ownerId.first_name} ${ticket.ownerId.second_name} ${ticket.ownerId.last_name}`.toLowerCase();
+    const lote = ticket.lotId.toString();
+    const periodo = this.formatPeriodo(ticket.period);
+    const total = this.calculateTotal(ticket).toLocaleString('es-ES', {
+      style: 'currency',
+      currency: 'EUR',
+    });
+    const estado = this.translateStatus(ticket.status).toLowerCase();
+
+    return (
+      propietario.includes(filterText) ||
+      lote.includes(filterText) ||
+      periodo.includes(filterText) ||
+      total.includes(filterText) ||
+      estado.includes(filterText)
     );
   }
 
-  changeFilterMode(mode: PlotFilters) {
-    switch (mode) {
-      case PlotFilters.NOTHING:
-        this.actualFilter = PlotFilters.NOTHING;
-        this.applyFilterWithNumber = false;
-        this.applyFilterWithCombo = false;
-        this.confirmFilterPlot();
-        break;
+  //Funcion formate el periodo 01/24 a Enero 2024
+  formatPeriodo(period: string): string {
+    const [month, year] = period.split('/');
+    const date = new Date(+year, +month - 1, 1);
+    return this.datePipe.transform(date, 'MMMM yyyy', 'es-ES')!;
+  }
 
-      case PlotFilters.BLOCK_NUMBER:
-        this.actualFilter = PlotFilters.BLOCK_NUMBER;
-        this.applyFilterWithNumber = true;
-        this.applyFilterWithCombo = false;
-        break;
-
-      case PlotFilters.PLOT_STATUS:
-        this.actualFilter = PlotFilters.PLOT_STATUS;
-        this.contentForFilterCombo = this.getKeys(this.plotStatusDictionary);
-        this.applyFilterWithNumber = false;
-        this.applyFilterWithCombo = true;
-        break;
-
-      case PlotFilters.PLOT_TYPE:
-        this.actualFilter = PlotFilters.PLOT_TYPE;
-        this.contentForFilterCombo = this.getKeys(this.plotTypeDictionary);
-        this.applyFilterWithNumber = false;
-        this.applyFilterWithCombo = true;
-        break;
-
+  // Traduce el estado del ticket a español
+  translateStatus(status: TicketStatus): string {
+    switch (status) {
+      case TicketStatus.PAID:
+        return 'Pagado';
+      case TicketStatus.CANCELED:
+        return 'Anulado';
+      case TicketStatus.PENDING:
+        return 'Pendiente';
+      case TicketStatus.UNDER_REVIEW:
+        return 'En revisión';
       default:
-        break;
+        return '';
     }
   }
 
-  //#region USO DE DICCIONARIOS
-  getKeys(dictionary: any) {
-    return Object.keys(dictionary);
+  getActualDayFormat() {
+    const today = new Date();
+
+    const formattedDate = today.toISOString().split('T')[0];
+
+    return formattedDate;
+  }
+  /**
+   * Export the HTML table to a PDF file.
+   * Calls the `exportTableToPdf` method from the `CadastreExcelService`.
+   */
+  exportToPdf() {
+    const doc = new jsPDF();
+
+    // Título del PDF
+    doc.setFontSize(18);
+    doc.text('Tickets Report', 14, 20);
+
+    this.ticketService
+      .getAllTicketsPageForExports(0, this.LIMIT_32BITS_MAX)
+      .subscribe(
+        (response: PaginatedResponse<TicketDto>) => {
+          // Accede a la propiedad `content` que contiene los tickets
+          const expenses = response.content;
+
+          autoTable(doc, {
+            startY: 30,
+            head: [['Propietario', 'Periodo', 'Estado']],
+            body: expenses.map((expense: TicketDto) => [
+              `${expense.ownerId.first_name} ${expense.ownerId.last_name}`,
+              expense.issueDate instanceof Date
+                ? expense.issueDate.toLocaleDateString()
+                : new Date(expense.issueDate).toLocaleDateString(),
+              this.translateStatus(expense.status),
+            ]),
+          });
+
+          // Guarda el PDF después de agregar la tabla
+          doc.save('expenses_report.pdf');
+        },
+        (error) => {
+          console.error('Error retrieved all, on export component.', error);
+        }
+      );
+  }
+
+  /**
+   * Export the HTML table to an Excel file (.xlsx).
+   * Calls the `exportTableToExcel` method from the `CadastreExcelService`.
+   */
+  //#region TIENEN QUE MODIFICAR EL SERIVCIO CON SU GETALL
+  exportToExcel() {
+    this.ticketService
+      .getAllTicketsPageForExports(0, this.LIMIT_32BITS_MAX)
+      .subscribe(
+        (response) => {
+          const modifiedContent = response.content.map(
+            ({ id, ownerId, ...rest }) => rest
+          );
+          this.excelService.exportListToExcel(
+            modifiedContent,
+            `${this.getActualDayFormat()}_${this.objectName}`
+          );
+        },
+        (error) => {
+          console.log('Error retrieved all, on export component.');
+        }
+      );
+  }
+
+  filteroptions: FilterOption[] = [
+    { value: 'PENDING', label: 'Pendiente' },
+    { value: 'PAID', label: 'Pagado' },
+    { value: 'CANCELED', label: 'Anulado' },
+  ];
+
+  filterConfig: Filter[] = new FilterConfigBuilder()
+    .numberFilter('Numero de lote', 'lotId', 'Ingrese un numero de lote')
+    .selectFilter('Estado', 'status', 'Estado', this.filteroptions)
+    .numberFilter('Año desde', 'initYear', 'Seleccione un año ')
+    .selectFilter('Mes desde', 'initMonth', 'Seleccione un mes', [
+      { value: '01', label: 'Enero' },
+      { value: '02', label: 'Febrero' },
+      { value: '03', label: 'Marzo' },
+      { value: '04', label: 'Abril' },
+      { value: '05', label: 'Mayo' },
+      { value: '06', label: 'Junio' },
+      { value: '07', label: 'Julio' },
+      { value: '08', label: 'Agosto' },
+      { value: '09', label: 'Septiembre' },
+      { value: '10', label: 'Octubre' },
+      { value: '11', label: 'Noviembre' },
+      { value: '12', label: 'Diciembre' },
+    ])
+    .numberFilter('Año hasta', 'endYear', 'Seleccione un año ')
+    .selectFilter('Mes hasta', 'endMonth', 'Seleccione un mes', [
+      { value: '01', label: 'Enero' },
+      { value: '02', label: 'Febrero' },
+      { value: '03', label: 'Marzo' },
+      { value: '04', label: 'Abril' },
+      { value: '05', label: 'Mayo' },
+      { value: '06', label: 'Junio' },
+      { value: '07', label: 'Julio' },
+      { value: '08', label: 'Agosto' },
+      { value: '09', label: 'Septiembre' },
+      { value: '10', label: 'Octubre' },
+      { value: '11', label: 'Noviembre' },
+      { value: '12', label: 'Diciembre' },
+    ])
+    .build();
+
+  // Método que detecta cambios en los filtros
+  filterChange($event: Record<string, any>) {
+    console.log($event); // Muestra los valores actuales de los filtros en la consola
+    this.eventSaved = $event;
+    this.isFilter = true;
+    if(!this.ticketService.isValidYearFilter($event['initYear']) || !this.ticketService.isValidYearFilter($event['endYear'])) {
+      return;
+    }
+    const initYear = this.ticketService.cutYearFilter($event['initYear']);
+    const endYear = this.ticketService.cutYearFilter($event['endYear']);
+    const monthInit = $event['initMonth'];
+    const monthEnd = $event['endMonth'];
+
+    const concatDateInit = !this.ticketService.isValidPeriod(initYear, monthInit) ? `${monthInit}/${initYear}` : '/';
+    const concatDateEnd = !this.ticketService.isValidPeriod(monthEnd, endYear) ? `${monthEnd}/${endYear}` : '/';
+
+    if(!this.ticketService.isValidateFullDate($event['initYear'], $event['initMonth'])){
+      return;
+    }
+
+
+    this.ticketService
+      .getAllWithFilters(
+        this.currentPage--,
+        this.pageSize,
+        $event['status'],
+        $event['lotId'],
+        concatDateInit == '/' ? '' : concatDateInit,
+        concatDateEnd == '/' ? '' : concatDateEnd
+      )
+      .subscribe(
+        (response: PaginatedResponse<TicketDto>) => {
+          console.log(response.content);
+          this.listallticket = response.content;
+          this.filteredTickets = response.content;
+          this.lastPage = response.last;
+          this.totalItems = response.totalElements;
+        },
+        (error) => {
+          console.error('Error al obtener los tickets con filtros:', error);
+        },
+        () => {
+          console.log('Obtención de tickets con filtros completada.');
+        }
+      );
+    // // Verifica si el filtro de estado tiene un cambio específico
+    // if ($event['status']?.includes("PAGADO")) {
+    //   this.onPaidStatusSelected();
+    // }
+  }
+
+  // Método propio que se ejecuta cuando se selecciona "PAGADO" en el checkbox
+  onPaidStatusSelected() {
+    console.log('Se seleccionó el estado PAGADO.');
+    // Aquí puedes agregar la lógica adicional que necesitas.
+  }
+
+  resetFilters() {
+    this.isFilter = false;
+    this.filterConfig = new FilterConfigBuilder()
+      .textFilter('Propietario', 'ownerId', 'Ingrese un propietario')
+      .numberFilter('Numero de lote', 'lotId', 'Ingrese un numero de lote')
+      .selectFilter(
+        'Estado',
+        'lotId',
+        'Seleccione un estado',
+        this.filteroptions
+      )
+      .build();
+  }
+
+  downloadTicket() {
+    this.fileService.downloadFilePayment(this.payment.receiptUrl).subscribe((response) => {
+      const blob = new Blob([response], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = this.payment.receiptUrl.split('/').pop() || 'download.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
   }
 }
