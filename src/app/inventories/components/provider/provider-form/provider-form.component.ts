@@ -187,7 +187,7 @@ export class ProviderFormComponent implements OnInit {
       next: (response) => {
         this.toastService.sendSuccess("El proveedor ha sido creado con éxito.");
         this.resetForm();
-        this.router.navigate(['/providers/list']);
+        this.router.navigate(['/inventories/providers/list']);
       },
       error: (error) => {
         this.toastService.sendError("Hubo un error en la creación del proveedor.");
@@ -204,7 +204,7 @@ export class ProviderFormComponent implements OnInit {
       next: (response) => {
         this.toastService.sendSuccess("El proveedor ha sido modificado con éxito.");
         this.resetForm();
-        this.router.navigate(['/providers/list']);
+        this.router.navigate(['/inventories/providers/list']);
       },
       error: (error) => {
         this.toastService.sendError("Hubo un error en la modificación del proveedor.");
@@ -216,7 +216,7 @@ export class ProviderFormComponent implements OnInit {
     this.providerForm.reset();
     this.isEditMode = false;
     this.currentProviderId = null;
-    this.router.navigate(['/providers/list']);
+    this.router.navigate(['/inventories/providers/list']);
   }
 
   loadProviderData(id: number): void {

@@ -34,10 +34,11 @@ export class EmployeesService {
       )
     );
   }
-  
+ 
+  //PARA LISTADO
   getAllEmployeesPaged(
     page: number = 0,
-    size: number = 40,
+    size: number = 400,
     filters?: {
       firstName?: string;
       lastName?: string;
@@ -45,7 +46,8 @@ export class EmployeesService {
       docType?: string;
       docNumber?: string;
       state?: string;
-      date?: string;
+      startDate?: string;
+      endDate?: string;
       salary?: string;
     }
   ): Observable<PaginatedResponse<Employee>> {
@@ -60,10 +62,11 @@ export class EmployeesService {
       if (filters.docType) params = params.set('docType', filters.docType);
       if (filters.docNumber) params = params.set('docNumber', filters.docNumber);
       if (filters.state) params = params.set('state', filters.state);
-      if (filters.date) params = params.set('date', filters.date);
+      if (filters.startDate) params = params.set('startDate', filters.startDate);
+      if (filters.endDate) params = params.set('endDate', filters.endDate);
       if (filters.salary) params = params.set('salary', filters.salary);
     }
-  
+      console.log('Parámetros enviados al backend:', params.toString());
     return this.http.get<PaginatedResponse<Employee>>(`${this.apiUrl}/paged`, { params }).pipe(
       map(response => {
         // Mapeo los campos de snake_case a camelCase
@@ -82,10 +85,50 @@ export class EmployeesService {
       })
     );
   }
+  //PARA FILTROS DE DASHBOARD
+  getAllEmployeesDashboard(
+    filters?: {
+      startDate?: string;
+      endDate?: string;
+      state?:string;
+    }
+  ): Observable<Employee[]> {
+    let params = new HttpParams();
+  
+    if (filters) {
+      if (filters.startDate) params = params.set('startDate', filters.startDate);
+      if (filters.endDate) params = params.set('endDate', filters.endDate);
+      if (filters.state) params = params.set('state', filters.state); // Agregamos el filtro de estado
+
+    }
+  
+    console.log('Parámetros enviados al backend:', params.toString());
+  
+    return this.http.get<Employee[] | undefined>(`${this.apiUrl}/dashboards`, { params }).pipe(
+      map(response => {
+        if (!response) {
+          console.warn('El backend devolvió una respuesta vacía o undefined');
+          return []; // Devuelve una lista vacía si la respuesta es undefined
+        }
+        return response.map(employee => this.mapperService.toCamelCase(employee));
+      }),
+      tap(response => {
+        response.forEach(employee => {
+          if (!employee.hiringDate) {
+            console.warn(`Employee with ID ${employee.id} is missing hiringDate.`);
+          }
+        });
+      })
+    );
+  }
+  
+  
+  
   
   
   //fin filtros dashboard
   createSchedule(schedule: EmployeeSchedule): Observable<EmployeeSchedule> {
+    console.log('Schedule to create:', schedule);
     return this.http.post<EmployeeSchedule>(this.apiUrlSHIFT, schedule);
   }
 
@@ -169,7 +212,7 @@ export class EmployeesService {
   // Actualizar un empleado existente
   updateEmployee(employee: Employee): Observable<Employee> {
     //employee.hiringDate.setHours(employee.hiringDate.getHours() + 5);
-    return this.http.put<Employee>(`${this.apiUrl}/${employee.id}`, employee);
+    return this.http.put<Employee>(`${this.apiUrl}/update/${employee.id}`, employee);
   }
 
   // Eliminar (o desactivar) un empleado

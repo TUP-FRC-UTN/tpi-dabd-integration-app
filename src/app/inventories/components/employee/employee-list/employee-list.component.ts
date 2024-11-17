@@ -249,7 +249,7 @@ export class EmployeeListComponent implements OnInit {
 
   // CRUD operations
   editEmployee(employee: Employee): void {
-    this.router.navigate(['inventories/employees/form', employee.id]);
+    this.router.navigate(['/inventories/employees/form', employee.id]);
   }
 
   deleteEmployee(id: number): void {
@@ -357,7 +357,7 @@ export class EmployeeListComponent implements OnInit {
   }
   showEmployeeAssistance(employeeId: number) {
     // Usar el Router para navegar a la vista de asistencias con el ID del empleado
-    this.router.navigate(['inventories/employees/assistance', employeeId]);
+    this.router.navigate(['/inventories/employees/assistance', employeeId]);
   }
 }
 

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { ArticleCateg, ArticleCategPost } from '../../../../../models/article.model';
 import { MapperService } from '../../../../../services/MapperCamelToSnake/mapper.service';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InventoryService } from '../../../../../services/inventory.service';
 import { CommonModule } from '@angular/common';

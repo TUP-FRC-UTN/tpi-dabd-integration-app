@@ -94,7 +94,7 @@
   <div class="d-flex justify-content-between align-items-center p-3 border-top">
     <!-- Left side - Items per page dropdown -->
     <div class="d-flex align-items-center">
-    <select class="form-select form-select-sm" style="width: auto"
+    <select class="form-select form-select-sm" style="width: auto" [(ngModel)]="itemsPerPage"
       (change)="onPageSizeChange($event)">
       <option value="5">5 Elementos</option>
       <option value="10">10 Elementos</option>

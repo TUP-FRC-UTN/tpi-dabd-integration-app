@@ -1,0 +1,24 @@
+<!-- Modal de Información-->
+    <div class="modal-dialog modal-dialog-centered" (click)="activeModal.close()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="infoModalLabel">Información de la Pantalla</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Esta pantalla ofrece un análisis del <strong>inventario</strong> de la organización. A continuación se describen las métricas visualizadas en esta sección:</p>
+          <ul>
+            <li><strong>Total</strong>: Muestra el total de los artículos dependiendo de su unidad de medida.</li>
+            <li><strong>Valor total del inventario Bajo</strong>: Muestra el valor total del inventario.</li>
+            <li><strong>Stock Bajo</strong>: Indica la cantidad de artículos que están en stock mínimo.</li>
+            <li><strong>Mayor Movimiento</strong>: Muestra el artículo con más movimiento en el inventario.</li>
+            <li><strong>Tendencias de Movimientos</strong>: Muestra los movimientos realizados de los artículos por pedido de tiempo y unidad de medida.</li>
+            <li><strong>Stock por Categoría</strong>: Indica la cantidad de artículos que hay en el inventario por categoría.</li>
+          </ul>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="activeModal.close()">Cerrar</button>
+        </div>
+      </div>
+    </div>

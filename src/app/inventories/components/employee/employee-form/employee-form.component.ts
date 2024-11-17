@@ -17,7 +17,7 @@ import { Countries } from '../../../models/enums/countries.enum';
 @Component({
   selector: 'app-employee-form',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, EmployeeAccessComponent, MainContainerComponent],
+  imports: [ReactiveFormsModule, CommonModule, EmployeeAccessComponent, EmployeeContactComponent, MainContainerComponent],
   templateUrl: './employee-form.component.html',
   styleUrls: ['./employee-form.component.scss'],
 })
@@ -28,7 +28,7 @@ export class EmployeeFormComponent implements OnInit {
   formattedDateTime = this.today.slice(0, 19);
 
   employeeForm = new FormGroup({
-    id: new FormControl(0),
+    //id: new FormControl(0),
     firstName: new FormControl('', [
       Validators.required, 
       Validators.minLength(3), 
@@ -65,7 +65,7 @@ export class EmployeeFormComponent implements OnInit {
     ]),
     state: new FormControl(StatusType.ACTIVE),
     contactsForm: new FormGroup({
-      contactType: new FormControl('', [Validators.required]),
+      contactType: new FormControl('EMAIL', []),
       contactValue: new FormControl('', [
         Validators.required,
         (control) => {
@@ -77,14 +77,6 @@ export class EmployeeFormComponent implements OnInit {
               return /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(control.value) 
                 ? null 
                 : { invalidEmail: true };
-            case 'PHONE':
-              return /^[\d\s()-]{8,15}$/.test(control.value) 
-                ? null 
-                : { invalidPhone: true };
-            case 'SOCIAL_MEDIA_LINK':
-              return /^https?:\/\//.test(control.value) 
-                ? null 
-                : { invalidUrl: true };
             default:
               return null;
           }
@@ -92,7 +84,7 @@ export class EmployeeFormComponent implements OnInit {
       ])
     }),
     address: new FormGroup({
-      street_address: new FormControl('', [
+      streetAddress: new FormControl('', [
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(100)
@@ -114,23 +106,66 @@ export class EmployeeFormComponent implements OnInit {
         Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/)
       ]),
       province: new FormControl('', [Validators.required]),
-      country: new FormControl({ 
-        value: 'ARGENTINA', 
-        disabled: true 
-      }, [Validators.required]),
-      postal_code: new FormControl(0, [
+      country: new FormControl({value:'', disabled: true}),
+      postalCode: new FormControl(0, [
         Validators.required, 
         Validators.min(0),
         Validators.pattern(/^\d+$/)
       ])
     })
   });
+  // employeeForm = new FormGroup({
+  //   id:new FormControl(0),
+  //   firstName: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]),
+  //   lastName: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]),
+  //   employeeType: new FormControl(EmployeeType.ADMINISTRATIVO, Validators.required),
+  //   hiringDate: new FormControl<string>(this.formattedDateTime, {
+  //     validators: [Validators.required],
+  //     nonNullable: true,
+  //   }),
+  //   documentType: new FormControl(DocumentType.DNI, Validators.required),
+  //   docNumber: new FormControl('', [Validators.required, Validators.pattern(/^[0-9.-]*$/)]),
+  //   salary: new FormControl(0, [Validators.required, Validators.min(0)]),
+  //   state: new FormControl(StatusType.ACTIVE),
+  //   contactsForm: new FormGroup({
+  //     contactType: new FormControl('', []),
+  //     contactValue: new FormControl('', []),
+  //   }),
+  //   address: new FormGroup({
+  //     street_address: new FormControl('', [Validators.required]),
+  //     number: new FormControl(0, [Validators.required, Validators.min(0)]),
+  //     floor: new FormControl(0, [Validators.required, Validators.min(0)]),
+  //     apartment: new FormControl(''),
+  //     city: new FormControl('', [Validators.required]),
+  //     province: new FormControl('', [Validators.required]),
+  //     country: new FormControl('', [Validators.required]),
+  //     postal_code: new FormControl(0, [Validators.required, Validators.min(0)])
+  //   })
+  // });
 
   @ViewChild('accessModal') accessModal!: TemplateRef<any>;
   contactTypes = ['PHONE', 'EMAIL', 'SOCIAL_MEDIA_LINK'];
   private toastService = inject(ToastService);
   
+  // get contacts() {
+  //   return this.employeeForm.get('contacts') as FormArray;
+  // }
+
+  // addContact() {
+  //   const contactForm = new FormGroup({
+  //     contact_type: new FormControl('', Validators.required),
+  //     contact_value: new FormControl('', [Validators.required])
+  //   });
+  //   this.contacts.push(contactForm);
+  // }
+
+  // removeContact(index: number) {
+  //   this.contacts.removeAt(index);
+  // }
+  
  currentEmployeeId!: number;
+
+  constructor() {}
 
   @ViewChild('infoModal') infoModal!: TemplateRef<any>;
 
@@ -168,7 +203,7 @@ export class EmployeeFormComponent implements OnInit {
             city: 'Córdoba',
             province: Provinces.CORDOBA,
             country: Countries.ARGENTINA,
-            postal_code: 5000
+            postalCode: 5000
           }
         })
       }
@@ -182,7 +217,6 @@ export class EmployeeFormComponent implements OnInit {
     this.addContact();
 
     this.employeeForm.get('hiringDate')?.valueChanges.subscribe(value => {
-      console.log(value);
       this.employeeForm.patchValue({ hiringDate: value });
     })
 
@@ -211,7 +245,7 @@ export class EmployeeFormComponent implements OnInit {
       console.log('[EmployeeForm] Datos originales:', data);
       
       this.employeeForm.patchValue({
-        id: data.id,
+        //id: data.id,
         firstName: data.firstName,
         lastName: data.lastName,
         employeeType: data.employeeType,
@@ -220,6 +254,8 @@ export class EmployeeFormComponent implements OnInit {
         docNumber: data.docNumber,
         state: StatusType.ACTIVE,
         salary: data.salary,
+        address: data.address,
+        contactsForm: data.contact,
       });
 
       // Guardar el estado inicial del formulario después de cargarlo
@@ -242,7 +278,7 @@ export class EmployeeFormComponent implements OnInit {
       } else {
         employeeData.id
         this.createEmployee(employeeData);
-        //this.router.navigate(['/employees/list']); // Redirect to employee list       
+        //this.router.navigate(['/inventories/employees/list']); // Redirect to employee list       
       }
     }
   }
@@ -250,7 +286,7 @@ export class EmployeeFormComponent implements OnInit {
     this.showEmployeeForm = true;
     this.employeeRegistered = false;
     this.employeeForm.reset({
-      id: 0,
+      //id: 0,
       firstName: '',
       lastName: '',
       employeeType: EmployeeType.MANTENIMIENTO,
@@ -260,35 +296,61 @@ export class EmployeeFormComponent implements OnInit {
       state: StatusType.ACTIVE,
       salary: 0,
       address: {
-        street_address: '',
+        streetAddress: '',
         number: 0,
         floor: 0,
         apartment: '',
         city: 'Córdoba',
         province: Provinces.CORDOBA,
         country: Countries.ARGENTINA,
-        postal_code: 5000  
+        postalCode: 5000  
       }
     });
+    // this.contacts.clear();
+    // this.addContact();
   }
+/*
+  prepareEmployeeData(): Employee {
+    const { id, firstName, lastName, employeeType, hiringDate, documentType, docNumber, salary, state } = this.employeeForm.value;    
+    let parsedHiringDate: Date | null = new Date();
+    /*if (hiringDate) {
+      parsedHiringDate = new Date(hiringDate);
+    }
 
-  prepareEmployeeData(): any {
-    const formValue = this.employeeForm.value;
-    const hiringDate = formValue.hiringDate ? new Date(formValue.hiringDate).toISOString() : new Date().toISOString();
-    
-    const employeeData = {
-      id: formValue.id,
-      first_name: formValue.firstName,
-      last_name: formValue.lastName,
-      employee_type: formValue.employeeType,
-      document_type: formValue.documentType,
-      doc_number: formValue.docNumber,
-      hiring_date: hiringDate,
-      salary: formValue.salary,
-      state: formValue.state,
-      address: formValue.address
+    return {
+      id,
+      firstName,
+      lastName,
+      employeeType,
+      documentType: documentType,
+      docNumber,
+      hiringDate,
+      salary,
+      state,
+    } as Employee;
+  } */
+    prepareEmployeeData(): any {
+      const formValue = this.employeeForm.getRawValue();
+      const hiringDate = formValue.hiringDate 
+      ? new Date(formValue.hiringDate).toISOString()
+      : new Date().toISOString();
+      //const hiringDate = formValue.hiringDate + (formValue.hiringDate?.includes('T') ? '' : 'T00:00:00');
+      // Crear el objeto base del empleado
+      const employeeData = {
+        //id: formValue.id,
+        first_name: formValue.firstName,
+        last_name: formValue.lastName,
+        employee_type: formValue.employeeType,
+        document_type: formValue.documentType,
+        doc_number: formValue.docNumber,
+        hiring_date: hiringDate,
+        salary: formValue.salary,
+        state: formValue.state,
+        // contact: this.contacts.length > 0 ? this.contacts.at(0).value : null,
+        address: formValue.address,
+        contact: formValue.contactsForm
       };
-
+  
       return employeeData;
     }
 
@@ -297,6 +359,8 @@ export class EmployeeFormComponent implements OnInit {
   }
 
   createEmployee(employee: Employee) {
+    console.log(employee);
+    console.log("Este es el metodo de createEmployee");
     this.employeeService.addEmployee(employee).subscribe({
       next: (response) => {
         this.toastService.sendSuccess("El Empleado ha sido creado con éxito.");
@@ -304,10 +368,11 @@ export class EmployeeFormComponent implements OnInit {
           this.currentEmployeeId = response.id;
           this.employeeRegistered = true;
           this.disableForm();
+          console.log('id enviado', this.currentEmployeeId);
           this.openAccessModal();
         }
         this.toastService.sendSuccess("Cargue los dato de acceso.");
-        this.resetForm();
+        this.resetForm(); // Limpia el formulario
       },
       error: (error) => {
         this.toastService.sendError("Hubo un error en la creación del empleado.");
@@ -329,6 +394,7 @@ export class EmployeeFormComponent implements OnInit {
   disableForm(): void {
     Object.keys(this.employeeForm.controls).forEach(key => {
       this.employeeForm.get(key)?.disable();
+      // this.contacts.get('contact_type')?.disable();
     });
   }
 
@@ -339,12 +405,13 @@ export class EmployeeFormComponent implements OnInit {
   }
 
   updateEmployee(employee: Employee) {
+    console.log('[EmployeeForm] Actualizando empleado:', employee);
     this.employeeService.updateEmployee(employee).subscribe({
       next: (response) => {
         this.toastService.sendSuccess("El Empleado ha sido modificado con éxito.");
         this.formHasChanges = false;
         this.initialFormValue = this.employeeForm.value;
-        this.router.navigate(['inventories/employees/list']);
+        this.router.navigate(['/inventories/employees/list']);
       },
       error: (error) => {
         this.toastService.sendError("Hubo un error en la modificación del empleado.");
@@ -355,7 +422,7 @@ export class EmployeeFormComponent implements OnInit {
 
 
   return() {
-    this.router.navigate(['inventories/employees/list']);
+    this.router.navigate(['/inventories/employees/list']);
   }
 
   documentExistsValidator(control: AbstractControl) {
@@ -371,25 +438,26 @@ export class EmployeeFormComponent implements OnInit {
     
 }
 
-  onCancel(){
-    this.resetForm();
-    this.router.navigate(['inventories/employees/list']);  
-  }
-  openAccessModal() {
-    const modalRef = this.modalService.open(this.accessModal, {
-      size: 'lg',
-      backdrop: 'static',
-      keyboard: false
-    });
-  }
+onCancel(){
+  this.resetForm();
+  this.router.navigate(['/inventories/employees/list']);
+}
+openAccessModal() {
+  const modalRef = this.modalService.open(this.accessModal, {
+    size: 'lg',
+    backdrop: 'static',
+    keyboard: false
+  });
+}
 
-  onAccessSaved() {
-    this.modalService.dismissAll();
-    this.startNewEmployee();
-    this.router.navigate(['inventories/employees/list']);
-  }
+onAccessSaved() {
+  this.modalService.dismissAll();
+  this.startNewEmployee();
+  this.router.navigate(['/inventories/employees/list']);
+}
 
-  changeContactType(event: any) {    
+  changeContactType(event: any) {
+      
     const type = event.target.value;
     if(type) {
       this.employeeForm.controls['contactsForm'].controls['contactValue'].addValidators(Validators.required);
@@ -460,6 +528,7 @@ export class EmployeeFormComponent implements OnInit {
 
     const currentValue = this.employeeForm.value;
     this.formHasChanges = !this.isEqual(currentValue, this.initialFormValue);
+    console.log('[EmployeeForm] Formulario tiene cambios:', this.formHasChanges);
   }
 
   private isEqual(obj1: any, obj2: any): boolean {
@@ -478,81 +547,81 @@ export class EmployeeFormComponent implements OnInit {
     return cleaned;
   }
 
-  private dniValidator(): ValidatorFn {
-    return (control: AbstractControl) => {
-      if (!control.value) return null;
-      const dni = control.value.toString().replace(/\D/g, '');
-      if (dni.length > 8) {
-        return { invalidDni: 'El DNI no puede tener más de 8 dígitos' };
-      }
-      return null;
-    };
-  }
-
-  private cuitValidator(): ValidatorFn {
-    return (control: AbstractControl) => {
-      if (!control.value) return null;
-      const cuit = control.value.toString().replace(/\D/g, '');
-        
-      if (cuit.length !== 11) {
-        return { invalidLength: 'CUIT/CUIL debe tener 11 dígitos' };
-      }
-  
-      const multiplicadores = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
-      let suma = 0;
-  
-      for (let i = 0; i < multiplicadores.length; i++) {
-        suma += parseInt(cuit[i]) * multiplicadores[i];
-      }
-  
-      const resto = suma % 11;
-      const digitoVerificador = 11 - resto;
-      const ultimoDigito = parseInt(cuit[10]);
-  
-      if (digitoVerificador !== ultimoDigito) {
-        return { invalidCheckDigit: 'Dígito verificador inválido' };
-      }
-  
-      return null;
-    };
-  }
-
-  private documentValidator(): ValidatorFn {
-    return (control: AbstractControl) => {
-      if (!control.value) return null;
-
-      const docType = control.parent?.get('documentType')?.value;
-      switch (docType) {
-        case DocumentType.DNI:
-          return this.dniValidator()(control);
-        case DocumentType.CUIT:
-        case DocumentType.CUIL:
-          return this.cuitValidator()(control);
-        default:
-          return null;
-      }
-    };
-  }
-    
-  getErrorMessage(controlName: string, groupName?: string): string {
-    const control = groupName ? 
-      this.employeeForm.get(`${groupName}.${controlName}`) : 
-      this.employeeForm.get(controlName);
-  
-    if (control?.errors) {
-      if (control.errors['required']) return 'Este campo es requerido';
-      if (control.errors['minlength']) return `Mínimo ${control.errors['minlength'].requiredLength} caracteres`;
-      if (control.errors['maxlength']) return `Máximo ${control.errors['maxlength'].requiredLength} caracteres`;
-      if (control.errors['pattern']) return 'Formato inválido';
-      if (control.errors['min']) return 'El valor debe ser mayor a 0';
-      if (control.errors['invalidDni']) return 'DNI inválido';
-      if (control.errors['invalidLength']) return 'CUIT/CUIL debe tener 11 dígitos';
-      if (control.errors['invalidCheckDigit']) return 'CUIT/CUIL inválido';
-      if (control.errors['invalidEmail']) return 'Email inválido';
-      if (control.errors['invalidPhone']) return 'Teléfono inválido';
-      if (control.errors['invalidUrl']) return 'URL inválida';
-      if (control.errors['futureDate']) return 'La fecha no puede ser futura';
+    private dniValidator(): ValidatorFn {
+      return (control: AbstractControl) => {
+        if (!control.value) return null;
+        const dni = control.value.toString().replace(/\D/g, '');
+        if (dni.length > 8) {
+          return { invalidDni: 'El DNI no puede tener más de 8 dígitos' };
+        }
+        return null;
+      };
     }
-    return '';
-  }
+
+    private cuitValidator(): ValidatorFn {
+      return (control: AbstractControl) => {
+        if (!control.value) return null;
+        const cuit = control.value.toString().replace(/\D/g, '');
+        
+        if (cuit.length !== 11) {
+          return { invalidLength: 'CUIT/CUIL debe tener 11 dígitos' };
+        }
+  
+        const multiplicadores = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+        let suma = 0;
+  
+        for (let i = 0; i < multiplicadores.length; i++) {
+          suma += parseInt(cuit[i]) * multiplicadores[i];
+        }
+  
+        const resto = suma % 11;
+        const digitoVerificador = 11 - resto;
+        const ultimoDigito = parseInt(cuit[10]);
+  
+        if (digitoVerificador !== ultimoDigito) {
+          return { invalidCheckDigit: 'Dígito verificador inválido' };
+        }
+  
+        return null;
+      };
+    }
+    private documentValidator(): ValidatorFn {
+      return (control: AbstractControl) => {
+        if (!control.value) return null;
+        
+        const docType = control.parent?.get('documentType')?.value;
+        switch (docType) {
+          case DocumentType.DNI:
+            return this.dniValidator()(control);
+          case DocumentType.CUIT:
+          case DocumentType.CUIL:
+            return this.cuitValidator()(control);
+          default:
+            return null;
+        }
+      };
+    }
+    getErrorMessage(controlName: string, groupName?: string): string {
+      const control = groupName ? 
+        this.employeeForm.get(`${groupName}.${controlName}`) : 
+        this.employeeForm.get(controlName);
+  
+      if (control?.errors) {
+        if (control.errors['required']) return 'Este campo es requerido';
+        if (control.errors['minlength']) return `Mínimo ${control.errors['minlength'].requiredLength} caracteres`;
+        if (control.errors['maxlength']) return `Máximo ${control.errors['maxlength'].requiredLength} caracteres`;
+        if (control.errors['pattern']) return 'Formato inválido';
+        if (control.errors['min']) return 'El valor debe ser mayor a 0';
+        if (control.errors['invalidDni']) return 'DNI inválido';
+        if (control.errors['invalidLength']) return 'CUIT/CUIL debe tener 11 dígitos';
+        if (control.errors['invalidCheckDigit']) return 'CUIT/CUIL inválido';
+        if (control.errors['invalidEmail']) return 'Email inválido';
+        if (control.errors['invalidPhone']) return 'Teléfono inválido';
+        if (control.errors['invalidUrl']) return 'URL inválida';
+        if (control.errors['futureDate']) return 'La fecha no puede ser futura';
+      }
+      return '';
+    }
+
+  
 }

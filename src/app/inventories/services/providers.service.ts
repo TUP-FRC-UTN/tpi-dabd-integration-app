@@ -7,7 +7,7 @@ import { Company } from '../models/suppliers/company.model';
 import { Service } from '../models/suppliers/service.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProvidersService {
   private apiUrl = 'http://localhost:8013/suppliers';
@@ -27,44 +27,57 @@ export class ProvidersService {
     'service.name'?: string,
     start?: string,
     end?: string
-}): Observable<PaginatedResponse<Supplier>> {
+  }): Observable<PaginatedResponse<Supplier>> {
     let params = new HttpParams();
-  
+
     if (filters) {
       Object.keys(filters).forEach(key => {
         const value = filters[key as keyof typeof filters];
-        // Verificación especial para fechas
         if (value !== undefined && value !== '' && value !== null) {
-          // Para fechas, asegurarse de que sean fechas válidas
-          if ((key === 'start' || key === 'end') && !this.isValidDate(value as string)) {
-            return;
-          }
           params = params.append(key, value.toString());
-          console.log('Parametros', params);
         }
-        console.log('Valor', value);
       });
     }
+
+    console.log('Parámetros finales enviados al backend:', params.toString()); // Depuración
     return this.http.get<PaginatedResponse<Supplier>>(`${this.apiUrl}/pageable`, { params });
-}
+  }
+  private formatDate(date: Date): string {
+    return date.toISOString().split('T')[0];
+  }
 
-getAllProvider():Observable<Supplier[]>{
-  return this.http.get<Supplier[]>(this.apiUrl);
-}
+  getProviderDashboard(dateFilter?: { start?: string; end?: string; state?: string }): Observable<PaginatedResponse<Supplier>> {
+    let params = new HttpParams().set('page', '0').set('size', '9999999');
+  
+    if (dateFilter?.start) {
+      params = params.set('start', dateFilter.start);
+    }
+    if (dateFilter?.end) {
+      params = params.set('end', dateFilter.end);
+    }
+    if (dateFilter?.state) {
+      params = params.set('state', dateFilter.state);
+    }
+  
+    console.log('Parámetros enviados al backend:', params.toString());
+  
+    return this.http.get<PaginatedResponse<Supplier>>(`${this.apiUrl}/pageable`, { params });
+  }
+  
+  
+  getCompany(): Observable<Company[]> {
+    return this.http.get<Company[]>(`${this.apiUrl}/companies`);
+  }
 
-getCompany(): Observable<Company[]> {
-  return this.http.get<Company[]>(`${this.apiUrl}/companies`);
-}
+  getServices(): Observable<Service[]> {
+    return this.http.get<Service[]>(this.apiurlService);
+  }
 
-getServices(): Observable<Service[]> {
-  return this.http.get<Service[]>(this.apiurlService);
-}
-
-// Método auxiliar para validar fechas
-private isValidDate(dateString: string): boolean {
-  const date = new Date(dateString);
-  return date instanceof Date && !isNaN(date.getTime());
-}
+  // Método auxiliar para validar fechas
+  private isValidDate(dateString: string): boolean {
+    const date = new Date(dateString);
+    return date instanceof Date && !isNaN(date.getTime());
+  }
 
   getProviderById(id: number): Observable<Supplier> {
     return this.http.get<Supplier>(`${this.apiUrl}/${id}`);
@@ -73,12 +86,11 @@ private isValidDate(dateString: string): boolean {
   addProvider(provider: Supplier): Observable<Supplier> {
     return this.http.post<Supplier>(this.apiUrl, provider);
   }
-  
+
   updateProvider(provider: Supplier): Observable<Supplier> {
     return this.http.put<Supplier>(this.apiUrl, provider);
   }
-  
-  
+
   deleteProvider(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

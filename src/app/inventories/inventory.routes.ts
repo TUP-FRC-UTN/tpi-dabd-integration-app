@@ -15,22 +15,25 @@ import { ProviderServiceUpdateComponent } from "./components/provider/provider-s
 import { EmployeeViewAcessComponent } from "./components/employee/employee-view-acess/employee-view-acess.component";
 import { ListEmpresasRegComponent } from "./components/provider/dashboards/list-empresas-reg/list-empresas-reg.component";
 import { ProviderListComponent } from "./components/provider/provider-list/provider-list.component";
+import { EmployeeDashboardComponent } from "./components/employee/employee-dashboard/employee-dashboard.component";
+import { InventoryDashboardComponent } from "./components/inventory/inventory-dashboard/inventory-dashboard.component";
+import { ProviderDashboardComponent } from "./components/provider/provider-dashboard/provider-dashboard.component";
 
 export const INVENTORY_ROUTES: Routes = [
     { path: 'employees/assistance', component:EmployeeAssistanceListComponent},
     { path: 'employees/assistance/:id', component:EmployeeAssistanceListComponent},
     { path: 'employees/list', component: EmployeeListComponent },
-    //{ path: 'employees/dashboard', component: EmployeeDashboardComponent },
+    { path: 'employees/dashboard', component: EmployeeDashboardComponent },
     { path: 'employees/form', component: EmployeeFormComponent },
     { path: 'employees/form/:id', component: EmployeeFormComponent },
     { path: 'providers/list', component: ProviderListComponent },
-    //{ path: 'providers/dashboard', component: ProviderDashboardComponent },
+    { path: 'providers/dashboard', component: ProviderDashboardComponent },
     { path: 'providers/form', component: ProviderFormComponent },
     { path: 'providers/form/:id', component: ProviderFormComponent },
     { path: 'articles/article', component: ArticleFormComponent},
     { path: 'articles/article/:id', component: ArticleFormComponent },
     { path: 'inventories', component: InventoryTableComponent },
-    //{ path: 'inventory/dashboard', component: InventoryDashboardComponent },
+    { path: 'inventory/dashboard', component: InventoryDashboardComponent },
     { path: 'transactions/:id', component: TransactionComponentForm },
     { path: 'inventories/transactions/:inventoryId', component: InventoryTransactionTableComponent },
     { path: 'inventories/config/category', component: InventoryArticleCategoryListComponent},

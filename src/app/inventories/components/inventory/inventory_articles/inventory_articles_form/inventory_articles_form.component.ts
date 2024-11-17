@@ -21,7 +21,7 @@ import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 export class ArticleFormComponent implements OnInit {
 
   return() {
-    this.router.navigate(['inventories/inventories']);
+    this.router.navigate(['/inventories/inventories']);
   }
   @Output() showRegisterForm = new EventEmitter<void>();
   isModalOpen : boolean = true;
@@ -243,7 +243,7 @@ export class ArticleFormComponent implements OnInit {
         this.inventoryService.addInventoryArticle(articleInventoryFormatted).subscribe((data) => {
           console.log(data);
           this.resetForm(); // Limpia el formulario después de crear exitosamente
-          this.router.navigate(['inventories/inventories']);
+          this.router.navigate(['/inventories/inventories']);
           this.toast.sendSuccess('Artículo creado exitosamente');
         })
       }

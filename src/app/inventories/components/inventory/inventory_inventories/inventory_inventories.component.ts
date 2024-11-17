@@ -1,5 +1,5 @@
 import { CommonModule,DatePipe } from '@angular/common';
-import { Component, inject, OnInit, TemplateRef, viewChild } from '@angular/core';
+import { Component, inject, OnInit, TemplateRef, viewChild, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ArticleFormComponent } from '../inventory_articles/inventory_articles_form/inventory_articles_form.component';
 import { RouterModule } from '@angular/router';
@@ -18,20 +18,22 @@ import autoTable from 'jspdf-autotable';
 import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TableFiltersComponent, Filter, FilterConfigBuilder } from 'ngx-dabd-grupo01';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
   imports: [CommonModule,
-        ReactiveFormsModule,
-        ArticleFormComponent,
-        RouterModule,
+     ReactiveFormsModule,
+      ArticleFormComponent,
+       RouterModule,
         TransactionComponentForm,
-        InventoryTransactionTableComponent,
-        InventoryInventoriesUpdateComponent,
-        TableFiltersComponent,
-        MainContainerComponent
+         InventoryTransactionTableComponent,
+          InventoryInventoriesUpdateComponent,
+          FormsModule,
+          TableFiltersComponent,
+          MainContainerComponent
         ],
         providers:[DatePipe],
   templateUrl: './inventory_inventories.component.html',
@@ -338,7 +340,7 @@ filterActiveInventories(): void {
 
   onPageSizeChange(event: any): void {
     this.itemsPerPage = event.target.value;
-    this.currentPage = 0;
+    this.currentPage = 0; // Reset to first page
     this.loadInventories();
   }
 

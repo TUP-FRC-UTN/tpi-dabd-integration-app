@@ -153,8 +153,46 @@
         }    
       </div>
     </div>
- 
+    
+    <!-- Contacto -->
+    <div formGroupName="contactsForm" class="col-md-6" >
+      <div class="flex-row d-flex align-items-center">
+        <label for="contact-info" class="col-form-label col-md-2">Email<label class="text-danger">*</label></label>
+        <div class="input-group m-2">
+          <input type="text" class="form-control" id="contact-info" formControlName="contactValue"
+            [ngClass]="{'is-invalid': employeeForm.get('contactsForm.contactValue')?.invalid && employeeForm.get('contactsForm.contactValue')?.touched,
+                        'is-valid': employeeForm.get('contactsForm.contactValue')?.valid && employeeForm.get('contactsForm.contactValue')?.touched}">
+        </div>
+        <div class="col">
+          @if(employeeForm.get('contactsForm.contactValue')?.invalid && employeeForm.get('contactsForm.contactValue')?.touched) {
+            @if(employeeForm.get('contactsForm.contactValue')?.errors?.['email']) {
+              <small class="text-danger">Email inválido</small>
+            }
+          }
+      </div>
+  </div>
+  @if (contacts.length !== 0) {
 
+  <div class="col-12">
+    <h5 class="mb-3">Lista de Contactos</h5>
+    <div class="list-group">
+      @for (contact of contacts; track $index) {
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <button type="button" class="list-group-item list-group-item-action btn btn-primary btn-sm me-2"
+          (click)="setContactValue($index)">
+          {{ contact.contactType }} - {{ contact.contactValue }}
+        </button>
+        @if (!id) {
+        <button type="button" class="btn btn-danger btn-sm" (click)="removeContact($index)">
+          <i class="bi bi-trash-fill"></i>
+        </button>
+        }
+      </div>
+      }
+    </div>
+  </div>
+  }
+</div>
     
  
     <div class="mb-3"></div>
@@ -171,14 +209,14 @@
           <!-- Calle y Número -->
           <div class="col-md-6">
             <div class="flex-row d-flex align-items-center mb-3">
-              <label for="street_address" class="col-form-label col-md-2">Calle<label class="text-danger">*</label></label>
-              <input type="text" class="form-control m-2" id="street_address" formControlName="street_address"
+              <label for="streetAddress" class="col-form-label col-md-2">Calle<label class="text-danger">*</label></label>
+              <input type="text" class="form-control m-2" id="streetAddress" formControlName="streetAddress"
                 
-                [ngClass]="{'is-invalid': employeeForm.get('address.street_address')?.invalid && employeeForm.get('address.street_address')?.touched,
-                           'is-valid': employeeForm.get('address.street_address')?.valid}">
+                [ngClass]="{'is-invalid': employeeForm.get('address.streetAddress')?.invalid && employeeForm.get('address.streetAddress')?.touched,
+                           'is-valid': employeeForm.get('address.streetAddress')?.valid}">
             </div>
             <div>
-              @if (employeeForm.get('address.street_address')?.invalid && employeeForm.get('address.street_address')?.touched) {
+              @if (employeeForm.get('address.streetAddress')?.invalid && employeeForm.get('address.streetAddress')?.touched) {
                 <small class="text-danger ms-2">La calle es requerida</small>
               }
             </div>
@@ -278,20 +316,20 @@
 
         <div class="col-md-6">
           <div class="flex-row d-flex align-items-center mb-3">
-            <label for="postal_code" class="col-form-label col-md-2">Código Postal<label class="text-danger">*</label></label>
-            <input type="number" class="form-control m-2" id="postal_code" formControlName="postal_code"
+            <label for="postalCode" class="col-form-label col-md-2">Código Postal<label class="text-danger">*</label></label>
+            <input type="number" class="form-control m-2" id="postalCode" formControlName="postalCode"
                style="text-align: right;"
-              [ngClass]="{'is-invalid': employeeForm.get('address.postal_code')?.invalid && employeeForm.get('address.postal_code')?.touched,
-                         'is-valid': employeeForm.get('address.postal_code')?.valid && employeeForm.get('address.postal_code')?.value !== 0}">
+              [ngClass]="{'is-invalid': employeeForm.get('address.postalCode')?.invalid && employeeForm.get('address.postalCode')?.touched,
+                         'is-valid': employeeForm.get('address.postalCode')?.valid && employeeForm.get('address.postalCode')?.value !== 0}">
           </div>
           <div>
-            @if (employeeForm.get('address.postal_code')?.invalid && employeeForm.get('address.postal_code')?.touched) {
+            @if (employeeForm.get('address.postalCode')?.invalid && employeeForm.get('address.postalCode')?.touched) {
               <small class="text-danger ms-2">
-                @if (employeeForm.get('address.postal_code')?.errors?.['required']) {
+                @if (employeeForm.get('address.postalCode')?.errors?.['required']) {
                   El código postal es requerido
-                } @else if (employeeForm.get('address.postal_code')?.errors?.['min']) {
+                } @else if (employeeForm.get('address.postalCode')?.errors?.['min']) {
                   El código postal debe ser mayor a 0
-                } @else if (employeeForm.get('address.postal_code')?.errors?.['pattern']) {
+                } @else if (employeeForm.get('address.postalCode')?.errors?.['pattern']) {
                   El código postal solo puede contener números
                 }
               </small>
@@ -303,92 +341,6 @@
   </div>
 </div>
 <!-- } -->
-
-  <div class="mb-3"></div>
-  <hr>
-
-
-  <!-- Contacto -->
-  <div formGroupName="contactsForm" class="row g-3 pb-5">
-    <h5 class="mt-2 p-2 pb-4">Añadir Contactos</h5>
-    <div class="row">
-      <div class="col-md-4 mx-auto">
-        <div class="row g-0 align-items-center">
-          <div class="col-auto">
-            <label for="contact-type" class="col-form-label me-2">Tipo Contacto</label>
-          </div>
-          <div class="col">
-            <select id="contact-type" class="form-select" formControlName="contactType"
-              (change)="changeContactType($event)">
-              <option disabled selected>Selecciona un tipo</option>
-              <option value="PHONE">Telefono</option>
-              <option value="EMAIL">Email</option>
-              <option value="SOCIAL_MEDIA_LINK">Link red social</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6 mx-auto">
-        <div class="row g-0 align-items-center">
-          <div class="col-auto">
-            <label for="contact-info" class="col-form-label me-2">Contacto</label>
-          </div>
-          <div class="col">
-            <input type="text" class="form-control" id="contact-info" formControlName="contactValue" />
-          </div>
-        </div>
-        <div class="col">
-          @if (employeeForm.get('contactsForm.contactValue')?.invalid && 
-         employeeForm.get('contactsForm.contactValue')?.touched) {
-      <small class="text-danger">
-        @if (employeeForm.get('contactsForm.contactValue')?.errors?.['required']) {
-          El contacto es requerido
-        } @else if (employeeForm.get('contactsForm.contactValue')?.errors?.['invalidEmail']) {
-          Formato de email inválido
-        } @else if (employeeForm.get('contactsForm.contactValue')?.errors?.['invalidPhone']) {
-          Formato de teléfono inválido
-        } @else if (employeeForm.get('contactsForm.contactValue')?.errors?.['invalidUrl']) {
-          URL de red social inválida
-        }
-      </small>
-    }
-        </div>
-      </div>
-      <!-- Botones para agregar y cancelar contactos -->
-      <!-- <div class="col-md-1 d-flex justify-content-center">
-        <button type="button" class="btn btn-outline-primary me-2" (click)="addContact()">
-          <i class="bi bi-plus-lg"></i>
-        </button>
-        @if (contactIndex !== undefined) {
-        <button type="button" class="btn btn-outline-danger" (click)="cancelEditContact()">
-          <i class="bi bi-x-lg"></i>
-        </button>
-        }
-      </div> -->
-    </div>
-    @if (contacts.length !== 0) {
-
-    <div class="col-12">
-      <h5 class="mb-3">Lista de Contactos</h5>
-      <div class="list-group">
-        @for (contact of contacts; track $index) {
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <button type="button" class="list-group-item list-group-item-action btn btn-primary btn-sm me-2"
-            (click)="setContactValue($index)">
-            {{ contact.contactType }} - {{ contact.contactValue }}
-          </button>
-          @if (!id) {
-          <button type="button" class="btn btn-danger btn-sm" (click)="removeContact($index)">
-            <i class="bi bi-trash-fill"></i>
-          </button>
-          }
-        </div>
-        }
-      </div>
-    </div>
-    }
-  </div>
 
   <!-- Botones -->
   <div class="col-12 d-flex justify-content-end">
@@ -467,6 +419,15 @@
 </div>
 
 </ng-template>
+<!-- Metodo Viejo que llama a accesos -->
+<!-- @if (currentEmployeeId) {
+  <div class="mt-0">
+    <app-employee-access
+      [employeeId]="currentEmployeeId"
+      (schedulesSaved)="startNewEmployee()"
+    ></app-employee-access>
+  </div>
+  } -->
   <!-- Template del Modal de Accesos Nuevo-->
   <ng-template #accessModal let-modal>
     <div class="modal-header">
@@ -481,4 +442,5 @@
       ></app-employee-access>
     </div>
   </ng-template>
+
 
