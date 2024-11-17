@@ -28,4 +28,22 @@ export class PaymentServiceService {
       headers: headers,
     });
   }
+
+
+  saveReceipt(formData : FormData) {
+    const headers = {
+      'x-user-id': this.userId.toString(),
+    };
+    this.http
+      .post(this.baseUrl+'/payments/saveReceipt', formData)
+      .subscribe(
+        (response) => {
+          console.log('File uploaded successfully!', response);
+          
+        },
+        (error) => {
+          console.error('Error uploading file:', error);
+        }
+      );
+  }
 }
