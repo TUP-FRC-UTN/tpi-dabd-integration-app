@@ -25,7 +25,10 @@ export class NotificationService {
 
   getNotificationByContact() {
     const user = this.sessionService.getItem('user');
-    const contactId = user?.contactId; 
+    
+    //Concatenar todos
+    const contactId = user?.contacts[0].id; 
+    
 
     if (!contactId) {
       throw new Error('No contact ID found in session.');

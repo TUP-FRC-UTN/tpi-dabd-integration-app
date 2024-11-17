@@ -90,9 +90,6 @@
           <ngb-pagination [(page)]="currentPage" [pageSize]="itemsPerPage" [collectionSize]="totalItems"
             (pageChange)="changePage($event)" [maxSize]="5" [boundaryLinks]="false"></ngb-pagination>
   
-          <button class="btn btn-secondary ms-3 mb-3" (click)="showInfo()">
-            <i class="bi bi-info-circle"></i>
-          </button>
         </div>
       </div>
   
@@ -114,7 +111,38 @@
           <button type="button" class="btn-close" (click)="isInformationModalOpen = false"></button>
         </div>
         <div class="modal-body">
-          <div [innerHTML]="informationModalMessage"></div>
+          <div class="container-fluid">
+            <!-- Introducción -->
+            <div class="alert alert-info mb-2">
+              <h5 class="alert-heading">Información sobre Auditoría de Contactos</h5>
+              <p class="mb-0 small">Esta tabla presenta una lista de auditoría de la entidad Contacto, donde se puede visualizar la fecha en la que ocurrió el cambio, junto con otros campos.</p>
+            </div>
+  
+            <!-- Descripción de los campos -->
+            <div class="card mb-2">
+              <div class="card-header">
+                <h5 class="mb-0">Descripción de los Campos</h5>
+              </div>
+              <div class="card-body">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">
+                    <strong>Fecha:</strong> Fecha en la que ocurrió el cambio.
+                  </li>
+                  <li class="list-group-item">
+                    <strong>Tipo de revisión:</strong> Tipo de cambio, ya sea Adición o Modificación, sobre la entidad contacto.
+                  </li>
+                  <li class="list-group-item">
+                    <strong>Tipo de contacto:</strong> Indica el tipo de contacto, ya sea: correo electrónico, teléfono o enlace de red social.
+                  </li>
+                  <li class="list-group-item">
+                    <strong>Valor:</strong> El contacto en sí mismo.
+                  </li>
+                </ul>
+              </div>
+            </div>
+  
+         
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="isInformationModalOpen = false">Volver</button>
