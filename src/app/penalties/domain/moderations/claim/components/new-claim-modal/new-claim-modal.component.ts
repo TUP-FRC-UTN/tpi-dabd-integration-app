@@ -11,7 +11,6 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { Plot } from '../../../../cadastre/plot/models/plot.model';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClaimService } from '../../service/claim.service';
 import { SanctionTypeService } from '../../../sanction-type/services/sanction-type.service';
@@ -23,6 +22,8 @@ import {
   UserDataService,
   UserData,
 } from '../../../../../shared/services/user-data.service';
+import { PlotService } from '../../../../../../users/services/plot.service';
+import { Plot } from '../../../../../../users/models/plot';
 
 @Component({
   selector: 'app-new-claim-modal',
@@ -37,12 +38,14 @@ export class NewClaimModalComponent implements OnInit {
   private claimService = inject(ClaimService);
 
   private toastService = inject(ToastService);
+  private plotService = inject(PlotService);
 
   //variables
   sanctionTypes: SanctionType[] | undefined;
   plotId: number | undefined;
   sanctionTypeId: number | undefined;
   description: string | undefined;
+  plotList: Plot[] = [];
 
   //variable para los archivos
   selectedFiles: File[] = [];
@@ -62,12 +65,21 @@ export class NewClaimModalComponent implements OnInit {
     });
   }
 
+  loadPlots() {
+    this.plotService.getAllPlots(0, 100000, true).subscribe((response) => {
+      if (response) {
+        this.plotList = response.content;
+      }
+    });
+  }
+
   userHasRole(role: string): boolean {
     return this.userData.roles.some((userRole) => userRole.name === role);
   }
 
   ngOnInit() {
     this.loadUserData();
+    this.loadPlots();
 
     // Obtener tipos de sanción
     this.sanctionService.getSanctionTypes().subscribe({
@@ -117,7 +129,7 @@ export class NewClaimModalComponent implements OnInit {
         formData.append('files', imageBlob, 'captured-image.png');
       }
 
-      this.claimService.createClaim(formData).subscribe({
+      this.claimService.createClaim(formData, this.userData.id).subscribe({
         next: (response) => {
           this.activeModal.close(response);
           this.toastService.sendSuccess(

@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { SessionService } from '../../../users/services/session.service';
 import { ToastService } from 'ngx-dabd-grupo01';
-import { Observable, map, catchError, of } from 'rxjs';
+import { Observable, map, catchError, of, switchMap } from 'rxjs';
 import { User } from '../../../users/models/user';
 import { OwnerPlotService } from '../../../users/services/owner-plot.service';
 import { UserService } from '../../../users/services/user.service';
@@ -24,63 +24,26 @@ export class UserDataService {
   private ownerPlotService = inject(OwnerPlotService);
   private toastService = inject(ToastService);
 
-  loadNecessaryData(): Observable<any> {
+  loadNecessaryData(): Observable<UserData | null> {
     const user: User = this.sessionService.getItem('user');
     const userId = user?.id || 1;
 
-    const userData: UserData = {
-      id: user.id || 1,
-      roles: user.roles || [],
-      plots: [
-        {
-          id: 3,
-          balance: 0,
-          blockNumber: '1',
-          builtArea: '0',
-          isActive: true,
-          plotNumber: '1',
-          plotStatus: 'CREATED',
-          plotType: 'PAID',
-          totalArea: '0',
-        },
-        {
-          id: 8,
-          balance: 0,
-          blockNumber: '2',
-          builtArea: '0',
-          isActive: true,
-          plotNumber: '2',
-          plotStatus: 'CREATED',
-          plotType: 'PAID',
-          totalArea: '0',
-        },
-      ],
-      plotIds: [3, 8],
-    };
-
-    return of(userData);
-
     return this.userService.getUserById(userId).pipe(
-      map((response) => {
-        const userData: UserData = {
-          id: user.id || 1,
-          roles: user.roles || [],
-          plots: [],
-          plotIds: [],
-        };
+      switchMap((response) => {
+        const ownerId = response.ownerId || 1;
 
-        this.ownerPlotService
-          .giveAllPlotsByOwner(response.ownerId || 1, 0, 100000)
-          .subscribe(
-            (response) => {
-              userData.plots = response.content;
-              userData.plotIds = response.content.map((plot) => plot.id);
-            },
-            (error) => {
-              this.toastService.sendError(
-                'Error recuperando sus lotes. Reinicie la pagina'
-              );
-            }
+        return this.ownerPlotService
+          .giveAllPlotsByOwner(ownerId, 0, 100000)
+          .pipe(
+            map((plotResponse) => {
+              const userData: UserData = {
+                id: user.id || 1,
+                roles: user.roles || [],
+                plots: plotResponse.content || [],
+                plotIds: (plotResponse.content || []).map((plot) => plot.id),
+              };
+              return userData;
+            })
           );
       }),
       catchError((error) => {

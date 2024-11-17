@@ -29,7 +29,7 @@
           }"
         >
           @for (plot of userData.plots; track $index) {
-          <option [value]="plot">
+          <option [value]="plot.id">
             {{ plot.plotNumber }} - {{ plot.blockNumber }} - {{ plot.plotType }}
           </option>
           }
@@ -50,6 +50,16 @@
             'is-valid': constructionForm.controls['description'].valid
           }"
         />
+        @if (constructionForm.controls['description'].invalid &&
+        (constructionForm.controls['description'].dirty ||
+        constructionForm.controls['description'].touched)) { @if
+        (constructionForm.controls['description'].getError('required')) {
+        <div class="invalid-feedback">Este campo es obligatorio</div>
+        } @if (constructionForm.controls['description'].getError('minlength')) {
+        <div class="invalid-feedback">10 caracteres mínimo.</div>
+        } @if (constructionForm.controls['description'].getError('maxlength')) {
+        <div class="invalid-feedback">500 caracteres máximo.</div>
+        } }
       </div>
 
       <div class="row">
@@ -153,9 +163,30 @@
           id="project_address"
           type="text"
           class="form-control"
+          [ngClass]="{
+            'is-invalid':
+              constructionForm.controls['project_address'].invalid &&
+              !constructionForm.controls['project_address'].untouched,
+            'is-valid': constructionForm.controls['project_address'].valid
+          }"
         />
       </div>
 
+      <div class="mb-3">
+        <label for="project_name" class="form-label">Nombre de proyecto</label>
+        <input
+          formControlName="project_name"
+          id="project_name"
+          type="text"
+          class="form-control"
+          [ngClass]="{
+            'is-invalid':
+              constructionForm.controls['project_name'].invalid &&
+              !constructionForm.controls['project_name'].untouched,
+            'is-valid': constructionForm.controls['project_name'].valid
+          }"
+        />
+      </div>
       <!-- Botón de submit dentro del formulario -->
       <div class="modal-footer">
         <button type="submit" class="btn btn-success">Confirmar</button>
