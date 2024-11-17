@@ -80,6 +80,8 @@
         id="InfractionDescription"
         rows="3"
         #descriptionControl="ngModel"
+        minlength="10"
+        maxlength="500"
         [ngClass]="{
           'is-invalid':
             descriptionControl.invalid &&
@@ -93,6 +95,10 @@
       descriptionControl.touched)) { @if
       (descriptionControl.getError('required')) {
       <div class="invalid-feedback">Este campo es obligatorio</div>
+      } @if (descriptionControl.getError('minlength')) {
+      <div class="invalid-feedback">10 caracteres mínimo.</div>
+      } @if (descriptionControl.getError('maxlength')) {
+      <div class="invalid-feedback">500 caracteres máximo.</div>
       } }
     </div>
 

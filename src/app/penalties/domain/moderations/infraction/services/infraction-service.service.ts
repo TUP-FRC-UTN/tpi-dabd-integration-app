@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import {
   InfractionResponseDTO,
   InfractionModel,
@@ -91,29 +91,37 @@ export class InfractionServiceService {
     );
   }
 
-  createInfraction(infraction: InfractionDto): Observable<InfractionModel> {
+  createInfraction(
+    infraction: InfractionDto,
+    userId: number
+  ): Observable<InfractionModel> {
+    const headers = new HttpHeaders().set('x-user-id', userId.toString());
+
     return this.http.post<InfractionModel>(
       `${this.apiUrl}/infractions`,
       infraction,
       {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       }
     );
   }
 
   changeInfractionStatus(
     infractionData: FormData,
-    infractionId: number
+    infractionId: number,
+    userId: number
   ): Observable<InfractionResponseDTO> {
+    const headers = new HttpHeaders({
+      'x-user-id': userId.toString(),
+    });
     return this.http.put<InfractionResponseDTO>(
       `${this.apiUrl}/infractions/${infractionId}/status`,
       {
         user_id: infractionData.get('user_id'),
         status: infractionData.get('status'),
         description: infractionData.get('description'),
-      }
+      },
+      { headers }
     );
   }
 
@@ -142,11 +150,16 @@ export class InfractionServiceService {
 
   appealInfraction(
     infractionData: FormData,
-    infractionId: number
+    infractionId: number,
+    userId: number
   ): Observable<any> {
+    const headers = new HttpHeaders({
+      'x-user-id': userId.toString(),
+    });
     return this.http.put(
       `${this.apiUrl}/infractions/${infractionId}/appeal`,
-      infractionData
+      infractionData,
+      { headers }
     );
   }
 }

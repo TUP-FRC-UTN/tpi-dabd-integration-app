@@ -95,12 +95,13 @@ export class FineTable {
     this.userDataService.loadNecessaryData().subscribe((response) => {
       if (response) {
         this.userData = response;
+        this.loadItems();
       }
     });
   }
 
   userHasRole(role: string): boolean {
-    return this.userData.roles.some((userRole) => userRole.name === role);
+    return this.userData?.roles.some((userRole) => userRole?.name === role);
   }
 
   ngOnInit() {
@@ -148,8 +149,9 @@ export class FineTable {
 
   loadItems(): void {
     if (
-      this.userHasRole('FINES_ADMIN') ||
-      (this.userHasRole('OWNER') && this.userData.plotIds.length !== 0)
+      this.userData &&
+      (this.userHasRole('FINES_ADMIN') ||
+        (this.userHasRole('OWNER') && this.userData.plotIds.length !== 0))
     ) {
       this.updateFiltersAccordingToUser();
       this.fineService

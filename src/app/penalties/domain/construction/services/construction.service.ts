@@ -15,7 +15,8 @@ type OneConstruction = ConstructionResponseDto | undefined;
   providedIn: 'root',
 })
 export class ConstructionService {
-  private apiUrl = environment.apis.constructions.slice(0, -1) + '/constructions';
+  private apiUrl =
+    environment.apis.constructions.slice(0, -1) + '/constructions';
 
   private oneConstruction = new BehaviorSubject<OneConstruction>(undefined);
   oneConstruction$ = this.oneConstruction.asObservable();

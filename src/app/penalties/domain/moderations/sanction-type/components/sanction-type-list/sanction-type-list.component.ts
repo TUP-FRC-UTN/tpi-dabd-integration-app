@@ -70,7 +70,7 @@ export class SanctionTypeListComponent {
   }
 
   userHasRole(role: string): boolean {
-    return this.userData.roles.some((userRole) => userRole.name === role);
+    return this.userData.roles?.some((userRole) => userRole?.name === role);
   }
 
   // Methods:
@@ -140,7 +140,7 @@ export class SanctionTypeListComponent {
   };
 
   goToDetails = (id: number, mode: string): void => {
-    this.router.navigate(['sanctionType', id, mode]);
+    this.router.navigate(['penalties/sanctionType', id, mode]);
   };
 
   openFormModal(sanctionTypeToEdit: number | null = null): void {

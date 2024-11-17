@@ -88,12 +88,13 @@ export class ClaimListComponent {
     this.userDataService.loadNecessaryData().subscribe((response) => {
       if (response) {
         this.userData = response;
+        this.loadItems();
       }
     });
   }
 
   userHasRole(role: string): boolean {
-    return this.userData.roles.some((userRole) => userRole.name === role);
+    return this.userData?.roles.some((userRole) => userRole?.name === role);
   }
 
   // Methods:
@@ -161,8 +162,8 @@ export class ClaimListComponent {
     if (!this.userHasRole('FINES_ADMIN')) {
       this.searchParams = {
         ...this.searchParams,
-        plotsIds: this.userData.plotIds,
-        userId: this.userData.id!,
+        plotsIds: this.userData?.plotIds,
+        userId: this.userData?.id,
       };
     } else {
       if (this.searchParams['userId']) {
@@ -175,13 +176,15 @@ export class ClaimListComponent {
   }
 
   loadItems(): void {
-    this.updateFiltersAccordingToUser();
-    this.claimService
-      .getPaginatedClaims(this.page, this.size, this.searchParams)
-      .subscribe((response) => {
-        this.claimService.setItems(response.items);
-        this.claimService.setTotalItems(response.total);
-      });
+    if (this.userData) {
+      this.updateFiltersAccordingToUser();
+      this.claimService
+        .getPaginatedClaims(this.page, this.size, this.searchParams)
+        .subscribe((response) => {
+          this.claimService.setItems(response.items);
+          this.claimService.setTotalItems(response.total);
+        });
+    }
   }
 
   onPageChange = (page: number): void => {
@@ -255,6 +258,7 @@ export class ClaimListComponent {
     modalRef.componentInstance.sanctionTypeNumber =
       this.checkedClaims[0].sanction_type.id;
     modalRef.componentInstance.plotId = this.checkedClaims[0].plot_id;
+    modalRef.componentInstance.userId = this.userData.id;
 
     modalRef.result
       .then((result) => {
