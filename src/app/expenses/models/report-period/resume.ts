@@ -6,6 +6,6 @@ export interface Resume {
   period: Period;
   ordinary: CategoryData[];
   extraordinary: CategoryData[];
-  supplier_ordinary: SupplierAmount[];
-  supplier_extraordinary: SupplierAmount[];
+  supplierOrdinary: SupplierAmount[];
+  supplierExtraordinary: SupplierAmount[];
 }
