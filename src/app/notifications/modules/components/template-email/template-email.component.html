@@ -17,9 +17,9 @@
           [(ngModel)]="templateName" required minlength="5">
         @if(templateNameModel.invalid && (templateNameModel.dirty || templateNameModel.touched) ){
         @if(templateNameModel.getError('minlength')) {
-        <div class="text-danger">El nombre es obligatorio</div>
+        <div class="text-danger">Debe contener como mínimo 5 caracteres.</div>
         }@else{
-        <div class="text-danger">Debe contener como minimo 1 caracter.</div>
+        <div class="text-danger">El nombre de la plantilla es obligatorio.</div>
         }}
 
       </div>
@@ -29,7 +29,7 @@
         <label for="templateBodyModelCustomValidation" class="form-label">Contenido:</label>
 
         <textarea #templateBodyModel="ngModel"
-          [ngClass]="{'is-invalid': templateBodyModel.invalid  && (templateBodyModel.dirty || templateBodyModel.touched) ,'is-valid': templateBodyModel.valid }"
+          [ngClass]="{'is-invalid': templateBodyModel.invalid  && ( templateBodyModel.touched) ,'is-valid': templateBodyModel.touched && templateBodyModel.valid }"
           class="form-control" id="templateBodyModel" name="templateBodyModel" style="max-width: 400px;"
           [(ngModel)]="templateBody" required minlength="100" rows="10"
           ></textarea>
