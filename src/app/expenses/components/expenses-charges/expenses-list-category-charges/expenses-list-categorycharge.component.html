@@ -56,9 +56,6 @@
 
           <td>{{category.name}}</td>
           <td>{{category.description}}</td>
-          <!-- <td> <span [class]=" getStatusBadgeClass('{{category.amountSing}}')">
-            {{category.amountSign}}
-            </span></td>   -->
           <td>{{category.amountSign}}</td>
           <td><i [ngClass]="category.active ? 'bi bi-check2-circle text-success fs-3' : 'bi bi-x-circle text-danger fs-4'"></i></td>
           <td  style="text-align: left; justify-content: center;" >
@@ -97,13 +94,11 @@
 
   <div class="row d-flex justify-content-end " style="margin-right: 20px;">
       <div class="col">
-      <!-- <label for="rowsPerPageSelect">Mostrar </label> -->
       <select class="form-select m-lg-1 w-auto d-inline" [(ngModel)]="pageSize" (ngModelChange)="changesPageSize($event)">
           <option value=10>10</option>
           <option value=25>25</option>
           <option value=50>50</option>
       </select>
-      <!-- <span> registros por página de {{this.totalItems}}</span> -->
       </div>
       <div class=" col">
       <nav aria-label="Page navigation example" style="cursor: pointer;">
