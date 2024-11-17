@@ -344,7 +344,7 @@ export class EmployeeFormComponent implements OnInit {
         this.toastService.sendSuccess("El Empleado ha sido modificado con éxito.");
         this.formHasChanges = false;
         this.initialFormValue = this.employeeForm.value;
-        this.router.navigate(['/employees/list']);
+        this.router.navigate(['inventories/employees/list']);
       },
       error: (error) => {
         this.toastService.sendError("Hubo un error en la modificación del empleado.");
@@ -355,7 +355,7 @@ export class EmployeeFormComponent implements OnInit {
 
 
   return() {
-    this.router.navigate(['employees/list']);
+    this.router.navigate(['inventories/employees/list']);
   }
 
   documentExistsValidator(control: AbstractControl) {
@@ -373,7 +373,7 @@ export class EmployeeFormComponent implements OnInit {
 
   onCancel(){
     this.resetForm();
-    this.router.navigate(['/employees/list']);  
+    this.router.navigate(['inventories/employees/list']);  
   }
   openAccessModal() {
     const modalRef = this.modalService.open(this.accessModal, {
@@ -386,7 +386,7 @@ export class EmployeeFormComponent implements OnInit {
   onAccessSaved() {
     this.modalService.dismissAll();
     this.startNewEmployee();
-    this.router.navigate(['/employees/list']);
+    this.router.navigate(['inventories/employees/list']);
   }
 
   changeContactType(event: any) {    

@@ -1,64 +1,129 @@
-import { Component, EventEmitter, inject, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import { DocumentType, Employee, EmployeeFilter, EmployeeType, StatusType } from '../../../models/employee.model';
-import { EmployeesService } from '../../../services/employees.service';
-import { Router, RouterLink } from '@angular/router';
-import Swal from 'sweetalert2';
-import { CommonModule } from '@angular/common';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
-// Exportar a PDF y Excel
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import autoTable from 'jspdf-autotable';
-import { EmployeeEditModalComponent } from '../employee-edit-modal/employee-edit-modal.component';
-import { MapperService } from '../../../services/MapperCamelToSnake/mapper.service';
+import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Router, RouterModule } from '@angular/router';
+import { EmployeesService } from '../../../services/employees.service';
+import { Employee, EmployeeType, StatusType, DocumentType } from '../../../models/employee.model';
+import { ToastService, MainContainerComponent, ConfirmAlertComponent } from 'ngx-dabd-grupo01';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
-import { ToastService } from 'ngx-dabd-grupo01';
+import { CommonModule, DatePipe } from '@angular/common';
+import { MapperService } from '../../../services/MapperCamelToSnake/mapper.service';
+import { Chart, ChartType } from 'chart.js';
+import { EmployeeListInfoComponent } from './employee-list-info/employee-list-info.component';
+import { TableFiltersComponent, Filter, FilterConfigBuilder } from 'ngx-dabd-grupo01';
+import { EmployeeViewAcessComponent } from '../employee-view-acess/employee-view-acess.component';
 
 @Component({
   selector: 'app-employee-list',
   standalone: true,
-  imports: [CommonModule, EmployeeEditModalComponent, RouterLink, FormsModule, ReactiveFormsModule],
+  imports: [
+    CommonModule, ReactiveFormsModule, FormsModule, RouterModule,
+    MainContainerComponent, TableFiltersComponent, EmployeeViewAcessComponent
+  ],
+  providers:[DatePipe],
   templateUrl: './employee-list.component.html',
-  styleUrls: ['./employee-list.component.css']
+  styleUrls: ['./employee-list.component.css'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class EmployeeListComponent implements OnInit {
-  employeeList: Employee[] = [];
-  originalEmployeeList: Employee[] = [];
-  filteredEmployeeList: Employee[] = [];
-  currentFilter: 'all' | 'active' | 'inactive' = 'all';
-
   @ViewChild('infoModal') infoModal!: TemplateRef<any>;
-  @Output() showEditModal: EventEmitter<boolean> = new EventEmitter<boolean>();
-
-  filterForm: FormGroup;
-  searchFilter = new FormControl('');
-  showEditForm: boolean = false;
+  @ViewChild('pieChart') pieChartRef!: ElementRef;
+  @ViewChild('employeeAccess') employeeAccess!: EmployeeViewAcessComponent;
   showModalFilters: boolean = false;
+  
+  // Metrics
+  inServiceCount = 0;
+  inactiveCount = 0;
+  typeCountMap: { [key: string]: number } = {};
+  pieChart!: Chart;
+  barChart!: Chart;
 
-  currentPage: number = 1;
-  totalPages: number = 0;
-  itemsPerPage: number = 10;
-  totalElements: number = 0;
-  selectedStatus?: StatusType;
+  // Lists
+  employeeList: Employee[] = [];
+  filteredEmployeeList: Employee[] = [];
+  isLoading = false;
+  currentFilters! : Record<string,any>;
+
+  // Forms and Filters
+  filterForm!: FormGroup;
+  searchFilter:FormControl = new FormControl('');
   statusTypes = Object.values(StatusType);
   employeeTypes = Object.values(EmployeeType);
   documentTypes = Object.values(DocumentType);
 
-  isLoading = false;
-  sortColumn: string = '';
-  sortDirection: 'asc' | 'desc' = 'asc';
+  filterConfig: Filter[] = new FilterConfigBuilder()
+    .textFilter(
+     'Nombre',
+     'firstName',
+     '' 
+    )
+    .textFilter(
+      'Apellido',
+      'lastName',
+      ''
+    )
+    .selectFilter(
+      'Tipo de Empleado',
+      'type',
+      'Seleccione un Tipo',
+      [
+        { value: '', label: 'Todos' },
+        { value: 'ADMINISTRATIVO', label: 'Administrativo' },
+        { value: 'GUARDIA', label: 'Guardia' },
+        { value: 'CONTADOR', label: 'Contador'},
+        { value: 'MANTENIMIENTO', label: 'Mantenimiento'}
+      ]
+    )
+    .textFilter(
+      'Número de Documento',
+      'docNumber',
+      ''
+    )
+    .selectFilter(
+      'Estado',
+      'state',
+      'Seleccione un Estado',
+      [
+        { value: '', label: 'Todos' },
+        { value: 'IN_SERVICE', label: 'Activo' },
+        { value: 'DOWN', label: 'Inactivo' },
+      ]
+    )
+    .build();
 
-  constructor(
-    private toastService: ToastService,
-    private fb: FormBuilder,
-    private employeeService: EmployeesService,
-    private router: Router,
-    private mapperService: MapperService,
-    private modalService: NgbModal
-  ) {
+    filterChange($event: Record<string, any>) {
+      console.log('[Filter Change] Evento originl:', $event);
+
+      const filters = {
+        ...$event
+      };
+
+      this.currentFilters = filters;
+      this.getEmployees();
+    }
+  
+  // Pagination
+  currentPage: number = 0; // Changed to 0-based for backend compatibility
+  totalItems: number = 0;
+  totalPages:number = 0;
+  pageSize: number = 10;
+  sizeOptions: number[] = [5, 10, 20, 50, 100];
+
+  selectedEmployee?: Employee;
+
+  // Services
+
+  private employeeService = inject(EmployeesService);
+  private router = inject(Router);
+  private modalService = inject(NgbModal);
+  private toastService = inject(ToastService);
+  private fb = inject(FormBuilder);
+  private mapperService = inject(MapperService);
+
+  constructor() {
     this.filterForm = this.fb.group({
       firstName: [''],
       lastName: [''],
@@ -67,286 +132,309 @@ export class EmployeeListComponent implements OnInit {
       docNumber: [''],
       hiringDate: [''],
       salary: [''],
-      state: [''],
-      enabled: [true]
+      state: ['']
     });
+
+    this.searchFilter.valueChanges
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe(() => this.searchEmployees());
   }
 
   ngOnInit(): void {
     this.getEmployees();
-    this.setupFilterSubscription();
   }
 
-  getEmployees(): void {
+  searchEmployees(){
+    if (!this.searchFilter.value||this.searchFilter.value == null) {
+      this.getEmployees();
+   }
+
+   this.filteredEmployeeList= this.filteredEmployeeList.filter(emp =>
+     emp.firstName.toLowerCase().includes(this.searchFilter.value.toLowerCase() ?? '')
+     ||emp.lastName.toLowerCase().includes(this.searchFilter.value.toLowerCase() ?? '')
+     ||emp.docNumber.toLowerCase().includes(this.searchFilter.value.toLowerCase() ?? '')
+   );
+  }
+
+  getEmployees(page: number = 0, size: number = this.pageSize, searchTerm?: string): void {
     this.isLoading = true;
-    this.employeeService.getEmployees().subscribe(
-      employeeList => {
-        employeeList = this.mapperService.toCamelCase(employeeList);
-        this.originalEmployeeList = employeeList;
-        this.employeeList = employeeList;
-        this.filteredEmployeeList = employeeList;
-        this.applyCurrentFilter();
+
+    const filters = this.currentFilters;
+    this.employeeService.getAllEmployeesPaged(this.currentPage,this.pageSize,filters).subscribe({
+
+      next: (response) => {
+        response = this.mapperService.toCamelCase(response);
+        
+        //this.employeeList = this.mapperService.toCamelCase(response.content);
+        this.employeeList = response.content.map((empleado: any) => {
+          const hiringDate = empleado.hiringDate || empleado.hiring_date;
+          
+          return {
+            ...empleado,
+            hiringDate: hiringDate ? this.formatearFecha(hiringDate) : ''
+          };
+        });    
+        this.filteredEmployeeList = [...this.employeeList];
+        this.totalItems = response.totalElements;
+        this.totalPages = response.totalPages;
         this.isLoading = false;
       },
-      error => {
-        console.error('Error al obtener empleados:', error);
+      error: (error) => {
+        console.error('Error fetching employees:', error);
         this.toastService.sendError('Error al cargar empleados.');
         this.isLoading = false;
       }
-    );
-  }
-
-  private setupFilterSubscription(): void {
-    this.searchFilter.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged()
-      )
-      .subscribe(searchTerm => {
-        if (!searchTerm || searchTerm.trim() === '') {
-          this.employeeList = [...this.originalEmployeeList];
-        } else {
-          this.employeeList = this.originalEmployeeList.filter(employee =>
-            employee.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            employee.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            employee.docNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            employee.salary.toString().toLowerCase().includes(searchTerm.toLowerCase())
-          );
-        }
-        this.filteredEmployeeList = [...this.employeeList];
-      });
+    });
   }
 
   applyFilters(): void {
-    const filter: EmployeeFilter = {
-      ...Object.entries(this.filterForm.value).reduce((acc, [key, value]) => {
-        if (value !== '' && value !== null && value !== undefined) {
-          (acc as any)[key] = value;
-        }
-        return acc;
-      }, {} as EmployeeFilter),
-      state: this.currentFilter === 'all' ? undefined :
-             this.currentFilter === 'active' ? StatusType.ACTIVE : StatusType.INACTIVE
-    };
-
-    this.isLoading = true;
-    this.employeeService.searchEmployees(filter).subscribe(
-      employees => {
-        this.employeeList = employees;
-        this.filteredEmployeeList = [...employees];
-        this.isLoading = false;
-      },
-      error => {
-        console.error('Error al filtrar empleados:', error);
-        //Swal.fire('Error', 'Error filtering employees', 'error');
-        this.isLoading = false;
-      }
-    );
-  }
-
-  editEmployee(employee: Employee): void {
-    this.router.navigate(['employees/form', employee.id]);
-  }
-
-  deleteEmployee(id: number): void {
-    Swal.fire({
-      title: '¿Estas Seguro?',
-      text: 'No podrás revertir esto',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then(result => {
-      if (result.isConfirmed) {
-        this.employeeService.deleteEmployee(id).subscribe(() => {
-          this.getEmployees();
-          this.toastService.sendSuccess('El Empleado ha sido eliminado con éxito.');
-        });
-      }
-    });
-  }
-
-  sort(column: keyof Employee): void {
-    this.sortDirection = this.sortColumn === column ? (this.sortDirection === 'asc' ? 'desc' : 'asc') : 'asc';
-    this.sortColumn = column;
-
-    this.employeeList = [...this.employeeList].sort((a, b) => {
-      const valueA = a[column];
-      const valueB = b[column];
-
-      if (valueA == null || valueB == null) return 0;
-
-      if (valueA < valueB) return this.sortDirection === 'asc' ? -1 : 1;
-      if (valueA > valueB) return this.sortDirection === 'asc' ? 1 : -1;
-      return 0;
-    });
-  }
-
-  exportToPDF(): void {
-    const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4'
-    });
-
-    const title = 'Listado de Empleados';
-    doc.setFontSize(20);
-    doc.setTextColor(40, 40, 40);
-    doc.text(title, doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
-    const tableColumn = ['Empleado', 'Tipo', 'Documento', 'Fecha de contratación', 'Estado'];
-    const tableRows: any[][] = [];
-
-    this.employeeList.forEach(employee => {
-      const hiringDate = new Date(employee.hiringDate).toISOString().split('T')[0];
-      const [year, month, day] = hiringDate.split('-');
-      const formattedDate = `${day}/${month}/${year}`;
-
-      const employeeData = [
-        `${employee.lastName} ${employee.firstName}`,
-        employee.employeeType,
-        `${employee.documentType}: ${employee.docNumber}`,
-        formattedDate,
-        employee.state
-      ];
-      tableRows.push(employeeData);
-    });
-
-    autoTable(doc, {
-      head: [tableColumn],
-      body: tableRows,
-      startY: 25
-    });
-
-    doc.save('lista-empleados.pdf');
-  }
-
-  exportToExcel(): void {
-    const data = this.employeeList.map(employee => {
-      const hiringDate = new Date(employee.hiringDate).toISOString().split('T')[0];
-      const [year, month, day] = hiringDate.split('-');
-      const formattedDate = `${day}/${month}/${year}`;
-
-      return {
-        Empleado: `${employee.lastName} ${employee.firstName}`,
-        Tipo: employee.employeeType,
-        Documento: `${employee.documentType}: ${employee.docNumber}`,
-        'Fecha de contratación': formattedDate,
-        Estado: employee.state
-      };
-    });
-
-    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Empleados');
-
-    const columnsWidth = [
-      { wch: 25 },
-      { wch: 15 },
-      { wch: 25 },
-      { wch: 20 },
-      { wch: 15 }
-    ];
-    ws['!cols'] = columnsWidth;
-
-    XLSX.writeFile(wb, 'lista-empleados.xlsx');
-  }
-
-  onModalClose(): void {
-    this.showEditForm = false;
+    this.currentPage = 0; // Reset to first page when applying filters
     this.getEmployees();
-  }
-
-  goToNextPage(): void {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.loadEmployees();
-    }
-  }
-
-  goToPreviousPage(): void {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-      this.loadEmployees();
-    }
-  }
-
-  onItemsPerPageChange(): void {
-    this.currentPage = 1;
-    this.loadEmployees();
-  }
-
-  filterByStatus(status?: StatusType): void {
-    this.selectedStatus = status;
-    this.currentPage = 1;
-    this.loadEmployees();
-  }
-
-  openModalFilters(): void {
-    this.showModalFilters = !this.showModalFilters;
-  }
-
-  private applyCurrentFilter(): void {
-    switch (this.currentFilter) {
-      case 'active':
-        this.employeeList = this.originalEmployeeList.filter(
-          employee => employee.state === StatusType.ACTIVE
-        );
-        break;
-      case 'inactive':
-        this.employeeList = this.originalEmployeeList.filter(
-          employee => employee.state === StatusType.INACTIVE
-        );
-        break;
-      default:
-        this.employeeList = [...this.originalEmployeeList];
-    }
-    this.filteredEmployeeList = [...this.employeeList];
-  }
-
-  setFilter(filter: 'all' | 'active' | 'inactive'): void {
-    this.currentFilter = filter;
-    this.applyCurrentFilter();
-    this.applyFilters();
-  }
-
-  loadEmployees(): void {
-    this.isLoading = true;
-    this.employeeService
-      .getEmployeesPageable(this.currentPage - 1, this.itemsPerPage, this.selectedStatus)
-      .subscribe({
-        next: response => {
-          response = this.mapperService.toCamelCase(response);
-          this.employeeList = this.mapperService.toCamelCase(response.content);
-          this.totalPages = this.mapperService.toCamelCase(response.totalPages);
-          this.totalElements = this.mapperService.toCamelCase(response.totalElements);
-          this.isLoading = false;
-        },
-        error: error => {
-          this.toastService.sendError('Error al cargar listado de empleados.');
-          console.error('Error loading employees:', error);
-          this.isLoading = false;
-        }
-      });
+    this.showModalFilters = false;
   }
 
   clearFilters(): void {
     this.filterForm.reset();
     this.searchFilter.setValue('');
-    this.currentFilter = 'all';
-    this.applyFilters();
+    this.currentPage = 0;
+    this.getEmployees();
   }
 
-  filterActiveEmployees(): void {
-    this.setFilter('active');
+  onPageChange(page: number): void {
+    this.currentPage = page - 1; // Convert to 0-based for backend
+    this.getEmployees();
   }
 
-  filterInactiveEmployees(): void {
-    this.setFilter('inactive');
+  onItemsPerPageChange(): void {
+    this.currentPage = 0;
+    this.getEmployees();
   }
 
-  showAllEmployees(): void {
-    this.setFilter('all');
+  // Metrics methods
+  calculateMetrics(): void {
+    this.inServiceCount = this.employeeList.filter(employee => employee.state === 'IN_SERVICE').length;
+    this.inactiveCount = this.employeeList.filter(employee => employee.state === 'DOWN').length;
+    
+    this.typeCountMap = this.employeeList.reduce((acc, employee) => {
+      const type = employee.employeeType;
+      if (type) {
+        acc[type] = (acc[type] || 0) + 1;
+      }
+      return acc;
+    }, {} as { [key: string]: number });
+  }
+
+  // Chart methods remain the same...
+  createPieChart(): void {
+    if (!this.pieChartRef?.nativeElement) {
+      console.warn('Elemento del gráfico circular no encontrado');
+      return;
+    }
+    if (this.pieChart) {
+      this.pieChart.destroy();
+    }
+    this.pieChart = new Chart(this.pieChartRef.nativeElement, {
+      type: 'pie' as ChartType,
+      data: {
+        labels: ['En Servicio', 'Inactivo'],
+        datasets: [{
+          data: [this.inServiceCount, this.inactiveCount],
+          backgroundColor: ['#28a745', '#dc3545'],
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top'
+          }
+        }
+      }
+    });
+  }
+
+  createBarChart(): void {
+    if (this.barChart) {
+      this.barChart.destroy();
+    }
+
+    const ctx = document.getElementById('barChart') as HTMLCanvasElement;
+    const employeeTypes = Object.keys(this.typeCountMap);
+    const typeCounts = Object.values(this.typeCountMap);
+
+    this.barChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: employeeTypes,
+        datasets: [{
+          label: 'Cantidad de Empleados',
+          data: typeCounts,
+          backgroundColor: '#007bff'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: { title: { display: true, text: 'Tipo de Empleado' } },
+          y: { title: { display: true, text: 'Cantidad' }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  // Export methods
+  exportToPDF(): void {
+    const doc = new jsPDF();
+    autoTable(doc, {
+      head: [['Empleado', 'Tipo', 'Documento', 'Fecha de contratación', 'Estado']],
+      body: this.employeeList.map(employee => [
+        `${employee.lastName} ${employee.firstName}`,
+        employee.employeeType,
+        `${employee.documentType}: ${employee.docNumber}`,
+        new Date(employee.hiringDate).toLocaleDateString(),
+        employee.state
+      ])
+    });
+    doc.save('lista-empleados.pdf');
+  }
+
+  exportToExcel(): void {
+    const data = this.employeeList.map(employee => ({
+      Empleado: `${employee.lastName} ${employee.firstName}`,
+      Tipo: employee.employeeType,
+      Documento: `${employee.documentType}: ${employee.docNumber}`,
+      'Fecha de contratación': new Date(employee.hiringDate).toLocaleDateString(),
+      Estado: employee.state
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Empleados');
+    XLSX.writeFile(wb, 'lista-empleados.xlsx');
+  }
+
+  // Modal methods
+  openModalFilters(): void {
+    this.showModalFilters = true;
+  }
+
+  closeModalFilters(): void {
+    this.showModalFilters = false;
+  }
+
+  // CRUD operations
+  editEmployee(employee: Employee): void {
+    this.router.navigate(['inventories/employees/form', employee.id]);
+  }
+
+  deleteEmployee(id: number): void {
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+    modalRef.componentInstance.alertTitle = 'Confirmación';
+    modalRef.componentInstance.alertMessage = '¿Estás seguro de eliminar este empleado?';
+    modalRef.componentInstance.alertVariant = 'delete';
+
+    modalRef.result.then((result) => {
+      if (result) {
+        this.employeeService.deleteEmployee(id).subscribe({
+          next: () => {
+            this.toastService.sendSuccess('Empleado eliminado con éxito.');
+            this.getEmployees();
+          },
+          error: () => {
+            this.toastService.sendError('Error al eliminar el empleado.');
+          }
+        });
+      }
+    });
+  }
+
+
+  showDetailModal(content: any, id: number) {
+    console.log("Este es el metodo de showDetailModal");
+    //debugger
+    this.employeeService.getEmployeeById(id).subscribe({
+      next: (employee) => {
+        console.log('Detalles del empleado:', employee);
+        console.log('this.selectedEmployee', this.selectedEmployee);
+        console.log('este es el numero de telefono de this.selectedEmployee', this.selectedEmployee?.contactValue);
+        this.selectedEmployee = employee;
+        //debugger
+        this.modalService.open(content, {
+          ariaLabelledBy: 'modal-basic-title',
+          size: 'lg'
+        });
+        console.log('this.selectedEmployee', this.selectedEmployee);
+        console.log('este es el numero de telefono de this.selectedEmployee', this.selectedEmployee?.contactValue);
+        console.log(this.selectedEmployee);
+      },
+      error: (error) => {
+        console.error('Error al cargar los detalles del empleado:', error);
+        this.toastService.sendError('Error al cargar los detalles del empleado.');
+      }
+    });
+  }
+
+
+  goToPreviousPage() {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.getEmployees();
+    }
+  }
+  
+  goToNextPage() {
+    if (this.currentPage < this.totalPages - 1) {
+      this.currentPage++;
+      this.getEmployees();
+    }
+  }
+
+  showInfo(): void {
+    this.modalService.open(EmployeeListInfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
+  }
+
+  private formatearFecha(fecha: string | Date | null): string {
+    if (!fecha) return '';
+    
+    // Si ya es un objeto Date
+    if (fecha instanceof Date) {
+      return fecha.toISOString().split('T')[0];
+    }
+    
+    // Si es un string, manejar diferentes formatos
+    try {
+      // Manejar formato LocalDateTime (yyyy-MM-dd'T'HH:mm:ss)
+      if (fecha.includes('T')) {
+        return fecha.split('T')[0];
+      }
+      
+      // Si es solo un string de fecha (yyyy-MM-dd)
+      return fecha;
+    } catch (error) {
+      console.error('Error al formatear la fecha:', error);
+      return '';
+    }
+  }
+
+  showEmployeeAccess(employeeId: number) {
+    console.log('Showing access for employee:', employeeId);
+    if (this.employeeAccess) {
+      this.employeeAccess.showEmployeeSchedule(employeeId);
+    } else {
+      console.error('Employee access component not found');
+    }
+  }
+  showEmployeeAssistance(employeeId: number) {
+    // Usar el Router para navegar a la vista de asistencias con el ID del empleado
+    this.router.navigate(['inventories/employees/assistance', employeeId]);
   }
 }
+

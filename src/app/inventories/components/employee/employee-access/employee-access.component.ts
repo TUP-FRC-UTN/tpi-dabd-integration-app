@@ -204,7 +204,7 @@ export class EmployeeAccessComponent implements OnInit {
         this.resetForm();
         this.closeModal.emit();
         this.schedulesSaved.emit();
-        this.router.navigate(['/employees/list']);
+        this.router.navigate(['inventories/employees/list']);
         
       },
       error: (error) => {
