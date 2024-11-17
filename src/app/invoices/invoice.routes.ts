@@ -9,8 +9,8 @@ import { hasRoleCodeGuard } from "../users/guards/has-role-code.guard";
 import { URLTargetType } from "../users/models/role";
 
 
-const stadisticsAdmin : Number[] = [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.FINANCE,
-    URLTargetType.FINANCE_ASSISTANT];
+const stadisticsAdmin : Number[] = [URLTargetType.SUPERADMIN , URLTargetType.FINANCE,
+    URLTargetType.FINANCE_ASSISTANT, URLTargetType.PAYMENTS_ADMIN];
 
 
 export const INVOICE_ROUTES: Routes = [
@@ -21,8 +21,8 @@ export const INVOICE_ROUTES: Routes = [
         canActivate: [authGuard],
         canMatch: [hasRoleCodeGuard],
         data: { allowedRoleCodes: [
-            URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.ADMINISTRATIVE, 
-            URLTargetType.FINANCE, URLTargetType.EMPLOYEE_ADMIN, URLTargetType.FINANCE_ASSISTANT
+            URLTargetType.SUPERADMIN , URLTargetType.ADMINISTRATIVE, 
+            URLTargetType.FINANCE, URLTargetType.FINANCE_ASSISTANT, URLTargetType.PAYMENTS_ADMIN
         ] }
     },
     {
