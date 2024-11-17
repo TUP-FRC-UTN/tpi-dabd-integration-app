@@ -337,7 +337,7 @@ export class ContactListComponent implements OnInit {
   
 
   saveContact() {
-    this.router.navigate(['/contact/new']);
+    this.router.navigate(['notifications/contact/new']);
   }
 
   editContact(contact: ContactModel) {
