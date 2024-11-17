@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Filter, FilterConfigBuilder, MainContainerComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, Filter, FilterConfigBuilder, MainContainerComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
 import { ProviderTypeUpdateComponent } from "../provider-type-update/provider-type-update.component";
 import { CompanyService } from '../../../services/suppliers/company.service';
 import { Company } from '../../../models/suppliers/company.model';
@@ -146,6 +146,10 @@ export class ProvideConfigComponent implements OnInit {
   }
 
   deleteCompany(id: number) {
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+    modalRef.componentInstance.alertTitle = 'Confirmación';
+    modalRef.componentInstance.alertMessage = '¿Está seguro que desea eliminar esta compañía?';
+    modalRef.componentInstance.alertVariant = 'delete';
     this.companyService.deleteCompany(id).subscribe({
       next: () => {
         this.loadCompanies();
