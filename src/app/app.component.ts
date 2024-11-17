@@ -39,6 +39,8 @@ import { NotificationsComponent } from './notifications/modules/components/notif
 export class AppComponent {
   // title = 'AppName';
   showNotifications: boolean = false;
+  // Modo Oscuro
+  darkModeEnabled = false;
   //variables
   navbarMenu: NavbarItem[] = [
     {
@@ -439,4 +441,14 @@ export class AppComponent {
   onNotificationClick(){
     this.showNotifications = !this.showNotifications;
   }
+
+  //Modo Oscuro
+  toggleDarkMode() {
+    this.darkModeEnabled = !this.darkModeEnabled;
+    if (this.darkModeEnabled) {
+      document.body.classList.add('dark-mode'); // Agrega clase al body
+    } else {
+      document.body.classList.remove('dark-mode'); // Remueve clase del body
+    }
+  }
 }
