@@ -41,22 +41,16 @@ export class ProvideConfigComponent implements OnInit {
   @ViewChild('infoModal') infoModal!: TemplateRef<any>;
 
   filterConfig: Filter[] = new FilterConfigBuilder()
-    .textFilter(
-     'Nombre',
-     'firstName',
-     '' 
-    ).selectFilter(
-      'Tipo de Empleado',
-      'employeeType',
+    .selectFilter(
+      'Estado',
+      'enabled',
       'Seleccione un Tipo',
       [
         { value: '', label: 'Todos' },
-        { value: 'ADMINISTRATIVO', label: 'Administrativo' },
-        { value: 'GUARDIA', label: 'Guardia' },
-        { value: 'CONTADOR', label: 'Contador'},
-        { value: 'MANTENIMIENTO', label: 'Mantenimiento'}
+        { value: 'true', label: 'Activo' },
+        { value: 'false', label: 'Inactivo' }
       ]
-    ).build();
+    ).build();
 
   ngOnInit(): void {
     this.loadCompanies();
