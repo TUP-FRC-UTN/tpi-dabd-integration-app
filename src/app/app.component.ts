@@ -302,7 +302,7 @@ export class AppComponent {
             },
             { label: 'Reporte Usuarios', routerLink: '/users/user/reports' },
           ],
-        }, 
+        },
         // {
         //   label: 'Perfil',
         //   subMenu: [
