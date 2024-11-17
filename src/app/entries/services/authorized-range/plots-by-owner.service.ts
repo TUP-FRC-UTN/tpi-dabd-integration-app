@@ -22,7 +22,7 @@ export class PlotsByOwnerService {
   host: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}`;
   
   actualOwnerByPlot(plotId : number){
-    return this.http.get<ownerPlotResponse>(`${this.host}/owner/current/plot/${plotId}`).pipe(
+    return this.http.get<ownerPlotResponse>(`${this.host}owner/current/plot/${plotId}`).pipe(
       map((response) =>{
         return this.caseTransformer.toCamelCase(response)
       })

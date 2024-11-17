@@ -107,10 +107,10 @@ export class AccessFormComponent implements OnInit {
     if (this.accessForm.valid) {
       const formData = this.accessForm.value;
       let plate = this.accessForm.get('vehicleReg')?.value;
+  
       if (plate != null) {
-        this.visitorService
-          .checkAccess(plate, this.accessForm.get('action')?.value)
-          .subscribe((data) => {
+
+        this.visitorService.checkAccess(plate, this.accessForm.get('action')?.value).subscribe((data) => {
             if (!data) {
               let text =
                 this.accessForm.get('action')?.value == 'ENTRY'
@@ -136,22 +136,15 @@ export class AccessFormComponent implements OnInit {
                 },
               }).then((result) => {
                 if (result.isDismissed) {
-                  this.accessService
-                    .createAccess(
-                      formData
-                    )
-                    .subscribe((data) => {
+                  
+                  this.accessService.createAccess(formData).subscribe((data) => {
                       this.toastService.sendSuccess('Registro exitoso!');
                       this.ngOnInit();
                     });
                 }
               });
             } else {
-              this.accessService
-                .createAccess(
-                  formData,
-                //  this.loginService.getLogin().id.toString()
-                ).subscribe({
+              this.accessService.createAccess(formData).subscribe({
                   next: (data) => {
                     this.toastService.sendSuccess('Registro exitoso!');
                     
