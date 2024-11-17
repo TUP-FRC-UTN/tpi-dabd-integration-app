@@ -1,0 +1,35 @@
+:host {
+    display: block;
+  }
+  .btn-outline-primary:hover {
+    color: #fff;
+  }
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+  .d-flex.flex-wrap.gap-2 .btn {
+    flex: 1 1 auto;
+    min-width: 100px; 
+  }
+  .card-body .row .col-12.col-md-4 {
+    max-width: 33.3333%;
+  }
+
+  .btn-light-blue {
+    background-color: #2890f9; 
+    border-color: #2890f9;
+    color: #fff;
+  }
+  .btn-light-blue:hover {
+    background-color: #1a78d6;
+    border-color: #1a78d6;
+  }
+  .btn-outline-light-blue {
+    border-color: #2890f9;
+    color: #2890f9;
+  }
+  .btn-outline-light-blue:hover {
+    background-color: #2890f9;
+    color: #fff;
+  }

@@ -22,7 +22,7 @@
   {{ item.description | truncate : 40 }}
 </ng-template>
 
-<app-main-container title="Tipos de sanciones" (infoButtonClick)="infoModal()">
+<app-main-container title="Listado de Tipos de Sanciones" (infoButtonClick)="infoModal()">
   <app-table
     [items]="(items$ | async) || []"
     [columns]="columns"

@@ -60,7 +60,7 @@ export class ApproveInfractionModalComponent {
       formData.append('status', 'APPROVED');
 
       this.infractionService
-        .changeInfractionStatus(formData, this.infractionId!)
+        .changeInfractionStatus(formData, this.infractionId!, this.userData.id)
         .subscribe({
           next: (response) => {
             this.activeModal.close(response);

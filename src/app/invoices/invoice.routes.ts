@@ -20,6 +20,10 @@ export const INVOICE_ROUTES: Routes = [
         component: StadisticsComponent
     },
     {
+        path: 'stadistics/:id',
+        component: StadisticsComponent
+    },
+    {
         path: 'review-tickets-transfer',
         component: ReviewTicketsTransferComponent
     },

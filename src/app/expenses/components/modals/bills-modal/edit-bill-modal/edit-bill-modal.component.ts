@@ -5,7 +5,6 @@ import {
   AbstractControl,
   AsyncValidatorFn,
   FormBuilder,
-  FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
@@ -22,9 +21,11 @@ import { Provider } from '../../../../models/provider';
 import { CommonModule } from '@angular/common';
 import { NgModalComponent } from '../../ng-modal/ng-modal.component';
 import { ToastService } from 'ngx-dabd-grupo01';
-import { NgSelectComponent, NgOptionComponent } from '@ng-select/ng-select';
+import { NgSelectComponent } from '@ng-select/ng-select';
 import { map } from 'rxjs';
 import { NewCategoryModalComponent } from '../../bills/new-category-modal/new-category-modal.component';
+import { StorageService } from '../../../../services/storage.service';
+import { User } from '../../../../models/user';
 
 @Component({
   selector: 'app-edit-bill-modal',
@@ -34,7 +35,6 @@ import { NewCategoryModalComponent } from '../../bills/new-category-modal/new-ca
     ReactiveFormsModule,
     CommonModule,
     NgSelectComponent,
-    NgOptionComponent,
   ],
   templateUrl: './edit-bill-modal.component.html',
   styleUrl: './edit-bill-modal.component.css'
@@ -48,6 +48,7 @@ export class EditBillModalComponent implements OnInit {
   private billService = inject(BillService);
   private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
+  private strageService = inject(StorageService);
 
   newCategoryForm: FormGroup;
   @ViewChild('newCategoryModal') newCategoryModal: any;
@@ -174,6 +175,8 @@ export class EditBillModalComponent implements OnInit {
   }
 
   onSubmit() {
+    let user = this.strageService.getFromSessionStorage('user') as User;
+
     if (this.updateBill.valid) {
       console.log(`Valor de bill a actualizar:${JSON.stringify(this.updateBill.value)}`);
       console.log(`Valor de bill a actualizar:${JSON.stringify(this.bill?.expenditureId)}`);
@@ -190,7 +193,7 @@ export class EditBillModalComponent implements OnInit {
         link_pdf: 'string'
       };
 
-      this.billService.updateBill(requestBill, this.bill?.expenditureId).subscribe({
+      this.billService.updateBill(requestBill, this.bill?.expenditureId, user.value.id).subscribe({
         next: (response: any) => {
           console.log('Actualizado correctamente', response);
           this.toastService.sendSuccess('El gasto se ha actualizado correctamente.');

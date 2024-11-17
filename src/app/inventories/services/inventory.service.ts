@@ -1,25 +1,28 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
-import { Article, ArticleInventoryPost, ArticlePost } from '../models/article.model';
-import { Inventory, Transaction, TransactionPost } from '../models/inventory.model';
+import { Article, ArticleCateg, ArticleCategory, ArticleCategPost, ArticleCondition, ArticleInventoryPost, ArticlePost, ArticleType } from '../models/article.model';
+import { Inventory, StatusType, Transaction, TransactionPost } from '../models/inventory.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InventoryService {
-   private apiArticlesUrl = 'http://localhost:8080/articles'; // URL de la API para los ítems DEL BACK
-   private apiInventoriesUrl = 'http://localhost:8080/inventories'; // URL de la API para los inventarios
-   private apiTransactionsUrl = 'http://localhost:8080/transactions'; // URL de la API para las transacciones
 
-  //private apiArticlesUrl = 'http://localhost:3000/articles'; // URL de la API para los ítems DEL BACK
-  //private apiInventoriesUrl = 'http://localhost:3000/inventories'; // URL de la API para los inventarios
- // private apiTransactionsUrl = 'http://localhost:3000/transactions'; // URL de la API para las transacciones
+
+   private apiArticlesUrl = 'http://localhost:8009/articles'; // URL de la API para los ítems DEL BACK
+   private apiArticleCategoriesUrl = 'http://localhost:8009/articleCategories';
+   private apiInventoriesUrl = 'http://localhost:8009/inventories'; // URL de la API para los inventarios
+   private apiTransactionsUrl = 'http://localhost:8009/transactions'; // URL de la API para las transacciones
 
   constructor(private http: HttpClient) {}
 
 
   // CRUD para Ítems
+  articleExist(identifier: string) {
+    return this.http.post<Boolean>(this.apiArticlesUrl + '/articleVerify', { identifier });
+  }
+
   getArticles(): Observable<Article[]> {
     return this.http.get<Article[]>(this.apiArticlesUrl);
   }
@@ -41,16 +44,20 @@ export class InventoryService {
     return this.http.patch<void>(`${this.apiArticlesUrl}/${article_id}`, { article_status: 'Inactive' });
   }
 
+  getFilteredInventories(filters: any): Observable<Inventory[]> {
+    return this.http.get<Inventory[]>(`/api/inventories`, { params: filters });
+  }
+
   // CRUD para Inventarios
   getInventories(filters?:{
     measure?: string;
     location?: string;
     articleName?: string;
     stock?: number;
-  } 
+  }
   ): Observable<Inventory[]> {
     let params = new HttpParams();
-    
+
     if (filters) {
       Object.keys(filters).forEach(key => {
         const value = filters[key as keyof typeof filters];
@@ -59,15 +66,16 @@ export class InventoryService {
         }
       });
     }
-    
+
     return this.http.get<Inventory[]>(this.apiInventoriesUrl, { params });
   }
 
   getInventoriesUnit(measure: string): Observable<Inventory[]> {
     return this.http.get<Inventory[]>(`${this.apiInventoriesUrl}/article/${measure}`);
   }
-  
+
   addInventory(inventory: Inventory): Observable<Inventory> {
+    console.log('servicio', inventory);
     return this.http.post<Inventory>(this.apiInventoriesUrl, inventory);
   }
 
@@ -115,7 +123,64 @@ export class InventoryService {
 
     return this.http.get<any>(`${this.apiInventoriesUrl}/pageable`, { params })
   }
+
+  // CRUD para ArticleCategories
+
+  getArticleCategories(): Observable<ArticleCateg[]> {
+    return this.http.get<ArticleCateg[]>(`${this.apiArticleCategoriesUrl}`);
+  }
+
+  deleteCategories(categoryId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiArticleCategoriesUrl}/${categoryId}`);
+  }
+  updateCategory(id: number, updatedCategory: Partial<ArticleCateg>): Observable<ArticleCateg> {
+    return this.http.put<ArticleCateg>(`${this.apiArticleCategoriesUrl}/${id}`, updatedCategory);
+  }
+
+  createCategory(category: ArticleCategPost): Observable<ArticleCategPost> {
+    console.log('creacion',category);
+    return this.http.post<ArticleCategPost>(this.apiArticleCategoriesUrl, category);
+  }
+
+  getInventoriesPagedFiltered(
+    page: number = 0,
+    size: number = 10,
+    filters?: {
+      article?: string;
+      description?: string;
+      status?: StatusType;
+      articleType?: ArticleType;
+      articleCondition?: ArticleCondition;
+      location?: string;
+    }
+  ): Observable<Page<Inventory>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    if (filters) {
+      if (filters.article) params = params.set('article', filters.article);
+      if (filters.description) params = params.set('description', filters.description);
+      if (filters.status) params = params.set('status', filters.status);
+      if (filters.articleType) params = params.set('articleType', filters.articleType);
+      if (filters.articleCondition) params = params.set('articleCondition', filters.articleCondition);
+      if (filters.location) params = params.set('location', filters.location);
+    }
+
+    return this.http.get<Page<Inventory>>(`${this.apiInventoriesUrl}/paginated`, { params });
+  }
+
+  getFilteredInventory(unit: string, startDate: string, endDate: string): Observable<Inventory[]> {
+    const params = new HttpParams()
+      .set('unit', unit)
+      .set('startDate', startDate)
+      .set('endDate', endDate);
+
+    return this.http.get<Inventory[]>(`${this.apiInventoriesUrl}/filtered`, { params });
+  }
 }
+
+
 export interface Page<T> {
   content: T[];
   totalElements: number;

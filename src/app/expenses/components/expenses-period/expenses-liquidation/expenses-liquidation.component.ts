@@ -14,8 +14,6 @@ import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import moment from 'moment';
 import { ToastService } from 'ngx-dabd-grupo01';
-import { StorageService } from '../../../services/storage.service';
-import { User } from '../../../models/user';
 
 @Component({
   selector: 'app-expenses-liquidation-expenses-list',
@@ -37,7 +35,6 @@ export class ExpensesLiquidationComponent implements OnInit {
 
   private readonly location = inject(Location);
   private modalService = inject(NgbModal);
-  private storageService = inject(StorageService)
 
 
   toastService: ToastService = inject(ToastService);
@@ -54,8 +51,6 @@ export class ExpensesLiquidationComponent implements OnInit {
   isModalVisible = false;
   selectedPeriodId: number | null = null;
   //USO DEL MODAL CORRECTO.
-
-  user: User | null = null;
 
   searchTerm = '';
 
@@ -82,8 +77,6 @@ export class ExpensesLiquidationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.user = this.storageService.getFromSessionStorage('usser') as User;
-
     this.loadId();
     this.loadList(this.id);
   }

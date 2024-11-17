@@ -2,10 +2,10 @@ import { ClaimDTO } from '../../claim/models/claim.model';
 import { EntityBase } from '../../../../shared/models/entity-base.model';
 
 export interface InfractionDto {
-  plotId: number;
+  plot_id: number;
   description: string;
-  sanctionTypeId: number;
-  claimsId: number[];
+  sanction_type_id: number;
+  claims_ids: number[];
 }
 
 export interface InfractionModel extends EntityBase {

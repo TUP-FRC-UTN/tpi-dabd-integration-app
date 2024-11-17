@@ -1,0 +1,25 @@
+
+    <!-- Modal de Información -->
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="infoModalLabel">Información de la Pantalla</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss()"></button>
+            </div>
+            <div class="modal-body">
+              <p>Esta pantalla proporciona una vista detallada de los <strong>empleados</strong> de la organización. A continuación se describen las métricas visualizadas en esta sección:</p>
+              <ul>
+                <li><strong>Total de Empleados</strong>: Muestra el número total de empleados registrados.</li>
+                <li><strong>Empleados en Servicio</strong>: Indica la cantidad de empleados que están activos y en servicio.</li>
+                <li><strong>Empleados Inactivos</strong>: Indica la cantidad de empleados que están inactivos.</li>
+                <li><strong>Estado de Empleados</strong>: Este gráfico de torta representa la proporción de empleados en servicio e inactivos.</li>
+                <li><strong>Empleados por Tipo</strong>: Este gráfico de barras muestra la distribución de empleados según su tipo (por ejemplo, administrativo, técnico, etc.).</li>
+              </ul>
+              <p>Utiliza los filtros para buscar empleados específicos o para segmentarlos por tipo y estado.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="activeModal.close()">Cerrar</button>
+            </div>
+          </div>
+        </div>
+    

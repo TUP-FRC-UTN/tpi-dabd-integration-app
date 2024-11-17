@@ -4,18 +4,19 @@ import {
   HttpParams,
   HttpResponse,
 } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { SendVisitor, Visitor } from '../../models/visitors/visitor.model';
 import { CaseTransformerService } from '../case-transformer.service';
 import { environment } from '../../../../environments/environment.prod';
+import { SessionService } from '../../../users/services/session.service';
 
 export interface VisitorFilter {
   active?: boolean;
   textFilter?: string;
 }
 
-interface PaginatedResponse<T> {
+export interface PaginatedResponse<T> {
   items: T[];
   totalElements: number;
 }
@@ -24,16 +25,13 @@ interface PaginatedResponse<T> {
   providedIn: 'root',
 })
 export class VisitorService {
-  //private apiUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/visitors';
- // private baseUrl = 'https://f81hvhvc-8080.brs.devtunnels.ms/';
-
-//  private urlEnvironment = environment.apis.accesses; //8080
-
+ 
   //si la variable de produccion es true, entonces se usa la url de produccion (eso lo indica la importacion de environment.prod.ts)
   private apiUrl: string = environment.production
   ? `${environment.apis.accesses}`
   : 'http://localhost:8001/';
 
+  sessionService = inject(SessionService)
 
   constructor(
     private http: HttpClient,
@@ -45,6 +43,7 @@ export class VisitorService {
     size: number,
     filter?: boolean
   ): Observable<{ items: Visitor[] }> {
+    
     const params = this.caseTransformer.toSnakeCase({
       page,
       size,
@@ -161,12 +160,18 @@ export class VisitorService {
 
   upsertVisitor(
     visitor: SendVisitor,
-    userId: number,
     visitorId?: number
   ): Observable<HttpResponse<Visitor>> {
-    const headers = new HttpHeaders({
-      'x-user-id': userId.toString(),
-    });
+
+    let headers = new HttpHeaders();
+    const user = this.sessionService.getItem('user');
+
+    if(!user) {
+      console.error('Error: user es nulo o undefined');
+    }else{
+      headers = headers.set('x-user-id', user.id.toString());
+    }
+    
 
     const snakeCaseVisitor = this.caseTransformer.toSnakeCase(visitor);
     let params = new HttpParams();
@@ -209,22 +214,32 @@ export class VisitorService {
     });
   }
 
-  enable(visitorId: number, userId: number): Observable<any> {
-    const headers = new HttpHeaders({
-      'x-user-id': userId.toString(),
-    });
+  enable(visitorId: number): Observable<any> {
+    let headers = new HttpHeaders();
+    const user = this.sessionService.getItem('user');
+
+    if(!user) {
+      console.error('Error: user es nulo o undefined');
+    }else{
+      headers = headers.set('x-user-id', user.id.toString());
+    }
 
     return this.http
-      .put<any>(`${this.apiUrl}visitors/${visitorId}/activate`, null, {
-        headers,
-      })
+      .put<any>(`${this.apiUrl}visitors/${visitorId}/activate`, null, {headers})
       .pipe(map((response) => this.caseTransformer.toCamelCase(response)));
   }
 
-  delete(visitorId: number, userId: number): Observable<any> {
-    const headers = new HttpHeaders({
-      'x-user-id': userId.toString(),
-    });
+  delete(visitorId: number): Observable<any> {
+    let headers = new HttpHeaders();
+    const user = this.sessionService.getItem('user');
+
+    if(!user) {
+      console.error('Error: user es nulo o undefined');
+    }else{
+
+      headers = headers.set('x-user-id', user.id.toString());
+      console.log(headers.get('x-user-id') +" header user id");
+    }
 
     return this.http
       .delete<any>(`${this.apiUrl}visitors/${visitorId}`, { headers })

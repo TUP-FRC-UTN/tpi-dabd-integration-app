@@ -3,9 +3,10 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { InventoryService } from '../../../../services/inventory.service';
 import { Transaction, TransactionType, Inventory, TransactionPost } from '../../../../models/inventory.model';
 import { CommonModule } from '@angular/common';
-import { Article } from '../../../../models/article.model';
+import { Article, MeasurementUnit } from '../../../../models/article.model';
 import { ActivatedRoute } from '@angular/router';
 import { MapperService } from '../../../../services/MapperCamelToSnake/mapper.service';
+import { ToastService } from 'ngx-dabd-grupo01';
 
 @Component({
   selector: 'app-transaction',
@@ -17,8 +18,9 @@ import { MapperService } from '../../../../services/MapperCamelToSnake/mapper.se
 export class TransactionComponentForm implements OnInit {
 
   private mapperService = inject(MapperService);
+  private toastService = inject(ToastService);
 
-@Input() inventoryId: string | null = null;
+@Input() inventory: Inventory | null = null;
 @Output() closeRegisterTransaction = new EventEmitter<void>();
 @Output() showRegisterTransactionForm = new EventEmitter<void>();
 isModalOpen : boolean = true;
@@ -26,6 +28,7 @@ isModalOpen : boolean = true;
 
   transactionForm: FormGroup;
 
+  measure: string = '';
   transactions: Transaction[] = [];
   inventories: Inventory[] = [];
   isEditing: boolean = false;
@@ -40,88 +43,56 @@ isModalOpen : boolean = true;
       transactionType: [TransactionType.ENTRY, Validators.required],
       quantity: [0, Validators.required],
       price: [0],
-      transactionDate: [{ value: new Date().toISOString().split('T')[0] }]
+      transactionDate: [new Date().toISOString().split('T')[0]]
     });
   }
 
   ngOnInit(): void {
-    if (this.inventoryId) {
-      console.log('ID de inventario recibido:', this.inventoryId);
+    if (this.inventory) {
+      console.log('ID de inventario recibido:', this.inventory);
     }
+    // Escuchar cambios en el tipo de transacción para habilitar/deshabilitar el campo de precio
+    this.transactionForm.get('transactionType')?.valueChanges.subscribe((type: TransactionType) => {
+    if (type === TransactionType.OUTPUT) {
+      this.transactionForm.get('price')?.disable();
+    } else {
+      this.transactionForm.get('price')?.enable();
+    }
+  });
+  this.getDisplayUnit(this.inventory?.article?.measurementUnit);
   }
 
   addTransaction(): void {
-    console.log(this.transactionForm.value); // Loguear el estado actual del formulario
     if (this.transactionForm.valid) {
-      const formValues = this.transactionForm.value;
+        const formValues = this.transactionForm.value;
 
-      // Crear la transacción con el nuevo modelo TransactionPost
-      const newTransaction: TransactionPost = {
-        transactionType: formValues.transactionType,
-        quantity: formValues.quantity,
-        price: this.transactionForm.get('transactionType')?.value === 'OUTPUT' ? null : this.transactionForm.get('price')?.value,
-        transactionDate: formValues.transactionDate,
-      };
+        // Crear la transacción con el nuevo modelo TransactionPost
+        const newTransaction: TransactionPost = {
+            transactionType: formValues.transactionType,
+            quantity: formValues.quantity,
+            price: this.transactionForm.get('transactionType')?.value === 'OUTPUT' ? null : this.transactionForm.get('price')?.value,
+            transactionDate: formValues.transactionDate,
+        };
 
-      const transactionFormatted = this.mapperService.toSnakeCase(newTransaction);
-      if (this.inventoryId) {
-        this.inventoryService.addTransaction(transactionFormatted, this.inventoryId).subscribe(() => {
-          this.getTransactions();
-          this.resetForm();
-        });
-      } else {
-        console.error('Error: inventoryId no está definido');
-      }
+        const transactionFormatted = this.mapperService.toSnakeCase(newTransaction);
+        console.log(transactionFormatted);
+        if (this.inventory?.id) {
+            this.inventoryService.addTransaction(transactionFormatted, this.inventory.id.toString()).subscribe({
+                next: () => {
+                    this.toastService.sendSuccess('Movimiento registrado con éxito.');
+                    this.getTransactions();
+                    this.onClose();
+                },
+                error: (error) => {
+                  const errorMessage = error.error?.message || 'Error desconocido';
+                  this.toastService.sendError(errorMessage);
+                }
+            });
+        } else {
+            console.error('Error: inventoryId no está definido');
+        }
     }
-  }
-
-  getArticles(): void {
-    this.inventoryService.getArticles().subscribe(articles => {
-      this.articles = articles;
-      this.buildArticleMap(); // Construir el mapa de ítems
-    });
-  }
-
-  buildArticleMap(): void {
-    this.articles.forEach(article => {
-      if (article && article.id !== undefined) {
-        this.articleMap[article.id] = article; // Mapea el ID del ítem al objeto ítem
-      }
-    });
-    console.log('Mapa de ítems:', this.articleMap); // Verificar si el mapa de ítems se construye bien
-
-  }
-  buildInventoryMap(): void {
-    this.inventoryMap = {}; // Reiniciar el mapa antes de construirlo
-    this.inventories.forEach(inventory => {
-      if (inventory && inventory.id !== undefined && inventory.id !== null) {
-        this.inventoryMap[inventory.id] = inventory;
-      }
-    });
-    console.log('Mapa de inventarios construido:', this.inventoryMap); // Verificar el contenido del mapa
-  }
-
-
-
-  toggleFieldsByTransactionType(type: TransactionType): void {
-    const priceControl = this.transactionForm.get('price');
-    if (type === TransactionType.ENTRY) {
-      priceControl?.setValidators([Validators.required]);
-      priceControl?.enable();
-    } else {
-      priceControl?.clearValidators();
-      priceControl?.disable();
-    }
-    priceControl?.updateValueAndValidity();
-  }
-
-  getInventories(): void {
-    this.inventoryService.getInventories().subscribe(inventories => {
-      this.inventories = inventories//.filter(inventory => inventory.inventory_status == "Active");
-      this.buildInventoryMap(); // Construimos el mapa después de cargar los inventarios
-      console.log('Inventarios cargados:', this.inventories); // Verificar los inventarios cargados
-    });
-  }
+}
 
   getTransactions(): void {
     this.inventoryService.getTransactions().subscribe(transactions => {
@@ -131,59 +102,30 @@ isModalOpen : boolean = true;
 
   }
 
-
-
-  updateTransaction(): void {
-    if (this.transactionForm.valid && this.editingTransactionId) {
-      const formValues = this.transactionForm.value;
-
-      // Crear el objeto actualizado de la transacción
-      const updatedTransaction: Transaction = {
-        id: this.editingTransactionId, // Mantén el ID de la transacción
-        inventoryId: formValues.inventory_id,
-        quantity: formValues.quantity,
-        price: formValues.price,
-        transactionType: formValues.transaction_type, // Asegúrate de capturar correctamente el tipo de transacción
-        transactionDate: new Date().toISOString() // Si quieres mantener la fecha actualizada
-      };
-
-      // Enviar la actualización al servidor
-      this.inventoryService.updateTransaction(this.editingTransactionId, updatedTransaction).subscribe(() => {
-        this.getTransactions(); // Recargar las transacciones
-        this.resetForm(); // Resetea el formulario después de la edición
-      });
-    }
-  }
-
-
-
-  editTransaction(transaction: Transaction): void {
-    this.isEditing = true;
-   // this.editingTransactionId = transaction.id;
-    this.transactionForm.patchValue(transaction);
-    this.toggleFieldsByTransactionType(transaction.transactionType);
-  }
-
-  deleteTransaction(transaction_id: number): void {
-    this.inventoryService.deleteTransaction(transaction_id).subscribe(() => {
-      this.getTransactions();
-    });
-  }
-
-  resetForm(): void {
-    this.transactionForm.reset({
-      transactionType: '',
-      inventory_id: '',
-      quantity: 0,
-      price: 0,
-      transaction_date: new Date().toISOString().split('T')[0]
-    });
-    this.isEditing = false;
-  //  this.editingTransactionId = null;
-  }
-
   onClose(){
-    this.showRegisterTransactionForm.emit();
+    debugger
+    this.closeRegisterTransaction.emit();
     this.isModalOpen = false
+  }
+
+  getDisplayUnit(unit: MeasurementUnit | undefined): void {
+    if (!unit) {
+      this.measure= 'Ud.'; // Retorna un valor predeterminado
+    }
+
+    switch (unit) {
+      case MeasurementUnit.LITERS:
+        this.measure='Lts.';
+        break;
+      case MeasurementUnit.KILOS:
+        this.measure='Kg.';
+        break;
+      case MeasurementUnit.UNITS:
+        this.measure='Ud.';
+        break;
+      default:
+        this.measure='Ud.';
+        break;
+    }
   }
 }

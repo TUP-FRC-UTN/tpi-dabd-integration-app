@@ -17,8 +17,6 @@ import Period from '../../../models/period';
 import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal/edit-bill-modal.component';
 import { ViewBillModalComponent } from '../../modals/bills-modal/view-bill-modal/view-bill-modal.component';
 import { DeleteBillModalComponent } from '../../modals/bills/delete-bill-modal/delete-bill-modal.component';
-import { User } from '../../../models/user';
-import { StorageService } from '../../../services/storage.service';
 
 @Component({
   selector: 'app-expenses-liquidation-details',
@@ -45,7 +43,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   private readonly categoryService = inject(CategoryService);
   private readonly supplierService = inject(ProviderService);
   private readonly billTypeService = inject(BillService);
-  private readonly storage = inject(StorageService)
   private modalService = inject(NgbModal);
 
   //
@@ -111,7 +108,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
   fileName = 'reporte-gastos-liquidación';
 
-  user :User | null = null;
 
 
   //
@@ -119,8 +115,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   //
 
   ngOnInit(): void {
-    this.user = this.storage.getFromSessionStorage('user') as User;
-
     this.fechaTitulo = ''
 
     this.loadLiquidationExpenseDetails();
