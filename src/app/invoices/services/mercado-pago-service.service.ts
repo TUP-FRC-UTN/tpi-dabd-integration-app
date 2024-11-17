@@ -13,9 +13,9 @@ export class MercadoPagoServiceService {
   // private apiUrl = 'http://localhost:8090/payments/mercadopago/crear-preferencia';// DEV
 
   constructor(private http: HttpClient) {
-    let session = JSON.parse(sessionStorage.getItem('user')!)
-    this.userId = session.value.id;
-    console.log(this.userId);
+      let session = JSON.parse(sessionStorage.getItem('user')!)
+      this.userId = session.value.id;
+      console.log(this.userId);
   }
 
   crearPreferencia(orderData: TicketPayDto): Observable<any> {

@@ -9,8 +9,8 @@ import { environment } from '../../../environments/environment.prod';
 })
 export class PaymentServiceService {
   // Base URL para el servicio de tickets
-  private readonly baseUrl = environment.apis.payments;
-  // private readonly baseUrl = 'http://localhost:8090/payments';//DEV
+  // private readonly baseUrl = environment.apis.payments;
+  private readonly baseUrl = 'https://lbsm4xgt-8080.brs.devtunnels.ms/payments';//DEV
   userId : Number;
   constructor(private http: HttpClient) {
     let session = JSON.parse(sessionStorage.getItem('user')!)
