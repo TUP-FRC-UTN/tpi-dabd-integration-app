@@ -23,7 +23,7 @@
       title="Eliminar">
       <i class="bi bi-trash"></i>
     </button>
-  } 
+  }
 </ng-template>
 
 <app-main-container title="Lista de Categorías" (infoButtonClick)="showInfo()">
@@ -45,7 +45,7 @@
     [showHeaderButton]="true"
     [tableFilters]="filterConfig"
     (filterValueChange)="onFilterValueChange($event)"
-    (excelButtonClick)="downloadTable()"
+    [getAllItems]="downloadTable"
     (pdfButtonClick)="imprimirPDF()"
     [headerButtonIcon]="'bi bi-plus'"
     [headerButtonText]="''"
