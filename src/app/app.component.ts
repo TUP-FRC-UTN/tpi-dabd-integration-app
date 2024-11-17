@@ -31,7 +31,7 @@ import { NotificationsComponent } from './notifications/modules/components/notif
     AsyncPipe,
     LoginComponent,
     NotificationsComponent,
-	ForgotPasswordComponent,
+    ForgotPasswordComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -75,7 +75,20 @@ export class AppComponent {
           label: 'Lista de Expensas (Propietario)',
           routerLink: '/invoices/owner-list-expensas',
         },
-        { label: 'Estadísticas', routerLink: '/invoices/stadistics' },
+        {
+          label: 'Estadísticas', subMenu: [
+            {
+              label: 'Tickets',
+              routerLink: '/invoices/stadistics/1',
+            },
+            {
+              label: 'Payments',
+              routerLink: '/invoices/stadistics/2',
+            },
+            
+          ],
+        },
+
       ],
     },
     {
@@ -95,7 +108,7 @@ export class AppComponent {
           label: 'Reportes',
           subMenu: [
             {
-              label: 'Gráficos de obras',
+              label: 'Reporte de obras',
               routerLink: '/penalties/constructions-report',
             },
           ],
@@ -259,7 +272,10 @@ export class AppComponent {
           label: 'Administración',
           subMenu: [
             { label: 'Listado de Multas', routerLink: '/penalties/fine' },
-            { label: 'Listado de Infracciones', routerLink: '/penalties/infraction' },
+            {
+              label: 'Listado de Infracciones',
+              routerLink: '/penalties/infraction',
+            },
             { label: 'Listado de Reclamos', routerLink: '/penalties/claim' },
             {
               label: 'Tipos de Sanciones',
@@ -271,15 +287,15 @@ export class AppComponent {
           label: 'Reportes',
           subMenu: [
             {
-              label: 'Gráficos de Multas',
+              label: 'Reporte de Multas',
               routerLink: '/penalties/fine-report',
             },
             {
-              label: 'Gráficos de Infracciones',
+              label: 'Reporte de Infracciones',
               routerLink: '/penalties/infraction-report',
             },
             {
-              label: 'Gráficos de Reclamos',
+              label: 'Reporte de Reclamos',
               routerLink: '/penalties/claim-report',
             },
           ],
@@ -352,7 +368,7 @@ export class AppComponent {
         {
           label: 'Propietarios',
           subMenu: [
-            { label: 'Lista de Propietarios', routerLink: '/users/owner/list' },
+            { label: 'Listado de Propietarios', routerLink: '/users/owner/list' },
             { label: 'Cargar Propietario', routerLink: '/users/owner/form' },
             { label: 'Asignar Lote', routerLink: '/users/owner/assign' },
             { label: 'Cargar Archivo', routerLink: '/users/files/form' },
@@ -362,20 +378,20 @@ export class AppComponent {
         {
           label: 'Lotes',
           subMenu: [
-            { label: 'Lista de Lotes', routerLink: '/users/plot/list' },
+            { label: 'Listado de Lotes', routerLink: '/users/plot/list' },
             { label: 'Cargar Lote', routerLink: '/users/plot/form' },
           ],
         },
         {
           label: 'Usuarios',
           subMenu: [
-            { label: 'Lista de Usuarios', routerLink: '/users/user/list' },
+            { label: 'Listado de Usuarios', routerLink: '/users/user/list' },
             { label: 'Cargar Usuario', routerLink: '/users/user/form' },
             {
               label: 'Cargar Inquilino',
               routerLink: '/users/user/tenant/form',
             },
-            { label: 'Lista de Roles', routerLink: '/users/roles/list' },
+            { label: 'Listado de Roles', routerLink: '/users/roles/list' },
             /*   { label: 'Cargar Roles', routerLink: '/users/roles/form' }, */
             { label: 'Usuarios Creados', routerLink: '/users/user/created' },
             { label: 'Usuarios por Rol', routerLink: '/users/user/role' },
@@ -413,8 +429,8 @@ export class AppComponent {
   }
   //#endregion
 
-  openProfile(){
-    this.router.navigate(["/users/profile/detail"]);
+  openProfile() {
+    this.router.navigate(['/users/profile/detail']);
   }
 
   currentUrl$ = this.router.events.pipe(
@@ -422,8 +438,7 @@ export class AppComponent {
     map((event: NavigationEnd) => event.urlAfterRedirects)
   );
 
-
-  onNotificationClick(){
+  onNotificationClick() {
     this.showNotifications = !this.showNotifications;
   }
 }
