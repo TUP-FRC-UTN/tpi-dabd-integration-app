@@ -12,6 +12,7 @@ import { LoginService } from './users/services/login.service';
 import { ForgotPasswordComponent } from './users/components/forgot-password/forgot-password.component';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
+import { NotificationsComponent } from './notifications/modules/components/notifications/notifications.component';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +24,7 @@ import { filter, map } from 'rxjs/operators';
     ToastsContainer,
     AsyncPipe,
     LoginComponent,
+    NotificationsComponent,
 	ForgotPasswordComponent,
   ],
   templateUrl: './app.component.html',
@@ -30,7 +32,7 @@ import { filter, map } from 'rxjs/operators';
 })
 export class AppComponent {
   // title = 'AppName';
-
+  showNotifications: boolean = false;
   //variables
   navbarMenu: NavbarItem[] = [
     {
@@ -300,7 +302,7 @@ export class AppComponent {
             },
             { label: 'Reporte Usuarios', routerLink: '/users/user/reports' },
           ],
-        }, 
+        },
         // {
         //   label: 'Perfil',
         //   subMenu: [
@@ -392,4 +394,7 @@ export class AppComponent {
   );
 
 
+  onNotificationClick(){
+    this.showNotifications = !this.showNotifications;
+  }
 }

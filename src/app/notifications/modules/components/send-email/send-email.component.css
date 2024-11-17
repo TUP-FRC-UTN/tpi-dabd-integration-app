@@ -1,4 +1,4 @@
-.modal {
+.modal-email {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -10,7 +10,7 @@
     background-color: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente */
   }
   
-  .modal-content {
+  .modal-content-email {
     background-color: white;
     padding: 20px;
     border-radius: 10px;

@@ -1,0 +1,51 @@
+.btn {
+    font-size: 1.2rem;
+    margin-top: 20px;
+  }
+  
+  .btn:disabled {
+    opacity: 0.7;
+  }
+  
+  .btn-group .btn {
+    margin-top: 0;
+  }
+  
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+  
+  video, img {
+    max-width: 100%;
+    max-height: 400px;
+  }
+  
+  /* Estilos adicionales recomendados */
+  .container {
+    padding: 20px;
+  }
+  
+  .alert {
+    margin-top: 1rem;
+  }
+  
+  .text-center {
+    text-align: center;
+  }
+  
+  audio {
+    width: 100%;
+    max-width: 500px;
+  }
+  
+  img {
+    object-fit: contain;
+  }
+  
+  @media (max-width: 576px) {
+    .btn {
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+    }
+  }
