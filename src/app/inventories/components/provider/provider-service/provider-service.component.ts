@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ConfirmAlertComponent, MainContainerComponent } from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 import { ProviderServiceUpdateComponent } from "../provider-service-update/provider-service-update.component";
 import { ServiceService } from '../../../services/suppliers/service.service';
 import { Service } from '../../../models/suppliers/service.model';
@@ -32,6 +32,7 @@ export class ProviderServiceComponent implements OnInit {
 
   private modalService = inject(NgbModal);
   private serviceService = inject(ServiceService);
+  private toastService = inject(ToastService);
 
   @ViewChild('infoModal') infoModal!: TemplateRef<any>;
 
@@ -118,9 +119,11 @@ export class ProviderServiceComponent implements OnInit {
       if(result){
         this.serviceService.deleteService(id).subscribe({
           next: () => {
+            this.toastService.sendSuccess('Servicio eliminado exitosamente');
             this.loadServices();
           },
           error: (error) => {
+            this.toastService.sendError('Error al eliminar el servicio');
             console.error('Error deleting service:', error);
           }
         });
