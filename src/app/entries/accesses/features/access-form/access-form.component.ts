@@ -76,7 +76,7 @@ export class AccessFormComponent implements OnInit {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       plotId: ['', Validators.required],
-      docNumber: [null, Validators.required],
+      docNumber: [null, [Validators.required, Validators.min(0)]],
       action: ['ENTRY', Validators.required], // Nueva acción (ENTRY/SALIDA)
       vehicleType: ['CAR', Validators.required], // Tipo de vehículo (CAR/MOTORBIKE/etc.)
       vehicleReg: [''], // Matrícula del vehículo

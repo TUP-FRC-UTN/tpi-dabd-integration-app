@@ -13,21 +13,35 @@
                         </label>
                     </div>
                     <div class="col-9">
-                        <input type="number" id="docNumber" class="form-control" formControlName="docNumber" [ngClass]="{
-              'is-invalid':
-                (accessForm.get('docNumber')?.invalid &&
-                  accessForm.get('docNumber')?.touched) ||
-                accessForm.get('docNumber')?.hasError('unauthorized')
-            }" (input)="onDocNumberChange($event)" />
+                        <input type="number" 
+                               id="docNumber" 
+                               class="form-control" 
+                               formControlName="docNumber" 
+                               [ngClass]="{
+                                   'is-invalid': (accessForm.get('docNumber')?.invalid && accessForm.get('docNumber')?.touched) ||
+                                                accessForm.get('docNumber')?.hasError('unauthorized')
+                               }" 
+                               (input)="onDocNumberChange($event)" 
+                        />
                         <div>
-                            <small class="text-danger" *ngIf="
-              accessForm.get('docNumber')?.invalid &&
-              accessForm.get('docNumber')?.touched &&
-              !accessForm.get('docNumber')?.hasError('unauthorized')
-            ">
+                            <!-- Error para número negativo - Primera prioridad -->
+                            <small class="text-danger" 
+                                   *ngIf="accessForm.get('docNumber')?.value < 0 && 
+                                          accessForm.get('docNumber')?.touched">
+                                El número de documento no puede ser negativo
+                            </small>
+                            <!-- Error para campo requerido - Segunda prioridad -->
+                            <small class="text-danger" 
+                                   *ngIf="accessForm.get('docNumber')?.errors?.['required'] && 
+                                          accessForm.get('docNumber')?.touched && 
+                                          accessForm.get('docNumber')?.value >= 0 &&
+                                          !accessForm.get('docNumber')?.hasError('unauthorized')">
                                 Por favor, ingrese el número de documento del visitante
                             </small>
-                            <small class="text-danger" *ngIf="accessForm.get('docNumber')?.hasError('unauthorized')">
+                            <!-- Error para no autorizado - Tercera prioridad -->
+                            <small class="text-danger" 
+                                   *ngIf="accessForm.get('docNumber')?.hasError('unauthorized') && 
+                                          accessForm.get('docNumber')?.value >= 0">
                                 Por favor, ingrese un número de documento registrado
                             </small>
                         </div>

@@ -49,7 +49,7 @@ export class EntityFormComponent {
       name: ['', Validators.required],
       lastName: ['', Validators.required],
       docType: ['DNI', Validators.required],
-      docNumber: [null, Validators.required],
+      docNumber: [null, [Validators.required, Validators.min(0)]],
       birthDate: [null],
     });
   }

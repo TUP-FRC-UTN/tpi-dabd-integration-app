@@ -107,20 +107,38 @@
               </div>
             </div>
           </div>
-
-          <div class="col-12 col-lg-6">
-            <div class="row align-items-center">
-              <div class="col-12 col-sm-3">
-                <label for="doc-number" class="form-label mb-2 mb-sm-0">Número de Documento<span class="text-danger">*</span></label>
-              </div>
-              <div class="col-12 col-sm-9">
-                <input type="number" id="doc-number" class="form-control" formControlName="docNumber"
-                       [ngClass]="{'is-invalid': authForm.get('visitorRequest.docNumber')?.invalid && authForm.get('visitorRequest.docNumber')?.touched}"/>
-                <small class="text-danger d-block mt-1"
-                       *ngIf="authForm.get('visitorRequest.docNumber')?.invalid && authForm.get('visitorRequest.docNumber')?.touched">
-                  Por favor, ingrese el número de documento del visitante
-                </small>
-              </div>
+        <div class="col-12 col-lg-6">
+          <div class="row align-items-center">
+            <div class="col-12 col-sm-3">
+              <label for="doc-number" class="form-label mb-2 mb-sm-0">Número de Documento<label class="text-danger">*</label></label>
+            </div>
+            <div class="col-12 col-sm-9">
+              <input 
+              type="number" 
+              id="doc-number" 
+              class="form-control" 
+              formControlName="docNumber"
+              [ngClass]="{'is-invalid': authForm.get('visitorRequest.docNumber')?.invalid && 
+                         authForm.get('visitorRequest.docNumber')?.touched}"
+          />
+          <!-- Error para número negativo -->
+          <small 
+              class="text-danger"
+              *ngIf="authForm.get('visitorRequest.docNumber')?.value < 0 && 
+                     authForm.get('visitorRequest.docNumber')?.touched"
+          >
+              El número de documento no puede ser negativo
+          </small>
+          <!-- Error para campo requerido -->
+          <small 
+              class="text-danger"
+              *ngIf="authForm.get('visitorRequest.docNumber')?.errors?.['required'] && 
+                     authForm.get('visitorRequest.docNumber')?.touched && 
+                     authForm.get('visitorRequest.docNumber')?.value >= 0"
+          >
+              Por favor, ingrese el número de documento del visitante
+          </small>
+          </div>
             </div>
           </div>
 
