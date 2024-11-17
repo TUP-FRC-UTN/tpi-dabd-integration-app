@@ -1,6 +1,12 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { RouterModule, RouterOutlet, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
+import {
+  RouterModule,
+  RouterOutlet,
+  Router,
+  NavigationEnd,
+  ActivatedRoute,
+} from '@angular/router';
 import {
   MainLayoutComponent,
   NavbarItem,
@@ -74,13 +80,13 @@ export class AppComponent {
     },
     {
       label: 'Construcciones',
-      routerLink: '/penalties/constructions',
+      routerLink: '/home',
       sidebarMenu: [
         {
           label: 'Administración',
           subMenu: [
             {
-              label: 'Obras',
+              label: 'Listado de Obras',
               routerLink: '/penalties/constructions',
             },
           ],
@@ -111,45 +117,53 @@ export class AppComponent {
         {
           label: 'Auditoría de Contactos',
           routerLink: 'notifications/contact-audit',
-        }
+        },
       ],
     },
     {
-      "label": "Empleados",
-      "routerLink": "inventories/employees",
-      "sidebarMenu": [
+      label: 'Empleados',
+      routerLink: 'inventories/employees',
+      sidebarMenu: [
         {
-          "label": "Gráficos",
-          "routerLink": "inventories/employees/dashboard"
+          label: 'Gráficos',
+          routerLink: 'inventories/employees/dashboard',
         },
         {
-          "label": "Lista",
-          "routerLink": "inventories/employees/list"
+          label: 'Lista',
+          routerLink: 'inventories/employees/list',
         },
         {
-          "label": "Registrar",
-          "routerLink": "inventories/employees/form"
-        }
-      ]
+          label: 'Registrar',
+          routerLink: 'inventories/employees/form',
+        },
+      ],
     },
     {
       label: 'Gastos', //expensas
-      routerLink:'expenses',
+      routerLink: 'expenses',
       sidebarMenu: [
         {
           label: 'Gastos',
           subMenu: [
             { label: 'Lista de gastos', routerLink: 'expenses/gastos' },
-            { label: 'Categorias de gastos', routerLink: 'expenses/gastos/categorias' },
-            { label: 'Reporte de gastos', routerLink: 'expenses/gastos/report' },
-
+            {
+              label: 'Categorias de gastos',
+              routerLink: 'expenses/gastos/categorias',
+            },
+            {
+              label: 'Reporte de gastos',
+              routerLink: 'expenses/gastos/report',
+            },
           ],
         },
         {
           label: 'Cargos',
           subMenu: [
             { label: 'Lista de cargos', routerLink: 'expenses/cargos' },
-            { label: 'Categorias de cargos', routerLink: 'expenses/cargos/categorias' }
+            {
+              label: 'Categorias de cargos',
+              routerLink: 'expenses/cargos/categorias',
+            },
           ],
         },
         {
@@ -157,38 +171,41 @@ export class AppComponent {
           subMenu: [
             { label: 'Lista de periodos', routerLink: 'expenses/periodo' },
             { label: 'Histórico de expensas', routerLink: 'expenses/expenses' },
-            { label: 'Reporte de expensas', routerLink: 'expenses/expenses/report' },
-          ]
+            {
+              label: 'Reporte de expensas',
+              routerLink: 'expenses/expenses/report',
+            },
+          ],
         },
       ],
     },
     {
-      "label": "Inventario",
-      "routerLink": "inventories/inventory",
-      "sidebarMenu": [
+      label: 'Inventario',
+      routerLink: 'inventories/inventory',
+      sidebarMenu: [
         {
-          "label": "Gráficos",
-          "routerLink": "inventories/inventory/dashboard"
+          label: 'Gráficos',
+          routerLink: 'inventories/inventory/dashboard',
         },
         {
-          "label": "Lista",
-          "routerLink": "inventories/inventories"
+          label: 'Lista',
+          routerLink: 'inventories/inventories',
         },
         {
-          "label": "Registrar",
-          "routerLink": "inventories/articles/article"
+          label: 'Registrar',
+          routerLink: 'inventories/articles/article',
         },
         {
-          "label": "Configuración",
-          "routerLink": "inventories/inventories/config",
+          label: 'Configuración',
+          routerLink: 'inventories/inventories/config',
           subMenu: [
             {
-              "label": "Categorías",
-              "routerLink": "inventories/inventories/config/category"
-            }
-          ]
-        }
-      ]
+              label: 'Categorías',
+              routerLink: 'inventories/inventories/config/category',
+            },
+          ],
+        },
+      ],
     },
     // {
     //   label: 'Normas',
@@ -231,63 +248,75 @@ export class AppComponent {
         {
           label: 'Mis Notificaciones',
           routerLink: 'notifications/my-notification',
-        }
+        },
       ],
     },
     {
       label: 'Moderación',
-      routerLink: '/penalties/fine',
+      routerLink: '/home',
       sidebarMenu: [
         {
           label: 'Administración',
           subMenu: [
-            { label: 'Multas', routerLink: '/penalties/fine' },
-            { label: 'Infracciones', routerLink: '/penalties/infraction' },
-            { label: 'Reclamos', routerLink: '/penalties/claim' },
-            { label: 'Tipos de Sanciones', routerLink: '/penalties/sanctionType' },
+            { label: 'Listado de Multas', routerLink: '/penalties/fine' },
+            { label: 'Listado de Infracciones', routerLink: '/penalties/infraction' },
+            { label: 'Listado de Reclamos', routerLink: '/penalties/claim' },
+            {
+              label: 'Tipos de Sanciones',
+              routerLink: '/penalties/sanctionType',
+            },
           ],
         },
         {
           label: 'Reportes',
           subMenu: [
-            { label: 'Gráficos de Multas', routerLink: '/penalties/fine-report' },
-            { label: 'Gráficos de Infracciones', routerLink: '/penalties/infraction-report' },
-            { label: 'Gráficos de Reclamos', routerLink: '/penalties/claim-report' },
+            {
+              label: 'Gráficos de Multas',
+              routerLink: '/penalties/fine-report',
+            },
+            {
+              label: 'Gráficos de Infracciones',
+              routerLink: '/penalties/infraction-report',
+            },
+            {
+              label: 'Gráficos de Reclamos',
+              routerLink: '/penalties/claim-report',
+            },
           ],
         },
       ],
     },
     {
-      "label": "Proveedores",
-      "routerLink": "inventories/providers",
+      label: 'Proveedores',
+      routerLink: 'inventories/providers',
       sidebarMenu: [
         {
-          "label": "Gráficos",
-          "routerLink": "inventories/providers/dashboard"
+          label: 'Gráficos',
+          routerLink: 'inventories/providers/dashboard',
         },
         {
-          "label": "Lista",
-          "routerLink": "inventories/providers/list"
+          label: 'Lista',
+          routerLink: 'inventories/providers/list',
         },
         {
-          "label": "Registrar",
-          "routerLink": "inventories/providers/form"
+          label: 'Registrar',
+          routerLink: 'inventories/providers/form',
         },
         {
-          "label": "Configuración",
-          "routerLink": "inventories/providers/config",
+          label: 'Configuración',
+          routerLink: 'inventories/providers/config',
           subMenu: [
             {
-              "label": "Empresas",
-              "routerLink": "inventories/providers/config/company"
+              label: 'Empresas',
+              routerLink: 'inventories/providers/config/company',
             },
             {
-              "label": "Servicios",
-              "routerLink": "inventories/providers/config/service"
-            }
+              label: 'Servicios',
+              routerLink: 'inventories/providers/config/service',
+            },
           ],
-        }
-      ]
+        },
+      ],
     },
     {
       label: 'Usuarios',
@@ -361,7 +390,7 @@ export class AppComponent {
    * Service responsible for managing user session and authentication state.
    */
   private sessionService = inject(SessionService);
-  private router = inject(Router)
+  private router = inject(Router);
 
   /**
    * Observable that emits the current authentication status.
@@ -380,7 +409,7 @@ export class AppComponent {
    */
   onLogoutButtonClick() {
     this.sessionService.logout();
-    this.router.navigate([""]);
+    this.router.navigate(['']);
   }
   //#endregion
 

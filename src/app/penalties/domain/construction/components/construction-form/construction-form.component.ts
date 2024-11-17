@@ -34,8 +34,8 @@ export class ConstructionFormComponent implements OnInit {
       plot_id: new FormControl('', [Validators.required]),
       description: new FormControl('', [
         Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(20),
+        Validators.minLength(10),
+        Validators.maxLength(500),
       ]),
       planned_start_date: new FormControl('', [
         Validators.required,
@@ -45,7 +45,9 @@ export class ConstructionFormComponent implements OnInit {
       planned_end_date: new FormControl('', [Validators.required]),
       start_time: new FormControl('08:00', [Validators.required]),
       end_time: new FormControl('18:00', [Validators.required]),
-      project_address: new FormControl('', []),
+      project_address: new FormControl('', [Validators.required]),
+      project_name: new FormControl('', [Validators.required]),
+
     },
     {
       validators: [this.dateRangeValidator, this.timeValidation],
