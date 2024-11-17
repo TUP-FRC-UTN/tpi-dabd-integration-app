@@ -17,9 +17,9 @@
           [(ngModel)]="templateName" required minlength="5">
         @if(templateNameModel.invalid && (templateNameModel.dirty || templateNameModel.touched) ){
         @if(templateNameModel.getError('minlength')) {
-        <div class="text-danger">El nombre es obligatorio</div>
+        <div class="text-danger">Debe contener como mínimo 5 caracteres.</div>
         }@else{
-        <div class="text-danger">Debe contener como minimo 1 caracter.</div>
+        <div class="text-danger">El nombre de la plantilla es obligatorio.</div>
         }}
 
       </div>

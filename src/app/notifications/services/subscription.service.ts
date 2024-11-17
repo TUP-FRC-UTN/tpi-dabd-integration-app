@@ -66,8 +66,8 @@ export class SubscriptionService {
             subscriptionValue: true
           };
 
-
-          return this.http.put<any>(`${this.apiUrl}/subscriptions`, updateData);
+          console.log('object sent to be: ', updateData)
+          return this.http.put<any>(`${this.apiUrl}/contacts/subscription`, updateData);
         });
 
 
