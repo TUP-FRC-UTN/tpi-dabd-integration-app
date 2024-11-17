@@ -75,7 +75,20 @@ export class AppComponent {
           label: 'Lista de Expensas (Propietario)',
           routerLink: '/invoices/owner-list-expensas',
         },
-        { label: 'Estadísticas', routerLink: '/invoices/stadistics' },
+        {
+          label: 'Estadísticas', subMenu: [
+            {
+              label: 'Tickets',
+              routerLink: '/invoices/stadistics/1',
+            },
+            {
+              label: 'Payments',
+              routerLink: '/invoices/stadistics/2',
+            },
+            
+          ],
+        },
+
       ],
     },
     {
