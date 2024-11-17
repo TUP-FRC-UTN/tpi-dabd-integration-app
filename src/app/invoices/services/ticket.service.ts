@@ -15,12 +15,13 @@ export class TicketService {
     // Base URL para el servicio de tickets
   private readonly baseUrl = environment.apis.tickets;
   // private readonly baseUrl = 'https://lbsm4xgt-8080.brs.devtunnels.ms/tickets/tickets';//DEV
+  // private readonly baseUrl = 'https://lbsm4xgt-8080.brs.devtunnels.ms/tickets/tickets';//DEV
 
   // Endpoints específicos prod
   private readonly apiUrl = this.baseUrl;
-  private readonly apiUrlPdf = this.baseUrl + 'generateTicket/';
-  private readonly apiGetAllByOwner = this.baseUrl + 'getAllTicketsByOwner';
-  private readonly apiGetAll = this.baseUrl + 'getAll';
+  private readonly apiUrlPdf = this.baseUrl + 'tickets/generateTicket/';
+  private readonly apiGetAllByOwner = this.baseUrl + 'tickets/getAllTicketsByOwner';
+  private readonly apiGetAll = this.baseUrl + 'tickets/getAll';
   // // Endpoints específicos
   // private readonly apiUrl = this.baseUrl;
   // private readonly apiUrlPdf = this.baseUrl + '/generateTicket/';
