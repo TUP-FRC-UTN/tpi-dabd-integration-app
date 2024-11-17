@@ -87,7 +87,7 @@
           } @else {
               <thead>
                 <tr>
-                  <th scope="col">Nombre</th>
+                  <!-- <th scope="col">Nombre</th> -->
                   <th scope="col">Tipo</th>
                   <th scope="col">Estado de KYC</th>
                   <th scope="col">Acciones</th>
@@ -96,7 +96,7 @@
               <tbody>
                 @for(file of files; track file) {
                   <tr>
-                    <td>{{ file.name }}</td>
+                    <!-- <td>{{ file.name }}</td> -->
                     <td>{{ translateTable(file.fileType, fileTypeDictionary) }}</td>
                     <td>{{ translateTable(file.approvalStatus, fileStatusDictionary) }}</td>
                     <td>
