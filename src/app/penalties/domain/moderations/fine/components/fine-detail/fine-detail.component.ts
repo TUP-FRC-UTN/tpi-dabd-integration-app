@@ -60,10 +60,6 @@ export class FineDetailComponent {
     });
   }
 
-  userHasRole(role: string): boolean {
-    return this.userData.roles.some((userRole) => userRole.name === role);
-  }
-
   async ngOnInit() {
     this.loadUserData();
 
@@ -92,7 +88,7 @@ export class FineDetailComponent {
   }
   updateIsAdminAndOnAssembly() {
     this.isAdminAndOnAssembly =
-      this.userHasRole('FINES_ADMIN') &&
+      this.userDataService.userHasRole(this.userData, 'FINES_ADMIN') &&
       this.fine!.fine_state === ('ON_ASSEMBLY' as FineStatusEnum);
   }
 

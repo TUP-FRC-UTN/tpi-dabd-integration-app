@@ -66,10 +66,6 @@ export class ClaimDetailComponent implements OnInit {
     });
   }
 
-  userHasRole(role: string): boolean {
-    return this.userData.roles.some((userRole) => userRole.name === role);
-  }
-
   ngOnInit(): void {
     this.loadUserData();
 

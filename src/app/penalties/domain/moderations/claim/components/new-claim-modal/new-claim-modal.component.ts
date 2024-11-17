@@ -73,10 +73,6 @@ export class NewClaimModalComponent implements OnInit {
     });
   }
 
-  userHasRole(role: string): boolean {
-    return this.userData.roles.some((userRole) => userRole.name === role);
-  }
-
   ngOnInit() {
     this.loadUserData();
     this.loadPlots();

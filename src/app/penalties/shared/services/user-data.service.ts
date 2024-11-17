@@ -62,4 +62,8 @@ export class UserDataService {
 
     return new HttpHeaders().set('x-user-id', userId.toString());
   }
+
+  userHasRole(userData: UserData, role: string): boolean {
+    return userData.roles.some((userRole) => userRole.name === role || userRole.name === 'SUPERADMIN');
+  }
 }
