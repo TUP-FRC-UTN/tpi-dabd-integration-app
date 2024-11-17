@@ -13,12 +13,15 @@ import { ClaimDTO, ClaimNew, UpdateClaimDTO } from '../models/claim.model';
 import { environment } from '../../../../../../environments/environment';
 import { SessionService } from '../../../../../users/services/session.service';
 import { User } from '../../../../../users/models/user';
+import { UserDataService } from '../../../../shared/services/user-data.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ClaimService {
   private http = inject(HttpClient);
+  private userDataService = inject(UserDataService);
+
   private apiUrl = environment.apis.moderations.slice(0, -1); // URL de la API
 
   // private oneClaim = new BehaviorSubject<OneConstruction>(undefined);
@@ -47,16 +50,11 @@ export class ClaimService {
   
   private readonly sessionService = inject(SessionService);
 
-  getHeaders(): HttpHeaders {
-    const user: User = this.sessionService.getItem('user');
-    const userId = user?.id || 1;
 
-    return new HttpHeaders().set('x-user-id', userId.toString());
-  }
   createClaim(claimData: FormData): Observable<any> {
 
     return this.http.post(`${this.apiUrl}/claims`, claimData,{
-      headers: this.getHeaders(),
+      headers: this.userDataService.getHeaders(),
     });
   }
 
@@ -71,7 +69,7 @@ export class ClaimService {
           sanction_type_entity_id: claimDTO.sanction_type.id,
         },
         {
-          headers: this.getHeaders(),
+          headers: this.userDataService.getHeaders(),
         }
       )
       .pipe(

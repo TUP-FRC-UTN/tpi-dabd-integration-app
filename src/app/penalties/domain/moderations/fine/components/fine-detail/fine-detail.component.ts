@@ -55,6 +55,7 @@ export class FineDetailComponent {
     this.userDataService.loadNecessaryData().subscribe((response) => {
       if (response) {
         this.userData = response;
+        this.updateIsAdminAndOnAssembly();
       }
     });
   }
@@ -82,14 +83,17 @@ export class FineDetailComponent {
         FineStatusEnum.ON_ASSEMBLY
       );
 
-      this.isAdminAndOnAssembly =
-        this.userHasRole('ADMIN') &&
-        fine!.fine_state === ('ON_ASSEMBLY' as FineStatusEnum);
+      this.updateIsAdminAndOnAssembly();
     } catch (error) {
       console.error(error);
     }
 
     this.fineId = +this.route.snapshot.paramMap.get('id')!;
+  }
+  updateIsAdminAndOnAssembly() {
+    this.isAdminAndOnAssembly =
+      this.userHasRole('FINES_ADMIN') &&
+      this.fine!.fine_state === ('ON_ASSEMBLY' as FineStatusEnum);
   }
 
   private async getFineById(fineId: number): Promise<Fine | undefined> {
