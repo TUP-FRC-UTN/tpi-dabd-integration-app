@@ -1,18 +1,39 @@
-import { Component, ElementRef, Inject, inject, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Inject,
+  inject,
+  ViewChild,
+} from '@angular/core';
 import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 import { TemplateService } from '../../../services/template.service';
-import { AbstractControl, FormsModule, NgForm, ValidatorFn } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  NgForm,
+  ReactiveFormsModule,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TemplateModel } from '../../../models/templates/templateModel';
 import { HttpErrorResponse } from '@angular/common/http';
 import { IaService } from '../../../services/ia-service';
 import { response } from 'express';
-import { error } from 'console';
+import { error, log } from 'console';
 
 @Component({
   selector: 'app-template-email',
   standalone: true,
-  imports: [FormsModule, CommonModule,MainContainerComponent],
+  imports: [
+    FormsModule,
+    CommonModule,
+    MainContainerComponent,
+    ReactiveFormsModule,
+  ],
   templateUrl: './template-email.component.html',
   styleUrl: './template-email.component.css',
 })
@@ -20,8 +41,7 @@ import { error } from 'console';
 @Inject('HtmlValidationService')
 @Inject('IaService')
 export class TemplateEmailComponent {
-  templateName: string = '';
-  templateBody: string = '';
+  templateBodyModal: string = '';
   modalTitle: string = '';
   modalMessage: string = '';
   isModalOpen = false;
@@ -33,45 +53,59 @@ export class TemplateEmailComponent {
   showModalToRenderHTML: boolean = false;
   @ViewChild('iframePreview') iframePreview!: ElementRef;
 
+  constructor(private cdr: ChangeDetectorRef) {}
+  ngAfterViewInit() {
+    this.cdr.detectChanges();
+  }
+  form: FormGroup = new FormGroup({
+    templateName: new FormControl('', [
+      Validators.required,
+      Validators.minLength(5),
+    ]),
+    templateBody: new FormControl('', [
+      Validators.required,
+      Validators.minLength(100),
+      this.isValidHTML(),
+    ]),
+  });
 
   template: TemplateModel = {
     id: 0,
     name: '',
     body: '',
-    active: true
+    active: true,
   };
 
   templateService: TemplateService = new TemplateService();
   toastService: ToastService = inject(ToastService);
   iaService: IaService = new IaService();
 
-  public async sendForm(form: NgForm) {
-    // Agrega el validador a templateBody
-    const templateBodyControl = form.controls['templateBodyModel'];
-    templateBodyControl.setValidators([this.isValidHTML()]);
-    templateBodyControl.updateValueAndValidity();
+  // Formulario reactivo
+  public async sendForm() {
+    const templateBodyControl = this.form.get('templateBody');
+    templateBodyControl?.updateValueAndValidity();
 
-    if (form.valid) {
+    if (this.form.valid) {
+      console.log(this.form);
+
       return await this.sendEmailTemplate(
-        form.value.templateNameModel,
-        form.value.templateBodyModel
+        this.form.get('templateName')?.value,
+        this.form.get('templateBody')?.value
       );
-
     }
   }
 
   async sendEmailTemplate(templateName: string, templateBody: string) {
-
     this.template.name = templateName;
     this.template.body = templateBody;
 
     this.templateService.sendTemplate(this.template).subscribe({
       next: (response) => {
-        this.toastService.sendSuccess("Plantilla guardada correctamente")
+        this.toastService.sendSuccess('Plantilla guardada correctamente');
         this.resetForm();
       },
       error: (error: HttpErrorResponse) => {
-         this.toastService.sendError("Hubo un error guardando la plantilla");
+        this.toastService.sendError('Hubo un error guardando la plantilla');
         console.error('Error al enviar el template:', error);
       },
     });
@@ -89,16 +123,26 @@ export class TemplateEmailComponent {
     document.body.classList.remove('modal-open');
   }
 
-  private resetForm() {
-    this.templateName = '';
-    this.templateBody = '';
+  resetForm() {
+    this.form.reset({
+      templateName: '',
+      templateBody: '',
+    });
   }
+
   isValidHTML(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
       const html = control.value;
 
       if (!html) {
         return null; // No hay valor, no se aplica la validación
+      }
+      // Verifica si contiene al menos una etiqueta HTML básica
+      const regex = /<\/?[a-z][\s\S]*>/i; // Expresión regular básica para detectar etiquetas HTML
+      const isHTML = regex.test(html);
+
+      if (!isHTML) {
+        return { invalidHtml: true }; // Si no es un HTML válido
       }
 
       const parser = new DOMParser();
@@ -110,81 +154,79 @@ export class TemplateEmailComponent {
     };
   }
 
-    openIaModal() {
-      this.isIaModalOpen = true;
+  openIaModal() {
+    this.isIaModalOpen = true;
+  }
+
+  closeIaModal() {
+    this.isIaModalOpen = false;
+  }
+
+  sendToIa() {
+    this.isLoadingIA = true;
+    this.iaService.askTemplateToAI(this.iaInputText).subscribe({
+      next: (response) => {
+        this.iaResponse = response;
+        this.isLoadingIA = false;
+      },
+      error: (error) => {
+        console.error('Error de IA:', error);
+        this.toastService.sendError(error);
+        this.isLoadingIA = false;
+      },
+    });
+  }
+
+  sendBodyIa() {
+    this.templateBodyModal = this.iaResponse.toString();
+    this.closeIaModal();
+  }
+
+  openPreviewModal() {
+    if (this.isValidHtml(this.iaResponse.toString())) {
+      this.previewVisible = true;
+    } else {
+      this.toastService.sendError(
+        'El HTML no es válido para la previsualización.'
+      );
     }
+  }
 
-    closeIaModal() {
-      this.isIaModalOpen = false;
-    }
+  isValidHtml(html: string): boolean {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    return !doc.getElementsByTagName('parsererror').length;
+  }
 
-
-    sendToIa() {
-      this.isLoadingIA = true;
-      this.iaService.askTemplateToAI(this.iaInputText).subscribe({
-        next: (response) => {
-          this.iaResponse = response;
-          this.isLoadingIA = false;
-        },
-        error: (error) => {
-          console.error("Error de IA:", error);
-          this.toastService.sendError(error);
-          this.isLoadingIA = false;
+  previewContent(): void {
+    this.showModalToRenderHTML = true;
+    setTimeout(() => {
+      const iframe = this.iframePreview.nativeElement as HTMLIFrameElement;
+      iframe.srcdoc = this.iaResponse.toString(); // Asigna la respuesta de la IA al iframe
+      iframe.onload = () => {
+        const iframeDocument =
+          iframe.contentDocument || iframe.contentWindow?.document;
+        if (iframeDocument) {
+          const height = iframeDocument.documentElement.scrollHeight;
+          iframe.style.height = `${height}px`; // Ajusta la altura del iframe
         }
-      });
-    }
+      };
+    }, 5);
+  }
 
-    sendBodyIa(){
-      this.templateBody = this.iaResponse.toString();
-      this.closeIaModal();
-    }
+  closeModalToRenderHTML(): void {
+    this.showModalToRenderHTML = false;
+  }
 
-    openPreviewModal() {
-      if (this.isValidHtml(this.iaResponse.toString())) {
-        this.previewVisible = true;
-      } else {
-        this.toastService.sendError("El HTML no es válido para la previsualización.");
-      }
-    }
+  showInfo() {
+    const message = '';
 
-    isValidHtml(html: string): boolean {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-      return !doc.getElementsByTagName('parsererror').length;
-    }
+    this.showModal('Información', message);
+  }
 
-    previewContent(): void {
-      this.showModalToRenderHTML = true;
-      setTimeout(() => {
-        const iframe = this.iframePreview.nativeElement as HTMLIFrameElement;
-        iframe.srcdoc = this.iaResponse.toString(); // Asigna la respuesta de la IA al iframe
-        iframe.onload = () => {
-          const iframeDocument = iframe.contentDocument || iframe.contentWindow?.document;
-          if (iframeDocument) {
-            const height = iframeDocument.documentElement.scrollHeight;
-            iframe.style.height = `${height}px`; // Ajusta la altura del iframe
-          }
-        };
-      }, 5);
-    }
-
-    closeModalToRenderHTML(): void {
-      this.showModalToRenderHTML = false;
-    }
-
-    showInfo() {
-      const message = '';
-
-      this.showModal('Información', message);
-    }
-
-    showModal(title: string, message: string) {
-      this.modalTitle = title;
-      this.modalMessage = message;
-      this.isModalOpen = true;
-    }
-
-   
-
-
+  showModal(title: string, message: string) {
+    this.modalTitle = title;
+    this.modalMessage = message;
+    this.isModalOpen = true;
+  }
 }
