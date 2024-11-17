@@ -9,8 +9,8 @@ import { environment } from '../../../environments/environment.prod';
 })
 export class PaymentServiceService {
   // Base URL para el servicio de tickets
-  private readonly baseUrl = environment.apis.payments;
-  // private readonly baseUrl = 'https://lbsm4xgt-8080.brs.devtunnels.ms/payments';//DEV
+  // private readonly baseUrl = environment.apis.payments;
+  private readonly baseUrl = 'https://lbsm4xgt-8080.brs.devtunnels.ms/payments';//DEV
   userId : Number;
   constructor(private http: HttpClient) {
     let session = JSON.parse(sessionStorage.getItem('user')!)
@@ -27,5 +27,23 @@ export class PaymentServiceService {
     return this.http.get<PaymentDto>(url, {
       headers: headers,
     });
+  }
+
+
+  saveReceipt(formData : FormData) {
+    const headers = {
+      'x-user-id': this.userId.toString(),
+    };
+    this.http
+      .post(this.baseUrl+'/payments/saveReceipt', formData)
+      .subscribe(
+        (response) => {
+          console.log('File uploaded successfully!', response);
+          
+        },
+        (error) => {
+          console.error('Error uploading file:', error);
+        }
+      );
   }
 }
