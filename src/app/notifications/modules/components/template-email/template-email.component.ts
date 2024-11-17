@@ -41,7 +41,6 @@ import { error, log } from 'console';
 @Inject('HtmlValidationService')
 @Inject('IaService')
 export class TemplateEmailComponent {
-  templateBodyModal: string = '';
   modalTitle: string = '';
   modalMessage: string = '';
   isModalOpen = false;
@@ -86,12 +85,12 @@ export class TemplateEmailComponent {
     templateBodyControl?.updateValueAndValidity();
 
     if (this.form.valid) {
-      console.log(this.form);
-
+  
       return await this.sendEmailTemplate(
         this.form.get('templateName')?.value,
         this.form.get('templateBody')?.value
       );
+      
     }
   }
 
@@ -178,7 +177,16 @@ export class TemplateEmailComponent {
   }
 
   sendBodyIa() {
-    this.templateBodyModal = this.iaResponse.toString();
+    // this.templateBodyModal = this.iaResponse.toString();
+    
+
+    this.form.patchValue({
+      templateBody: this.iaResponse.toString(),
+    });
+  
+    this.form.get('templateBody')?.markAsDirty();
+    this.form.get('templateBody')?.markAsTouched();
+  
     this.closeIaModal();
   }
 
