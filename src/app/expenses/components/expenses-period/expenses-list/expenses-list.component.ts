@@ -1,7 +1,7 @@
-import { Component, inject, input, Input, OnInit, SimpleChanges } from '@angular/core';
+import { Component, inject, OnInit, } from '@angular/core';
 import { ExpenseServiceService } from '../../../services/expense.service';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import Expense, { ExpenseFilters } from '../../../models/expense';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import Expense from '../../../models/expense';
 import { FormsModule } from '@angular/forms';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import Period from '../../../models/period';
@@ -16,14 +16,15 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import {NgPipesModule} from "ngx-pipes";
 import {
-  TableColumn, TableComponent, ConfirmAlertComponent,
-
+  TableComponent,
   MainContainerComponent,
-  ToastService, TableFiltersComponent, Filter, FilterConfigBuilder, FilterOption, SelectFilter
+  TableFiltersComponent, Filter,  FilterOption, SelectFilter,
 } from "ngx-dabd-grupo01" ;
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {InfoExpensesListComponent} from "../../modals/info-expenses-list/info-expenses-list.component";
 import {MonthService} from "../../../services/month.service";
+import { StorageService } from '../../../services/storage.service';
+import { User } from '../../../models/user';
 
 
 @Component({
@@ -44,6 +45,7 @@ export class ExpensesListComponent implements OnInit{
   private readonly service = inject(ExpenseServiceService)
   private readonly billService = inject(BillService)
   private readonly monthService = inject(MonthService);
+  private readonly storageService = inject(StorageService)
 
   selectedLotId: number = 0;
   selectedTypeId: number = 0;
@@ -77,7 +79,9 @@ export class ExpensesListComponent implements OnInit{
       this.selectedPeriodId = Number(periodPath) ;
     }
     this.loadSelect()
-    this.loadExpenses()
+    this.loadExpenses();
+    const user = this.storageService.getFromLocalStorage('user') as User;
+
   }
   loadExpenses(page: number = 0, size: number = 10): void {
     debugger
@@ -89,19 +93,19 @@ export class ExpensesListComponent implements OnInit{
         const expenses = this.keysToCamel(expense) as Expense;
         return {
           ...expenses,
-          month: this.getMonthName(expense.period.month), // Suponiendo que cada expenses-list tenga un campo `month`
+          month: this.getMonthName(expense.period.month), 
         };
 
       });
-      this.totalPages = data.totalPages;  // Número total de páginas
-      this.totalItems = data.totalElements;  // Total de registros
+      this.totalPages = data.totalPages;  
+      this.totalItems = data.totalElements;
       this.currentPage = data.number;
       this.updateVisiblePages();
     });
   }
 
   onPageSizeChange() {
-    this.currentPage = 0; // Reinicia a la primera página
+    this.currentPage = 0; 
     this.loadExpenses(0,this.pageSize);
   }
   applyFilters() {
@@ -109,7 +113,6 @@ export class ExpensesListComponent implements OnInit{
     this.loadExpenses();
     this.updateVisiblePages();
     }
-
 
   updateVisiblePages(): void {
     const half = Math.floor(this.maxPagesToShow / 2);
@@ -227,20 +230,13 @@ export class ExpensesListComponent implements OnInit{
     });
   }
 
-
-
-
-
-
   imprimir() {
     const doc = new jsPDF();
 
-    // Título del PDF
+    
     doc.setFontSize(18);
     doc.text('Expenses Report', 14, 20);
-    // Llamada al servicio para obtener las expensas
     this.service.getWithoutFilters(this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
-      // Usando autoTable para agregar la tabla
       autoTable(doc, {
         startY: 30,
         head: [['Mes', 'Año', 'Total Amount', 'State', 'Plot Number', 'Percentage', 'Bill Type']],
@@ -254,14 +250,21 @@ export class ExpensesListComponent implements OnInit{
           expense.billType
         ]),
       });
-      // Guardar el PDF después de agregar la tabla
-      doc.save('expenses_report.pdf');
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+      doc.save(`Expenses_Report_${formattedDate}.pdf`);
     });
   }
 
   downloadTable() {
     this.service.getWithoutFilters( this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
-
       const data = expenses.map(expense => ({
         'Periodo':  `${expense?.period?.month} / ${expense?.period?.year}`,
         'Monto Total': expense.totalAmount,
@@ -277,8 +280,10 @@ export class ExpensesListComponent implements OnInit{
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
       });
-      // Convertir los datos tabulares a una hoja de cálculo
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
@@ -291,7 +296,6 @@ export class ExpensesListComponent implements OnInit{
   }
 
   filterChange(event: Record<string, any>) {
-    // Actualizar las variables de filtro
     this.selectedPeriodId = event['period'] || null;
     this.selectedLotId = event['lot'] || null;
     this.selectedTypeId = event['type'] || null;
