@@ -92,7 +92,7 @@
   {{ item.description | truncate : 60 }}
 </ng-template>
 
-<app-main-container title="Lista de Reclamos" (infoButtonClick)="onInfoButtonClick()">
+<app-main-container title="Listado de Reclamos" (infoButtonClick)="onInfoButtonClick()">
   <app-table
     [items]="(items$ | async) || []"
     [columns]="columns"
