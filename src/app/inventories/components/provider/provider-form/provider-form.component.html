@@ -4,7 +4,7 @@
       <!-- Nombre -->
       <div class="col-md-6">
         <div class="flex-row d-flex align-items-center">
-          <label class="form-label">Nombre*</label>
+          <label class="form-label">Nombre<label class="text-danger">*</label></label>
         </div>
         <input type="text" class="form-control" formControlName="name"
         [ngClass]="{'is-invalid': isFieldInvalid('name'), 'is-valid': providerForm.get('name')?.valid && providerForm.get('name')?.touched}">
@@ -18,7 +18,7 @@
       <!-- CUIL -->
       <div class="col-md-6">
         <div class="flex-row d-flex align-items-center">
-          <label class="form-label">CUIL*</label>
+          <label class="form-label">CUIL<label class="text-danger">*</label></label>
         </div>
         <input type="text" class="form-control" formControlName="cuil"
         [ngClass]="{'is-invalid': isFieldInvalid('cuil'), 'is-valid': providerForm.get('cuil')?.valid && providerForm.get('cuil')?.touched}">
@@ -32,7 +32,7 @@
       <!-- Servicio -->
       <div class="col-md-6">
         <div class="flex-row d-flex align-items-center">
-          <label class="form-label">Servicio*</label>
+          <label class="form-label">Servicio<label class="text-danger">*</label></label>
         </div>
         <select class="form-select" formControlName="service"
           [ngClass]="{'is-invalid': isFieldInvalid('service'), 'is-valid': providerForm.get('service')?.valid && providerForm.get('service')?.touched}">
@@ -49,7 +49,7 @@
       <!-- Compañía -->
       <div class="col-md-6">
         <div class="flex-row d-flex align-items-center">
-          <label class="form-label">Compañía*</label>
+          <label class="form-label">Compañía<label class="text-danger">*</label></label>
         </div>
         <select class="form-select" formControlName="company"
         [ngClass]="{'is-invalid': isFieldInvalid('company'), 'is-valid': providerForm.get('company')?.valid && providerForm.get('company')?.touched}">
@@ -66,7 +66,7 @@
       <!-- Contacto -->
       <div class="col-md-6">
         <div class="flex-row d-flex align-items-center">
-          <label class="form-label">Contacto*</label>
+          <label class="form-label">Contacto<label class="text-danger">*</label></label>
         </div>
         <input type="text" class="form-control" formControlName="contact"
           [ngClass]="{'is-invalid': isFieldInvalid('contact'), 'is-valid': providerForm.get('contact')?.valid && providerForm.get('contact')?.touched}">
@@ -80,7 +80,7 @@
       <!-- Dirección -->
       <div class="col-md-6">
         <div class="flex-row d-flex align-items-center">
-          <label class="form-label">Dirección*</label>
+          <label class="form-label">Dirección<label class="text-danger">*</label></label>
         </div>
         <input type="text" class="form-control" formControlName="address"
           [ngClass]="{'is-invalid': isFieldInvalid('address'), 'is-valid': providerForm.get('address')?.valid && providerForm.get('address')?.touched}">
@@ -94,7 +94,7 @@
       <!-- Detalles -->
       <div class="col-12">
         <div class="flex-row d-flex">
-          <label class="form-label">Detalles*</label>
+          <label class="form-label">Detalles<label class="text-danger">*</label></label>
         </div>
         <textarea class="form-control" formControlName="details" rows="3"
         [ngClass]="{'is-invalid': isFieldInvalid('details'), 'is-valid': providerForm.get('details')?.valid && providerForm.get('details')?.touched}"></textarea>
