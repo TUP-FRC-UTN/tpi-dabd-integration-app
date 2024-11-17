@@ -40,6 +40,7 @@ import {
 } from 'ngx-dabd-grupo01';
 import { map, of } from 'rxjs';
 import { DeleteBillModalComponent } from '../../modals/bills/delete-bill-modal/delete-bill-modal.component';
+import {MonthService} from "../../../services/month.service";
 
 @Component({
   selector: 'app-list-expenses_bills',
@@ -62,6 +63,7 @@ import { DeleteBillModalComponent } from '../../modals/bills/delete-bill-modal/d
 export class ExpensesListBillsComponent implements OnInit {
 
   private readonly toastService = inject(ToastService);
+  private readonly monthService = inject(MonthService);
 
   bills: Bill[] = [];
   filteredBills: Bill[] = [];
@@ -93,6 +95,10 @@ export class ExpensesListBillsComponent implements OnInit {
     selectedStatus: new FormControl(''),
     selectedType: new FormControl(0),
   });
+
+  toMonthAbbr(month:number){
+    return this.monthService.getMonthAbbr(month);
+  }
 
   filterTableByText(value: string) {
     const filterValue = value?.toLowerCase() || '';
@@ -286,7 +292,7 @@ export class ExpensesListBillsComponent implements OnInit {
     this.periodService.get().subscribe((periods) => {
       this.periodsList = periods.map((period: any) => ({
         value: period.id,
-        label: `${period.month}/${period.year}`,
+        label: `${this.toMonthAbbr(period.month)}/${period.year}`,
       }));
       this.initializeFilters();
     });
@@ -598,6 +604,6 @@ export class ExpensesListBillsComponent implements OnInit {
   };
 
   nuevoGasto() {
-    this.router.navigate(['expenses//gastos/nuevo']);
+    this.router.navigate(['expenses/gastos/nuevo']);
   }
 }
