@@ -29,7 +29,7 @@
         <label for="templateBodyModelCustomValidation" class="form-label">Contenido:</label>
 
         <textarea #templateBodyModel="ngModel"
-          [ngClass]="{'is-invalid': templateBodyModel.invalid  && (templateBodyModel.dirty || templateBodyModel.touched) ,'is-valid': templateBodyModel.valid }"
+          [ngClass]="{'is-invalid': templateBodyModel.invalid  && ( templateBodyModel.touched) ,'is-valid': templateBodyModel.touched && templateBodyModel.valid }"
           class="form-control" id="templateBodyModel" name="templateBodyModel" style="max-width: 400px;"
           [(ngModel)]="templateBody" required minlength="100" rows="10"
           ></textarea>
