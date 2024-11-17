@@ -120,7 +120,7 @@ export class AppComponent {
       routerLink: 'notifications/contacts',
       sidebarMenu: [
         {
-          label: 'Listar Contactos',
+          label: 'Listado de Contactos',
           routerLink: 'notifications/contacts',
         },
         {
@@ -235,7 +235,7 @@ export class AppComponent {
       routerLink: 'notifications/send-email',
       sidebarMenu: [
         {
-          label: 'Listar Plantillas',
+          label: 'Listado de Plantillas',
           routerLink: 'notifications/templates',
         },
         {
@@ -255,7 +255,7 @@ export class AppComponent {
           routerLink: 'notifications/notifications-historic',
         },
         {
-          label: 'Dashboard',
+          label: 'Reporte de Notificaciones',
           routerLink: 'notifications/notification/charts',
         },
         {
