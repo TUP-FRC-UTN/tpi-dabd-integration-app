@@ -129,7 +129,7 @@ export class NewClaimModalComponent implements OnInit {
         formData.append('files', imageBlob, 'captured-image.png');
       }
 
-      this.claimService.createClaim(formData, this.userData.id).subscribe({
+      this.claimService.createClaim(formData).subscribe({
         next: (response) => {
           this.activeModal.close(response);
           this.toastService.sendSuccess(

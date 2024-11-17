@@ -148,19 +148,15 @@ export class ClaimDetailComponent implements OnInit {
 
     modalRef.result.then((result) => {
       if (result) {
-        this.claimService
-          .updateClaim(this.claim!, this.userData.id!)
-          .subscribe({
-            next: () => {
-              this.toastService.sendSuccess(
-                `Reclamo actualizado exitosamente.`
-              );
-              this.editing = false;
-            },
-            error: () => {
-              this.toastService.sendError(`Error actualizando reclamo.`);
-            },
-          });
+        this.claimService.updateClaim(this.claim!).subscribe({
+          next: () => {
+            this.toastService.sendSuccess(`Reclamo actualizado exitosamente.`);
+            this.editing = false;
+          },
+          error: () => {
+            this.toastService.sendError(`Error actualizando reclamo.`);
+          },
+        });
       }
     });
   }

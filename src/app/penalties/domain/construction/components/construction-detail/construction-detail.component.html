@@ -261,13 +261,18 @@
       <i class="bi bi-exclamation-circle"></i>
       La obra fue enviada a revisión }
       <!-- ALL APPROVED -->
-      @else if(isConstructionAbleToApprove() && userHasRole('CONSTRUCTION_ADMIN')) {
+      @else if(isConstructionAbleToApprove() &&
+      userHasRole('CONSTRUCTION_ADMIN')) {
       <i class="bi bi-check-circle"></i>
       Todos los documentos están aprobados, puede aprobar la obra }
       <!-- DOCUMENTS NOT APPROVED -->
       @else if (userHasRole('CONSTRUCTION_ADMIN')) {
       <i class="bi bi-exclamation-circle"></i>
       No podrá aprobar la obra hasta que todos los documentos estén aprobados}
+      @else if (userHasRole('OWNER')) {
+      <i class="bi bi-exclamation-circle"></i>
+      Debe cargar al menos un documento, una vez cargado puede enviar a
+      revisión.}
     </div>
     } @if(mode === "edit") {
     <div></div>
