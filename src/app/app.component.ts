@@ -18,6 +18,7 @@ import { LoginService } from './users/services/login.service';
 import { ForgotPasswordComponent } from './users/components/forgot-password/forgot-password.component';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
+import { NotificationsComponent } from './notifications/modules/components/notifications/notifications.component';
 
 @Component({
   selector: 'app-root',
@@ -29,14 +30,15 @@ import { filter, map } from 'rxjs/operators';
     ToastsContainer,
     AsyncPipe,
     LoginComponent,
-    ForgotPasswordComponent,
+    NotificationsComponent,
+	ForgotPasswordComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
   // title = 'AppName';
-
+  showNotifications: boolean = false;
   //variables
   navbarMenu: NavbarItem[] = [
     {
@@ -52,7 +54,7 @@ export class AppComponent {
           routerLink: 'entries/access-query',
         },
         {
-          label: 'Listado de Autorizaciónes',
+          label: 'Listado de Autorizaciones',
           routerLink: 'entries/auth-list',
         },
         {
@@ -330,23 +332,23 @@ export class AppComponent {
             { label: 'Reporte Usuarios', routerLink: '/users/user/reports' },
           ],
         },
-        {
-          label: 'Perfil',
-          subMenu: [
-            {
-              label: 'Consultar Perfil',
-              routerLink: '/users/profile/detail',
-            },
-            {
-              label: 'Editar Perfil',
-              routerLink: '/users/profile/edit',
-            },
-            {
-              label: 'Cambiar contraseña',
-              routerLink: '/users/changepassword',
-            },
-          ],
-        },
+        // {
+        //   label: 'Perfil',
+        //   subMenu: [
+        //     {
+        //       label: 'Consultar Perfil',
+        //       routerLink: '/users/profile/detail',
+        //     },
+        //     {
+        //       label: 'Editar Perfil',
+        //       routerLink: '/users/profile/edit',
+        //     },
+        //     {
+        //       label: 'Cambiar contraseña',
+        //       routerLink: '/users/changepassword',
+        //     },
+        //   ],
+        // },
         {
           label: 'Propietarios',
           subMenu: [
@@ -411,8 +413,17 @@ export class AppComponent {
   }
   //#endregion
 
+  openProfile(){
+    this.router.navigate(["/users/profile/detail"]);
+  }
+
   currentUrl$ = this.router.events.pipe(
     filter((event): event is NavigationEnd => event instanceof NavigationEnd),
     map((event: NavigationEnd) => event.urlAfterRedirects)
   );
+
+
+  onNotificationClick(){
+    this.showNotifications = !this.showNotifications;
+  }
 }

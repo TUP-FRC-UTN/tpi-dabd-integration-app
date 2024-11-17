@@ -9,7 +9,7 @@ export class AuthorizerCompleterService {
   constructor() {
   }
 
-  authorizers: Authorizer[] = [
+ /* authorizers: Authorizer[] = [
     {
       authId: 1,
       authFirstName: 'Ana',
@@ -85,5 +85,5 @@ export class AuthorizerCompleterService {
 
   completeAuthorizer(id: number): Authorizer {
     return this.authorizers.find(x => x.authId == id)!;
-  }
+  }*/
 }

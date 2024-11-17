@@ -145,8 +145,15 @@ export class UserUserListComponent {
 
   //#region Filters
 
+  filters?: Record<string, any>
+
   filterChange($event: Record<string, any>) {
-    this.userService.dinamicFilters(0, this.pageSize, $event).subscribe({
+    this.filters = $event
+    this.confirmSearch();
+  }
+
+  dinamicFilter() {
+    this.userService.dinamicFilters(0, this.pageSize, this.filters).subscribe({
       next: (result) => {
         this.usersList = result.content;
         this.filteredUsersList.next([...result.content]);
@@ -154,6 +161,16 @@ export class UserUserListComponent {
         this.totalItems = result.totalElements;
       },
     });
+  }
+
+  clearFilter() {
+    this.filters = undefined;
+    this.currentPage = 0
+    this.confirmSearch();
+  }
+
+  confirmSearch() {
+    this.filters == undefined ? this.getAllUsers() : this.dinamicFilter();
   }
 
   onFilterTextBoxChanged(event: Event) {
@@ -190,13 +207,13 @@ export class UserUserListComponent {
 
   //#region Pageable
   onItemsPerPageChange() {
-    this.currentPage = 1;
-    this.getAllUsers();
+    this.currentPage = 0;
+    this.confirmSearch();
   }
 
   onPageChange(page: number) {
     this.currentPage = page;
-    this.getAllUsers();
+    this.confirmSearch();
   }
   //#endregion
 
@@ -243,7 +260,7 @@ export class UserUserListComponent {
    */
   exportToPdf() {
     const doc = new jsPDF();
-  
+
     doc.setFontSize(18);
     doc.text('Usuarios', 14, 20);
 
@@ -275,7 +292,7 @@ export class UserUserListComponent {
         const toExcel = data.content.map(user => ({
           'Nombre completo': user.firstName + ' ' + user.lastName,
           'Nombre de usuario': user.userName,
-          'Email': user.email,  
+          'Email': user.email,
           'Activo': user.isActive? 'Activo' : 'Inactivo'
         }));
         const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);
@@ -415,5 +432,4 @@ export class UserUserListComponent {
     this.retrieveUsersByActive = isActive;
     this.getAllUsers();
   }
-  //#endregion
 }

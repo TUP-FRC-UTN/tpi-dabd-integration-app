@@ -16,7 +16,7 @@
             (input)="onFilterTextBoxChanged($event)"
             placeholder="Buscar..."
           />
-          <app-table-filters style="z-index: 1;" [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
+          <app-table-filters style="z-index: 1;" [filters]="filterConfig" (filterValueChange)="filterChange($event)" (filterValueClear)="clearFilter()"></app-table-filters>
         </div>
       </div>
     </div>
@@ -103,16 +103,6 @@
     </table>
   </div>
   <div class="d-flex justify-content-between align-items-center mt-3">
-    <ngb-pagination
-      [(page)]="currentPage"
-      [pageSize]="pageSize"
-      [collectionSize]="totalItems"
-      (pageChange)="onPageChange($event)"
-      [maxSize]="5"
-      [boundaryLinks]="false"
-    ></ngb-pagination>
-    <div class="ms-auto">
-    </div>
 
     <div class="form-group mb-3 me-2">
       <select
@@ -126,5 +116,17 @@
         }
       </select>
     </div>
+
+    <div class="ms-auto"></div>
+
+    <ngb-pagination
+      [(page)]="currentPage"
+      [pageSize]="pageSize"
+      [collectionSize]="totalItems"
+      (pageChange)="onPageChange($event)"
+      [maxSize]="5"
+      [boundaryLinks]="false"
+    ></ngb-pagination>
+
   </div>
 </app-main-container>

@@ -6,7 +6,7 @@ import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
 import { SessionService } from '../../services/session.service';
 import { User } from '../../models/user';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { InfoComponent } from '../commons/info/info.component';
 
 @Component({
@@ -33,7 +33,8 @@ export class ChangePasswordComponent {
     private userService: UserService,
     private sessionService: SessionService,
     private toastService: ToastService,
-    private router: Router
+    private router: Router,
+    public activeModal: NgbActiveModal
   ) { }
 
   ngOnInit() {
@@ -64,7 +65,8 @@ export class ChangePasswordComponent {
 
       this.userService.changePassword(this.oldPassword, this.newPassword).subscribe({
         next: (response) => {
-          this.toastService.sendSuccess("Contraseña actualizada con éxito")
+          this.toastService.sendSuccess("Contraseña actualizada con éxito");
+          this.activeModal.close();
           this.router.navigate(['/home']);
         },
         error: (error) => {

@@ -1,7 +1,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../../environments/environment.prod';
+import { SessionService } from '../../../users/services/session.service';
+
+
 
 export interface sendQRByEmailRequest {
   email: string;
@@ -13,8 +16,11 @@ export interface sendQRByEmailRequest {
   providedIn: 'root',
 })
 export class QrService {
-  private apiUrl = 'http://localhost:8001/qr';
-  private urlEnviroment = environment.apis.accesses;
+
+
+
+  private urlEnviroment = environment.apis.accesses;//8080
+  sesionService = inject(SessionService)
 
   constructor(private http: HttpClient) {}
 
@@ -24,13 +30,17 @@ export class QrService {
     });
   }
 
-  sendQRByEmail(
-    request: sendQRByEmailRequest,
-    userId: number
-  ): Observable<any> {
-    const headers = new HttpHeaders({
-      'x-user-id': userId,
-    });
-    return this.http.post(`${this.urlEnviroment}qr/send`, request, { headers });
+  sendQRByEmail(request: sendQRByEmailRequest , userId: number): Observable<any> {
+
+    let headers = new HttpHeaders();
+    const user = this.sesionService.getItem('user');
+
+    if(!user) {
+      console.error('Error: user es nulo o undefined');
+    }else{
+      headers = headers.set('x-user-id', user.id.toString());
+    }
+    
+    return this.http.post(`${this.urlEnviroment}qr/send` , request ,{ headers });
   }
 }

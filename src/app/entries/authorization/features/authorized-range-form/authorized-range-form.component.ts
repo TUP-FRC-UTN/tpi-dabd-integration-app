@@ -65,6 +65,7 @@ export class RangeModalComponent implements OnInit{
 
   onSubmit(){
     this.ranges[this.selectedRange] = this.rangeForm.value
+    console.log(this.ranges)
     this.activeModal.close(this.ranges);
   }
 
@@ -80,7 +81,7 @@ export class RangeModalComponent implements OnInit{
   createForm(): FormGroup {
     return this.fb.group({
       authRangeId: [0],
-      dateFrom: [formatDate(), [Validators.required , ValidatorFecha.validarFecha]],
+      dateFrom: [formatDate(), [Validators.required]],
       dateTo: [formatDate(), Validators.required],
       hourFrom: [formatTime(), Validators.required],
       hourTo: [formatTime(), Validators.required],

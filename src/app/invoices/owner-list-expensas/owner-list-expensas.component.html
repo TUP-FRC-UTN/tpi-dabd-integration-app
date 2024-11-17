@@ -1,151 +1,42 @@
-<div class="container">
-  <h2 class="mt-4">Hola Propietario</h2>
-  <hr class="my-4" />
-  <div class="row d-flex mb-3 justify-content-center">
-    <!-- <div class="col-md-6 justify-content-center">
-      <label for="searchInput" class="form-label mb-0">Buscador general</label>
-      <input type="text" class="form-control" id="searchInput" [(ngModel)]="searchText" (input)="searchTable()"
-        placeholder="Escribe para buscar...">
-    </div> -->
-
-    <!-- <form [formGroup]="fechasForm" class="col-md-6 justify-content-center">
-      <div class="row g-3 justify-content-center align-items-end">
-        <div class="col-md-4">
-          <label for="fechaInicio" class="form-label mb-0">Fecha Inicio</label>
-          <input type="date" class="form-control" formControlName="fechaInicio" id="fechaInicio">
-        </div>
-        <div class="col-md-4">
-          <label for="fechaFin" class="form-label mb-0">Fecha Fin</label>
-          <input type="date" class="form-control" formControlName="fechaFin" id="fechaFin">
-        </div>
-        <div class="col-md-4">
-          <button class="btn btn-dark" type="button" (click)="enviarFechas()">Buscar</button>
-        </div>
-      </div>
-    </form> -->
-  </div>
-
-  <app-ticket-payment-filter-buttons
-    #filterComponent
-    [itemsList]="plotsList"
-    [tableName]="tableName.nativeElement"
-    formPath="/plot/form"
-    [dictionaries]="plotDictionaries"
-    objectName="TICKET"
-  >
-  </app-ticket-payment-filter-buttons>
-
+<app-main-container
+  title="Hola Propietario"
+  subTitle="Aquí puedes ver tu expensas"
+  (infoButtonClick)="showInfo()"
+>
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="btn-group me-5" role="group">
-      <div class="d-flex align-items-center">
-        <div class="btn-group me-2">
-          <button
-            type="button"
-            class="btn btn-outline-danger"
-            (click)="changeFilterMode(filterTypes.NOTHING)"
-          >
-            <i class="bi bi-trash-fill"></i> Limpiar
-          </button>
-
-          <button
-            type="button"
-            class="btn btn-outline-info dropdown-toggle"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <i class="bi bi-funnel-fill"></i> Filtros
-          </button>
-          <ul class="dropdown-menu">
-            <li>
-              <a
-                class="dropdown-item"
-                (click)="changeFilterMode(filterTypes.PLOT_TYPE)"
-                >Tipo de Estado</a
-              >
-            </li>
-          </ul>
-        </div>
-
-        @if (applyFilterWithNumber === true || applyFilterWithCombo === true) {
-        <div class="d-flex">
-          @if (applyFilterWithNumber === true) {
+      <div class="col-sm-12 col-md-8 col-xl-8">
+        <div class="input-group">
+          <span class="input-group-text" id="search-icon">
+            <i class="bi bi-search"></i>
+          </span>
           <input
-            type="number"
+            type="text"
             class="form-control me-2"
-            id="filter-number"
-            [(ngModel)]="filterInput"
-            name="ngModel"
-            placeholder="Número de Lote"
+            id="filter-text-box"
+            (input)="onFilterTextBoxChanged($event)"
+            placeholder="Buscar..."
           />
-          } @else if (applyFilterWithCombo === true) {
-          <select
-            id="content-filter"
-            class="form-select me-2"
-            [(ngModel)]="filterInput"
-            name="ngModel"
-          >
-            <option disabled selected>Selecciona un filtro</option>
-            @for (content of contentForFilterCombo; track content) {
-            <option value="{{ content }}">{{ content }}</option>
-            }
-          </select>
-          }
-          <div class="ms-auto">
-            <button
-              class="btn btn-dark"
-              type="button"
-              (click)="confirmFilterPlot()"
-            >
-              Buscar
-            </button>
-          </div>
+          <app-table-filters
+            class="me-2"
+            [filters]="filterConfig"
+            (filterValueChange)="filterChange($event)"
+          ></app-table-filters>
         </div>
-        }
       </div>
     </div>
 
-    <!-- aca va el codigo para mostrar los filtros soloes -->
+    <div class="d-flex align-items-center">
+      <!-- <button type="button" class="btn btn-outline-primary" (click)="redirectToForm()">+</button> -->
 
-    <!-- <div
-      class="btn-group"
-      role="group"
-      aria-label="Basic radio toggle button group"
-    >
-      <input
-        type="radio"
-        class="btn-check"
-        name="btnradio"
-        id="btnradio1"
-        autocomplete="off"
-        (change)="changeActiveFilter(true)"
-        checked
-      />
-      <label class="btn btn-outline-primary" for="btnradio1"
-        >Expensa Pagada</label
-      >
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="btnradio"
-        id="btnradio2"
-        autocomplete="off"
-        (change)="changeActiveFilter(false)"
-      />
-      <label class="btn btn-outline-primary" for="btnradio2"
-        >Expensa Pendiente</label
-      >
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="btnradio"
-        id="btnradio3"
-        autocomplete="off"
-        (change)="changeActiveFilter()"
-      />
-      <label class="btn btn-outline-primary" for="btnradio3">Todos</label>
-    </div> -->
+      <div class="vertical-line mx-3"></div>
+      <button class="btn btn-success me-2" (click)="exportToExcel()">
+        <i class="bi bi-file-earmark-excel"></i>
+      </button>
+      <button class="btn btn-danger me-2" (click)="exportToPdf()">
+        <i class="bi bi-file-earmark-pdf"></i>
+      </button>
+    </div>
   </div>
 
   <div class="table-container">
@@ -165,20 +56,16 @@
         </tr>
       </thead>
       <tbody>
-        @for (item of filteredPlotsList; track $index) {
-
+        @for (item of filteredTickets; track $index) {
         <tr>
           <th scope="row" class="text-center">
-            {{ (item.issueDate | date : "MMMM-Y")!.toString() | capitalize }}
+            {{ item.period | periodToMonthYear | capitalize }}
           </th>
           <td class="text-center">
-            {{ item.expirationDate | date : "MM/YYYY" }}
+            {{ item.expirationDate | date : "dd/MM/YYYY" }}
           </td>
           <td class="text-center">
-            {{
-              calculateTotal(item)
-                | currency : "" : "symbol-narrow" : "1.2-2" : "es-ES"
-            }}
+            {{ calculateTotal(item) | currencyFormat }}
           </td>
           <td class="text-center">
             <span
@@ -186,7 +73,8 @@
               [ngClass]="{
                 'text-success border-success': item.status === 'PAID',
                 'text-danger border-danger': item.status === 'CANCELED',
-                'text-warning border-warning': item.status === 'PENDIENTE'
+                'text-secondary border-secondary': item.status === 'PENDING',
+                'text-dark border-dark': item.status === 'UNDER_REVIEW'
               }"
             >
               {{ item.status | translateStatusTicket }}
@@ -194,16 +82,17 @@
           </td>
 
           <td class="text-center">
-            <div class="btn-group">
+            <div class="btn-group" ngbDropdown>
               <button
                 type="button"
                 class="btn btn-sm btn-secondary dropdown-toggle"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
+                ngbDropdownToggle
               >
                 <i class="bi bi-three-dots-vertical"></i>
               </button>
-              <ul class="dropdown-menu">
+              <ul ngbDropdownMenu class="dropdown-menu">
                 <li>
                   <a
                     class="dropdown-item"
@@ -215,6 +104,11 @@
                 </li>
                 <li>
                   <a
+                    *ngIf="
+                      item.status !== 'PAID' &&
+                      item.status !== 'CANCELED' &&
+                      item.status !== 'UNDER_REVIEW'
+                    "
                     class="dropdown-item"
                     data-bs-toggle="modal"
                     data-bs-target="#statusModal"
@@ -224,6 +118,11 @@
                 </li>
                 <li>
                   <a
+                    *ngIf="
+                      item.status !== 'PAID' &&
+                      item.status !== 'CANCELED' &&
+                      item.status !== 'UNDER_REVIEW'
+                    "
                     class="dropdown-item"
                     data-bs-toggle="modal"
                     data-bs-target="#ticketModal"
@@ -231,17 +130,29 @@
                     >Pagar con Mercadopago</a
                   >
                 </li>
+                <li>
+                  <a class="dropdown-item" (click)="downloadTicket(item)"
+                    >Descargar Expensa</a
+                  >
+                </li>
               </ul>
             </div>
           </td>
         </tr>
+        }@empty {
+        <td colspan="7" class="text-center">
+          <div class="text-center p-3">
+            <div class="alert alert-secondary">
+              No hay registros para mostrar
+            </div>
+          </div>
+        </td>
         }
       </tbody>
     </table>
   </div>
 
   <div class="d-flex justify-content-between align-items-center mt-3">
-
     <div class="form-group mb-3 me-2">
       <select
         id="itemsPerPage"
@@ -250,7 +161,7 @@
         (change)="onItemsPerPageChange()"
       >
         @for(option of sizeOptions; track $index) {
-        <option [value]="option">{{ option }}</option>
+        <option [value]="option">{{ option }} Elementos</option>
         }
       </select>
     </div>
@@ -266,7 +177,7 @@
       [boundaryLinks]="false"
     ></ngb-pagination>
   </div>
-</div>
+</app-main-container>
 
 <!-- Modal -->
 <div
@@ -304,7 +215,7 @@
           <div class="col-md-6 text-end">
             <strong>Fecha de emisión:</strong>
             {{ ticketSelectedModal.issueDate | date : "dd/MM/yyyy" }}<br />
-            <strong>Fecha de expiración:</strong>
+            <strong>Fecha de vencimiento</strong>
             {{ ticketSelectedModal.expirationDate | date : "dd/MM/yyyy" }}
           </div>
         </div>
@@ -315,9 +226,9 @@
             <tr>
               <th scope="col">#</th>
               <th scope="col">Descripción</th>
-              <th scope="col">Cantidad</th>
+              <!-- <th scope="col">Cantidad</th> -->
               <!-- <th scope="col">Precio Unitario</th> -->
-              <th scope="col">Costo Total</th>
+              <th scope="col">Sub Total</th>
             </tr>
           </thead>
           <tbody>
@@ -330,10 +241,7 @@
               <td>{{ i + 1 }}</td>
               <td>{{ item.description }}</td>
               <td>
-                {{
-                  item.amount
-                    | currency : "" : "symbol-narrow" : "1.2-2" : "es-ES"
-                }}
+                {{ item.amount | currencyFormat }}
               </td>
               <!-- <td>{{ item.price | currency }}</td> -->
               <!-- <td>{{ (item.quantity * item.price) | currency }}</td> -->
@@ -343,12 +251,18 @@
 
         <div class="row">
           <div class="col-md-6">
-            <strong>Estado:</strong>
+            <strong>Estado: </strong>
             <span
+              class="badge bg-transparent p-2 border"
               [ngClass]="{
-                'badge bg-success': ticketSelectedModal.status === 'PAID',
-                'badge bg-danger': ticketSelectedModal.status === 'CANCELED',
-                'badge bg-warning': ticketSelectedModal.status === 'PENDIENTE'
+                'border-success text-success':
+                  ticketSelectedModal.status === 'PAID',
+                'border-danger text-danger':
+                  ticketSelectedModal.status === 'CANCELED',
+                'border-secondary text-secondary':
+                  ticketSelectedModal.status === 'PENDING',
+                'border-dark text-dark':
+                  ticketSelectedModal.status === 'UNDER_REVIEW'
               }"
             >
               {{ ticketSelectedModal.status | translateStatusTicket }}
@@ -356,10 +270,7 @@
           </div>
           <div class="col-md-6 text-end">
             <strong>Total:</strong>
-            {{
-              calculateTotal(ticketSelectedModal)
-                | currency : "" : "symbol-narrow" : "1.2-2" : "es-ES"
-            }}
+            {{ calculateTotal(ticketSelectedModal) | currencyFormat }}
           </div>
         </div>
       </div>
@@ -368,7 +279,10 @@
           Cerrar
         </button>
         <!-- <button type="button" class="btn btn-primary" (click)="pagar()">Pagar</button> -->
-        <div id="wallet_container"></div>
+        <div
+          *ngIf="ticketSelectedModal.status === 'PENDING'"
+          id="wallet_container"
+        ></div>
       </div>
     </div>
   </div>
@@ -399,7 +313,7 @@
         <div class="row mb-4">
           <div class="col-md-6">
             <h6 class="mb-0">
-              ID Factura:
+              Factura - Ticket N°
               <strong>{{ ticketSelectedModal.ticketNumber }}</strong>
             </h6>
           </div>
@@ -425,7 +339,7 @@
           </div>
           <div class="col-md-6">
             <h6 class="mb-0">
-              Fecha de Expiración:
+              Fecha de Vencimiento:
               <strong>{{
                 ticketSelectedModal.expirationDate | date : "dd/MM/yyyy"
               }}</strong>
@@ -440,6 +354,7 @@
               class="form-control"
               id="inputGroupFile02"
               (change)="onFileSelected($event)"
+              accept=".pdf, .jpg, .png, .jpeg"
             />
             <label class="input-group-text" for="inputGroupFile02"
               >Subir comprobante</label
@@ -456,6 +371,7 @@
           class="btn btn-primary"
           [disabled]="!selectedFile"
           (click)="onUpload()"
+          data-bs-dismiss="modal"
         >
           Cargar Comprobante
         </button>

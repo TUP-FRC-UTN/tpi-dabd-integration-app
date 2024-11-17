@@ -1,73 +1,50 @@
-<app-main-container title="Lista de Plantillas">
-    <div class="card-body">
-        <!-- Botones de exportación -->
-        <div class="col row d-flex justify-content-end mb-3">
-            <div class="col-auto me-1">
-                <button type="button" (click)="saveEmailTemplate()" class="btn btn-outline-primary"
-                    aria-expanded="false">
-                    Nuevo
-                </button>
-            </div>
+<app-main-container title="Lista de Plantillas" (infoButtonClick)="showInfo()">
 
-            <div class="col-auto">
-                <button class="btn" (click)="exportToExcel()" style="background-color: #239b56; color: white;">
-                    <i class="bi bi-file-earmark-excel"></i>
-                </button>
-            </div>
-
-            <div class="col-auto btn-export-pdf">
-                <button class="btn" (click)="exportToPDF()" style="background-color: red; color: white;">
-                    <i class="bi bi-file-pdf"></i>
-                </button>
-            </div>
-        </div>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <!-- Grupo de botones izquierdo -->
-            <div class="btn-group me-5" role="group">
-                <div class="d-flex align-items-center">
-                    <div class="btn-group me-2" ngbDropdown>
-                        <button class="btn btn-outline-danger" (click)="clearSearch()">
-                            <i class="bi bi-trash-fill"></i> Limpiar
-                        </button>
-
-                        <button type="button" class="btn btn-outline-info" ngbDropdownToggle>
-                            <i class="bi bi-funnel-fill"></i> Filtros
-                        </button>
-
-                        <div ngbDropdownMenu>
-                            <button ngbDropdownItem (click)="showTheInput()">Nombre</button>
-
-
-
-
-                        </div>
-                        <div class="input-group">
-                            @if (showInput) {
-                                <input type="text" class="form-control" [(ngModel)]="searchTerm"
-                                placeholder="Buscar...">
-                            <button class="btn btn-dark" (click)="filterByName()">Buscar</button>
-                            }
-
-                        </div>
-                    </div>
-                </div>
+          <!-- Sección de búsqueda y filtros -->
+          <div class="btn-group me-5" role="group">
+            <div class="col-sm-12 col-md-8 col-xl-10" id="general-search">
+              <div class="input-group" style="max-width: 280px">
+                <span class="input-group-text mr-3" id="search-icon">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input
+                [(ngModel)]="globalSearchTerm"
+                  type="text"
+                  class="form-control"
+                  id="filter-text-box"
+                  (input)="onGlobalSearchTextChange(globalSearchTerm)"
+                  placeholder="Buscar..."
+                />
+                <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"  (clearFilters)="clearFilters()"></app-table-filters> 
+              </div>
             </div>
+          </div>
 
-            <!-- Botones de estado -->
-            <div class="btn-group" role="group">
-                <input type="radio" class="btn-check" name="btnradio" id="btnradio1" (change)="filterByStatus('active')"
-                    checked>
-                <label class="btn btn-outline-primary" for="btnradio1">Plantilas Activas</label>
+                  <!-- Botones de exportación -->
+        <div class="col row d-flex justify-content-end mb-3">
+          <div class="col-auto">
+              <button type="button" (click)="saveEmailTemplate()" class="btn btn-outline-primary"
+                  aria-expanded="false">
+                  +
+              </button>
+          </div>
 
-                <input type="radio" class="btn-check" name="btnradio" id="btnradio2"
-                    (change)="filterByStatus('inactive')">
-                <label class="btn btn-outline-primary" for="btnradio2">Plantillas Inactivas</label>
+          <div class="col-auto">
+              <button class="btn" (click)="exportToExcel()" style="background-color: #239b56; color: white;">
+                  <i class="bi bi-file-earmark-excel"></i>
+              </button>
+          </div>
 
-                <input type="radio" class="btn-check" name="btnradio" id="btnradio3" (change)="filterByStatus('all')">
-                <label class="btn btn-outline-primary" for="btnradio3">Todos</label>
-            </div>
+          <div class="col-auto btn-export-pdf">
+              <button class="btn" (click)="exportToPDF()" style="background-color: red; color: white;">
+                  <i class="bi bi-file-pdf"></i> 
+              </button>
+          </div>
+      </div>
         </div>
+
 
         <!-- Tabla -->
         <div class="table-container">
@@ -147,12 +124,11 @@
               <ngb-pagination [(page)]="currentPage" [pageSize]="itemsPerPage" [collectionSize]="totalItems"
               (pageChange)="changePage($event)" [maxSize]="5" [boundaryLinks]="false"></ngb-pagination>
 
-                <button class="btn btn-secondary ms-3 mb-3" (click)="showInfo()">
+                <!-- <button class="btn btn-secondary ms-3 mb-3" (click)="showInfo()">
                     <i class="bi bi-info-circle"></i>
-                </button>
+                </button> -->
             </div>
         </div>
-    </div>
 </app-main-container>
 
 
@@ -188,24 +164,10 @@ tabindex="-1">
         <!-- Body -->
         <div class="mb-3">
           <label for="cuerpo" class="form-label">Cuerpo</label>
-          <input type="text" class="form-control" id="cuerpo" name="cuerpo"
-            [(ngModel)]="editingtemplate.body" required>
+          <textarea class="form-control" id="cuerpo" name="cuerpo"
+            [(ngModel)]="editingtemplate.body" required rows="10"></textarea>
         </div>
 
-        <!-- Suscripciones
-        <div class="mb-3">
-          <label class="form-label">Suscripciones</label>
-          <div *ngFor="let subscription of availableSubscriptions; let i = index">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" [id]="'subscription-' + i"
-                [checked]="isSubscribed(subscription)" (change)="toggleSubscription(subscription)">
-              <label class="form-check-label" [for]="'subscription-' + i">
-                {{subscription}}
-              </label>
-            </div>
-          </div>
-        </div>
-        -->
       </form>
     </div>
     <div class="modal-footer">
@@ -232,15 +194,7 @@ tabindex="-1">
         <p>¿Está seguro que desea eliminar el siguiente contacto?</p>
         <div class="contact-details mt-3">
           <p><strong>Nombre:</strong> {{templateToDelete.name}}</p>
-          <!-- <p><strong>Cuerpo:</strong> {{templateToDelete.body}}</p> -->
-          <!-- @if(contactToDelete.subscriptions.length > 0){
-           <p><strong>Suscripciones:</strong></p>
-          <ul class="list-unstyled">
-            @for(subscription of contactToDelete.subscriptions; track $index){
-            <li><i class="bi bi-dot"></i> {{subscription}}</li>
-            }
-          </ul>
-          } -->
+
         </div>
         } @else {
         <p>No se ha seleccionado ninguna plantilla para eliminar.</p>
@@ -258,23 +212,52 @@ tabindex="-1">
 
 
 
-
-  <!-- Modal de Información -->
+<!-- Modal de informacion -->
 <div [class.show]="isModalOpen" [style.display]="isModalOpen ? 'block' : 'none'" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ modalTitle }}</h5>
-          <button type="button" class="btn-close" (click)="isModalOpen = false"></button>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ modalTitle }}</h5>
+        <button type="button" class="btn-close" (click)="isModalOpen = false"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+          <!-- Introducción -->
+          <div class="alert alert-info mb-2">
+            <h5 class="alert-heading">Información sobre las Plantillas</h5>
+            <p class="mb-0 small">Esta pantalla lista las plantillas disponible para el envio de correos electronicos.</p>
+          </div>
+
+          <!-- Descripción de los campos -->
+          <div class="card mb-2">
+            <div class="card-header">
+              <h5 class="mb-0">Descripción de los Campos</h5>
+            </div>
+            <div class="card-body">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                  <strong>Nombre:</strong> El nombre de la plantilla de correo electrónico que identifica su contenido y propósito.
+                </li>
+                <li class="list-group-item">
+                  <strong>Estado:</strong> Indica si la plantilla está activa o inactiva. Las plantillas activas se pueden utilizar para enviar notificaciones.
+                </li>
+                <li class="list-group-item">
+                  <strong>Acciones:</strong> Opciones disponibles para cada plantilla, que incluyen previsualizar, editar y eliminar la plantilla.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Nota sobre la gestión de plantillas -->
+          <div class="alert alert-warning mb-0">
+            <h5 class="alert-heading">Nota sobre las Plantillas:</h5>
+            <p class="mb-0 small">Asegúrate de gestionar adecuadamente tus plantillas para mantener una comunicación efectiva. Puedes editar o eliminar plantillas según sea necesario.</p>
+          </div>
         </div>
-        <div class="modal-body">
-          <div [innerHTML]="modalMessage"></div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="isModalOpen = false">Volver</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="isModalOpen = false">Volver</button>
       </div>
     </div>
   </div>
-
-
+</div>

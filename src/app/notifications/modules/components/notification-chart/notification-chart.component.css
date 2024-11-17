@@ -1,0 +1,356 @@
+/* Card Styles */
+.card {
+  box-shadow: 0 4px 8px rgb(0,0,0,0.4);
+
+  border: none;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-title {
+  font-size: 1.75rem;
+}
+
+.card-subtitle {
+  font-size: 0.875rem;
+}
+
+/* Chart Styles */
+.chart-container {
+  position: relative;
+  height: 250px;  /* Reducir la altura de los gráficos */
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Form Styles */
+.form-control {
+  height: 31px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 4px;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+/* Button Styles */
+.btn {
+  line-height: 1;
+  padding: 0.375rem;
+  font-weight: 500;
+}
+
+.btn i {
+  font-size: 14px;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+.btn-outline-secondary {
+  border-color: #ced4da;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #f8f9fa;
+  border-color: #6c757d;
+}
+
+/* Icon Styles */
+.icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-circle i {
+  font-size: 1.25rem;
+}
+
+/* Utility Classes */
+.text-secondary {
+  font-size: 0.875rem;
+}
+
+.text-success {
+  color: #28a745;
+}
+
+.gap-1 {
+  gap: 0.25rem !important;
+}
+
+.gap-2 {
+  gap: 0.5rem !important;
+}
+
+.gap-3 {
+  gap: 1rem !important;
+}
+
+.me-2 {
+  margin-right: 0.5rem;
+}
+
+/* Background Colors */
+.bg-success {
+  background-color: #28a745;
+}
+
+.bg-primary {
+  background-color: #0d6efd;
+}
+
+.bg-warning {
+  background-color: #ffc107;
+}
+
+.bg-info {
+  background-color: #17a2b8;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .chart-container {
+    height: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1rem;
+  }
+}
+
+.btn {
+  border: 1px solid #dee2e6 !important;
+  /* Añade el borde gris claro */
+  padding: 0.375rem 0.5rem;
+}
+
+.btn i {
+  font-size: 16px;
+}
+
+/* Colores específicos para los botones */
+.btn-outline-danger {
+  color: #dc3545;
+  border-color: #dc3545 !important;
+}
+
+.btn-outline-info {
+  color: #0dcaf0;
+  border-color: #0dcaf0 !important;
+}
+
+.chart-container {
+  position: relative;
+  height: 200px;
+  width: 100%;
+}
+
+.card-title {
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.card {
+  box-shadow: 0 4px 8px rgb(0,0,0,0.4);
+
+  border: none;
+}
+
+/* Estilo para el grupo de botones dentro del dropdown */
+.btn-group .dropdown-menu {
+  min-width: auto;
+}
+
+/* Input group styles adaptados */
+.input-group {
+  width: auto;
+  margin-left: 1rem;
+}
+
+/* Opcional: ajusta las etiquetas y campos en el dropdown */
+.dropdown .form-label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.dropdown .form-control,
+.dropdown .form-select {
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
+}
+
+.dropdown .btn-outline-danger,
+.dropdown .btn-outline-primary {
+  font-size: 0.875rem;
+  padding: 0.375rem;
+}
+
+.dropdown .dropdown-menu {
+  min-width: 20rem;
+
+}
+
+.dropdown .dropdown-menu {
+  width: 21rem;
+}
+
+.modal {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-backdrop {
+
+  z-index: 1040;
+}
+
+.modal {
+  z-index: 1050;
+}
+
+.hover-underline:hover {
+  text-decoration: underline;
+  color: inherit;
+}
+
+
+
+.bg-violet {
+  background-color: #8b5cf6;
+}
+.tooltip-wrapper {
+  position: relative;
+}
+
+.tooltip-container {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  transform: translateY(10px);
+  width: 500px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  padding: 15px;
+}
+
+.tooltip-container::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  right: 15px;
+  transform: translateY(-100%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #ccc transparent;
+}
+
+.tooltip-container::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  right: 15px;
+  transform: translateY(-100%);
+  border-width: 4px;
+  border-style: solid;
+  border-color: transparent transparent #fff transparent;
+}
+
+.spinner-border {
+  display: block;
+  margin: 0 auto;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 0.75rem;
+  height: 38px;
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+}
+
+.small {
+  font-size: 0.75em;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 0.75rem;
+  height: 38px;
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+}
+
+.small {
+  font-size: 0.75em;
+}
+
+.dropdown-menu {
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+.dropdown-menu.show {
+  display: block;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

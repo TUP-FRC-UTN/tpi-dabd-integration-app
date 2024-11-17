@@ -7,7 +7,7 @@ import { TicketPayDto } from '../models/TicketPayDto';
   providedIn: 'root'
 })
 export class MercadoPagoServiceService {  
-  private apiUrl = 'http://localhost:8086/payments/mercadopago/crear-preferencia';
+  private apiUrl = 'http://localhost:8090/payments/mercadopago/crear-preferencia';
 
   constructor(private http: HttpClient) {}
 

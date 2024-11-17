@@ -14,7 +14,6 @@ import {
 } from '../../../models/owner';
 import * as XLSX from 'xlsx';
 import { Router } from '@angular/router';
-import { CadastreFilterButtonsComponent } from '../../commons/cadastre-filter-buttons/cadastre-filter-buttons.component';
 import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -38,7 +37,6 @@ import autoTable from 'jspdf-autotable';
   standalone: true,
   imports: [
     CommonModule,
-    CadastreFilterButtonsComponent,
     FormsModule,
     MainContainerComponent,
     NgbPagination,
@@ -74,6 +72,7 @@ export class OwnerListComponent implements OnInit {
   dictionaries: Array<{ [key: string]: any }> = [];
   LIMIT_32BITS_MAX = 2147483647;
   headers: string[] = ['Nombre', 'Apellido', 'Documento', 'Tipo propietario'];
+  filters? : Record<string, any>
 
   ownersList!: Owner[];
   private filteredOwnersList = new BehaviorSubject<Owner[]>([]);
@@ -90,9 +89,9 @@ export class OwnerListComponent implements OnInit {
   tableName!: ElementRef<HTMLTableElement>;
 
   ngOnInit(): void {
-    this.getAllOwners();
+    this.confirmSearch();
     this.filteredOwnersList.subscribe(ow => console.log(ow));
-    
+
   }
 
   ngAfterViewInit(): void {}
@@ -208,7 +207,13 @@ export class OwnerListComponent implements OnInit {
     .build();
 
   filterChange($event: Record<string, any>) {
-    this.ownerService.dinamicFilters(0, this.pageSize, $event).subscribe({
+    this.filters = $event;
+    this.currentPage = 0
+    this.confirmSearch();
+  }
+
+  dinamicFilter() {
+    this.ownerService.dinamicFilters(0, this.pageSize, this.filters).subscribe({
       next: (result) => {
         this.ownersList = result.content;
         this.filteredOwnersList.next([...result.content]);
@@ -216,6 +221,16 @@ export class OwnerListComponent implements OnInit {
         this.totalItems = result.totalElements;
       },
     });
+  }
+
+  clearFilter() {
+    this.filters = undefined;
+    this.currentPage = 0
+    this.confirmSearch();
+  }
+
+  confirmSearch() {
+    this.filters === undefined ? this.getAllOwners() : this.dinamicFilter();
   }
 
   /**
@@ -230,7 +245,7 @@ export class OwnerListComponent implements OnInit {
     const filterValue = target.value.toLowerCase();
 
 
-    
+
 
     let filteredList = this.ownersList.filter((owner) => {
       return Object.values(owner).some((prop) => {
@@ -337,10 +352,10 @@ export class OwnerListComponent implements OnInit {
 
   exportToPdf() {
     const doc = new jsPDF();
-  
+
     doc.setFontSize(18);
     doc.text('Propietarios', 14, 20);
-    
+
     this.ownerService.getOwners(0, this.LIMIT_32BITS_MAX, true).subscribe({
       next: (data) => {
         autoTable(doc, {
@@ -382,13 +397,13 @@ export class OwnerListComponent implements OnInit {
 
   //#region Pageable
   onItemsPerPageChange() {
-    this.currentPage = 1;
-    //this.confirmFilterOwner();
+    this.currentPage = 0;
+    this.confirmSearch()
   }
 
   onPageChange(page: number) {
     this.currentPage = page;
-    //this.confirmFilterOwner();
+    this.confirmSearch()
   }
   //#end region
 

@@ -34,7 +34,8 @@ export class UserService {
 
   updateUser(id: number, user: User): Observable<User> {
     const headers = new HttpHeaders({
-      'x-user-id': this.sessionService.getItem('user').id.toString()
+      'x-user-id': this.sessionService.getItem('user').id.toString(),
+      "Accept": "application/json"
     });
     delete user.id;
 

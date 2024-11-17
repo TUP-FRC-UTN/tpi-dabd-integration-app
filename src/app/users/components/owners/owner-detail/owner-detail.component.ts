@@ -151,6 +151,19 @@ export class OwnerDetailComponent implements OnInit {
     }));
   }
 
+  setContactType(contactType: string | undefined) {
+    switch(contactType){
+      case "PHONE":
+        return "Teléfono";
+      case "EMAIL":
+        return "Email";
+      case "SOCIAL_MEDIA_LINK":
+        return "Link red social";
+      default:
+        return "Otro";
+    }
+  }
+
   openInfo(){
     const modalRef = this.modalService.open(InfoComponent, {
       size: 'lg',
