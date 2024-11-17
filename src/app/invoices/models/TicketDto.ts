@@ -5,9 +5,12 @@ export interface TicketDetail {
 }
 
 export enum TicketStatus {
-  PENDING = 'PENDIENTE',
+  PENDING = 'PENDING',
   PAID = 'PAID',
-  CANCELED = 'CANCELED'
+  CANCELED = 'CANCELED',
+  UNDER_REVIEW = 'UNDER_REVIEW',
+  EXPIRED = 'EXPIRED',
+  IN_DEFAULT = 'IN_DEFAULT',
 }
 
 export interface Owner{
@@ -26,27 +29,8 @@ export interface TicketDto {
   ticketNumber: string;
   lotId: number;
   ticketDetails: TicketDetail[]; // Cambiado de 'items'
-
+  urlTicket: string;
+  period: string
 }
 
-export const PlotTypeDictionary: { [key: string]: string } = {
-  "Pagado": "PAID",
-  "Pendiente": "PENDING",
-  "Cancelado": "CANCELED"
-};
 
-export const PlotStatusDictionary: { [key: string]: string } = {
-  "Creado": "CREATED",
-  "En Venta": "FOR_SALE",
-  "Venta": "SALE",
-  "Proceso de Venta": "SALE_PROCESS",
-  "En construcciones": "CONSTRUCTION_PROCESS",
-  "Vacio": "EMPTY"
-};
-
-export enum PlotFilters {
-  NOTHING = 'NOTHING',
-  BLOCK_NUMBER = 'BLOCK_NUMBER',
-  PLOT_STATUS = 'PLOT_STATUS',
-  PLOT_TYPE = 'PLOT_TYPE'
-}

@@ -14,14 +14,13 @@ import autoTable from 'jspdf-autotable';
 
 import * as XLSX from 'xlsx';
 import { BehaviorSubject } from 'rxjs';
-import { CadastreFilterButtonsComponent } from '../../commons/cadastre-filter-buttons/cadastre-filter-buttons.component';
 
 @Component({
   selector: 'app-files-view',
   standalone: true,
   imports: [
     CommonModule, FormsModule, NgbPagination, MainContainerComponent,
-    CadastreFilterButtonsComponent, TableFiltersComponent, AsyncPipe],
+     TableFiltersComponent, AsyncPipe],
   templateUrl: './files-view.component.html',
   styleUrl: './files-view.component.css',
   providers: [DatePipe],
@@ -41,7 +40,7 @@ export class FilesViewComponent {
   private filteredOwnersList = new BehaviorSubject<Owner[]>([]);
   filter$ = this.filteredOwnersList.asObservable();
 
-  
+
   dictionaries: Array<{ [key: string]: any }> = [];
   LIMIT_32BITS_MAX = 2147483647;
   headers: string[] = ['Nombre', 'Apellido', 'Documento', 'Tipo propietario'];
@@ -53,10 +52,10 @@ export class FilesViewComponent {
 
 
   ngOnInit() {
-    
+
     this.getAllOwners(true);
     this.filteredOwnersList.subscribe(ow => console.log(ow));
-    
+
   }
 
   mapKYCStatus(type: string){
@@ -117,7 +116,7 @@ export class FilesViewComponent {
   confirmFilter(){}
 
 
-  
+
   goBack() {
     this.location.back()
   }
@@ -364,10 +363,10 @@ export class FilesViewComponent {
 
   exportToPdf() {
     const doc = new jsPDF();
-  
+
     doc.setFontSize(18);
     doc.text('Propietarios', 14, 20);
-    
+
     this.ownerService.getOwners(0, this.LIMIT_32BITS_MAX, true).subscribe({
       next: (data) => {
         autoTable(doc, {

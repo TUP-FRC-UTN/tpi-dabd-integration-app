@@ -42,8 +42,11 @@ export class ClaimService {
     this.totalItemsSubject.next(total);
   }
 
-  createClaim(claimData: FormData): Observable<any> {
-    return this.http.post(`${this.apiUrl}/claims`, claimData);
+  createClaim(claimData: FormData, userId: number): Observable<any> {
+    const headers = new HttpHeaders({
+      'x-user-id': userId.toString(),
+    });
+    return this.http.post(`${this.apiUrl}/claims`, claimData, { headers });
   }
 
   updateClaim(claimDTO: ClaimDTO, userId: number): Observable<ClaimDTO> {

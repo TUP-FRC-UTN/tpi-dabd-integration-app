@@ -3,6 +3,6 @@ export interface Period {
   year: number;
   state: string;
   id: number;
-  start_date: Date;
-  end_date: Date;
+  startDate: Date;
+  endDate: Date;
 }

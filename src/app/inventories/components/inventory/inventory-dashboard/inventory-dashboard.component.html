@@ -1,0 +1,179 @@
+<app-main-container title="Dashboard de Inventario" (infoButtonClick)="showInfo()">
+
+  <!-- Filtros de fecha y unidad -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Filtros</h5>
+          <form [formGroup]="filtersForm" class="row g-3 align-items-end">
+            <!-- Filtro de Unidad de Medida -->
+            <div class="col-md-4">
+              <label class="form-label">Unidad de Medida</label>
+              <select class="form-select" formControlName="unit">
+                <option value="UNITS">Unidades</option>
+                <option value="LITERS">Litros</option>
+                <option value="KILOS">Kilos</option>
+              </select>
+            </div>
+
+            <!-- Filtro de Fecha Desde -->
+            <div class="col-md-4">
+              <label class="form-label">Fecha desde</label>
+              <input type="date" class="form-control" formControlName="startDate">
+            </div>
+
+            <!-- Filtro de Fecha Hasta -->
+            <div class="col-md-4">
+              <label class="form-label">Fecha hasta</label>
+              <input type="date" class="form-control" formControlName="endDate">
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="col-12 text-end">
+              <button type="button" class="btn btn-outline-danger me-2" (click)="resetFilters()">
+                <i class="bi bi-trash"></i> Limpiar
+              </button>
+              <button type="button" class="btn btn-primary" (click)="applyFilters()">
+                <i class="bi bi-filter"></i> Aplicar filtros
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- KPIs Principales -->
+  <div class="row g-4 mb-4">
+    <!-- Total Artículos -->
+    <div class="col-md-3">
+      <div class="card shadow-sm" (click)="showInventoryItems()" style="cursor: pointer;">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <div class="icon-circle bg-primary text-white me-3">
+              <i class="bi bi-box"></i>
+            </div>
+            <!-- Subtítulo dinámico -->
+            <h6 class="card-subtitle mb-2">Total de {{ capitalizeFirstLetter(unitLabel) }}</h6>
+          </div>
+
+          <!-- Número dinámico -->
+          <div class="d-flex align-items-baseline mt-2">
+            <h2 class="card-title mb-0">{{ metrics.totalItems }}</h2>
+          </div>
+
+          <!-- Subtítulo dinámico con la unidad -->
+          <div class="mt-2">
+            <small class="text-muted">Artículos con medida en {{ unitLabel }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Valor de Inventario -->
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <div class="icon-circle bg-success text-white me-3">
+              <i class="bi bi-currency-dollar"></i>
+            </div>
+            <h6 class="card-subtitle mb-2">Valor del Inventario</h6>
+          </div>
+
+          <div class="d-flex align-items-baseline mt-2">
+            <h2 class="card-title mb-0">$ {{ metrics.totalValue.toFixed(2) }}</h2>
+          </div>
+
+          <div class="mt-2">
+            <small class="text-muted">Valor total actual</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stock Bajo -->
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <div class="icon-circle bg-danger text-white me-3">
+              <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <h6 class="card-subtitle mb-2">Stock Bajo</h6>
+          </div>
+
+          <div class="d-flex align-items-baseline mt-2">
+            <h2 class="card-title mb-0">{{ metrics.lowStockItems }}</h2>
+          </div>
+
+          <div class="mt-2">
+            <small class="text-muted">Artículos en mínimo</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Artículo Más Utilizado -->
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <div class="icon-circle bg-warning text-white me-3">
+              <i class="bi bi-star"></i>
+            </div>
+            <h6 class="card-subtitle mb-2">Mayor Movimiento</h6>
+          </div>
+
+          <div class="d-flex align-items-baseline mt-2">
+            <h2 class="card-title mb-0 text-truncate" style="max-width: 180px;">
+              {{ metrics.mostArticleUsed }}
+            </h2>
+          </div>
+
+          <div class="mt-2">
+            <small class="text-muted">Mayor rotación</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficos -->
+  <div class="row g-4 mb-4">
+    <!-- Tendencias de Movimientos -->
+    <div class="col-md-6">
+      <div class="card border-0 shadow-lg rounded-4 h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-3">
+            <div class="icon-circle bg-gradient-primary text-white me-3">
+              <i class="bi bi-bar-chart-steps"></i>
+            </div>
+            <h5 class="card-title text-secondary mb-0">Tendencias de Movimientos</h5>
+          </div>
+          <div class="chart-container" style="height: 300px; position: relative;">
+            <canvas baseChart [type]="'bar'" [data]="transactionTrendsChartData" [options]="barChartOptions">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stock por Categoría -->
+    <div class="col-md-6">
+      <div class="card border-0 shadow-lg rounded-4 h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-3">
+            <h5 class="card-title text-secondary mb-0">Stock por Categoría</h5>
+          </div>
+          <div class="chart-container" style="height: 400px; position: relative;">
+            <canvas #categoryPieChart></canvas> <!-- Referencia al canvas -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</app-main-container>

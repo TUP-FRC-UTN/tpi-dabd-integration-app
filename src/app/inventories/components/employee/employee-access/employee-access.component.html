@@ -1,0 +1,201 @@
+<div class="container-fluid my-4">
+  <form [formGroup]="accessForm" (ngSubmit)="isEditMode ? updateSchedule() : saveSchedule()">
+    <!-- Header -->
+    <div class="d-flex align-items-center mb-4">
+      <h3>Horarios de Acceso</h3>
+    </div>
+
+    <!-- Date Range -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="form-label">
+            Fecha Desde <span class="text-danger">*</span>
+          </label>
+          <input 
+            type="date" 
+            formControlName="dateFrom"
+            class="form-control"
+            [class.is-invalid]="accessForm.get('dateFrom')?.invalid && 
+                              accessForm.get('dateFrom')?.touched"
+          >
+          @if (accessForm.get('dateFrom')?.invalid && accessForm.get('dateFrom')?.touched) {
+            <div class="invalid-feedback">
+              Fecha desde es requerida
+            </div>
+          }
+          @if (accessForm.get('dateFrom')?.errors?.['pastDate']) {
+            <div class="invalid-feedback">
+              La fecha no puede ser anterior a hoy
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="form-label">
+            Fecha Hasta <span class="text-danger">*</span>
+          </label>
+          <input 
+            type="date" 
+            formControlName="dateTo"
+            class="form-control"
+            [class.is-invalid]="accessForm.get('dateTo')?.invalid && 
+                              accessForm.get('dateTo')?.touched"
+          >
+          @if (accessForm.get('dateTo')?.invalid && accessForm.get('dateTo')?.touched) {
+            <div class="invalid-feedback">
+              Fecha hasta es requerida
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Time Selection -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="form-label">
+            Hora Entrada <span class="text-danger">*</span>
+          </label>
+          <input 
+            type="time" 
+            formControlName="entryTime"
+            class="form-control"
+            [class.is-invalid]="accessForm.get('entryTime')?.invalid && 
+                              accessForm.get('entryTime')?.touched"
+          >
+          @if (accessForm.get('entryTime')?.invalid && accessForm.get('entryTime')?.touched) {
+            <div class="invalid-feedback">
+              Hora de entrada es requerida
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="form-label">
+            Hora Salida <span class="text-danger">*</span>
+          </label>
+          <input 
+            type="time" 
+            formControlName="exitTime"
+            class="form-control"
+            [class.is-invalid]="accessForm.get('exitTime')?.invalid && 
+                              accessForm.get('exitTime')?.touched"
+          >
+          @if (accessForm.get('exitTime')?.invalid && accessForm.get('exitTime')?.touched) {
+            <div class="invalid-feedback">
+              Hora de salida es requerida
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Shift Type -->
+    <div class="mb-4">
+      <div class="form-group">
+        <label class="form-label">
+          Tipo de Turno <span class="text-danger">*</span>
+        </label>
+        <div class="d-flex flex-wrap gap-2">
+          @for (shift of shiftTypes; track shift) {
+            <button 
+            type="button"
+            (click)="toggleShift(shift)"
+            class="btn btn-sm flex-grow-1 {{selectedShift === shift ?
+            'btn-primary' : 'btn-outline-primary'}}">
+              {{ shiftTypeLabels[shift] }}
+            </button>
+          }
+        </div>
+        <!-- <select 
+          formControlName="shiftType"
+          class="form-select"
+          [class.is-invalid]="accessForm.get('shiftType')?.invalid && 
+                            accessForm.get('shiftType')?.touched"
+        >
+          <option value="" disabled>Seleccione un turno</option>
+          @for (shift of shiftTypes; track shift) {
+            <option [value]="shift">{{ shiftTypeLabels[shift] }}</option>
+          }
+        </select> -->
+        @if (accessForm.get('shiftType')?.invalid && accessForm.get('shiftType')?.touched) {
+          <div class="invalid-feedback">
+            Tipo de turno es requerido
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Days Selection -->
+    <div class="mb-4">
+      <label class="form-label">
+        Días Laborales <span class="text-danger">*</span>
+      </label>
+      <div class="d-flex flex-wrap gap-2">
+        @for (day of daysOfWeek; track day.id) {
+          <button
+            type="button"
+            (click)="toggleDay(day.id)"
+            class="btn btn-sm flex-grow-1 {{selectedDays.includes(day.id) ? 
+              'btn-light-blue' : 'btn-outline-light-blue'}}"
+              >
+            {{day.label}}
+          </button>
+        }
+      </div>
+      @if (showDaysError) {
+        <div class="text-danger small mt-2">
+          Debe seleccionar al menos un día
+        </div>
+      }
+    </div>
+    
+    <!-- Selected Schedule Preview -->
+    @if (selectedDays.length > 0) {
+      <div class="card mb-4 bg-light">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title">Horario Seleccionado: </h5>
+            <h6 class="text-muted">{{accessForm.get('dateFrom')?.value}} - {{accessForm.get('dateTo')?.value}}</h6>
+          </div>
+          <div class="row g-2">
+            @for (day of getSelectedDaysLabels(); track day) {
+              <div class="col-12 col-md-4">
+                <div class="p-2 bg-white rounded shadow-sm">
+                  <span class="badge bg-primary me-2">{{day}}</span>
+                  <span class="text-muted">
+                    {{accessForm.get('entryTime')?.value}} - {{accessForm.get('exitTime')?.value}}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Submit Button -->
+    <div class="d-flex justify-content-end">
+      <button
+        type="button"
+        class="btn btn-secondary me-2"
+        (click)="newEmployee()"
+      >
+      Nuevo Empleado
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="!isFormValid()"
+      >
+        Guardar Horarios
+      </button>
+    </div>
+  </form>
+</div>

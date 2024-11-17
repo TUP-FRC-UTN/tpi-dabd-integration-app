@@ -1,0 +1,100 @@
+<app-main-container title="Control de Asistencias" subTitle="Empleado: {{currentEmployee?.firstName}} {{currentEmployee?.lastName}}" (infoButtonClick)="showInfo()">
+  <!-- Header con búsqueda, filtros y botones de exportación -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="input-group w-25">
+      <span class="input-group-text"><i class="bi bi-search"></i></span>
+      <input type="text" 
+             class="form-control" 
+             placeholder="Buscar asistencia..." 
+             [formControl]="searchFilter" />
+             <app-table-filters style="z-index: 1;" [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
+    </div>
+    <div class="d-flex align-items-center">
+      <button type="button" class="btn btn-success me-2" (click)="exportToExcel()">
+        <i class="bi bi-file-earmark-excel"></i>
+      </button>
+      <button type="button" class="btn btn-danger" (click)="exportToPDF()">
+        <i class="bi bi-file-earmark-pdf"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container mt-3">
+    <table class="table table-striped">
+      <thead class="bg-light">
+        <tr>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Tipo de Acceso</th>
+          <th>Estado</th>
+          <th>Comentarios</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let assistance of employeeAssistances">
+          <td>{{assistance.actionDate  | date:"dd/MM/yyyy"}}</td>
+          <td>{{ assistance.actionDate | date:'HH:mm' }}</td>
+          <td>
+            <span class="custom-badge" [ngClass]="{
+              'bg-success text-white': assistance.action === 'ENTRY',
+              'bg-danger text-white': assistance.action === 'EXIT'
+            }">
+              {{ assistance.action === 'ENTRY' ? 'Entrada' : 'Salida' }}
+            </span>
+          </td>
+          <td>
+            <i [ngClass]="{
+              'bi bi-check-circle text-success': !assistance.isLate,
+              'bi bi-exclamation-circle text-warning': assistance.isLate
+            }" style="font-size: 1.2rem;"></i>
+            {{ assistance.isLate ? 'Tardío' : 'A tiempo' }}
+          </td>
+          <td>{{ assistance.comments || '-' }}</td>
+        </tr>
+        
+        <!-- Estado de carga -->
+        <tr *ngIf="isLoading">
+          <td colspan="6" class="text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+          </td>
+        </tr>
+        
+        <!-- Mensaje si no hay datos -->
+        <tr *ngIf="!isLoading && employeeAssistances.length === 0">
+          <td colspan="6" class="text-center">
+            No se encontraron registros de asistencia
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación con Reactive Forms -->
+  <div class="d-flex justify-content-between align-items-center p-3 border-top">
+    <!-- Selector de elementos por página -->
+    <select (change)="onItemsPerPageChange()" class="form-select form-select-sm" style="width: auto;"
+    [(ngModel)]="pageSize">
+    <option value="5">5 Elementos</option>
+    <option value="10">10 Elementos</option>
+    <option value="20">20 Elementos</option>
+    <option value="50">50 Elementos</option>
+  </select>
+
+    <!-- Información de paginación -->
+    <!-- Botones de navegación -->
+    <div class="ms-3">
+      <button class="btn btn-outline-secondary btn-sm me-1" 
+              [disabled]="currentPage === 0" 
+              (click)="goToPreviousPage()">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" 
+              [disabled]="currentPage === totalPages - 1"
+              (click)="goToNextPage()">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</app-main-container>

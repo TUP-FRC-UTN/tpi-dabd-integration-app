@@ -562,7 +562,7 @@
                 <button type="button"
                         class="list-group-item list-group-item-action btn btn-primary btn-sm me-2"
                         (click)="setContactValue($index)">
-                  {{ contact.contactType }} - {{ contact.contactValue }}
+                  {{ setContactType(contact.contactType) }} - {{ contact.contactValue }}
                 </button>
                 @if (!id) {
                   <button type="button" class="btn btn-danger btn-sm" (click)="removeContact($index)">

@@ -22,23 +22,20 @@ export interface Visitor {
 }
 
 export interface Authorizer {
-  authId: number;
+  authorizerId: number;
   authFirstName: string;
   authLastName: string | null;
-  docType: string;
-  docNumber: number;
 }
 
 export interface Auth {
   authId: number;
-  authorizerId: number;
   plotId: number | null;
   visitor: Visitor;
-  authorizer: Authorizer;
   visitorType: string;
   externalId: number | null;
   authRanges: AuthRange[];
   isActive: boolean;
+  authorizerId: number;
   authFirstName: string;
   authLastName: string | null;
 }

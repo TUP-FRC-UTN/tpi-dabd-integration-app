@@ -1,11 +1,50 @@
-<app-main-container title="Dashboard de usuarios" (infoButtonClick)="openInfo()">
+<app-main-container title="Reporte de Usuarios" (infoButtonClick)="openInfo()">
   <!-- User Charts Section -->
   <!-- <h3>KPIs</h3>
 
   <h3 class="mb-3">Graficos</h3> -->
-  <div class="d-flex align-items-center mb-3">
-  <app-table-filters style="z-index: 1;" [filters]="userFilterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
+
+
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex gap-3">
+        <div class="form-group d-flex flex-row align-items-center">
+          <label class="form-label m-0 me-3">Desde:</label>
+          <input
+            type="date"
+            class="form-control"
+            [max]="dateFilterTo"
+            [(ngModel)]="dateFilterFrom"
+            (ngModelChange)="changeFilterDateFrom($event)"
+          />
+        </div>
+        <div class="form-group d-flex flex-row align-items-center">
+          <label class="form-label m-0 me-3">Hasta:</label>
+          <input
+            type="date"
+            class="form-control"
+            [min]="dateFilterFrom"
+            [(ngModel)]="dateFilterTo"
+            (ngModelChange)="changeFilterDateTo($event)"
+          />
+        </div>
+         <div class="ps-3" style="border-left: 2px solid #e0e0e0">
+          <app-table-filters 
+            [filters]="filterConfig"
+            (filterValueClear)="clearAllFilters()"
+            (filterValueChange)="changeOtherFilters($event)"></app-table-filters>
+        </div>
+      </div>
+    </div>
   </div>
+
+
+
+  <div class="d-flex align-items-center mb-3">
+
+ <!--  <app-table-filters style="z-index: 1;" [filters]="userFilterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
+   -->
+</div>
    <!-- KPIs de Usuarios -->
    <div class="row mb-4">
     <!-- <h2 class="h4 mb-3">KPIs</h2> -->
@@ -82,32 +121,36 @@
     <div class="charts d-flex justify-content-between mt-4">
       <div class="chart">
         <h6>Distribución de Usuarios Activos e Inactivos</h6>
-        <canvas baseChart height="220px" [type]="'pie'" [datasets]="pieChartUserActiveStatusDatasets"
-          [labels]="pieChartUserActiveStatusLabels" [options]="pieChartOptions"></canvas>
+
+        <canvas 
+        baseChart 
+        height="220px" 
+        [type]="'pie'" [datasets]="pieChartUserActiveStatusDatasets"
+          [labels]="pieChartUserActiveStatusLabels" [options]="pieChartOptions" [plugins]="pieChartPlugins"></canvas>
       </div>
       <div class="chart">
         <h6>Distribución por Edad</h6>
         <canvas baseChart height="220px" [type]="'bar'" [datasets]="histogramAgeDistributionDatasets"
-          [labels]="histogramAgeDistributionLabels" [options]="barChartOptions"></canvas>
+          [labels]="histogramAgeDistributionLabels" [options]="barChartOptions" [plugins]="pieChartPlugins"></canvas>
       </div>
       <div class="chart">
         <h6>Categorías de Usuarios</h6>
         <canvas baseChart height="220px" [type]="'bar'" [datasets]="barChartUserCategoryDatasets"
-          [labels]="barChartUserCategoryLabels" [options]="barChartOptions"></canvas>
+          [labels]="barChartUserCategoryLabels" [options]="barChartOptions" [plugins]="pieChartPlugins"></canvas>
       </div>
     </div>
   </div>
 
   <!-- Gráficos de Roles -->
-  <div class="chart-section mb-4 mt-3 p-3 border rounded">
+  <!-- <div class="chart-section mb-4 mt-3 p-3 border rounded"> -->
     <!-- <h3 class="section-title">Estadísticas de Roles</h3> -->
-    <div class="charts d-flex justify-content-between mt-4">
+    <!-- <div class="charts d-flex justify-content-between mt-4"> -->
       <!-- <div class="chart">
         <h6>Distribución de Roles</h6>
         <canvas baseChart height="220px" [type]="'bar'" [datasets]="barChartUserRoleDatasets"
           [labels]="barChartUserRoleLabels" [options]="barChartOptions"></canvas>
       </div> -->
-      <div class="chart">
+      <!-- <div class="chart">
         <h6>Roles Activos e Inactivos</h6>
         <canvas baseChart height="220px" [type]="'pie'" [datasets]="pieChartRoleActiveStatusDatasets"
           [labels]="pieChartRoleActiveStatusLabels" [options]="pieChartOptions"></canvas>
@@ -125,5 +168,5 @@
         ></canvas>
       </div>
     </div>
-  </div>
+  </div> -->
 </app-main-container>

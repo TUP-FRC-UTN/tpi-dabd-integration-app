@@ -183,13 +183,13 @@ export class AccessListComponent implements OnInit, AfterViewInit {
       this.retrieveByActive
     );
 
-    response.content.forEach(data => {
+    /*response.content.forEach(data => {
       if (data.authorizerId != undefined && data.authorizerId < 10) {
         data.authorizer = this.authorizerCompleterService.completeAuthorizer(data.authorizerId);
       } else {
         data.authorizer = this.authorizerCompleterService.completeAuthorizer(3);
       }
-    });
+    });*/
 
     this.list = response.content;
     this.filteredList = [...this.list];
@@ -203,11 +203,13 @@ export class AccessListComponent implements OnInit, AfterViewInit {
   //#region NgOnInit | BUSCAR
   ngOnInit() {
     this.confirmFilter();
+    this.getAll();
   }
 
   ngAfterViewInit(): void {
     this.filterComponent.filter$.subscribe((filter: string) => {
       this.getAllFiltered(filter)
+      
     });
   }
 
@@ -216,13 +218,13 @@ export class AccessListComponent implements OnInit, AfterViewInit {
   //#region GET_ALL
   getAll() {
     this.accessService.getAll(this.currentPage, this.pageSize, this.retrieveByActive).subscribe(data => {
-        data.items.forEach(date => {
+       /* data.items.forEach(date => {
           if (date.authorizerId != undefined && date.authorizerId< 10){
             date.authorizer = this.authorizerCompleterService.completeAuthorizer(date.authorizerId)
           } else {
             date.authorizer = this.authorizerCompleterService.completeAuthorizer(3)
           }
-        })
+        })*/
       this.completeList = this.transformListToTableData(data.items);
         let response = this.transformResponseService.transformResponse(data.items,this.currentPage, this.pageSize, this.retrieveByActive)
 
@@ -243,13 +245,13 @@ export class AccessListComponent implements OnInit, AfterViewInit {
       data.items = data.items.filter(x => (x.firstName?.toLowerCase().includes(filter)
       || x.lastName?.toLowerCase().includes(filter) || x.docNumber?.toString().includes(filter) || x.vehicleReg?.toLowerCase().includes(filter)))
         let response = this.transformResponseService.transformResponse(data.items,this.currentPage, this.pageSize, this.retrieveByActive)
-        response.content.forEach(data => {
+      /*  response.content.forEach(data => {
           if (data.authorizerId != undefined && data.authorizerId< 10){
             data.authorizer = this.authorizerCompleterService.completeAuthorizer(data.authorizerId)
           } else {
             data.authorizer = this.authorizerCompleterService.completeAuthorizer(3)
           }
-        })
+        })*/
 
         this.list = response.content;
         this.filteredList = [...this.list]
@@ -268,13 +270,13 @@ export class AccessListComponent implements OnInit, AfterViewInit {
   filterByVisitorType(type: string) {
     this.accessService.getByType(type).subscribe(data => {
         let response = this.transformResponseService.transformType(data.items,this.currentPage, this.pageSize, type, this.retrieveByActive)
-        response.content.forEach(data => {
+        /*response.content.forEach(data => {
           if (data.authorizerId != undefined && data.authorizerId < 10){
             data.authorizer = this.authorizerCompleterService.completeAuthorizer(data.authorizerId)
           } else {
             data.authorizer = this.authorizerCompleterService.completeAuthorizer(3)
           }
-        })
+        })*/
 
         this.list = response.content;
         this.filteredList = [...this.list]
@@ -300,9 +302,9 @@ export class AccessListComponent implements OnInit, AfterViewInit {
           && new Date(new Date(x.actionDate).setHours(0,0,0,0))
           <= new Date(new Date(dateTo+"T00:00:00").setHours(0,0,0,0))))
         let response = this.transformResponseService.transformResponse(data.items,this.currentPage, this.pageSize, this.retrieveByActive)
-        response.content.forEach(data => {
+    /*    response.content.forEach(data => {
           data.authorizer = this.authorizerCompleterService.completeAuthorizer(data.authorizerId)
-        })
+        })*/
 
         this.list = response.content;
         this.filteredList = [...this.list]
@@ -318,9 +320,9 @@ export class AccessListComponent implements OnInit, AfterViewInit {
   filterByAction(action: string) {
     this.accessService.getByAction(this.currentPage, this.pageSize, action, this.retrieveByActive).subscribe(data => {
       let response = this.transformResponseService.transformAction(data.items,this.currentPage, this.pageSize, action, this.retrieveByActive)
-        response.content.forEach(data => {
+        /*response.content.forEach(data => {
           data.authorizer = this.authorizerCompleterService.completeAuthorizer(data.authorizerId)
-        })
+        })*/
 
         this.list = response.content;
         this.filteredList = [...this.list]
@@ -406,28 +408,7 @@ export class AccessListComponent implements OnInit, AfterViewInit {
 
   //#endregion
 
-  //#region DELETE
-  /*  assignPlotToDelete(plot: Plot) {
-      //TODO: Este modal se va a modificar por otro mas especifico de Eliminar.
-      const modalRef = this.modalService.open(ConfirmAlertComponent)
-      modalRef.componentInstance.alertTitle = 'Confirmacion';
-      modalRef.componentInstance.alertMessage = `Estas seguro que desea eliminar el lote nro ${plot.plotNumber} de la manzana ${plot.blockNumber}?`;
-
-      modalRef.result.then((result) => {
-        if (result) {
-
-          this.plotService.deletePlot(plot.id, 1).subscribe(
-            response => {
-              this.toastService.sendSuccess('Lote eliminado correctamente.')
-              this.confirmFilter();
-            }, error => {
-              this.toastService.sendError('Error al eliminar lote.')
-            }
-          );
-        }
-      })
-    }*/
-
+  
   //#endregion
 
   //#region RUTEO

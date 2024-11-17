@@ -76,7 +76,7 @@ export class AccessFormComponent implements OnInit {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       plotId: ['', Validators.required],
-      docNumber: [null, Validators.required],
+      docNumber: [null, [Validators.required, Validators.min(0)]],
       action: ['ENTRY', Validators.required], // Nueva acción (ENTRY/SALIDA)
       vehicleType: ['CAR', Validators.required], // Tipo de vehículo (CAR/MOTORBIKE/etc.)
       vehicleReg: [''], // Matrícula del vehículo
@@ -138,8 +138,7 @@ export class AccessFormComponent implements OnInit {
                 if (result.isDismissed) {
                   this.accessService
                     .createAccess(
-                      formData,
-                      this.loginService.getLogin().id.toString()
+                      formData
                     )
                     .subscribe((data) => {
                       this.toastService.sendSuccess('Registro exitoso!');
@@ -151,17 +150,25 @@ export class AccessFormComponent implements OnInit {
               this.accessService
                 .createAccess(
                   formData,
-                  this.loginService.getLogin().id.toString()
-                )
-                .subscribe((data) => {
-                  this.toastService.sendSuccess('Registro exitoso!');
-                  if (data.is_Late) {
-                    this.toastService.sendSuccess(
-                      'Se ha notificado la salida tardía'
-                    );
+                //  this.loginService.getLogin().id.toString()
+                ).subscribe({
+                  next: (data) => {
+                    this.toastService.sendSuccess('Registro exitoso!');
+                    
+                    if(data.is_Late){
+                      this.toastService.sendSuccess('Se ha notificado la salida tardía');
+                    }
+                    this.ngOnInit();
+                  },
+                  error : (err)=>{
+
+                    if(err.error.status >= 400  || err.error.status <= 409){
+                      this.toastService.sendError(err.error.message);
+                      
+                    }
                   }
-                  this.ngOnInit();
-                });
+                })
+              
             }
           });
       }
@@ -171,7 +178,7 @@ export class AccessFormComponent implements OnInit {
   }
 
   onCancel() {
-    this.router.navigate(['/access/list']);
+    this.router.navigate(['/entries/access-query']);
   }
 
   onDocNumberChange(event: any) {

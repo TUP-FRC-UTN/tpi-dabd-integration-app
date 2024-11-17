@@ -8,6 +8,7 @@ import {
   UserDataService,
   UserData,
 } from '../../../../../shared/services/user-data.service';
+import { HttpHeaderResponse, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-appeal-infraction-modal',
@@ -18,6 +19,7 @@ import {
 })
 export class AppealInfractionModalComponent {
   @Input() infractionId: number | undefined;
+  @Input() userId: number | undefined;
 
   //services
 
@@ -78,7 +80,7 @@ export class AppealInfractionModalComponent {
       formData.append('user_id', this.userData.id.toString());
 
       this.infractionService
-        .appealInfraction(formData, this.infractionId!)
+        .appealInfraction(formData, this.infractionId!, this.userData.id)
         .subscribe({
           next: (response) => {
             this.activeModal.close(response);

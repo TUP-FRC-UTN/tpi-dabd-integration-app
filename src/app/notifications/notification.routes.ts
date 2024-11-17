@@ -43,10 +43,7 @@ export const NOTIFICATION_ROUTES: Routes = [
   },
   {
     path: 'send-email',
-    loadChildren: () =>
-      import('./modules/components/send-email/send-email.component').then(
-        (m) => m.SendEmailComponent
-      ),
+
     component: SendEmailComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
@@ -60,10 +57,6 @@ export const NOTIFICATION_ROUTES: Routes = [
   },
   {
     path: 'send-email-contact',
-    loadChildren: () =>
-      import(
-        './modules/components/send-email-contact/send-email-contact.component'
-      ).then((m) => m.SendEmailContactComponent),
     component: SendEmailContactComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],

@@ -1,18 +1,6 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  Inject,
-  inject,
-  OnInit,
-  ViewChild,
-  ElementRef,
-} from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { Component, Inject, inject, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
 import { EmailService } from '../../../services/emailService';
 import { TemplateModel } from '../../../models/templates/templateModel';
 import { EmailData } from '../../../models/notifications/emailData';
@@ -22,45 +10,26 @@ import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 import { TemplateService } from '../../../services/template.service';
 
 @Component({
-  selector: 'app-send-email',
+  selector: 'app-send-notification',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, MainContainerComponent],
+  imports: [CommonModule, ReactiveFormsModule, MainContainerComponent],
   templateUrl: './send-email.component.html',
-  styleUrl: './send-email.component.css',
+  styleUrl: './send-email.component.css'
 })
-@Inject('EmailService')
-@Inject('Base64Service')
-@Inject('TemplateService')
 export class SendEmailComponent implements OnInit {
-  toastService: ToastService = inject(ToastService);
-
-  @ViewChild('iframePreview', { static: false }) iframePreview!: ElementRef;
-
   emailForm: FormGroup;
-
-  emailService: EmailService = new EmailService();
-  templateService: TemplateService = new TemplateService();
-
-  base64Service: Base64Service = new Base64Service();
-
-  variables: Variable[] = [];
   templates: TemplateModel[] = [];
+  isLoading = false;
+  showModalToRenderHTML = false;
+  informationModalTitle: string = '';
+  isModalOpen: boolean = false;
+  @ViewChild('iframePreview') iframePreview!: ElementRef;
+  toastService: ToastService = inject(ToastService);
+  templateService: TemplateService = inject(TemplateService);
+  emailService: EmailService = inject(EmailService);
+  base64Service: Base64Service = inject(Base64Service);
 
-  showModalToRenderHTML: boolean = false;
-  isLoading: boolean = false;
-
-  // Estado del modal
-  isModalOpen = false;
-  informationModalTitle = '';
-  informationModalMessage = '';
-
-  constructor(
-    private formBuilder: FormBuilder,
-    // @Inject('EmailService') private emailService: EmailService,
-    // @Inject('Base64Service') private base64Service: Base64Service,
-    // @Inject('TemplateService') private templateService: TemplateService,
-    // private toastService: ToastService
-  ) {
+  constructor(private formBuilder: FormBuilder) {
     this.emailForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       subject: ['', [Validators.required, Validators.minLength(3)]],
@@ -70,15 +39,73 @@ export class SendEmailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.templateService.getAllTemplates().subscribe((data) => {
-      this.templates = data;
+    this.templateService.getAllTemplates().subscribe((templates: TemplateModel[]) => {
+      this.templates = templates;
+    });
+    this.emailForm.valueChanges.subscribe(() => {
+      this.emailForm.updateValueAndValidity()
+    })
+  }
+
+  get variables() {
+    return (this.emailForm.get('variables') as FormArray);
+  }
+
+  addVariable() {
+    const variableGroup = this.formBuilder.group({
+      key: [''],  // Variable "key" con validación requerida
+      value: [''],  // Variable "value" con validación requerida
+    });
+  
+    this.variables.push(variableGroup);  // Agregar el grupo al FormArray
+    this.emailForm.updateValueAndValidity();  // Actualiza la validez del formulario
+  }
+  
+  
+  removeVariable(index: number) {
+    this.variables.removeAt(index);  // Eliminar la variable del FormArray
+    this.emailForm.updateValueAndValidity();  // Actualiza la validez del formulario
+  }
+  
+  
+
+  submit() {
+    this.isLoading = true;
+
+    const variables = this.variables.value.map((variable: any) => ({
+      key: variable.key,
+      value: variable.value,
+    }));
+
+    const data: EmailData = {
+      recipient: this.emailForm.get('email')?.value,
+      subject: this.emailForm.get('subject')?.value,
+      variables: variables,
+      templateId: Number(this.emailForm.get('templateID')?.value),
+    };
+    console.log(data);
+    
+
+    this.emailService.sendEmail(data).subscribe({
+      next: () => {
+        this.toastService.sendSuccess('Enviado con éxito');
+        this.clean();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        if (err.status === 400) {
+          this.toastService.sendError("Las variables no coinciden. Por favor, verifique y vuelva a intentar.");
+        }
+
+       else this.toastService.sendError('Hubo un error al enviar el correo, pruebe más tarde');
+        this.isLoading = false;
+      },
     });
   }
 
   previewSelectedTemplate(): void {
-    const selectedTemplate = this.templates.find(
-      (t) => t.id == parseInt(this.emailForm.get('templateID')?.value)
-    );
+
+    const selectedTemplate = this.templates.find(t => t.id == parseInt(this.emailForm.get('templateID')?.value));
 
     if (selectedTemplate) {
       this.showModalToRenderHTML = true;
@@ -87,8 +114,7 @@ export class SendEmailComponent implements OnInit {
         const iframe = this.iframePreview.nativeElement as HTMLIFrameElement;
         iframe.srcdoc = selectedTemplate.body;
         iframe.onload = () => {
-          const iframeDocument =
-            iframe.contentDocument || iframe.contentWindow?.document;
+          const iframeDocument = iframe.contentDocument || iframe.contentWindow?.document;
           if (iframeDocument) {
             const height = iframeDocument.documentElement.scrollHeight;
             iframe.style.height = `${height}px`;
@@ -102,68 +128,13 @@ export class SendEmailComponent implements OnInit {
     this.showModalToRenderHTML = false;
   }
 
-  enviar() {
-    this.isLoading = true;
-
-    const data: EmailData = {
-      recipient: this.emailForm.get('email')?.value,
-      subject: this.emailForm.get('subject')?.value,
-      variables: this.variables,
-      templateId: Number(this.emailForm.get('templateID')?.value),
-    };
-
-    this.emailService.sendEmail(data).subscribe({
-      next: (data) => {
-        this.toastService.sendSuccess('Enviado con éxito');
-        this.clean();
-        this.isLoading = false;
-      },
-      error: (err) => {
-        this.toastService.sendError(
-          'Hubo un error al enviar el correo, pruebe más tarde'
-        );
-        this.isLoading = false;
-      },
-    });
-  }
-
-  addVariables() {
-    const name = this.emailForm.get('name')?.value;
-    const value = this.emailForm.get('value')?.value;
-
-    if (name !== null && name !== '' && value !== null && value !== '') {
-      const newVariable: Variable = {
-        key: name,
-        value: value,
-      };
-
-      this.variables.push(newVariable);
-      this.emailForm.get('name')?.setValue('');
-      this.emailForm.get('value')?.setValue('');
-    }
-  }
-
   clean() {
     this.emailForm.reset();
-    this.variables = [];
-  }
-
-  showInformationModal(title: string, message: string) {
-    this.informationModalTitle = title;
-    this.informationModalMessage = message;
-    this.isModalOpen = true;
-  }
-
-  closeInformationModal() {
-    this.isModalOpen = false;
+    this.variables.clear();
   }
 
   showInfo() {
-    const message = `
-      <strong>Envío de Notificaciones</strong><br>
-      Esta funcionalidad permite enviar notificaciones a contactos registrados. 
-      Asegúrese de completar todos los campos obligatorios antes de enviar.
-    `;
-    this.showInformationModal('Información', message);
-  }
+    this.isModalOpen = true;
+    this.informationModalTitle = 'Información sobre el Envío de Notificaciones';
+  }  
 }

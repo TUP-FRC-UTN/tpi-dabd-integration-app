@@ -17,6 +17,8 @@ export class TransformTicketPipe implements PipeTransform {
       ticketNumber: ticketDto.ticketNumber,
       ticketDetails: ticketDto.ticketDetails,
       lotId: ticketDto.lotId.toString(),
+      urlTicket:ticketDto.urlTicket,
+      period:ticketDto.period
     };
   }
 

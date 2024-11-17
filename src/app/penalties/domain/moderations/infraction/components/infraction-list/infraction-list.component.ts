@@ -80,12 +80,13 @@ export class InfractionListComponent {
     this.userDataService.loadNecessaryData().subscribe((response) => {
       if (response) {
         this.userData = response;
+        this.loadItems();
       }
     });
   }
 
   userHasRole(role: string): boolean {
-    return this.userData.roles.some((userRole) => userRole.name === role);
+    return this.userData?.roles?.some((userRole) => userRole?.name === role);
   }
 
   // Methods:
@@ -129,19 +130,23 @@ export class InfractionListComponent {
   }
 
   loadItems(): void {
-    this.updateFiltersAccordingToUser();
-    this.infractionService
-      .getAllInfractions(this.page, this.size, this.searchParams)
-      .subscribe((response) => {
-        this.infractionService.setItems(response.items);
-        this.infractionService.setTotalItems(response.total);
+    if (this.userData) {
+      this.updateFiltersAccordingToUser();
+      this.infractionService
+        .getAllInfractions(this.page, this.size, this.searchParams)
+        .subscribe((response) => {
+          this.infractionService.setItems(response.items);
+          this.infractionService.setTotalItems(response.total);
 
-        const infractionsToSolve = response.items.filter(
-          (item) => item.infraction_status.toString() === 'CREATED'
-        ).length;
+          const infractionsToSolve = response.items.filter(
+            (item) => item.infraction_status.toString() === 'CREATED'
+          ).length;
 
-        this.infractionBadgeService.updateInfractionsCount(infractionsToSolve);
-      });
+          this.infractionBadgeService.updateInfractionsCount(
+            infractionsToSolve
+          );
+        });
+    }
   }
 
   onPageChange = (page: number): void => {
@@ -163,6 +168,8 @@ export class InfractionListComponent {
   openFormModal(itemId: number | null = null): void {
     const modalRef = this.modalService.open(NewInfractionModalComponent);
     modalRef.componentInstance.itemId = itemId;
+    modalRef.componentInstance.userId = this.userData.id;
+
     modalRef.result
       .then((result) => {
         if (result) {
@@ -222,15 +229,15 @@ export class InfractionListComponent {
     .build();
 
   goToDetails(id: number) {
-    this.router.navigate(['/infraction', id]);
+    this.router.navigate(['/penalties/infraction', id]);
   }
 
   updateFiltersAccordingToUser() {
     if (!this.userHasRole('FINES_ADMIN')) {
       this.searchParams = {
         ...this.searchParams,
-        plotsIds: this.userData.plotIds,
-        userId: this.userData.id!,
+        plotsIds: this.userData?.plotIds,
+        userId: this.userData?.id,
       };
     } else {
       if (this.searchParams['userId']) {
