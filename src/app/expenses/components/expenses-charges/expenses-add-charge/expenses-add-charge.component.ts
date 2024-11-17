@@ -1,11 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import {
-  AbstractControl,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { ChargeService } from '../../../services/charge.service';
@@ -150,7 +147,6 @@ export class ExpensesAddChargeComponent implements OnInit{
 
         break;
       default:
-        console.log('Default' + categoryCharge)
         break;
 
     }
@@ -180,14 +176,11 @@ export class ExpensesAddChargeComponent implements OnInit{
       this.chargeService.addCharge(charges,this.user.value.id).subscribe(
         (response) => {
           this.toastService.sendSuccess("El cargo se ha registrado correctamente");
-
-          //('Cargo registrado exitosamente');
           this.chargeForm.reset();
           this.router.navigate([`expenses/cargos`]);
         },
         (error) => {
           this.toastService.sendError("Error al registrar el cargo");
-          console.error('Error al registrar el cargo:', error);
         }
       );
     }
@@ -216,9 +209,7 @@ export class ExpensesAddChargeComponent implements OnInit{
       return obj.map((item) => this.camelToSnake(item));
     } else if (obj !== null && typeof obj === 'object') {
       return Object.keys(obj).reduce((acc, key) => {
-        // Convierte la clave de camelCase a snake_case
         const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-        // Aplica la conversión recursiva si el valor es un objeto o array
         acc[snakeKey] = this.camelToSnake(obj[key]);
         return acc;
       }, {} as any);
@@ -228,9 +219,7 @@ export class ExpensesAddChargeComponent implements OnInit{
 
   ngOnInit(): void {
     let user = this.storage.getFromSessionStorage('user') as User;
-
     this.rolCode = user.value.roles.filter(rol => rol.code === URLTargetType.FINANCE).length == 1 ? true : false
-
     this.loadSelect();
   }
 }
