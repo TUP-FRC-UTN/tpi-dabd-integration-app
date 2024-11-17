@@ -24,6 +24,7 @@ import { NotificationsComponent } from './notifications/modules/components/notif
   selector: 'app-root',
   standalone: true,
   imports: [
+    RouterOutlet,
     RouterModule,
     MainLayoutComponent,
     ToastsContainer,
