@@ -108,12 +108,10 @@ export class FineDetailComponent {
 
   save(fineStatus: FineStatusEnum) {
     let fine: UpdateFineStateDTO = {
-      id: this.fine?.id,
-      updatedBy: this.userData.id!,
       fineState: fineStatus,
     };
 
-    this.fineService.updateState(fine).subscribe({
+    this.fineService.updateState(fine, this.fine!.id).subscribe({
       next: (response) => {
         this.toastService.sendSuccess('Se actualizó el estado con éxito.');
         this.ngOnInit();

@@ -14,14 +14,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
 import { SanctionTypeSelectComponent } from '../../../sanction-type/components/sanction-type-select/sanction-type-select.component';
-import { CadastreService } from '../../../../cadastre/services/cadastre.service';
-import { Plot } from '../../../../cadastre/plot/models/plot.model';
+
 import { firstValueFrom } from 'rxjs';
 import { ClaimDocumentsComponent } from '../claim-documents/claim-documents.component';
 import {
   UserDataService,
   UserData,
 } from '../../../../../shared/services/user-data.service';
+import { PlotService } from '../../../../../../users/services/plot.service';
+import { Plot } from '../../../../../../users/models/plot';
 
 @Component({
   selector: 'app-claim-detail',
@@ -42,7 +43,7 @@ export class ClaimDetailComponent implements OnInit {
   claimService = inject(ClaimService);
   sanctionTypeService = inject(SanctionTypeService);
 
-  cadastreService = inject(CadastreService);
+  plotService = inject(PlotService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private modalService = inject(NgbModal);
   private router = inject(Router);
@@ -107,13 +108,14 @@ export class ClaimDetailComponent implements OnInit {
       }
     });
 
-    this.cadastreService.getPlots().subscribe({
-      next: (response) => {
+    this.loadPlots();
+  }
+
+  loadPlots() {
+    this.plotService.getAllPlots(0, 100000, true).subscribe((response) => {
+      if (response) {
         this.plots = response.content;
-      },
-      error: (error) => {
-        console.error('Error fetching plots:', error);
-      },
+      }
     });
   }
 
