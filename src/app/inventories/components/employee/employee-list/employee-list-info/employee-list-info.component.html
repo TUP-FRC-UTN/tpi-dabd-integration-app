@@ -1,0 +1,71 @@
+<div class="modal-header fs-6 py-1">
+    <h4 class="modal-title">Información de la Lista de Empleados</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+  </div>
+  <div class="modal-body fs-6 py-2">
+    <div class="container-fluid">
+      <!-- Introducción -->
+      <div class="alert alert-info mb-2 py-2">
+        <h5 class="alert-heading">¿Qué es este listado?</h5>
+        <p class="mb-0 small">Este listado te permite visualizar y gestionar los empleados registrados.
+            Cada sección está diseñada para ofrecer un acceso a la información de manera ordenada y sencilla.</p>
+      </div>
+  
+  <!--    ACA PUEDEN AGREGAR/ELIMINAR LAS CARDS SEGUN NECESITEN-->
+      <!-- Campos Principales -->
+      <div class="card mb-2">
+        <div class="card-header py-1">
+          <h5 class="mb-0">Campos Principales</h5>
+        </div>
+        <div class="card-body py-2">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item py-1">
+              <strong>Empleado:</strong> Nombre y apellido de cada empleado.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Rol:</strong> El rol que cumple el empleado dentro del consorcio.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Documento:</strong> Documento de indentificación propio del empleado.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Fecha Contratación:</strong> Fecha de contratación del empleado.
+            </li>
+            <li class="list-group-item py-1">
+                <strong>Estado:</strong> Indica si el empleado está activo o fue eliminado.
+              </li>
+          </ul>
+        </div>
+      </div>
+  
+      <!-- Acciones -->
+      <div class="card mb-2">
+        <div class="card-header py-1">
+          <h5 class="mb-0">Acciones Disponibles</h5>
+        </div>
+        <div class="card-body py-2">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item py-1">
+              <strong>Editar:</strong> Editar los información del empleado seleccionado.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Eliminar</strong> Eliminar el empleado seleccionado.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Visualizar:</strong> Visualizar la información del empleado seleccionado.
+            </li>
+          </ul>
+        </div>
+      </div>
+  
+      <!-- Nota (OPCIONAL)-->
+      <div class="alert alert-warning py-2 mb-0">
+        <h5 class="alert-heading">Nota:</h5>
+        <p class="mb-0 small">Asegúrate de verificar la información antes de modificar, ingresar o eliminar un empleado.</p>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer py-2">
+    <button type="button" class="btn btn-primary" (click)="activeModal.close()">Entendido</button>
+  </div>
+  

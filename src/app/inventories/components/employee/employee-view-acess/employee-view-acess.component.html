@@ -1,0 +1,136 @@
+<ng-template #scheduleDetailModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Detalles del Horario</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+      @if (loading) {
+        <div class="d-flex justify-content-center p-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+      }
+  
+      @if (error) {
+        <div class="alert alert-danger" role="alert">
+          {{error}}
+        </div>
+      }
+  
+      @if (currentSchedule && !loading) {
+        <div class="container-fluid">
+          <!-- Header -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-body">
+                  <h6 class="card-subtitle mb-1 text-muted">ID Empleado</h6>
+                  <p class="card-text">{{currentSchedule.employee_id}}</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-body">
+                  <h6 class="card-subtitle mb-1 text-muted">Tipo de Turno</h6>
+                  <p class="card-text">{{currentSchedule.shift_type}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Date Range -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-body">
+                  <h6 class="card-subtitle mb-1 text-muted">Fecha de Inicio</h6>
+                  <p class="card-text">{{currentSchedule.start_date | date:'dd/MM/yyyy'}}</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-body">
+                  <h6 class="card-subtitle mb-1 text-muted">Fecha de Finalización</h6>
+                  <p class="card-text">{{currentSchedule.finish_date | date:'dd/MM/yyyy'}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Schedule Table -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6 class="card-subtitle mb-2 text-muted">Horarios por Día</h6>
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Día</th>
+                      <th>Entrada</th>
+                      <th>Salida</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (schedule of getDaySchedules(); track schedule.day) {
+                      <tr>
+                        <td>{{schedule.day}}</td>
+                        <td>{{schedule.entry}}</td>
+                        <td>{{schedule.exit}}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Selected Schedule Preview -->
+          <!-- @if (currentSchedule.day_schedules) {
+            <div class="card mb-3 bg-light">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="card-title mb-0">Resumen de Horarios</h5>
+                  <span class="text-muted">
+                    {{currentSchedule.start_date | date:'dd/MM/yyyy'}} - 
+                    {{currentSchedule.finish_date | date:'dd/MM/yyyy'}}
+                  </span>
+                </div>
+                <div class="row g-2">
+                  @for (schedule of getDaySchedules(); track schedule.day) {
+                    <div class="col-12 col-md-4">
+                      <div class="p-2 bg-white rounded shadow-sm">
+                        <span class="badge bg-primary me-2">{{schedule.day}}</span>
+                        <span class="text-muted">
+                          {{schedule.entry}} - {{schedule.exit}}
+                        </span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          } -->
+  
+          <!-- Multiple Schedules Navigation -->
+          @if (selectedSchedules.length > 1) {
+            <div class="d-flex justify-content-center gap-2 mb-3">
+              @for (schedule of selectedSchedules; track $index) {
+                <button 
+                  type="button"
+                  class="btn {{schedule === currentSchedule ? 'btn-primary' : 'btn-outline-primary'}}"
+                  (click)="setCurrentSchedule(schedule)">
+                  Horario {{$index + 1}}
+                </button>
+              }
+            </div>
+          }
+        </div> 
+      }
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="modal.close()">Cerrar</button>
+    </div>
+  </ng-template>

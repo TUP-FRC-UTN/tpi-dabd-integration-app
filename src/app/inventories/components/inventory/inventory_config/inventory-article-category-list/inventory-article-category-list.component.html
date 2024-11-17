@@ -1,0 +1,210 @@
+<app-main-container title="Lista de Categorías" (infoButtonClick)="showInfo()">
+  <!-- Barra de búsqueda y botones de acción -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="input-group w-25">
+      <span class="input-group-text"><i class="bi bi-search"></i></span>
+      <input type="text" class="form-control" placeholder="Buscar..." [formControl]="searchFilter"
+        (input)="applyFilters()" />
+      <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown"
+        aria-expanded="false">
+        <i class="bi bi-funnel-fill"></i>
+      </button>
+      <ul class="dropdown-menu">
+        <li>
+          <button class="dropdown-item" (click)="filterByStatus('ACTIVE')">Activo</button>
+        </li>
+        <li>
+          <button class="dropdown-item" (click)="filterByStatus('INACTIVE')">Inactivo</button>
+        </li>
+        <li>
+          <button class="dropdown-item" (click)="filterByStatus('')">Todos</button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="d-flex">
+      <button class="btn btn-outline-primary me-2" (click)="onCategoryUpdate()">
+        <i class="bi bi-plus-lg"></i></button>
+      <button class="btn btn-success me-2" (click)="exportToExcel()">
+        <i class="bi bi-file-earmark-excel"></i>
+      </button>
+      <button class="btn btn-danger" (click)="exportToPDF()">
+        <i class="bi bi-file-earmark-pdf"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenedor con scroll para la tabla -->
+  <div class="table-container mt-3" style="max-height: 400px; overflow-y: auto;">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Denominación</th>
+          <th>Estado</th>
+          <th class="text-end" style="padding-right: 20px;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="categories.length === 0">
+          <td colspan="3" class="text-center">No se encontraron categorías</td>
+        </tr>
+        <tr *ngFor="let category of categories">
+          <td>{{ category.denomination }}</td>
+          <td>
+            <i *ngIf="category.status.toString() === 'ACTIVE'" class="bi bi-check2-circle text-success"
+              style="font-size: 1.5rem;"></i>
+            <i *ngIf="category.status.toString() !== 'ACTIVE'" class="bi bi-x-circle text-danger"
+              style="font-size: 1.5rem;"></i>
+          </td>
+          <td class="text-end" style="padding-right: 20px;">
+            <div class="d-flex justify-content-end gap-2">
+              <!-- Botón de Editar -->
+              <button *ngIf="category.status.toString() === 'ACTIVE'" (click)="onCategoryUpdate(category)"
+                class="btn btn-warning btn-sm" title="Editar">
+                <i class="bi bi-pencil"></i>
+              </button>
+
+              <!-- Botón de Editar -->
+              <button *ngIf="category.status.toString() !== 'ACTIVE'" disabled class="btn btn-warning btn-sm"
+                class="btn btn-warning btn-sm" title="Editar">
+                <i class="bi bi-pencil"></i>
+              </button>
+
+              <!-- Botón de Eliminar -->
+              <button *ngIf="category.status.toString() === 'ACTIVE'" (click)="deleteCategory(category.id)"
+                class="btn btn-danger btn-sm" title="Eliminar">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+
+              <!-- Botón de Eliminar (Deshabilitado) -->
+              <button *ngIf="category.status.toString() !== 'ACTIVE'" disabled class="btn btn-danger btn-sm" title="Eliminar">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal de Filtros -->
+  <div *ngIf="showModalFilter" class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Filtrar Categorías</h5>
+          <button type="button" class="btn-close" (click)="closeModalFilter()"></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="filterForm">
+            <div class="form-group">
+              <label>Denominación</label>
+              <input type="text" class="form-control" formControlName="denomination">
+            </div>
+            <div class="form-group">
+              <label>Estado</label>
+              <select class="form-select" formControlName="status">
+                <option value="">Todos</option>
+                <option value="ACTIVE">Activo</option>
+                <option value="INACTIVE">Inactivo</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-danger" (click)="clearFilters()">Limpiar</button>
+          <button type="button" class="btn btn-primary" (click)="applyFilters()">Aplicar Filtros</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Componente de Alta/Edición -->
+  <app-article-category-update *ngIf="showCategoryUpdate" [category]="selectedCategory"
+    (closeModal)="onCategoryUpdateClose()"></app-article-category-update>
+
+    <ng-template #infoModal let-modal>
+      <div class="modal-header fs-6 py-1">
+        <h4 class="modal-title">Categorías de Artículos</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+      </div>
+      <div class="modal-body fs-6 py-2">
+        <div class="container-fluid">
+          <!-- Introducción -->
+          <div class="alert alert-info mb-2 py-2">
+            <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
+            <p class="mb-0 small">Esta pantalla te permite gestionar las diferentes categorías para clasificar los artículos del inventario.</p>
+          </div>
+
+          <!-- Campos Principales -->
+          <div class="card mb-2">
+            <div class="card-header py-1">
+              <h5 class="mb-0">Datos de Categorías</h5>
+            </div>
+            <div class="card-body py-2">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item py-1">
+                  <strong>Campos a ingresar:</strong> Se solicitará la denominación de la categoría (ej: Electrónicos, Papelería, Herramientas).
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>ATENCIÓN:</strong> Las categorías una vez creadas podrán ser asignadas a los artículos en su registro.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Acciones -->
+          <div class="card mb-2">
+            <div class="card-header py-1">
+              <h5 class="mb-0">Acciones Disponibles</h5>
+            </div>
+            <div class="card-body py-2">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item py-1">
+                  <strong>Agregar:</strong> Permite crear una nueva categoría de artículos.
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>Editar:</strong> Modifica una categoría existente (solo disponible para categorías activas).
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>Eliminar:</strong> Desactiva una categoría (solo disponible si no tiene artículos asociados).
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>Exportar:</strong> Permite descargar la lista en formato Excel o PDF.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Estados -->
+          <div class="card mb-2">
+            <div class="card-header py-1">
+              <h5 class="mb-0">Estados</h5>
+            </div>
+            <div class="card-body py-2">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item py-1">
+                  <i class="bi bi-check2-circle text-success"></i>
+                  <strong>Activo:</strong> La categoría está disponible para ser asignada a artículos.
+                </li>
+                <li class="list-group-item py-1">
+                  <i class="bi bi-x-circle text-danger"></i>
+                  <strong>Inactivo:</strong> La categoría no puede ser asignada a nuevos artículos.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Nota -->
+          <div class="alert alert-warning py-2 mb-0">
+            <h5 class="alert-heading">Nota:</h5>
+            <p class="mb-0 small">Las categorías son fundamentales para organizar y filtrar el inventario. Una buena categorización facilitará la gestión y búsqueda de artículos.</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer py-2">
+        <button type="button" class="btn btn-primary" (click)="modal.close()">Entendido</button>
+      </div>
+    </ng-template>
+
+</app-main-container>

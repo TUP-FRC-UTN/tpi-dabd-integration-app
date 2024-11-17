@@ -1,12 +1,45 @@
 .custom-button {
-    font-size: 1.2rem;        
-    color: #0d6efd;          
-    margin-left: 0.5rem;        
-    padding: 0;               
-    border: none;           
-    background: transparent;   
+    font-size: 1.2rem;
+    color: #0d6efd;
+    margin-left: 0.5rem;
+    padding: 0;
+    border: none;
+    background: transparent;
 }
 
 .custom-button i {
-    vertical-align: middle;     
+    vertical-align: middle;
+}
+
+.form-group {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.error-container {
+    position: absolute;
+    left: 0;
+    padding-left: calc(25% + 1rem);
+}
+
+label {
+    min-width: 25%;
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+.form-control, .form-select {
+    flex: 1;
+}
+
+.valid-feedback,
+.invalid-feedback {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.form-label-detail{
+    min-width: 12%;
 }

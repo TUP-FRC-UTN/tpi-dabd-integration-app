@@ -1,0 +1,23 @@
+<!-- Modal de Información -->
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="infoModalLabel">Información de la Pantalla</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss()"></button>
+        </div>
+        <div class="modal-body">
+          <p>Esta pantalla muestra un análisis detallado de los <strong>proveedores</strong> de la organización. A continuación se describen las métricas visualizadas en esta sección:</p>
+          <ul>
+            <li><strong>Total de Proveedores</strong>: Muestra el número total de proveedores registrados en el sistema.</li>
+            <li><strong>Proveedores Activos</strong>: Indica la cantidad de proveedores que actualmente están activos.</li>
+            <li><strong>Proveedores Inactivos</strong>: Muestra la cantidad de proveedores que actualmente están inactivos.</li>
+            <li><strong>Estado de Proveedores</strong>: Este gráfico de torta representa la proporción de proveedores activos e inactivos.</li>
+            <li><strong>Proveedores por Tipo de Servicio</strong>: Este gráfico de barras muestra la distribución de proveedores según el tipo de servicio que ofrecen (por ejemplo, servicios de limpieza, tecnología, mantenimiento, entre otros).</li>
+          </ul>
+          <p>Utiliza los filtros para buscar proveedores específicos o para segmentarlos por servicio y estado.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="activeModal.close()">Cerrar</button>
+        </div>
+      </div>
+    </div>
