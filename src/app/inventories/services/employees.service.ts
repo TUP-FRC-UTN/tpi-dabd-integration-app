@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, map, Observable } from 'rxjs';
-import { Employee, EmployeeFilter, EmployeePayment, StatusType } from '../models/employee.model';
+import { BehaviorSubject, map, Observable, tap } from 'rxjs';
+import { Employee, EmployeeFilter, EmployeePayment, EmployeeSchedule, StatusType } from '../models/employee.model';
 import { MapperService } from './MapperCamelToSnake/mapper.service';
+import { PaginatedResponse } from '../models/api-response';
 
 
 @Injectable({
@@ -10,14 +11,135 @@ import { MapperService } from './MapperCamelToSnake/mapper.service';
 })
 export class EmployeesService {
 
-   private apiUrl = 'http://localhost:8063/employees'; // URL de la API para empleados
+   private apiUrl = 'http://localhost:8007/employees'; // URL de la API para empleados
   //private apiUrl = 'http://localhost:3000/employees'; // URL de la API para empleados
 
   private http = inject(HttpClient);
   private selectedEmployee = new BehaviorSubject<Employee | null>(null);
   private mapperService = inject(MapperService);
-  
 
+  private apiUrlSHIFT = 'http://localhost:8007/shift'; // URL de la API para empleados
+
+
+  //FILTROS DASHBOARD
+  getFilteredEmployees(filters: any): Observable<Employee[]> {
+    const params = new HttpParams({ fromObject: filters });
+  
+    return this.http.get<any[]>(this.apiUrl, { params }).pipe(
+      map((employees) =>
+        employees.map((employee) => ({
+          ...employee,
+          hiringDate: employee.hiring_date ? new Date(employee.hiring_date) : null // Convertimos a Date o dejamos null
+        }))
+      )
+    );
+  }
+ 
+  //PARA LISTADO
+  getAllEmployeesPaged(
+    page: number = 0,
+    size: number = 400,
+    filters?: {
+      firstName?: string;
+      lastName?: string;
+      type?: string;
+      docType?: string;
+      docNumber?: string;
+      state?: string;
+      startDate?: string;
+      endDate?: string;
+      salary?: string;
+    }
+  ): Observable<PaginatedResponse<Employee>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+  
+    if (filters) {
+      if (filters.firstName) params = params.set('firstName', filters.firstName);
+      if (filters.lastName) params = params.set('lastName', filters.lastName);
+      if (filters.type) params = params.set('type', filters.type);
+      if (filters.docType) params = params.set('docType', filters.docType);
+      if (filters.docNumber) params = params.set('docNumber', filters.docNumber);
+      if (filters.state) params = params.set('state', filters.state);
+      if (filters.startDate) params = params.set('startDate', filters.startDate);
+      if (filters.endDate) params = params.set('endDate', filters.endDate);
+      if (filters.salary) params = params.set('salary', filters.salary);
+    }
+      console.log('Parámetros enviados al backend:', params.toString());
+    return this.http.get<PaginatedResponse<Employee>>(`${this.apiUrl}/paged`, { params }).pipe(
+      map(response => {
+        // Mapeo los campos de snake_case a camelCase
+        const mappedContent = response.content.map(employee => this.mapperService.toCamelCase(employee));
+        return {
+          ...response,
+          content: mappedContent
+        };
+      }),
+      tap(response => {
+        response.content.forEach(employee => {
+          if (!employee.hiringDate) {
+            console.warn(`Employee with ID ${employee.id} is missing hiringDate.`);
+          }
+        });
+      })
+    );
+  }
+  //PARA FILTROS DE DASHBOARD
+  getAllEmployeesDashboard(
+    filters?: {
+      startDate?: string;
+      endDate?: string;
+      state?:string;
+    }
+  ): Observable<Employee[]> {
+    let params = new HttpParams();
+  
+    if (filters) {
+      if (filters.startDate) params = params.set('startDate', filters.startDate);
+      if (filters.endDate) params = params.set('endDate', filters.endDate);
+      if (filters.state) params = params.set('state', filters.state); // Agregamos el filtro de estado
+
+    }
+  
+    console.log('Parámetros enviados al backend:', params.toString());
+  
+    return this.http.get<Employee[] | undefined>(`${this.apiUrl}/dashboards`, { params }).pipe(
+      map(response => {
+        if (!response) {
+          console.warn('El backend devolvió una respuesta vacía o undefined');
+          return []; // Devuelve una lista vacía si la respuesta es undefined
+        }
+        return response.map(employee => this.mapperService.toCamelCase(employee));
+      }),
+      tap(response => {
+        response.forEach(employee => {
+          if (!employee.hiringDate) {
+            console.warn(`Employee with ID ${employee.id} is missing hiringDate.`);
+          }
+        });
+      })
+    );
+  }
+  
+  
+  
+  
+  
+  //fin filtros dashboard
+  createSchedule(schedule: EmployeeSchedule): Observable<EmployeeSchedule> {
+    console.log('Schedule to create:', schedule);
+    return this.http.post<EmployeeSchedule>(this.apiUrlSHIFT, schedule);
+  }
+
+  getEmployeeSchedules(employeeId: number): Observable<EmployeeSchedule[]> {
+    return this.http.get<EmployeeSchedule[]>(`${this.apiUrlSHIFT}/employee/${employeeId}`);
+  }
+  
+  updateSchedule(schedule: EmployeeSchedule): Observable<EmployeeSchedule> {
+    return this.http.put<EmployeeSchedule>(`${this.apiUrlSHIFT}/${schedule.employee_id}`, schedule);
+  }
+  
   getEmployeesPageable(
     page: number = 0,
     size: number = 10,
@@ -26,12 +148,37 @@ export class EmployeesService {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
-    
+  
     if (type) {
       params = params.set('type', type);
     }
-    return this.http.get<PageResponse<Employee>>(`${this.apiUrl}/pageable`, { params });
+    
+    return this.http.get<PageResponse<Employee>>(`${this.apiUrl}/pageable`, { params }).pipe(
+      tap(response => {
+        // Verificar en la consola si todos los empleados tienen `hiringDate`
+        response.content.forEach(employee => {
+          if (!employee.hiringDate) {
+            console.warn(`Employee with ID ${employee.id} is missing hiringDate`);
+          }
+        });
+      })
+    );
   }
+  
+  // getEmployeesPageable(
+  //   page: number = 0,
+  //   size: number = 10,
+  //   type?: StatusType
+  // ): Observable<PageResponse<Employee>> {
+  //   let params = new HttpParams()
+  //     .set('page', page.toString())
+  //     .set('size', size.toString());
+    
+  //   if (type) {
+  //     params = params.set('type', type);
+  //   }
+  //   return this.http.get<PageResponse<Employee>>(`${this.apiUrl}/pageable`, { params });
+  // }
 
   // Obtener empleados
   getEmployees(): Observable<Employee[]> {
@@ -46,7 +193,12 @@ export class EmployeesService {
   }
 
   getEmployeeById(id: number): Observable<Employee> {
-    return this.http.get<Employee>(`${this.apiUrl}/${id}`);
+    console.log("Este es el id:", id);
+   // debugger
+    return this.http.get<Employee>(`${this.apiUrl}/${id}`).pipe(
+      map(employee => this.mapperService.toCamelCase(employee))
+    );
+    
   }
 
   // Agregar un nuevo empleado
@@ -60,7 +212,7 @@ export class EmployeesService {
   // Actualizar un empleado existente
   updateEmployee(employee: Employee): Observable<Employee> {
     //employee.hiringDate.setHours(employee.hiringDate.getHours() + 5);
-    return this.http.put<Employee>(`${this.apiUrl}/${employee.id}`, employee);
+    return this.http.put<Employee>(`${this.apiUrl}/update/${employee.id}`, employee);
   }
 
   // Eliminar (o desactivar) un empleado
@@ -89,7 +241,80 @@ export class EmployeesService {
       map(employees => this.mapperService.toCamelCase(employees))
     );
   }
+  // searchEmployees(filters: any): Observable<Employee[]> {
+  //   // Asegúrate de que el endpoint y el método de envío sean correctos
+  //   return this.http.post<Employee[]>(`${this.apiUrl}/search`, filters);
+  // }
+  
 
+
+  // getAllEmployeesPaged(
+  //   page: number = 0,
+  //   size: number = 40,
+  //   filters?: {
+  //     firstName?: string;
+  //     lastName?: string;
+  //     type?: string;
+  //     docType?: string;
+  //     docNumber?: string;
+  //     state?: string;
+  //     date?: string;
+  //     salary?: string;
+  //   }
+    
+  // ): Observable<PaginatedResponse<Employee>> {
+  //   let params = new HttpParams()
+  //     .set('page', page.toString())
+  //     .set('size', size.toString());
+  
+  //   if (filters) {
+  //     if (filters.firstName) params = params.set('firstName', filters.firstName);
+  //     if (filters.lastName) params = params.set('lastName', filters.lastName);
+  //     if (filters.type) params = params.set('type', filters.type);
+  //     if (filters.docType) params = params.set('docType', filters.docType);
+  //     if (filters.docNumber) params = params.set('docNumber', filters.docNumber);
+  //     if (filters.state) params = params.set('state', filters.state);
+  //     if (filters.date) params = params.set('date', filters.date);
+  //     if (filters.salary) params = params.set('salary', filters.salary);
+  //   }
+  //   console.log(filters);
+  //   console.log('filtros de tipo', filters?.type);
+  //   debugger
+  //   console.log('params', params);
+  //   return this.http.get<PaginatedResponse<Employee>>(`${this.apiUrl}/paged`, { params });
+  // }
+
+ /* getAllEmployeesPaged(filters: {
+    page?: number;
+    size?: number;
+    firstName?: string;
+    lastName?: string;
+    type?: string;
+    docType?: string;
+    docNumber?: string;
+    state?: string;
+    date?: string;
+    salary?: string;
+  }): Observable<PaginatedResponse<Employee>> {
+    let params = new HttpParams();
+    
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') {
+        params = params.append(key, value.toString());
+      }
+    });
+    return this.http.get<PaginatedResponse<Employee>>(`${this.apiUrl}/paged`, { params })//;
+    .pipe(
+      tap((response) => {
+        console.log('Respuesta de la API:', response);
+        console.log('Contenido de la primera página:', response.content);
+        if (response.content.length > 0) {
+          console.log('Primer empleado:', response.content[0]);
+          console.log('Fecha de contratación del primer empleado:', response.content[0].hiringDate);
+        }
+      })
+    );
+  } */ 
 }
 
 interface PageResponse<T> {

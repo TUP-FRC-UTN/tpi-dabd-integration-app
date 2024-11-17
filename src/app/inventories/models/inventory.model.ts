@@ -28,14 +28,6 @@ export enum TransactionType {
   OUTPUT = 'OUTPUT' // Egreso de inventario
 }
 
-// export interface Inventory {
-//   id?: number;
-//   article_id: number; // Relación con el ítem
-//   stock: number;
-//   min_stock?: number; // Puede ser null
-//   inventory_status: StatusType; // Baja lógica
-// }
-
 export interface Inventory {
   id?: number;
   article: Article;     // Información del artículo

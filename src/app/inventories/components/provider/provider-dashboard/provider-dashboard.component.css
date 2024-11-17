@@ -1,0 +1,160 @@
+.modal {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+/* Icon Styles */
+.icon-circle {
+width: 40px;
+height: 40px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.icon-circle i {
+font-size: 1.25rem;
+}
+:host {
+display: block;
+width: 100%;
+}
+
+.card {
+height: 100%;
+
+.card-body.fixed-height {
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+}
+
+.chart-wrapper {
+position: relative;
+flex: 1;
+min-height: 0; 
+height: 300px; 
+}
+
+.chart-info {
+margin-top: auto;
+padding-top: 1rem;
+}
+
+canvas {
+width: 100% !important;
+height: 100% !important;
+}
+
+
+.row {
+margin-right: 0;
+margin-left: 0;
+}
+
+.container {
+max-width: 1400px;
+}
+
+.bg-purple {
+background-color: #6f42c1; /* Color morado */
+}
+
+.bg-orange{
+background-color: #fd7e14; /* Color naranja */
+}
+
+.bg-gray{
+background-color: #6c757d; /* Color gris */
+}
+
+.icon-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress {
+  background-color: #f0f0f0;
+  border-radius: 0.5rem;
+}
+
+.card {
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+
+/* TOP ANTIGUEDAD PROVEEDORES */
+
+.top-providers-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.provider-item {
+  transition: all 0.2s ease;
+}
+
+.provider-item:hover {
+  transform: translateX(5px);
+  background-color: rgba(0,0,0,0.03);
+}
+
+.bg-bronze {
+  background-color: #cd7f32;
+}
+
+.ranking-badge .badge {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-circle i {
+  font-size: 1.2rem;
+}
+
+/* Estilizar la barra de desplazamiento */
+.top-providers-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.top-providers-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.top-providers-list::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.top-providers-list::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

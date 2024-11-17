@@ -1,0 +1,174 @@
+<app-main-container title="Dashboard de Empleados" (infoButtonClick)="showInfo()">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="input-group w-25">
+      <span class="input-group-text">
+        <i class="bi bi-search"></i>
+      </span>
+      <app-table-filters
+        style="z-index: 1;"
+        [filters]="filterConfig"
+        (filterValueChange)="applyDateFilters($event)">
+      </app-table-filters>
+    </div>
+  </div>
+
+<!-- Primera fila de KPIs -->
+<div class="row mb-4">
+  <!-- Empleados Contratados Último Mes -->
+  <div class="col-md-3 mb-3">
+    <div class="card shadow-sm" (click)="showRecentHires()" style="cursor: pointer;">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-primary text-white me-3">
+            <i class="bi bi-calendar-plus"></i>
+          </div>
+          <h6 class="card-subtitle mb-2">Empleados Contratados Último Mes</h6>
+        </div>
+        <h3 class="card-title mb-0">{{ employeesHiredLastMonth }}</h3>
+        <small class="text-muted">Usuarios registrados</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empleados Activos -->
+  <div class="col-md-3 mb-3">
+    <div class="card shadow-sm" (click)="showActiveEmployees()" style="cursor: pointer;">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-success text-white me-3">
+            <i class="bi bi-check-circle"></i>
+          </div>
+          <h6 class="card-subtitle mb-2">Empleados Activos</h6>
+        </div>
+
+        <div class="d-flex align-items-center">
+          <h3 class="card-title mb-0">{{ inServiceCount }}</h3>
+          <div class="ms-2" *ngIf="employeesGrowthCount !== 0">
+            <span class="badge"
+              [ngClass]="{
+                'bg-success': !isNegativeTrend,
+                'bg-danger': isNegativeTrend
+              }">
+              <i class="bi"
+                [ngClass]="{
+                  'bi-arrow-up': !isNegativeTrend,
+                  'bi-arrow-down': isNegativeTrend
+                }"></i>
+            </span>
+          </div>
+        </div>
+
+        <div class="progress mt-2" style="height: 10px;">
+          <div class="progress-bar bg-success"
+            role="progressbar"
+            [style.width]="employeesActivationRate + '%'"
+            [attr.aria-valuenow]="employeesActivationRate"
+            aria-valuemin="0"
+            aria-valuemax="100">
+          </div>
+          <div class="progress-bar bg-danger"
+            role="progressbar"
+            [style.width]="(100 - employeesActivationRate) + '%'"
+            [attr.aria-valuenow]="100 - employeesActivationRate"
+            aria-valuemin="0"
+            aria-valuemax="100">
+          </div>
+        </div>
+
+        <div class="mt-2 d-flex justify-content-between">
+          <small class="text-success">
+            {{ inServiceCount }} activos
+          </small>
+          <small class="text-danger">
+            {{ inactiveCount }} inactivos
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tasa de Retención -->
+  <div class="col-md-3 mb-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-info text-white me-3">
+            <i class="bi bi-graph-up"></i>
+          </div>
+          <h6 class="card-subtitle mb-2">Tasa de Retención</h6>
+        </div>
+        <h3 class="card-title mb-0">{{ formatNumber(retentionRate) }}%</h3>
+        <small class="text-muted">Empleados activos</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Antigüedad Promedio -->
+  <div class="col-md-3 mb-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-warning text-white me-3">
+            <i class="bi bi-calendar-check"></i>
+          </div>
+          <h6 class="card-subtitle mb-2">Antigüedad Promedio</h6>
+        </div>
+        <h3 class="card-title mb-0">{{ formatNumber(avgTenure) }}</h3>
+        <small class="text-muted">Años</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Segunda fila de KPIs -->
+<div class="row mb-4">
+  <!-- Nómina Total -->
+  <!-- <div class="col-md-6 mb-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-circle bg-purple text-white me-3">
+            <i class="bi bi-cash"></i>
+          </div>
+          <h6 class="card-subtitle mb-2">Nómina Total Mensual</h6>
+        </div>
+        <h3 class="card-title mb-0">$ {{ formatNumber(totalPayroll) }}</h3>
+        <small class="text-muted">Salario promedio: $ {{ formatNumber(averageSalary) }}</small>
+      </div>
+    </div>
+  </div> -->
+</div>
+
+<!-- Gráficos -->
+<div class="container mt-4">
+  <h3 class="text-center text-secondary mb-4">Métricas de Empleados</h3>
+  <div class="row g-4">
+    
+
+    <!-- Empleados por Tipo (Bar) -->
+    <div class="col-md-6">
+      <div class="card border-0 shadow-lg rounded-4">
+        <div class="card-body fixed-height">
+          <h5 class="card-title text-secondary mb-3">Empleados por Rol</h5>
+          <div class="chart-wrapper">
+            <canvas #barChart></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Distribución de Antigüedad (Line) -->
+    <div class="col-md-6">
+      <div class="card border-0 shadow-lg rounded-4">
+        <div class="card-body fixed-height">
+          <h5 class="card-title text-secondary mb-3">Distribución de Antigüedad</h5>
+          <div class="chart-wrapper">
+            <canvas #lineChart></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</app-main-container>

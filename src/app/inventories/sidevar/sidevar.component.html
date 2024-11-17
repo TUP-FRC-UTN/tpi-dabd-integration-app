@@ -1,41 +1,198 @@
-<div class="container-fluid mt-5">
-    <div class="row">
-        <div class="container-fluid">
-            <div class="row flex-nowrap">
-                <!-- Sidebar -->
-                <div class="bg-dark col-auto col-md-4 col-lg-3 min-vh-100">
-                    <div class="bg-dark p-2">
-                        <a class="d-flex text-decoration-none mt-1 justify-content-center align-items-center text-white text-center">
-                            <span class="fs-4 d-none d-md-inline text-center"></span>
-                        </a>
-                        <ul class="nav nav-pills flex-column mt-4">
-                            <!-- Empleados con submenú -->
-                            <li class="nav-item" ngbDropdown>
-                                <a class="nav-link" id="navbarDropdown" role="button" ngbDropdownToggle>Empleados</a>
-                                <div ngbDropdownMenu aria-labelledby="navbarDropdown">
-                                <a ngbDropdownItem routerLink="/employees/list">Listado</a>
-                                <a ngbDropdownItem routerLink="/employees/form">Registrar Empleado</a>
-                                </div>
-                            </li>
-                    
-                            <li class="nav-item" ngbDropdown>
-                                <a class="nav-link" id="navbarDropdown" role="button" ngbDropdownToggle>Proveedores</a>
-                                <div ngbDropdownMenu aria-labelledby="navbarDropdown">
-                                <a ngbDropdownItem routerLink="/providers/list">Listado</a>
-                                <a ngbDropdownItem routerLink="/providers/form">Registrar Proveedor</a>
-                                </div>
-                            </li>
-                            <li class="nav-item" ngbDropdown>
-                                <a class="nav-link" id="navbarDropdown" role="button" ngbDropdownToggle>Inventario</a>
-                                <div ngbDropdownMenu aria-labelledby="navbarDropdown">
-                                <a ngbDropdownItem routerLink="/inventories">Listado</a>
-                                <a ngbDropdownItem routerLink="/articles/article">Registrar Artículo</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+<aside id="sidebar" class="bg-dark text-white p-3 vh-100 sticky-top">
+    <!-- Encabezado de la Sidebar -->
+    <header class="sidebar-header d-flex align-items-center text-center mb-4">
+      <a class="navbar-brand text-white fs-4" href="#"> </a>
+    </header>
+  
+    <!-- Navegación con Menús Desplegables -->
+    <nav class="nav flex-column">
+      <!-- Empleados -->
+      <div class="nav-item">
+        <a
+          class="nav-link dropdown-toggle text-white"
+          data-bs-toggle="collapse"
+          href="#empleadosMenu"
+          role="button"
+          aria-expanded="false"
+          aria-controls="empleadosMenu"
+        >
+          Empleados
+        </a>
+        <div class="collapse" id="empleadosMenu">
+          <ul class="nav flex-column ms-3">
+            <li>
+              <a
+                class="nav-link text-white"
+                routerLink="inventories/employees/dashboard"
+                routerLinkActive="active"
+                >Gráficos</a
+              >
+            </li>
+            <li>
+              <a
+                class="nav-link text-white"
+                routerLink="inventories/employees/list"
+                routerLinkActive="active"
+                >Lista</a
+              >
+            </li>
+  
+            <li>
+              <a
+                class="nav-link text-white"
+                routerLink="inventories/employees/form"
+                routerLinkActive="active"
+                >Registrar</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+  
+      <!-- Proveedores -->
+      <div class="nav-item">
+        <a
+          class="nav-link dropdown-toggle text-white"
+          data-bs-toggle="collapse"
+          href="#proveedoresMenu"
+          role="button"
+          aria-expanded="false"
+          aria-controls="proveedoresMenu"
+        >
+          Proveedores
+        </a>
+        <div class="collapse" id="proveedoresMenu">
+          <ul class="nav flex-column ms-3">
+            <li>
+              <a
+                class="nav-link text-white"
+                routerLink="inventories/providers/dashboard"
+                routerLinkActive="active"
+              >
+                Gráficos
+              </a>
+            </li>
+            <li>
+              <a
+                class="nav-link text-white"
+                routerLink="inventories/providers/list"
+                routerLinkActive="active"
+                >Lista</a
+              >
+            </li>
+  
+            <li>
+              <a
+                class="nav-link text-white"
+                routerLink="inventories/providers/form"
+                routerLinkActive="active"
+                >Registrar</a
+              >
+            </li>
+            <!-- Configuración -->
+            <div class="nav-item">
+              <a
+                class="nav-link dropdown-toggle text-white"
+                data-bs-toggle="collapse"
+                href="#configuracionMenu"
+                role="button"
+                aria-expanded="false"
+                aria-controls="configuracionMenu"
+              >
+                Configuración
+              </a>
+              <div class="collapse" id="configuracionMenu">
+                <ul class="nav flex-column ms-3">
+                  <li>
+                    <a
+                      class="nav-link text-white"
+                      routerLink="inventories/providers/config/company"
+                      routerLinkActive="active"
+                      >Empresas</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="nav-link text-white"
+                      routerLink="inventories/providers/config/service"
+                      routerLinkActive="active"
+                      >Servicios</a
+                    >
+                  </li>
+                </ul>
+              </div>
             </div>
-         </div>
-    </div>
-</div>
+          </ul>
+        </div>
+      </div>
+  
+      <!-- Inventario -->
+      <div class="nav-item">
+        <a
+          class="nav-link dropdown-toggle text-white"
+          data-bs-toggle="collapse"
+          href="#inventarioMenu"
+          role="button"
+          aria-expanded="false"
+          aria-controls="inventarioMenu"
+        >
+          Inventario
+        </a>
+        <div class="collapse" id="inventarioMenu">
+          <ul class="nav flex-column ms-3">
+            <li>
+              <a
+                class="nav-link text-white"
+                routerLink="inventories/inventory/dashboard"
+                routerLinkActive="active"
+                >Gráficos
+              </a>
+            </li>
+            <li>
+              <a
+                class="nav-link text-white"
+                routerLink="inventories/inventories"
+                routerLinkActive="active"
+                >Lista</a
+              >
+            </li>
+            <li>
+              <a
+                class="nav-link text-white"
+                routerLink="inventories/articles/article"
+                routerLinkActive="active"
+                >Registrar</a
+              >
+            </li>
+  
+            <!-- Configuración -->
+            <div class="nav-item">
+              <a
+                class="nav-link dropdown-toggle text-white"
+                data-bs-toggle="collapse"
+                href="#configuracionMenu"
+                role="button"
+                aria-expanded="false"
+                aria-controls="configuracionMenu"
+              >
+                Configuración
+              </a>
+              <div class="collapse" id="configuracionMenu">
+                <ul class="nav flex-column ms-3">
+                  <li>
+                    <a
+                      class="nav-link text-white"
+                      routerLink="inventories/inventories/config/category"
+                      routerLinkActive="active"
+                      >Categorías</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </aside>
+  

@@ -1,61 +1,42 @@
 @if (isModalOpen) {
-<div class="register-overlay">
-  <div class="register-container">
-    <div class="card mx-auto" style="width: 50rem">
-      <div class="card-header">
-        <div class="d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Movimientos {{inventory?.article?.name}}</h5>
-          <button
-            type="button"
-            class="btn-close text-white"
-            (click)="onClose()"
-          ></button>
+  <div class="register-overlay">
+    <div class="register-container">
+      <div class="card mx-auto" style="width: 50rem">
+        <div class="card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Movimientos {{inventory?.article?.name}}</h5>
+            <button
+              type="button"
+              class="btn-close text-white"
+              (click)="onClose()"
+            ></button>
+          </div>
         </div>
-      </div>
-      <div class="card-body">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Tipo</th>
-              <th>Cantidad</th>
-              <th>Precio</th>
-              <th>Fecha</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let transaction of transactions">
-              <td>
-                {{ getTransactionTypeLabel(transaction.transactionType) }}
-              </td>
-              <td>{{ transaction.quantity }}</td>
-              <td>{{ transaction.price || "-" }}</td>
-              <td>{{ transaction.transactionDate ? (transaction.transactionDate | date: 'dd/MM/yyyy') : '-' }}</td>
-
-              <!-- <td>
-                <button
-                  (click)="editTransaction(transaction.id!)"
-                  class="btn btn-success btn-sm"
-                  title="Editar"
-                  data-toggle="tooltip"
-                  data-placement="top"
-                >
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button
-                  (click)="deleteTransaction(transaction.id!)"
-                  class="btn btn-danger btn-sm"
-                  title="Eliminar"
-                  data-toggle="tooltip"
-                  data-placement="top"
-                >
-                  <i class="bi bi-trash"></i>
-                </button>
-              </td> -->
-            </tr>
-          </tbody>
-        </table>
+        <div class="card-body">
+          <div class="transaction-table-container" style="max-height: 300px; overflow-y: auto;">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Tipo</th>
+                  <th>Cantidad</th>
+                  <th>Precio</th>
+                  <th>Fecha</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let transaction of transactions">
+                  <td>
+                    {{ getTransactionTypeLabel(transaction.transactionType) }}
+                  </td>
+                  <td>{{ transaction.quantity }}</td>
+                  <td>{{ transaction.price || "-" }}</td>
+                  <td>{{ transaction.transactionDate ? (transaction.transactionDate | date: 'dd/MM/yyyy') : '-' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 }
