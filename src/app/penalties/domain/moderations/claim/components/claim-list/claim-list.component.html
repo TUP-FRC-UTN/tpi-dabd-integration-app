@@ -34,7 +34,7 @@
 
 <ng-template #infraction let-item>
   @if (item.infraction_id) {
-  <a [href]="['/infraction/' + item.infraction_id]">
+  <a [href]="['/penalties/infraction/' + item.infraction_id]">
     {{ item.infraction_id }}
   </a>
   }@else { N/A }
@@ -92,7 +92,7 @@
   {{ item.description | truncate : 60 }}
 </ng-template>
 
-<app-main-container title="Reclamos" (infoButtonClick)="onInfoButtonClick()">
+<app-main-container title="Listado de Reclamos" (infoButtonClick)="onInfoButtonClick()">
   <app-table
     [items]="(items$ | async) || []"
     [columns]="columns"
@@ -152,13 +152,13 @@
               creación, infracción relacionada y estado del reclamo.
             </li>
             <li class="list-group-item py-1">
-              <strong>Filtros:</strong> Puedes aplicar filtros específicos
-              para encontrar reclamos rápidamente, ajustando la búsqueda a tus
+              <strong>Filtros:</strong> Puedes aplicar filtros específicos para
+              encontrar reclamos rápidamente, ajustando la búsqueda a tus
               necesidades.
             </li>
             <li class="list-group-item py-1">
-              <strong>Paginación:</strong> Control para navegar entre
-              múltiples páginas de reclamos.
+              <strong>Paginación:</strong> Control para navegar entre múltiples
+              páginas de reclamos.
             </li>
             <li class="list-group-item py-1">
               <strong>Exportar:</strong> Opción para exportar la lista de
@@ -180,18 +180,18 @@
               cada reclamo seleccionando "Ver detalle" en el menú de acciones.
             </li>
             <li class="list-group-item py-1">
-              <strong>Editar:</strong> Modifica la información de un reclamo
-              si tienes permisos de administrador o eres el creador y el
-              reclamo está en estado "Enviado".
+              <strong>Editar:</strong> Modifica la información de un reclamo si
+              tienes permisos de administrador o eres el creador y el reclamo
+              está en estado "Enviado".
             </li>
             <li class="list-group-item py-1">
-              <strong>Desaprobar:</strong> Los administradores pueden
-              desaprobar reclamos que se encuentran en estado "Enviado".
+              <strong>Desaprobar:</strong> Los administradores pueden desaprobar
+              reclamos que se encuentran en estado "Enviado".
             </li>
             <li class="list-group-item py-1">
-              <strong>Seleccionar Reclamos:</strong> Marca reclamos
-              específicos si tienes permisos de administrador y el estado del
-              reclamo es "Enviado".
+              <strong>Seleccionar Reclamos:</strong> Marca reclamos específicos
+              si tienes permisos de administrador y el estado del reclamo es
+              "Enviado".
             </li>
           </ul>
         </div>

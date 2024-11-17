@@ -377,13 +377,13 @@ export class EntityListComponent implements OnInit, AfterViewInit {
 
 
   disable(visitorId: number) {
-    this.visitorService.delete(visitorId,this.loginService.getLogin().id).subscribe(data => {
+    this.visitorService.delete(visitorId).subscribe(data => {
       this.getAll();
     })
   }
 
   enable(visitorId: number) {
-    this.visitorService.enable(visitorId,this.loginService.getLogin().id).subscribe(data => {
+    this.visitorService.enable(visitorId).subscribe(data => {
       this.getAll();
     })
   }

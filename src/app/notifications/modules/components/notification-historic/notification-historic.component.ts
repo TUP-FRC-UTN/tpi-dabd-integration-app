@@ -8,7 +8,7 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { NotificationService } from '../../../services/notification.service';
-import { NotificationFilter } from '../../..//models/notifications/filters/notificationFilter';
+import { NotificationFilter } from '../../../models/notifications/filters/notificationFilter';
 //import {Filter, FilterConfigBuilder } from 'ngx-dabd-grupo01'
 
 @Component({

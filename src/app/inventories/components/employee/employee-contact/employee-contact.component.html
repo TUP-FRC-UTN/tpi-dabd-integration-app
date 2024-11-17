@@ -1,0 +1,113 @@
+<app-main-container title="Información de Contacto">
+  <form [formGroup]="contactForm" class="row g-3 m-2">
+    <div formArrayName="contacts">
+      @for (contact of contacts.controls; track $index) {
+        <div [formGroupName]="$index" class="row">
+          <div class="col-md-5">
+            <div class="flex-row d-flex align-items-center">
+              <label [for]="'contactType'+$index" class="col-form-label col-md-4">
+                Tipo de Contacto<label class="text-danger">*</label>
+              </label>
+              <select class="form-select m-2" formControlName="contactType"
+                [id]="'contactType'+$index"
+                [ngClass]="{'is-invalid': contact.get('contactType')?.invalid && contact.get('contactType')?.touched,
+                           'is-valid': contact.get('contactType')?.valid}">
+                <option value="" disabled>Seleccione tipo de contacto</option>
+                <option value="EMAIL">Email</option>
+                <option value="PHONE">Teléfono</option>
+              </select>
+            </div>
+            <div>
+              @if (contact.get('contactType')?.invalid && contact.get('contactType')?.touched) {
+                <small class="text-danger ms-2">Tipo de contacto es requerido</small>
+              }
+            </div>
+          </div>
+
+          <div class="col-md-5">
+            <div class="flex-row d-flex align-items-center">
+              <label [for]="'contactValue'+$index" class="col-form-label col-md-2">
+                Valor<label class="text-danger">*</label>
+              </label>
+              <input type="text" class="form-control m-2" formControlName="contactValue"
+                [id]="'contactValue'+$index"
+                [placeholder]="'Ingrese ' + (contact.get('contactType')?.value === 'EMAIL' ? 'email' : 'teléfono')"
+                [ngClass]="{'is-invalid': contact.get('contactValue')?.invalid && contact.get('contactValue')?.touched,
+                           'is-valid': contact.get('contactValue')?.valid}">
+            </div>
+            <div>
+              @if (contact.get('contactValue')?.invalid && contact.get('contactValue')?.touched) {
+                <small class="text-danger ms-2">Valor de contacto es requerido</small>
+              }
+            </div>
+          </div>
+
+          <div class="col-md-2 d-flex align-items-center">
+            <button type="button" class="btn btn-danger btn-sm" (click)="removeContact($index)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="col-12">
+      <button type="button" class="btn btn-success" (click)="addContact()" [disabled]="contacts.length >= 2">
+        <i class="bi bi-plus-circle me-2"></i>
+      </button>
+    </div>
+  </form>
+</app-main-container>
+<!-- <div class="card mt-4">
+    <div class="card-body">
+      <h3 class="mb-4">Información de Contacto</h3>
+      <form [formGroup]="contactForm" class="mt-3">
+        <div formArrayName="contacts">
+          <div *ngFor="let contact of contacts.controls; let i=index" [formGroupName]="i" class="row mb-3">
+            <div class="col-md-5">
+              <label [for]="'contactType'+i" class="form-label">Tipo de Contacto<span class="text-danger">*</span></label>
+              <div class="position-relative">
+                <select formControlName="contactType" class="form-select" 
+                        [ngClass]="{'is-valid': contact.get('contactType')?.valid, 
+                                    'is-invalid': contact.get('contactType')?.invalid && contact.get('contactType')?.touched}" 
+                        [id]="'contactType'+i">
+                  <option value="" disabled>Seleccione tipo de contacto</option>
+                  <option value="EMAIL">Email</option>
+                  <option value="PHONE">Teléfono</option>
+                </select>
+                <div *ngIf="contact.get('contactType')?.invalid && contact.get('contactType')?.touched" 
+                     class="invalid-feedback">
+                  Tipo de contacto es requerido
+                </div>
+              </div>
+            </div>
+            <div class="col-md-5">
+              <label [for]="'contactValue'+i" class="form-label">Valor<span class="text-danger">*</span></label>
+              <div class="position-relative">
+                <input type="text" formControlName="contactValue" class="form-control" 
+                       [ngClass]="{'is-valid': contact.get('contactValue')?.valid, 
+                                   'is-invalid': contact.get('contactValue')?.invalid && contact.get('contactValue')?.touched}" 
+                       [id]="'contactValue'+i" [placeholder]="'Ingrese ' + (contact.get('contactType')?.value === 'EMAIL' ? 'email' : 'teléfono')">
+                <div *ngIf="contact.get('contactValue')?.invalid && contact.get('contactValue')?.touched" 
+                     class="invalid-feedback">
+                  Valor de contacto es requerido
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+              <button type="button" class="btn btn-danger mb-2" (click)="removeContact(i)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <button type="button" class="btn btn-success" (click)="addContact()" [disabled]="contacts.length >= 2">
+              <i class="bi bi-plus-circle me-2"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div> -->

@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Owner } from '../models/owner';
 import { PaginatedResponse } from '../models/api-response';
 import { Plot } from '../models/plot';
@@ -8,13 +8,15 @@ import { TransformPlotPipe } from '../pipes/plot-mapper.pipe';
 import { TransformOwnerPlotHistoryPipe } from '../pipes/owner-history-plots-mapper.pipe';
 import { OwnerPlotHistoryDTO } from '../models/ownerXplot';
 import { environment } from '../../../environments/environment';
+import { CaseTransformerService } from '../../entries/services/case-transformer.service';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class OwnerPlotService {
   constructor(private http: HttpClient) { }
-
+  
   host: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}`;
   giveActualOwner(plotId : number) {
     return this.http.get<Owner>(`${this.host}owner/current/plot/${plotId}`);

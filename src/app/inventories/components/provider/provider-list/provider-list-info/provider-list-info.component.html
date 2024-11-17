@@ -1,0 +1,78 @@
+<div class="modal-header fs-6 py-1">
+    <h4 class="modal-title">Información de la Lista de Proveedores</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body fs-6 py-2">
+    <div class="container-fluid">
+        <!-- Introducción -->
+        <div class="alert alert-info mb-2 py-2">
+            <h5 class="alert-heading">¿Qué es este listado?</h5>
+            <p class="mb-0 small">Este listado te permite visualizar y gestionar los proveedores registrados.
+                Cada sección está diseñada para ofrecer un acceso a la información de manera ordenada y sencilla.</p>
+        </div>
+
+        <!--    ACA PUEDEN AGREGAR/ELIMINAR LAS CARDS SEGUN NECESITEN-->
+        <!-- Campos Principales -->
+        <div class="card mb-2">
+            <div class="card-header py-1">
+                <h5 class="mb-0">Campos Principales</h5>
+            </div>
+            <div class="card-body py-2">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item py-1">
+                        <strong>Lista de Proveedores:</strong> Muestra los detalles de cada proveedor, incluyendo
+                        Nombre, CUIL,
+                        Servicio, Contacto, Dirección, Estado.
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Búsqueda:</strong> Funcionalidad para filtrar la lista de proveedores, por proveedores
+                        activos
+                        y/o inactivos, o por otros filtros de búsqueda.
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Limpiar:</strong> Permite limpiar los filtros seleccionados para la búsqueda.
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Paginación:</strong> Control para navegar entre múltiples páginas de proveedores.
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Nuevo:</strong> Permite ingresar un nuevo proveedor, nos redireccionará a un formulario
+                        para
+                        completarlo.
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Exportar:</strong> Botones para exportar la lista a formatos PDF o Excel.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="card mb-2">
+            <div class="card-header py-1">
+                <h5 class="mb-0">Acciones Disponibles</h5>
+            </div>
+            <div class="card-body py-2">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item py-1">
+                        <strong>Editar:</strong> Nos redireccionará a un formulario para editar el proveedor
+                        seleccionado.
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Eliminar:</strong> Nos solicitará confirmación para eliminar el proveedor seleccionado.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Nota (OPCIONAL)-->
+        <div class="alert alert-warning py-2 mb-0">
+            <h5 class="alert-heading">Nota:</h5>
+            <p class="mb-0 small">Asegúrate de verificar la información antes de modificar, ingresar o eliminar un
+                proveedor.</p>
+        </div>
+    </div>
+</div>
+<div class="modal-footer py-2">
+    <button type="button" class="btn btn-primary" (click)="activeModal.close()">Entendido</button>
+</div>

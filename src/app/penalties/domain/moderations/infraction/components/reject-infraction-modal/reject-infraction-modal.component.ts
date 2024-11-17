@@ -59,7 +59,7 @@ export class RejectInfractionModalComponent {
       formData.append('status', 'REJECTED');
 
       this.infractionService
-        .changeInfractionStatus(formData, this.infractionId!)
+        .changeInfractionStatus(formData, this.infractionId!, this.userData.id)
         .subscribe({
           next: (response) => {
             this.activeModal.close(response);

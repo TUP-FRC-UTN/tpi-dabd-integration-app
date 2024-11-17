@@ -1,7 +1,7 @@
 <app-main-container title="Reporte de Gastos">
   <!-- Comment out this section to see if it causes the error -->
-  <div class="container" style="overflow-x: hidden;">
-    <div class="card shadow-sm border border-1 px-2 p-1">
+  <div class="container" style="overflow-x: hidden">
+    <div class="card shadow-sm border border-1 px-2 p-2">
       <div class="d-flex align-items-center">
         <!-- Filtro de Mes y Año -->
         <div class="d-flex" [formGroup]="form">
@@ -81,22 +81,32 @@
             <div class="card-body">
               <!-- Condición para Monto -->
               <ng-container *ngIf="typeFilter === 'Monto'">
-                <h6 class="card-subtitle mb-2 text-muted">
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                >
                   <div class="icon-circle bg-success">
                     <i class="bi bi-cash-stack"></i>
                   </div>
-                  Gastos ordinarios
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos ordinarios } @else{
+                    Concentración ordinarios top 5}
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">${{ valueKPI1 }} mill</h3>
               </ng-container>
 
               <!-- Condición para Porcentaje -->
               <ng-container *ngIf="typeFilter === 'Porcentaje'">
-                <div class="icon-circle bg-success">
-                  <i class="bi bi-cash-stack"></i>
-                </div>
-                <h6 class="card-subtitle text-muted mb-2 ms-2">
-                  Gastos ordinarios
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                >
+                  <div class="icon-circle bg-success">
+                    <i class="bi bi-percent"></i>
+                  </div>
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos ordinarios } @else{
+                    Concentración ordinarios top 5}
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">
                   {{ valueKPI1 | number : "1.2-2" }}%
@@ -105,11 +115,16 @@
 
               <!-- Condición para Promedio -->
               <ng-container *ngIf="typeFilter === 'Promedio'">
-                <div class="icon-circle bg-success">
-                  <i class="bi bi-cash-stack"></i>
-                </div>
-                <h6 class="card-subtitle text-muted mb-2 ms-2">
-                  Gastos ordinarios
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                >
+                  <div class="icon-circle bg-success">
+                    <i class="bi bi-calculator"></i>
+                  </div>
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos ordinarios } @else{
+                    Concentración ordinarios top 5}
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">${{ valueKPI1 }} mill</h3>
               </ng-container>
@@ -124,22 +139,38 @@
             <div class="card-body">
               <!-- Condición para Monto -->
               <ng-container *ngIf="typeFilter === 'Monto'">
-                <h6 class="card-subtitle mb-2 text-muted">
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                  [ngStyle]="{
+                    'font-size': typeGraphic === 'General' ? '1rem' : '0.90rem'
+                  }"
+                >
                   <div class="icon-circle bg-success">
                     <i class="bi bi-cash-stack"></i>
                   </div>
-                  Gastos extraordinarios
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos extraordinarios }
+                    @else{ Concentración extraordinarios top 5}
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">${{ valueKPI2 }} mill</h3>
               </ng-container>
 
               <!-- Condición para Porcentaje -->
               <ng-container *ngIf="typeFilter === 'Porcentaje'">
-                <div class="icon-circle bg-success">
-                  <i class="bi bi-bar-chart-line"></i>
-                </div>
-                <h6 class="card-subtitle text-muted mb-2 ms-2">
-                  Gastos extraordinarios
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                  [ngStyle]="{
+                    'font-size': typeGraphic === 'General' ? '1rem' : '0.90rem'
+                  }"
+                >
+                  <div class="icon-circle bg-success">
+                    <i class="bi bi-percent"></i>
+                  </div>
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos extraordinarios }
+                    @else{ Concentración extraordinarios top 5}
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">
                   {{ valueKPI2 | number : "1.2-2" }}%
@@ -148,11 +179,19 @@
 
               <!-- Condición para Promedio -->
               <ng-container *ngIf="typeFilter === 'Promedio'">
-                <div class="icon-circle bg-success">
-                  <i class="bi bi-calculator"></i>
-                </div>
-                <h6 class="card-subtitle text-muted mb-2 ms-2">
-                  Gastos extraordinarios
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                  [ngStyle]="{
+                    'font-size': typeGraphic === 'General' ? '1rem' : '0.90rem'
+                  }"
+                >
+                  <div class="icon-circle bg-success">
+                    <i class="bi bi-calculator"></i>
+                  </div>
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos extraordinarios }
+                    @else{ Concentración extraordinarios top 5 }
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">${{ valueKPI2 }} mill</h3>
               </ng-container>
@@ -165,23 +204,34 @@
           <div class="card flex-grow-1 shadow-sm h-100">
             <div class="card-body">
               <!-- Condición para Monto -->
+
               <ng-container *ngIf="typeFilter === 'Monto'">
-                <h6 class="card-subtitle mb-2 text-muted">
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                >
                   <div class="icon-circle bg-info">
                     <i class="bi bi-cash-stack"></i>
                   </div>
-                  Gastos totales
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos totales } @else{
+                    Concentración total top 5}
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">${{ valueKPI3 }} mill</h3>
               </ng-container>
 
               <!-- Condición para Porcentaje -->
               <ng-container *ngIf="typeFilter === 'Porcentaje'">
-                <div class="icon-circle bg-info">
-                  <i class="bi bi-bar-chart-line"></i>
-                </div>
-                <h6 class="card-subtitle text-muted mb-2 ms-2">
-                  Gastos totales
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                >
+                  <div class="icon-circle bg-info">
+                    <i class="bi bi-percent"></i>
+                  </div>
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos totales } @else{
+                    Concentración total }
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">
                   {{ valueKPI3 | number : "1.2-2" }}%
@@ -190,11 +240,16 @@
 
               <!-- Condición para Promedio -->
               <ng-container *ngIf="typeFilter === 'Promedio'">
-                <div class="icon-circle bg-info">
-                  <i class="bi bi-calculator"></i>
-                </div>
-                <h6 class="card-subtitle text-muted mb-2 ms-2">
-                  Gastos totales
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                >
+                  <div class="icon-circle bg-info">
+                    <i class="bi bi-calculator"></i>
+                  </div>
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos totales } @else{
+                    Concentración total }
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">${{ valueKPI3 }} mill</h3>
               </ng-container>
@@ -203,71 +258,74 @@
         </div>
       </div>
     </div>
-    <div class="card mb-3">
-      <div class="justify-content-lg-start">
-        <div class="container mb-4">
-          <div class="col-12">
-            <div class="card hadow border-0 rounded-4">
-              <app-expenses-periods-graphic-bar
-                [ordinary]="reportPeriod?.resume?.ordinary || []"
-                [extraordinary]="reportPeriod?.resume?.extraordinary || []"
-                [type]="typeFilter || 'Monto'"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="col-12 p-2">
-          <div class="card shadow border-0 rounded-4" style="height: 100%">
-            <div class="d-flex justify-content-between align-items-center p-2">
-              <h6 class="mb-0">Top 5 proveedores</h6>
-              <button
-                class="btn btn-success d-flex align-items-center justify-content-center"
-                style="width: 32px; height: 32px"
-                (click)="exportToExcel()"
-              >
-                <i class="bi bi-file-earmark-excel text-white"></i>
-              </button>
-            </div>
-            <div class="col-12 d-flex">
-              <div class="col-6">
-                <div id="supplier-ordinary"></div>
-              </div>
-              <div class="col-6">
-                <div id="supplier-extraordinary"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-12 d-flex flex-wrap-reverse">
-            <div class="col-6 p-2">
-              <div class="card shadow border-0 rounded-1o p-1">
-                <h6 class="card-subtitle mb-2 text-muted">
-                  {{ typeFilter }} de gastos en millones
-                </h6>
-                <app-expenses-category-graphic
-                  [periods]="reportPeriod?.periods || []"
-                  [typeFilter]="typeFilter"
-                  type="Ordinary"
-                />
-              </div>
-            </div>
-            <div class="col-6 p-2">
-              <div class="card shadow border-0 rounded-10 p-1">
-                <h6 class="card-subtitle mb-2 text-muted">
-                  {{ typeFilter }} de gastos en millones
-                </h6>
 
-                <app-expenses-category-graphic
-                  [periods]="reportPeriod?.periods || []"
-                  [typeFilter]="typeFilter"
-                  type="Extraordinary"
-                />
-              </div>
+    <div class="justify-content-lg-start">
+      @if(typeGraphic==="General"){
+      <div class="container mb-4">
+        <div class="col-12">
+          <div class="card hadow border-0 rounded-4">
+            <app-expenses-periods-graphic-bar
+              [ordinary]="reportPeriod?.resume?.ordinary || []"
+              [extraordinary]="reportPeriod?.resume?.extraordinary || []"
+              [type]="typeFilter || 'Monto'"
+            />
+          </div>
+        </div>
+      </div>
+      } @if (typeGraphic==="Proveedores") {
+      <div class="col-12 p-2">
+        <div class="card shadow border-0 rounded-4" style="height: 100%">
+          <div class="d-flex justify-content-between align-items-center p-2">
+            <h6 class="mb-0">Top 5 proveedores</h6>
+            <button
+              class="btn btn-success d-flex align-items-center justify-content-center"
+              style="width: 32px; height: 32px"
+              (click)="exportToExcel()"
+            >
+              <i class="bi bi-file-earmark-excel text-white"></i>
+            </button>
+          </div>
+          <div class="col-12 d-flex">
+            <div class="col-6">
+              <div id="supplier-ordinary"></div>
+            </div>
+            <div class="col-6">
+              <div id="supplier-extraordinary"></div>
             </div>
           </div>
         </div>
       </div>
+      } @if (typeGraphic==="Categorias") {
+      <div class="row">
+        <div class="col-12 d-flex">
+          <div class="col-6 p-2">
+            <div class="card shadow border-0 rounded-4 p-3">
+              <h6 class="card-subtitle mb-2 text-muted">
+                {{ typeFilter }} de gastos en millones
+              </h6>
+              <app-expenses-category-graphic
+                [periods]="reportPeriod?.periods || []"
+                [typeFilter]="typeFilter"
+                type="Ordinary"
+              />
+            </div>
+          </div>
+          <div class="col-6 p-2">
+            <div class="card shadow border-0 rounded-4 p-3">
+              <h6 class="card-subtitle mb-2 text-muted">
+                {{ typeFilter }} de gastos en millones
+              </h6>
+
+              <app-expenses-category-graphic
+                [periods]="reportPeriod?.periods || []"
+                [typeFilter]="typeFilter"
+                type="Extraordinary"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      }
     </div>
   </div>
 </app-main-container>

@@ -1,8 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { NgbPagination, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { MainContainerComponent } from 'ngx-dabd-grupo01';
+import { MainContainerComponent, Filter, FilterConfigBuilder, TableFiltersComponent } from 'ngx-dabd-grupo01';
 import {  ContactAudit } from '../../../models/contacts/contactAudit';
 import { ContactAuditService } from '../../../services/contact-audit.service';
 import { Subscription } from 'rxjs';
@@ -10,6 +10,8 @@ import { ToastService } from 'ngx-dabd-grupo01';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { ActiveSearchTerm } from '../../../models/contacts/filters/activeSearchTerm';
+import { Console } from 'console';
 
 
 @Component({
@@ -20,41 +22,152 @@ import autoTable from 'jspdf-autotable';
     FormsModule,
     NgbPagination,
     NgbDropdownModule,
-    MainContainerComponent
+    MainContainerComponent,
+    TableFiltersComponent
   ],
   templateUrl: './contact-audit-history.component.html',
-  styleUrl: './contact-audit-history.component.css'
+  styleUrl: './contact-audit-history.component.css',
+  providers: [DatePipe]
 })
 export class ContactAuditHistoryComponent implements OnInit {
 
 
+  private subscription = new Subscription()
+  private readonly contactAuditService = inject(ContactAuditService)
   toastService: ToastService = inject(ToastService);
-
   isLoading: boolean = true;
 
-  // Paginación
-  currentPage = 1;
-  itemsPerPage = 10;
-  totalItems = 0;
-  sizeOptions: number[] = [10, 25, 50];
+
+    // Paginación
+    currentPage = 1;
+    itemsPerPage = 10;
+    totalItems = 0;
+    sizeOptions: number[] = [10, 25, 50];
+  
+  
+  
+    //Datos y estados
+    contactAuditItems: ContactAudit[] = [];
+    filteredContactAuditItems: ContactAudit[]=[];
+  
+    // Estados de modales
+    isInformationModalOpen = false;
+    informationModalTitle = '';
+    informationModalMessage = '';
+    selectedContactAudit: ContactAudit | null = null;
+  
+
+    // Filtros
+    globalSearchTerm = '';
+    filteredSearchTerm = '';
+    selectedContactType: string = '';
+    activeSearchTerm : ActiveSearchTerm = ActiveSearchTerm.GLOBAL;
 
 
-  // Filtros
-  searchTerm = '';
-  selectedContactType: string = '';
+    clearFilters() {
+      this.activeSearchTerm = ActiveSearchTerm.GLOBAL;
+      this.filteredSearchTerm = '';
+      this.globalSearchTerm = '';
+      this.selectedContactType = '';
+      this.currentPage = 1;
+      this.loadData();
+    }
 
-  //Datos y estados
-  contactAuditItems: ContactAudit[] = [];
-  filteredContactAuditItems: ContactAudit[]=[];
 
-  // Estados de modales
-  isInformationModalOpen = false;
-  informationModalTitle = '';
-  informationModalMessage = '';
-  selectedContactAudit: ContactAudit | null = null;
+  filterConfig: Filter[] = new FilterConfigBuilder()
+  .textFilter('Valor del contacto', 'contactValue', "Buscar por valor del contacto...")
+  .selectFilter('Tipo', 'contactType', 'Seleccione un tipo de contacto', [
+    {value: 'EMAIL', label: 'Correo electrónico'},
+    {value: 'PHONE', label: 'Teléfono'},
+    {value: 'SOCIAL_MEDIA_LINK', label: 'Red social'}
+  ])
+  .build()
 
-   //Estado de filtors
-   showInput: boolean = false;
+
+
+  loadData():void { 
+    this.isLoading = true;
+    this.subscription.add(
+      this.contactAuditService.getContactAudits().subscribe({
+        next: (data : ContactAudit[]) =>
+        {
+          //console.log('Datos que llegan al componente contact-audit-history: ', data)
+          this.contactAuditItems = data;
+          this.getFilteredContactAudits();
+          this.isLoading = false;
+        }
+
+      })
+    )
+  }
+
+  ngOnInit():void {
+    this.loadData();
+  }
+
+  
+  private applyFilters() {
+    this.currentPage = 1; // Resetear a la primera página al filtrar
+    this.loadData();
+  }
+  
+
+  
+
+  getFilteredContactAudits(): void {
+    this.filteredContactAuditItems = this.contactAuditItems.filter(item => {
+      //console.log('item.contactType on getFilteredContactAudits: ', item.contactType);
+      
+      // Transformar item.contactType a formato no legible
+      const itemContactTypeNonReadableFormat = this.contactAuditService.inverseMapContactType(item.contactType);
+      //console.log('itemContactTypeNonReadableFormat: ', itemContactTypeNonReadableFormat);
+
+      const matchesContactType = this.selectedContactType.trim() !== ''
+        ? itemContactTypeNonReadableFormat === this.selectedContactType
+        : true;
+  
+
+      const matchesGlobalSearchTerm = this.globalSearchTerm.trim() !== ''
+        ? item.value.toLowerCase().includes(this.globalSearchTerm.toLowerCase())
+        : true;
+
+      const matchesFilteredSearchTerm = this.filteredSearchTerm.trim() !== ''
+      ? item.value.toLowerCase().includes(this.filteredSearchTerm.toLowerCase())
+      : true;
+  
+      // Devolver true solo si ambos criterios son satisfechos
+      return matchesContactType && matchesGlobalSearchTerm && matchesFilteredSearchTerm ;
+    });
+  
+    // Actualizar la cantidad total de items para la paginación
+    this.updatePagination();
+  }
+
+
+
+
+  filterChange($event: Record<string, any>) {
+    this.clearFilters();
+
+
+    console.log('filterChange event: ', $event)
+ 
+    if($event['contactType']  && $event['contactType'].trim() !== '' ) {
+      //console.log('event contact type on filterChange: ', $event['contactType'])
+      this.selectedContactType = $event['contactType']
+    }
+
+    if($event['contactValue']  && $event['contactValue'].trim() !== '' ) {
+      this.activeSearchTerm = ActiveSearchTerm.FILTERED;
+      this.filteredSearchTerm = $event['contactValue']
+    }
+
+    this.loadData();
+
+  }
+
+
+
 
 
   // Modal handlers
@@ -103,77 +216,18 @@ export class ContactAuditHistoryComponent implements OnInit {
 
 
 
-
-  private subscription = new Subscription()
-
-
-  private readonly contactAuditService = inject(ContactAuditService)
-
-
-  loadData():void {
-    this.isLoading = true;
-    this.subscription.add(
-      this.contactAuditService.getContactAudits().subscribe({
-        next: (data : ContactAudit[]) =>
-        {
-          //console.log('Datos que llegan al componente: ', data)
-          this.contactAuditItems = data;
-          this.getFilteredContactAudits();
-          this.isLoading = false;
-        }
-
-      })
-    )
-  }
-
-  ngOnInit():void {
-    this.loadData();
-  }
-
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
 
 
-  clearSearch() {
-    this.searchTerm = '';
-    this.selectedContactType = '';
-    this.showInput = false; // Ocultar input al limpiar
-    this.loadData();
-  }
 
-  filterByContactType(contactType: string): void {
-    this.showInput = true;
-    this.selectedContactType = contactType;
-    this.getFilteredContactAudits();
-  }
-
-  onSearchTextChange(searchTerm: string) {
-    this.searchTerm = searchTerm;
+  onGlobalSearchTextChange(searchTerm: string) {
+    this.globalSearchTerm = searchTerm;
     this.getFilteredContactAudits();
   }
 
 
-  getFilteredContactAudits(): void {
-    this.filteredContactAuditItems = this.contactAuditItems.filter(item => {
-
-      //Transformar item.contactType de string legible a EMAIL - PHONE - etc para poder hacer la comp.
-     const itemContactTypeNonReadableFormat = this.contactAuditService.inverseMapContactType(item.contactType);
-
-      const matchesContactType = this.selectedContactType
-        ? itemContactTypeNonReadableFormat === this.selectedContactType
-        : true;
-
-      const matchesSearchTerm = this.searchTerm
-        ? item.value.toLowerCase().includes(this.searchTerm.toLowerCase())
-        : true;
-
-      return matchesContactType && matchesSearchTerm;
-    });
-
-    // Actualizar la cantidad total de items para la paginación
-    this.updatePagination();
-  }
 
 
   
@@ -187,20 +241,19 @@ export class ContactAuditHistoryComponent implements OnInit {
       next: (audits) => {
         autoTable(doc, {
           startY: 30,
-          head: [['Fecha', 'ID revisión', 'Tipo revisión', 'Tipo contacto', 'Valor']],
+          head: [['Fecha','Tipo revisión', 'Tipo contacto', 'Valor']],
           body: audits.map((audit) => [
             audit.revisionDate,
-            audit.revisionId,
             audit.revisionType,
             audit.contactType,
             audit.value
           ]),
           columnStyles: {
-            0: { cellWidth: 30 },  // Fecha del cambio - mantiene el ancho para las fechas
-            1: { cellWidth: 25 },  // ID de revisión - números cortos
-            2: { cellWidth: 20 },  // Tipo de revisión - palabras como "Adición"/"Modificación"
-            3: { cellWidth: 35 },  // Tipo de contacto - "Correo electrónico"
-            4: { cellWidth: 60 }   // Valor - emails largos como nicolasgeronimrodigoku@gmail.com
+            0: { cellWidth: 45 },  // Fecha del cambio - mantiene el ancho para las fechas
+            //1: { cellWidth: 25 },  // ID de revisión - números cortos
+            1: { cellWidth: 30 },  // Tipo de revisión - palabras como "Adición"/"Modificación"
+            2: { cellWidth: 35 },  // Tipo de contacto - "Correo electrónico"
+            3: { cellWidth: 60 }   // Valor - emails largos como nicolasgeronimrodigoku@gmail.com
           },
           styles: { overflow: 'linebreak' },
         });
@@ -221,10 +274,9 @@ export class ContactAuditHistoryComponent implements OnInit {
   exportToExcel() {
     // Implementar la lógica de exportación a Excel
     this.contactAuditService.getContactAudits().subscribe({
-      next: (audits:any) => {
-        const data = audits.map((audit:any) => ({
+      next: (audits) => {
+        const data = audits.map((audit) => ({
           Fecha: audit.revisionDate,
-          ID_revision: audit.revisionId,
           Tipo_revision: audit.revisionType,
           Tipo_contacto: audit.contactType,
           Valor: audit.value
@@ -240,7 +292,7 @@ export class ContactAuditHistoryComponent implements OnInit {
         const fileName = `AuditoríaContactos-${dateTime}.xlsx`; // Nombre del archivo
         XLSX.writeFile(wb, fileName);
       },
-      error: (error:any) => {
+      error: (error) => {
         this.toastService.sendError("Hubo un error generando el archivo Excel");
       },
     });

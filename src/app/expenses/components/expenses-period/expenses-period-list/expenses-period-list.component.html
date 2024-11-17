@@ -76,7 +76,7 @@
         'ordinary.amount', 'extraordinary.amount', 'state'] : searchTerm; track
         $index) {
         <tr>
-          <td>{{ period.month }} / {{ period.year }}</td>
+          <td>{{ period.month }}/{{ period.year }}</td>
           <td style="text-align: end">
             {{
               period.extraordinary?.amount?.toLocaleString("es-AR", {
@@ -132,18 +132,18 @@
                 >
                   Liquidación
                 </button>
-
                 @if ( period.state != 'Cerrado') {
                   <li>
                     <button
-                    class="dropdown-item btn btn-danger"
-                    (click)="newPeriod(period.id, period.month.toString() + '/' + period.year.toString())"
+                      class="dropdown-item btn btn-danger"
+                      (click)="newPeriod(period.id, period.month.toString() + '/' + period.year.toString())"
                     >
-                    Cambiar Fecha de Fin
-                  </button>
-                 </li>
-                }
+                      Cambiar Fecha de Fin
+                    </button>
+                  </li>
+                  }
                 @if (rolCode){
+
                   @if ( period.state == 'Liquidación Cerrada') {
                   <li>
                     <button
@@ -184,7 +184,7 @@
     </table>
     <div class="row d-flex align-items-between">
       <div class="col-1">
-        <select style="width: fit-content;"
+        <select style="width: 147px;"
           name="tipoExpensa"
           id="tipoExpensa"
           class="form-select"

@@ -115,7 +115,7 @@ export class InfractionDetailComponent implements OnInit {
 
   showAppealButton(): boolean {
     return (
-      this.userHasRole('FINES_ADMIN') &&
+      this.userHasRole('OWNER') &&
       this.infraction!.infraction_status === ('CREATED' as InfractionStatusEnum)
     );
   }
@@ -159,6 +159,8 @@ export class InfractionDetailComponent implements OnInit {
   appealInfraction() {
     const modalRef = this.modalService.open(AppealInfractionModalComponent);
     modalRef.componentInstance.infractionId = this.infractionId;
+    modalRef.componentInstance.userId = this.userData.id;
+
     modalRef.result
       .then((result) => {
         if (result) {

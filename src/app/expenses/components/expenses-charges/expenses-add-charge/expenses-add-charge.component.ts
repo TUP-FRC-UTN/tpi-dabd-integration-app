@@ -51,12 +51,6 @@ export class ExpensesAddChargeComponent implements OnInit{
   selectedPeriodId: number | null = null;
   selectedLotId : number = 0;
 
-
-  onCancel() {
-    this.chargeForm.reset();
-    this.router.navigate([`expenses/cargos`])
-  }
-
   showInfo(){
     this.modalService.open(ChargeInfoComponent, {
       size: 'lg',
@@ -132,6 +126,7 @@ export class ExpensesAddChargeComponent implements OnInit{
     });
   }
   ValidarMonto(categoryCharge : CategoryCharge) {
+    if (categoryCharge == undefined) return
 
     switch(categoryCharge.amountSign) {
       case ('Positivo'):
@@ -157,12 +152,11 @@ export class ExpensesAddChargeComponent implements OnInit{
 
     }
     this.chargeForm.get('amount')?.updateValueAndValidity();
-    console.log(this.chargeForm.get('amount'))
   }
 
 
   onBack() {
-    this.router.navigate([`expenses/cargos`]);
+    this.router.navigate(['expenses/cargos']);
   }
 
   onSubmit(): void {
@@ -230,41 +224,8 @@ export class ExpensesAddChargeComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this.storage.saveToStorage(this.userLoggin,'user');
-    this.loadSelect();
     let user = this.storage.getFromSessionStorage('user') as User;
+    this.storage.saveToStorage(user,'user');
+    this.loadSelect();
   }
-
-
-
-  userLoggin = {
-    "value": {
-      "id": 1,
-      "first_name": "Super",
-      "last_name": "Admin",
-      "user_name": "superadmin",
-      "email": "superadmin@example.com",
-      "is_active": true,
-      "owner_id": 1,
-      "plot_id": 1,
-      "addresses": null,
-      "contacts": null,
-      "roles": [
-        {
-          "id": 1,
-          "code": 999,
-          "name": "SUPERADMIN",
-          "description": "Nivel más alto de acceso",
-          "pretty_name": "Superadministrador",
-          "is_active": true
-        }
-      ],
-      "created_date": "12/11/2024 09:53 p. m.",
-      "document_number": "12345678",
-      "document_type": "DNI",
-      "birthdate": "01/01/1990"
-    },
-    "expirationTime": 1731545612929
-  };
-
 }

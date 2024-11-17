@@ -1,0 +1,229 @@
+<app-main-container title="Lista de Compañías" (infoButtonClick)="showInfo()">
+<!-- Header con búsqueda y botones de acción -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="input-group w-25">
+    <span class="input-group-text">
+      <i class="bi bi-search"></i>
+    </span>
+    <input 
+      type="text" 
+      class="form-control" 
+      placeholder="Buscar compañía..." 
+      [formControl]="searchFilter"
+    />
+    <app-table-filters style="z-index: 1;" [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters> 
+     <!-- <button type="button" class="btn btn-outline-info" (click)="openModalFilter()">
+      <i class="bi bi-funnel-fill"></i>
+    </button>  -->
+  </div>
+  
+  <!-- Botones de acción -->
+  <div class="d-flex">
+    <button class="btn btn-outline-primary me-2" (click)="onCompanyUpdate()">
+      <i class="bi bi-plus-lg"></i>
+    </button>
+    <button class="btn btn-success me-2" (click)="exportToExcel()">
+      <i class="bi bi-file-earmark-excel"></i>
+    </button>
+    <button class="btn btn-danger" (click)="exportToPDF()">
+      <i class="bi bi-file-earmark-pdf"></i>
+    </button>
+  </div>
+</div>
+
+  <!-- Contenedor con scroll para la tabla -->
+  <div class="table-container mt-3" style="max-height: 400px; overflow-y: auto;">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nombre de Compañía</th>
+          <th>Estado</th>
+          <th class="text-end" style="padding-right: 20px;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if(companies.length === 0) {
+          <tr>
+            <td colspan="3" class="text-center">No se encontraron compañías</td>
+          </tr>
+        }
+        @for (company of companies; track company.id) {
+          <tr>
+            <td>{{ company.name }}</td>
+            <td>
+              @if (company.enabled) {
+                <i class="bi bi-check2-circle text-success"
+                  style="font-size: 1.5rem;"></i>
+              }
+              @if (!company.enabled) {
+                <i class="bi bi-x-circle text-danger"
+                  style="font-size: 1.5rem;"></i>
+              }
+            </td>
+            <td class="text-end" style="padding-right: 20px;">
+              <div class="d-flex justify-content-end gap-2">
+                <!-- Botón de Editar -->
+                @if(company.enabled) {
+                  <button (click)="onCompanyUpdate(company)" 
+                    class="btn btn-warning btn-sm" title="Editar">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                }
+                <!-- Botón de Editar (Deshabilitado) -->
+                @if (!company.enabled) {
+                  <button disabled 
+                    class="btn btn-warning btn-sm" title="Editar">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                }
+      
+                <!-- Botón de Eliminar -->
+                @if (company.enabled) {
+                  <button (click)="deleteCompany(company.id)"
+                    class="btn btn-danger btn-sm" title="Eliminar">
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+                }   
+                <!-- Botón de Eliminar (Deshabilitado) -->
+                @if (!company.enabled) {
+                  <button disabled 
+                    class="btn btn-danger btn-sm" title="Eliminar">
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal de Filtros -->
+  @if (showModalFilter) {
+    <div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Filtrar Compañías</h5>
+            <button type="button" class="btn-close" (click)="closeModalFilter()"></button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="filterForm">
+              <div class="form-group mb-3">
+                <label>Nombre de Compañía</label>
+                <input type="text" class="form-control" formControlName="name">
+              </div>
+              <div class="form-group">
+                <label>Estado</label>
+                <select class="form-select" formControlName="enabled">
+                  <option value="">Todos</option>
+                  <option value="true">Activo</option>
+                  <option value="false">Inactivo</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-danger" (click)="clearFilters()">Limpiar</button>
+            <button type="button" class="btn btn-primary" (click)="applyFilters()">Aplicar Filtros</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Componente de Alta/Edición -->
+  @if (showServiceTypeUpdate) {
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <app-provider-type-update 
+            [company]="selectedCompany" 
+            (closeModal)="onServiceTypeUpdateClose()">
+          </app-provider-type-update>
+        </div>
+      </div>
+    </div>
+  }
+  
+
+  <ng-template #infoModal let-modal>
+    <div class="modal-header fs-6 py-1">
+      <h4 class="modal-title">Gestión de Compañías</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body fs-6 py-2">
+      <div class="container-fluid">
+        <!-- Introducción -->
+        <div class="alert alert-info mb-2 py-2">
+          <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
+          <p class="mb-0 small">Esta pantalla te permite gestionar las diferentes compañías en el sistema.</p>
+        </div>
+  
+        <!-- Campos Principales -->
+        <div class="card mb-2">
+          <div class="card-header py-1">
+            <h5 class="mb-0">Datos de Compañías</h5>
+          </div>
+          <div class="card-body py-2">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item py-1">
+                <strong>Campos a ingresar:</strong> Se requiere el nombre de la compañía.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>ATENCIÓN:</strong> Las compañías una vez creadas podrán ser asociadas a proveedores.
+              </li>
+            </ul>
+          </div>
+        </div>
+  
+        <!-- Acciones -->
+        <div class="card mb-2">
+          <div class="card-header py-1">
+            <h5 class="mb-0">Acciones Disponibles</h5>
+          </div>
+          <div class="card-body py-2">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item py-1">
+                <strong>Agregar:</strong> Permite crear una nueva compañía.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Editar:</strong> Modifica una compañía existente.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Eliminar:</strong> Desactiva una compañía.
+              </li>
+              <li class="list-group-item py-1">
+                <strong>Exportar:</strong> Permite descargar la lista en formato Excel o PDF.
+              </li>
+            </ul>
+          </div>
+        </div>
+  
+        <!-- Estados -->
+        <div class="card mb-2">
+          <div class="card-header py-1">
+            <h5 class="mb-0">Estados</h5>
+          </div>
+          <div class="card-body py-2">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item py-1">
+                <i class="bi bi-check2-circle text-success"></i>
+                <strong>Activo:</strong> La compañía está habilitada en el sistema.
+              </li>
+              <li class="list-group-item py-1">
+                <i class="bi bi-x-circle text-danger"></i>
+                <strong>Inactivo:</strong> La compañía está deshabilitada.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer py-2">
+      <button type="button" class="btn btn-primary" (click)="modal.close()">Entendido</button>
+    </div>
+  </ng-template>
+</app-main-container>

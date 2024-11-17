@@ -1,152 +1,446 @@
-<div class="card">
-    <div class="card-body">
-<div class="m-4">
-  @if(!isEdit){
-      <h2 class="mb-4">Registrar Empleado:</h2>
-  }
-  @else {
-      <h2 class="mb-4">Modificar Empleado:</h2>
-  }
-  <form [formGroup]="employeeForm" (submit)="saveEmployee()" class="mt-3">
-      <div class="row mb-3">
-          <div class="col-md-6">
-              <div class="d-flex justify-content-between align-items-center">
-                  <label for="firstName" class="form-label">Nombre:</label>
-                  <input type="text" formControlName="firstName" class="form-control" id="firstName" placeholder="Ingrese el nombre">
-              </div>
-          </div>
-          <div class="col-md-6">
-              <div class="d-flex justify-content-between align-items-center">
-                  <label for="lastName" class="form-label">Apellido:</label>
-                  <input type="text" formControlName="lastName" class="form-control" id="lastName" placeholder="Ingrese el apellido">
-              </div>
-          </div>
+<app-main-container [title]="!isEdit ? 'Registrar Empleado' : 'Modificar Empleado'" (infoButtonClick)="showInfo()">
+  <form [formGroup]="employeeForm" (ngSubmit)="saveEmployee()" class="row g-3 m-2">
+    
+    <!-- Nombre y Apellido -->
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="firstName" class="col-form-label col-md-2">Nombre<label class="text-danger">*</label></label>
+        <input type="text" class="form-control m-2" id="firstName" formControlName="firstName"
+          
+          [ngClass]="{'is-invalid': employeeForm.get('firstName')?.invalid && employeeForm.get('firstName')?.touched,
+                     'is-valid': employeeForm.get('firstName')?.valid && employeeForm.get('firstName')?.touched}">
       </div>
-      <div class="row mb-3">
-          <div class="col-md-6">
-              <div class="d-flex justify-content-between align-items-center">
-                  <label for="employeeType" class="form-label">Tipo:</label>
-                  <select formControlName="employeeType" class="form-select" id="employeeType">
-                      @for (type of employeeTypes; track $index) {
-                          <option value="{{type}}">{{type}}</option>
-                      }
-                  </select>
-              </div>
-          </div>
-          <div class="col-md-6">
-              <div class="d-flex justify-content-between align-items-center">
-                  <label for="hiringDate" class="form-label">Fecha de Contratación:</label>
-                  <input formControlName="hiringDate" type="date" class="form-control" id="hiringDate" />
-              </div>
-          </div>
+      <div>
+        @if (employeeForm.get('firstName')?.invalid && employeeForm.get('firstName')?.touched) {
+          <small class="text-danger ms-2">
+            @if (employeeForm.get('firstName')?.errors?.['required']) {
+              Nombre es requerido
+            } @else if (employeeForm.get('firstName')?.errors?.['minlength']) {
+              El nombre debe tener al menos 3 caracteres
+            } @else if (employeeForm.get('firstName')?.errors?.['maxlength']) {
+              El nombre no puede tener más de 100 caracteres
+            } @else if (employeeForm.get('firstName')?.errors?.['pattern']) {
+              El nombre solo puede contener letras
+            }
+          </small>
+        }
       </div>
-      <div class="row mb-3">
-          <div class="col-md-6">
-              <div class="d-flex justify-content-between align-items-center">
-                  <label for="documentType" class="form-label">Tipo de Documento:</label>
-                  <select formControlName="documentType" class="form-select" id="documentType">
-                      @for (type of documentTypes; track $index) {
-                          <option value="{{type}}">{{type}}</option>
-                      }
-                  </select>
-              </div>
-          </div>
-          <div class="col-md-6">
-              <div class="d-flex justify-content-between align-items-center">
-                  <label for="docNumber" class="form-label">Documento:</label>
-                  <input type="text" formControlName="docNumber" class="form-control" id="docNumber" placeholder="Ingrese el número de documento">
-                  <!-- @if (employeeForm.get('docNumber')) {
-                  <div class="text-danger">
-                    Este número de documento ya está registrado.
-                  </div>
-                } -->
-                </div>
-          </div>
-      </div>
-      <div class="row mb-4">
-          <div class="col-md-6">
-              <div class="d-flex justify-content-between align-items-center">
-                  <label for="salary" class="form-label">Salario:</label>
-                  <div class="input-group ms-2">
-                      <span class="input-group-text">$</span>
-                      <input type="number" formControlName="salary" class="form-control" id="salary" placeholder="Ingrese el salario">
-                  </div>
-              </div>
-          </div>
-      </div>
-      <div class="d-flex justify-content-between">
-          <button type="button" class="btn btn-secondary" (click)="return()">Cancelar</button>
-          @if(employeeForm.valid){
-              <button type="submit" class="btn btn-primary">Guardar</button>
-          }
-          @else {
-              <button type="submit" class="btn btn-primary" disabled>Guardar</button>
-          }
-      </div>
-      <div class="d-flex justify-content-end">
-        <button class="btn btn-secondary ms-3 custom-button" (click)="showInfo()">
-            <i class="bi bi-info-circle"></i>
-        </button>
     </div>
-  </form>
-</div>
-
-<ng-template #infoModal let-modal>
-    <div class="modal-header fs-6 py-1">
-        <h4 class="modal-title">Formulario de Empleados</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+ 
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="lastName" class="col-form-label col-md-2">Apellido<label class="text-danger">*</label></label>
+        <input type="text" class="form-control m-2" id="lastName" formControlName="lastName"  
+          [ngClass]="{'is-invalid': employeeForm.get('lastName')?.invalid && employeeForm.get('lastName')?.touched,
+                     'is-valid': employeeForm.get('lastName')?.valid && employeeForm.get('lastName')?.touched}">
       </div>
-      <div class="modal-body fs-6 py-2">
-        <div class="container-fluid">
-          <!-- Introducción -->
-          <div class="alert alert-info mb-2 py-2">
-            <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
-            <p class="mb-0 small">Esta pantalla te permite registrar/actualizar un empleado.</p>
+      <div>
+        @if (employeeForm.get('lastName')?.invalid && employeeForm.get('lastName')?.touched) {
+          <small class="text-danger ms-2">
+            @if (employeeForm.get('lastName')?.errors?.['required']) {
+              Apellido es requerido
+            } @else if (employeeForm.get('lastName')?.errors?.['minlength']) {
+              El apellido debe tener al menos 3 caracteres
+            } @else if (employeeForm.get('lastName')?.errors?.['maxlength']) {
+              El apellido no puede tener más de 100 caracteres
+            } @else if (employeeForm.get('lastName')?.errors?.['pattern']) {
+              El apellido solo puede contener letras
+            }
+          </small>
+        }
+      </div>
+    </div>
+ 
+    <!-- Tipo y Fecha de Contratación -->
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="employeeType" class="col-form-label col-md-2">Rol<label class="text-danger">*</label></label>
+        <select class="form-select m-2" id="employeeType" formControlName="employeeType"
+          [ngClass]="{'is-invalid': employeeForm.get('employeeType')?.invalid && employeeForm.get('employeeType')?.touched,
+                     'is-valid': employeeForm.get('employeeType')?.valid && employeeForm.get('employeeType')?.touched}">
+          <option value="" disabled>Seleccione Rol</option>
+          <option *ngFor="let type of employeeTypes" [value]="type">{{ type }}</option>
+        </select>
+      </div>
+      <div>
+        @if (employeeForm.get('employeeType')?.invalid && employeeForm.get('employeeType')?.touched) {
+          <small class="text-danger ms-2">Rol es requerido</small>
+        }
+      </div>
+    </div>
+ 
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="hiringDate" class="col-form-label col-md-2">Fecha de Contratación<label class="text-danger">*</label></label>
+        <input type="date" class="form-control m-2" id="hiringDate" formControlName="hiringDate"
+          [ngClass]="{'is-invalid': employeeForm.get('hiringDate')?.invalid && employeeForm.get('hiringDate')?.touched,
+                     'is-valid': employeeForm.get('hiringDate')?.valid && employeeForm.get('hiringDate')?.touched}">
+      </div>
+      <div>
+        @if (employeeForm.get('hiringDate')?.invalid && employeeForm.get('hiringDate')?.touched) {
+          <small class="text-danger ms-2">Fecha es requerida</small>
+        }
+      </div>
+    </div>
+ 
+    <!-- Documento -->
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="documentType" class="col-form-label col-md-2">Tipo de Documento<label class="text-danger">*</label></label>
+        <select class="form-select m-2" id="documentType" formControlName="documentType"
+          [ngClass]="{'is-invalid': employeeForm.get('documentType')?.invalid && employeeForm.get('documentType')?.touched,
+                     'is-valid': employeeForm.get('documentType')?.valid && employeeForm.get('documentType')?.touched}">
+          <option value="" disabled>Seleccione tipo de documento</option>
+          <option *ngFor="let type of documentTypes" [value]="type">{{ type }}</option>
+        </select>
+      </div>
+      <div>
+        @if (employeeForm.get('documentType')?.invalid && employeeForm.get('documentType')?.touched) {
+          <small class="text-danger ms-2">Tipo de documento es requerido</small>
+        }
+      </div>
+    </div>
+ 
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="docNumber" class="col-form-label col-md-2">Documento<label class="text-danger">*</label></label>
+        <input type="text" class="form-control m-2" id="docNumber" formControlName="docNumber"
+           style="text-align: left;"
+          [ngClass]="{'is-invalid': employeeForm.get('docNumber')?.invalid && employeeForm.get('docNumber')?.touched,
+                     'is-valid': employeeForm.get('docNumber')?.valid && employeeForm.get('docNumber')?.touched}">
+      </div>
+      <div>
+        @if (employeeForm.get('docNumber')?.invalid && employeeForm.get('docNumber')?.touched) {
+          <small class="text-danger ms-2">
+            @if (employeeForm.get('docNumber')?.errors?.['required']) {
+              Documento es requerido
+            } @else if (employeeForm.get('docNumber')?.errors?.['invalidDni']) {
+              El DNI no puede tener más de 8 dígitos
+            } @else if (employeeForm.get('docNumber')?.errors?.['invalidLength']) {
+              CUIT/CUIL debe tener 11 dígitos
+            } @else if (employeeForm.get('docNumber')?.errors?.['invalidCheckDigit']) {
+              Dígito verificador inválido
+            }
+          </small>
+        }
+      </div>
+    </div>
+ 
+    <!-- Salario -->
+    <div class="col-md-6">
+      <div class="flex-row d-flex align-items-center">
+        <label for="salary" class="col-form-label col-md-2">Salario<label class="text-danger">*</label></label>
+        <div class="input-group m-2">
+            <span class="input-group-text">$</span>
+            <input type="number" class="form-control" id="salary" formControlName="salary"
+                 style="text-align: right;"
+                [ngClass]="{'is-invalid': (employeeForm.get('salary')?.touched && employeeForm.get('salary')?.invalid) || 
+                                       (employeeForm.get('salary')?.touched && employeeForm.get('salary')?.value === 0),
+                           'is-valid': employeeForm.get('salary')?.touched && employeeForm.get('salary')?.valid && employeeForm.get('salary')?.value !== 0}">
+        </div>
+      </div>    
+      <div>
+        @if (employeeForm.get('salary')?.invalid && employeeForm.get('salary')?.touched) {
+          <small class="text-danger ms-2">
+            @if (employeeForm.get('salary')?.errors?.['required']) {
+              Salario es requerido
+            } @else if (employeeForm.get('salary')?.errors?.['min']) {
+              El salario debe ser mayor a 0
+            } @else if (employeeForm.get('salary')?.errors?.['pattern']) {
+              Formato de salario inválido
+            }
+          </small>
+        }    
+      </div>
+    </div>
+    
+    <!-- Contacto -->
+    <div formGroupName="contactsForm" class="col-md-6" >
+      <div class="flex-row d-flex align-items-center">
+        <label for="contact-info" class="col-form-label col-md-2">Email<label class="text-danger">*</label></label>
+        <div class="input-group m-2">
+          <input type="text" class="form-control" id="contact-info" formControlName="contactValue"
+            [ngClass]="{'is-invalid': employeeForm.get('contactsForm.contactValue')?.invalid && employeeForm.get('contactsForm.contactValue')?.touched,
+                        'is-valid': employeeForm.get('contactsForm.contactValue')?.valid && employeeForm.get('contactsForm.contactValue')?.touched}">
+        </div>
+        <div class="col">
+          @if(employeeForm.get('contactsForm.contactValue')?.invalid && employeeForm.get('contactsForm.contactValue')?.touched) {
+            @if(employeeForm.get('contactsForm.contactValue')?.errors?.['email']) {
+              <small class="text-danger">Email inválido</small>
+            }
+          }
+      </div>
+  </div>
+  @if (contacts.length !== 0) {
+
+  <div class="col-12">
+    <h5 class="mb-3">Lista de Contactos</h5>
+    <div class="list-group">
+      @for (contact of contacts; track $index) {
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <button type="button" class="list-group-item list-group-item-action btn btn-primary btn-sm me-2"
+          (click)="setContactValue($index)">
+          {{ contact.contactType }} - {{ contact.contactValue }}
+        </button>
+        @if (!id) {
+        <button type="button" class="btn btn-danger btn-sm" (click)="removeContact($index)">
+          <i class="bi bi-trash-fill"></i>
+        </button>
+        }
+      </div>
+      }
+    </div>
+  </div>
+  }
+</div>
+    
+ 
+    <div class="mb-3"></div>
+<!-- @if (!isEdit) { -->
+  <hr>
+  <!-- Dirección -->
+  <div class="col-12">
+    <div class="">
+      <div class="">
+        <h5 class=" mb-0">Dirección</h5>
+      </div>
+      <div class="">
+        <div formGroupName="address" class="row">
+          <!-- Calle y Número -->
+          <div class="col-md-6">
+            <div class="flex-row d-flex align-items-center mb-3">
+              <label for="streetAddress" class="col-form-label col-md-2">Calle<label class="text-danger">*</label></label>
+              <input type="text" class="form-control m-2" id="streetAddress" formControlName="streetAddress"
+                
+                [ngClass]="{'is-invalid': employeeForm.get('address.streetAddress')?.invalid && employeeForm.get('address.streetAddress')?.touched,
+                           'is-valid': employeeForm.get('address.streetAddress')?.valid}">
+            </div>
+            <div>
+              @if (employeeForm.get('address.streetAddress')?.invalid && employeeForm.get('address.streetAddress')?.touched) {
+                <small class="text-danger ms-2">La calle es requerida</small>
+              }
+            </div>
           </div>
-      
-          <!-- Campos Principales -->
-          <div class="card mb-2">
-            <div class="card-header py-1">
-              <h5 class="mb-0">Datos de Empleados</h5>
-            </div>
-            <div class="card-body py-2">
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item py-1">
-                  <strong>Campos a ingresar:</strong> Se solicitarán: Nombre, Apellido, Tipo, Documento, Tipo de Documento, Salario y Fecha de Contratación.
-                </li>
-                <li class="list-group-item py-1">
-                    <strong>ATENCIÓN:</strong> La opción de GUARDAR solo se habilitará si todos los campos se encuentran correctamente completados.
-                  </li>
-              </ul>
-            </div>
-          </div>
-      
-          <!-- Acciones -->
-          <div class="card mb-2">
-            <div class="card-header py-1">
-              <h5 class="mb-0">Acciones Disponibles</h5>
-            </div>
-            <div class="card-body py-2">
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item py-1">
-                  <strong>Guardar:</strong> En caso de que todos los campos se encuentren correctamente completados se guardará el nuevo empleado.
-                </li>
-                <li class="list-group-item py-1">
-                  <strong>Cancelar:</strong> Se cancela el registro o la actualización del empleado y nos devuelve al listado de empleados.
-                </li>
-              </ul>
+
+          <div class="col-md-6">
+            <div class="flex-row d-flex align-items-center mb-3">
+              <label for="number" class="col-form-label col-md-2">Número<label class="text-danger">*</label></label>
+              <input type="number" class="form-control m-2" id="number" formControlName="number"
+                 style="text-align: right;"
+                 [ngClass]="{'is-invalid': employeeForm.get('address.number')?.invalid && employeeForm.get('address.number')?.touched,
+                 'is-valid': employeeForm.get('address.number')?.valid && employeeForm.get('address.number')?.value !== 0}">
+           </div>
+            <div>
+              @if (employeeForm.get('address.number')?.invalid && employeeForm.get('address.number')?.touched) {
+                <small class="text-danger ms-2">
+                  @if (employeeForm.get('address.number')?.errors?.['required']) {
+                    El número es requerido
+                  } @else if (employeeForm.get('address.number')?.errors?.['min']) {
+                    El número debe ser mayor a 0
+                  } @else if (employeeForm.get('address.number')?.errors?.['pattern']) {
+                    Solo se permiten números enteros
+                  }
+                </small>
+              }
             </div>
           </div>
-      
-          <!-- Nota (OPCIONAL) -->
-          <div class="alert alert-warning py-2 mb-0">
-            <h5 class="alert-heading">Nota:</h5>
-            <p class="mb-0 small">Asegúrate de verificar la información antes de modificar, ingresar o eliminar un empleado.</p>
+
+          <!-- Piso y Departamento -->
+          <div class="col-md-6">
+            <div class="flex-row d-flex align-items-center mb-3">
+              <label for="floor" class="col-form-label col-md-2">Piso</label>
+              <input type="number" class="form-control m-2" id="floor" formControlName="floor"
+                 style="text-align: right;">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="flex-row d-flex align-items-center mb-3">
+              <label for="apartment" class="col-form-label col-md-2">Departamento</label>
+              <input type="text" class="form-control m-2" id="apartment" formControlName="apartment"
+                >
+            </div>
+          </div>
+
+          <!-- País y Provincia -->
+          <div class="col-md-6">
+            <div class="flex-row d-flex align-items-center mb-3">
+              <label for="country" class="col-form-label col-md-2">País<label class="text-danger">*</label></label>
+              <input type="text" 
+                     class="form-control m-2" 
+                     id="country" 
+                     formControlName="country"
+                     [value]="'ARGENTINA'"
+                     [disabled]="true">
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div class="flex-row d-flex align-items-center mb-3">
+              <label for="province" class="col-form-label col-md-2">Provincia<label class="text-danger">*</label></label>
+              <select id="province" type="select" class="form-control m-2" formControlName="province"
+                
+                [ngClass]="{'is-invalid': employeeForm.get('address.province')?.invalid && employeeForm.get('address.province')?.touched,
+                'is-valid': employeeForm.get('address.province')?.valid}">
+                <option *ngFor="let province of provinceOptions" [value]="province.value">{{ province.display }}</option>
+              </select>
+            </div>
+            <div>
+              <small class="text-danger ms-2" *ngIf="employeeForm.get('address.province')?.invalid && employeeForm.get('address.province')?.touched">La provincia es requerida</small>
+            </div>
+          </div>
+
+          <!-- Ciudad y Código Postal -->
+          <div class="col-md-6">
+            <div class="flex-row d-flex align-items-center mb-3">
+              <label for="city" class="col-form-label col-md-2">Ciudad<label class="text-danger">*</label></label>
+              <input type="text" class="form-control m-2" id="city" formControlName="city"
+                
+                [ngClass]="{'is-invalid': employeeForm.get('address.city')?.invalid && employeeForm.get('address.city')?.touched,
+                           'is-valid': employeeForm.get('address.city')?.valid}">
+            </div>
+            <div>
+              @if (employeeForm.get('address.city')?.invalid && employeeForm.get('address.city')?.touched) {
+                <small class="text-danger ms-2">
+                  @if (employeeForm.get('address.city')?.errors?.['required']) {
+                    La ciudad es requerida
+                  } @else if (employeeForm.get('address.city')?.errors?.['minlength']) {
+                    La ciudad debe tener al menos 2 caracteres
+                  } @else if (employeeForm.get('address.city')?.errors?.['pattern']) {
+                    La ciudad solo puede contener letras
+                  }
+                </small>
+              }
+            </div>
+          </div>
+
+        <div class="col-md-6">
+          <div class="flex-row d-flex align-items-center mb-3">
+            <label for="postalCode" class="col-form-label col-md-2">Código Postal<label class="text-danger">*</label></label>
+            <input type="number" class="form-control m-2" id="postalCode" formControlName="postalCode"
+               style="text-align: right;"
+              [ngClass]="{'is-invalid': employeeForm.get('address.postalCode')?.invalid && employeeForm.get('address.postalCode')?.touched,
+                         'is-valid': employeeForm.get('address.postalCode')?.valid && employeeForm.get('address.postalCode')?.value !== 0}">
+          </div>
+          <div>
+            @if (employeeForm.get('address.postalCode')?.invalid && employeeForm.get('address.postalCode')?.touched) {
+              <small class="text-danger ms-2">
+                @if (employeeForm.get('address.postalCode')?.errors?.['required']) {
+                  El código postal es requerido
+                } @else if (employeeForm.get('address.postalCode')?.errors?.['min']) {
+                  El código postal debe ser mayor a 0
+                } @else if (employeeForm.get('address.postalCode')?.errors?.['pattern']) {
+                  El código postal solo puede contener números
+                }
+              </small>
+            }
           </div>
         </div>
       </div>
-      <div class="modal-footer py-2">
-        <button type="button" class="btn btn-primary" (click)="modal.close()">Entendido</button>
+    </div>
+  </div>
+</div>
+<!-- } -->
+
+  <!-- Botones -->
+  <div class="col-12 d-flex justify-content-end">
+    @if (!currentEmployeeId) {
+      <div class="mx-2">
+        <button type="button" class="btn btn-danger" (click)="onCancel()">Cancelar</button>
       </div>
-      
+      <div>
+        <button type="submit" class="btn btn-primary" [disabled]="employeeForm.invalid">
+          {{ !isEdit ? 'Guardar' : 'Modificar' }}
+        </button>
+      </div>
+    }
+  </div>
+</form>
+</app-main-container>
+
+<!-- Template del Modal Info -->
+<ng-template #infoModal let-modal>
+<div class="modal-header fs-6 py-1">
+  <h4 class="modal-title">Formulario de Empleados</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+</div>
+<div class="modal-body fs-6 py-2">
+  <div class="container-fluid">
+    <div class="alert alert-info mb-2 py-2">
+      <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
+      <p class="mb-0 small">Esta pantalla te permite registrar/actualizar un empleado.</p>
+    </div>
+
+    <div class="card mb-2">
+      <div class="card-header py-1">
+        <h5 class="mb-0">Datos de Empleados</h5>
+      </div>
+      <div class="card-body py-2">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item py-1">
+            <strong>Campos a ingresar:</strong> Se solicitarán: Nombre, Apellido, Tipo, Documento, 
+            Tipo de Documento, Salario y Fecha de Contratación.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>ATENCIÓN:</strong> La opción de GUARDAR solo se habilitará si todos los campos 
+            se encuentran correctamente completados.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card mb-2">
+      <div class="card-header py-1">
+        <h5 class="mb-0">Acciones Disponibles</h5>
+      </div>
+      <div class="card-body py-2">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item py-1">
+            <strong>Guardar:</strong> En caso de que todos los campos se encuentren correctamente 
+            completados se guardará el nuevo empleado.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Cancelar:</strong> Se cancela el registro o la actualización del empleado y nos 
+            devuelve al listado de empleados.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alert alert-warning py-2 mb-0">
+      <h5 class="alert-heading">Nota:</h5>
+      <p class="mb-0 small">Asegúrate de verificar la información antes de modificar, ingresar o 
+        eliminar un empleado.</p>
+    </div>
+  </div>
+</div>
+<div class="modal-footer py-2">
+  <button type="button" class="btn btn-primary" (click)="modal.close()">Entendido</button>
+</div>
+
+</ng-template>
+<!-- Metodo Viejo que llama a accesos -->
+<!-- @if (currentEmployeeId) {
+  <div class="mt-0">
+    <app-employee-access
+      [employeeId]="currentEmployeeId"
+      (schedulesSaved)="startNewEmployee()"
+    ></app-employee-access>
+  </div>
+  } -->
+  <!-- Template del Modal de Accesos Nuevo-->
+  <ng-template #accessModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Configuración de Accesos</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+      <app-employee-access
+        [employeeId]="currentEmployeeId"
+        (closeModal)="onAccessSaved()"
+        (schedulesSaved)="onAccessSaved()"
+      ></app-employee-access>
+    </div>
   </ng-template>
+
+

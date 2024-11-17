@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import {
   ChargeTypeEnum,
@@ -38,7 +38,7 @@ export class SanctionTypeService {
 
   ChargeTypeEnum = ChargeTypeEnum;
 
-  getSanctionTypes(name: string ='') {
+  getSanctionTypes(name: string = '') {
     let params = new HttpParams();
     if (name && name !== '') {
       params = params.set('searchValue', name);
@@ -116,16 +116,25 @@ export class SanctionTypeService {
       );
   }
 
-  updateSanctionType(sanctionType: SanctionType): Observable<SanctionType> {
+  updateSanctionType(
+    sanctionType: SanctionType,
+    userId: number
+  ): Observable<SanctionType> {
+    const headers = new HttpHeaders().set('x-user-id', userId.toString());
+
     return this.http
-      .put<SanctionType>(`${this.apiUrl}/sanction-type/${sanctionType.id}`, {
-        description: sanctionType.description,
-        amount: sanctionType.amount,
-        charge_type: sanctionType.charge_type,
-        infraction_days_to_expire: sanctionType.infraction_days_to_expire,
-        amount_of_infractions_for_fine:
-          sanctionType.amount_of_infractions_for_fine,
-      })
+      .put<SanctionType>(
+        `${this.apiUrl}/sanction-type/${sanctionType.id}`,
+        {
+          description: sanctionType.description,
+          amount: sanctionType.amount,
+          charge_type: sanctionType.charge_type,
+          infraction_days_to_expire: sanctionType.infraction_days_to_expire,
+          amount_of_infractions_for_fine:
+            sanctionType.amount_of_infractions_for_fine,
+        },
+        { headers }
+      )
       .pipe(
         map((newItem) => {
           return newItem;

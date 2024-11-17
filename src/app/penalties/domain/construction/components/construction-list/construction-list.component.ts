@@ -48,6 +48,8 @@ export class ConstructionListComponent {
 
   private constructionService = inject(ConstructionService);
   private modalService = inject(NgbModal);
+  userDataService = inject(UserDataService);
+  userData!: UserData;
 
   // Properties:
   CONSTRUCTION_STATUSES_ENUM = CONSTRUCTION_STATUSES_ENUM;
@@ -75,35 +77,35 @@ export class ConstructionListComponent {
 
   // Methods:
   updateFiltersAccordingToUser() {
-    if (!this.userHasRole('CONSTRUCTION_ADMIN')) {
-      this.searchParams = {
-        ...this.searchParams,
-        plotsIds: this.userData.plotIds,
-        userId: this.userData.id,
-      };
-    } else {
-      if (this.searchParams['userId']) {
-        delete this.searchParams['userId'];
-      }
-      if (this.searchParams['plotsIds']) {
-        delete this.searchParams['plotsIds'];
+    if (this.userData) {
+      if (!this.userHasRole('CONSTRUCTION_ADMIN')) {
+        this.searchParams = {
+          ...this.searchParams,
+          plotsIds: this.userData.plotIds,
+          userId: this.userData.id,
+        };
+      } else {
+        if (this.searchParams['userId']) {
+          delete this.searchParams['userId'];
+        }
+        if (this.searchParams['plotsIds']) {
+          delete this.searchParams['plotsIds'];
+        }
       }
     }
   }
-
-  userDataService = inject(UserDataService);
-  userData!: UserData;
 
   loadUserData() {
     this.userDataService.loadNecessaryData().subscribe((response) => {
       if (response) {
         this.userData = response;
+        this.loadItems();
       }
     });
   }
 
   userHasRole(role: string): boolean {
-    return this.userData.roles.some((userRole) => userRole.name === role);
+    return this.userData?.roles?.some((userRole) => userRole?.name === role);
   }
 
   ngOnInit(): void {
@@ -135,13 +137,15 @@ export class ConstructionListComponent {
   }
 
   loadItems(): void {
-    this.updateFiltersAccordingToUser();
-    this.constructionService
-      .getAllConstructions(this.page, this.size, this.searchParams)
-      .subscribe((response) => {
-        this.constructionService.setItems(response.items);
-        this.constructionService.setTotalItems(response.total);
-      });
+    if (this.userData) {
+      this.updateFiltersAccordingToUser();
+      this.constructionService
+        .getAllConstructions(this.page, this.size, this.searchParams)
+        .subscribe((response) => {
+          this.constructionService.setItems(response.items);
+          this.constructionService.setTotalItems(response.total);
+        });
+    }
   }
 
   onPageChange = (page: number): void => {

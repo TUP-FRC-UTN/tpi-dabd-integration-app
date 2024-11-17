@@ -40,7 +40,10 @@
   </div>
 </ng-template>
 
-<app-main-container title="Obras" (infoButtonClick)="onInfoButtonClick()">
+<app-main-container
+  title="Lista de Obras"
+  (infoButtonClick)="onInfoButtonClick()"
+>
   <app-table
     [items]="(items$ | async) || []"
     [columns]="columns"
@@ -82,8 +85,8 @@
         <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
         <p class="mb-0 small">
           Esta pantalla permite a los usuarios visualizar y gestionar la lista
-          completa de obras en curso, así como acceder a información detallada
-          y realizar acciones específicas. A continuación, se describen las
+          completa de obras en curso, así como acceder a información detallada y
+          realizar acciones específicas. A continuación, se describen las
           principales funcionalidades disponibles:
         </p>
       </div>
@@ -101,17 +104,17 @@
               fechas de inicio y finalización, nombre y dirección.
             </li>
             <li class="list-group-item py-1">
-              <strong>Filtros:</strong> Puedes aplicar filtros específicos
-              para encontrar obras rápidamente, ajustando la búsqueda a tus
+              <strong>Filtros:</strong> Puedes aplicar filtros específicos para
+              encontrar obras rápidamente, ajustando la búsqueda a tus
               necesidades.
             </li>
             <li class="list-group-item py-1">
-              <strong>Paginación:</strong> Control para navegar entre
-              múltiples páginas de obras.
+              <strong>Paginación:</strong> Control para navegar entre múltiples
+              páginas de obras.
             </li>
             <li class="list-group-item py-1">
-              <strong>Exportar:</strong> Opción para exportar la lista de
-              obras a un archivo Excel para su análisis externo.
+              <strong>Exportar:</strong> Opción para exportar la lista de obras
+              a un archivo Excel para su análisis externo.
             </li>
           </ul>
         </div>
@@ -129,8 +132,8 @@
               campo de búsqueda para localizar registros específicos.
             </li>
             <li class="list-group-item py-1">
-              <strong>Limpiar Filtros:</strong> Restablece los filtros
-              aplicados para mostrar la lista completa de obras.
+              <strong>Limpiar Filtros:</strong> Restablece los filtros aplicados
+              para mostrar la lista completa de obras.
             </li>
             <li class="list-group-item py-1">
               <strong>Ver Detalle:</strong> Accede a información detallada de

@@ -1,0 +1,207 @@
+<app-main-container title="Mis Notificaciones" (infoButtonClick)="showInfo()">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <!-- Sección de búsqueda y filtros -->
+    <div class="btn-group me-5" role="group">
+      <div class="col-sm-12 col-md-8 col-xl-10" id="general-search">
+        <div class="input-group">
+          <span class="input-group-text mr-2" id="search-icon">
+            <i class="bi bi-search"></i>
+          </span>
+          <input
+          [(ngModel)]="globalSearchTerm"
+            type="text"
+            class="form-control"
+            id="filter-text-box"
+            (input)="onGlobalSearchTextChange(globalSearchTerm)"
+            placeholder="Buscar..."
+          />
+         <app-table-filters [filters]="filterConfig"  (filterValueChange)="filterChange($event)" (clearFilters)="clearFilters()"></app-table-filters> 
+    
+        </div>
+      </div>
+      
+
+    </div>  
+
+      <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
+      <div class="d-flex align-items-center">
+
+        <!-- Línea vertical y botones de exportación -->
+        <div class="vertical-line mx-3"></div>
+        <button class="btn btn-success me-2" (click)="exportToExcel()">
+          <i class="bi bi-file-earmark-excel"></i>
+        </button>
+        <button class="btn btn-danger me-2" (click)="exportToPDF()">
+          <i class="bi bi-file-earmark-pdf"></i>
+        </button>
+      </div>
+
+    </div>
+
+
+
+  
+      <!-- Tabla -->
+      <div class="table-container">
+        <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;">
+          
+          @if (filteredNotifications.length === 0) {
+          <thead>
+            <tr>
+              <td colspan="5">
+                <div class="text-center p-2">
+                  <div class="alert alert-secondary text-center" role="alert">
+                    No hay notificaciones para mostrar
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </thead>
+          } @else {
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Asunto</th>
+              <th>Fecha</th>
+              <th>Visualizado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(notification of filteredNotifications; track $index) {
+            <tr>
+                <td title="{{ notification.recipient }}">
+                    {{ notification.recipient.split('@')[0] }}&#64;...
+                  </td>
+              <td>{{notification.subject}}</td>
+              <td>{{ notification.dateSend | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td>
+                @if (notification.statusSend === "VISUALIZED") {
+                <p class="mb-0">
+                  <i class="bi bi-check2-circle text-success" style="font-size: 1.5rem;"></i>
+                </p>
+                } @else {
+                <p class="mb-0">
+                  <i class="bi bi-x-circle text-danger" style="font-size: 1.5rem;"></i>
+                </p>
+                }
+              </td>
+              <td>
+                <button class="btn btn-primary" (click)="previewContent(notification)">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </td>
+            </tr>
+            }
+          </tbody>
+          }
+        </table>
+      </div>
+  
+      
+        
+        <!-- Paginación e Info -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <div class="d-flex align-items-center">
+            <select class="form-select me-3" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+              <option [value]="10">10 Elementos</option>
+              <option [value]="25">25 Elementos</option>
+              <option [value]="50">50 Elementos</option>
+            </select>
+          </div>
+    
+          <div class="d-flex align-items-center">
+            <ngb-pagination [(page)]="currentPage" [pageSize]="itemsPerPage" [collectionSize]="totalItems"
+              (pageChange)="changePage($event)" [maxSize]="5" [boundaryLinks]="false"></ngb-pagination>
+          </div>
+        </div>
+      
+    </app-main-container>
+    
+    
+    
+<!-- Modal de Información -->
+<div [class.show]="isModalOpen" [style.display]="isModalOpen ? 'block' : 'none'" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header fs-6 py-1">
+        <h5 class="modal-title">{{ modalTitle }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="isModalOpen = false"></button>
+      </div>
+      <div class="modal-body fs-6 py-2">
+        <div class="container-fluid">
+          <!-- Introducción -->
+          <div class="alert alert-info mb-2 py-2">
+            <h5 class="alert-heading">Información sobre el Historial de Notificaciones</h5>
+            <p class="mb-0 small">Esta tabla presenta un resumen de las notificaciones enviadas a los usuarios, junto con su estado de visualización.</p>
+          </div>
+
+          <!-- Descripción de los campos -->
+          <div class="card mb-2">
+            <div class="card-header py-1">
+              <h5 class="mb-0">Descripción de los Campos</h5>
+            </div>
+            <div class="card-body py-2">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item py-1">
+                  <strong>Usuario:</strong> Indica el correo electrónico del destinatario de la notificación.
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>Asunto:</strong> Resumen breve del contenido de la notificación enviada.
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>Fecha:</strong> Fecha y hora en que se envió la notificación, lo que permite rastrear la temporalidad de los mensajes.
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>Visualizado:</strong> Estado que indica si el usuario ha abierto o visualizado la notificación. Se representa con un ícono de verificación o una cruz.
+                </li>
+                <li class="list-group-item py-1">
+                  <strong>Acciones:</strong> Botón para permitir al usuario ver el contenido de la notificación.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Nota (OPCIONAL) -->
+          <div class="alert alert-warning py-2 mb-0">
+            <h5 class="alert-heading">Nota:</h5>
+            <p class="mb-0 small">Las notificaciones no visualizadas están marcadas con un ícono de cruz (❌), mientras que las visualizadas tienen un ícono de verificación (✅).</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer py-2">
+        <button type="button" class="btn btn-secondary" (click)="isModalOpen = false">Volver</button>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    <!-- Modal Notificacion -->
+    <div [class.show]="isModalOpenNoti" [style.display]="isModalOpenNoti ? 'block' : 'none'" class="modal fade" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">{{ modalTitle }}</h5>
+          </div>
+          <div class="modal-body">
+            <div [innerHTML]="modalMessage"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="isModalOpen = false">Volver</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal Notificación -->
+    <div class="modal" *ngIf="showModalToRenderHTML" (click)="closeModalToRenderHTML()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h5 class="modal-title">{{selectedNotification?.subject}}</h5>
+        </div>
+          <!-- <span class="close" (click)="closeModalToRenderHTML()">&times;</span> -->
+          <iframe #iframePreview style="width: 100%; border: none;"></iframe>
+          <div class="mt-3 text-end">
+            <button type="button" class="btn btn-secondary" (click)="closeModalToRenderHTML()">Volver</button>
+          </div>
+      </div>
+    </div>
