@@ -3,7 +3,6 @@ import { ExpenseServiceService } from '../../../services/expense.service';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import Expense from '../../../models/expense';
 import { FormsModule } from '@angular/forms';
-import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import Period from '../../../models/period';
 import {CommonModule, DatePipe} from '@angular/common';
 import { PeriodService } from '../../../services/period.service';
@@ -16,7 +15,6 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import {NgPipesModule} from "ngx-pipes";
 import {
-  TableComponent,
   MainContainerComponent,
   TableFiltersComponent, Filter,  FilterOption, SelectFilter,
 } from "ngx-dabd-grupo01" ;
@@ -30,7 +28,14 @@ import { User } from '../../../models/user';
 @Component({
   selector: 'app-expenses-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PeriodSelectComponent, TableComponent, NgPipesModule, MainContainerComponent, TableFiltersComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    NgPipesModule,
+    MainContainerComponent,
+    TableFiltersComponent
+  ],
   providers: [DatePipe, NgbActiveModal],
   templateUrl: './expenses-list.component.html',
   styleUrl: './expenses-list.component.css'
@@ -93,11 +98,11 @@ export class ExpensesListComponent implements OnInit{
         const expenses = this.keysToCamel(expense) as Expense;
         return {
           ...expenses,
-          month: this.getMonthName(expense.period.month), 
+          month: this.getMonthName(expense.period.month),
         };
 
       });
-      this.totalPages = data.totalPages;  
+      this.totalPages = data.totalPages;
       this.totalItems = data.totalElements;
       this.currentPage = data.number;
       this.updateVisiblePages();
@@ -105,7 +110,7 @@ export class ExpensesListComponent implements OnInit{
   }
 
   onPageSizeChange() {
-    this.currentPage = 0; 
+    this.currentPage = 0;
     this.loadExpenses(0,this.pageSize);
   }
   applyFilters() {
@@ -233,7 +238,7 @@ export class ExpensesListComponent implements OnInit{
   imprimir() {
     const doc = new jsPDF();
 
-    
+
     doc.setFontSize(18);
     doc.text('Expenses Report', 14, 20);
     this.service.getWithoutFilters(this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
