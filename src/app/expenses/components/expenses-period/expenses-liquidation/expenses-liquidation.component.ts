@@ -38,7 +38,6 @@ export class ExpensesLiquidationComponent implements OnInit {
 
 
   toastService: ToastService = inject(ToastService);
-  //table
 
   items: any[] = [];
   sizeOptions: number[] = [];
@@ -50,7 +49,7 @@ export class ExpensesLiquidationComponent implements OnInit {
   selectedItemId: number | null = null;
   isModalVisible = false;
   selectedPeriodId: number | null = null;
-  //USO DEL MODAL CORRECTO.
+
 
   searchTerm = '';
 
@@ -64,7 +63,7 @@ export class ExpensesLiquidationComponent implements OnInit {
       ariaLabelledBy: 'modal-basic-title',
     });
   }
-  //modal
+
   changeStateQuery(text: string) {
     this.type = text;
     this.loadLookList();
@@ -129,7 +128,7 @@ export class ExpensesLiquidationComponent implements OnInit {
     }
   }
 
-  seeDetail(categoryId:number) {
+  seeDetail(categoryId: number) {
     let id = this.listLooking[0].expense_id;
 
     this.router.navigate([`expenses/expense/periodo/${this.id}/liquidacion/${id}/${categoryId}`]);
@@ -152,10 +151,10 @@ export class ExpensesLiquidationComponent implements OnInit {
   }
 
   imprimir() {
-    console.log('Imprimiendo');
+
     const doc = new jsPDF();
 
-    // Título del PDF
+
     doc.setFontSize(18);
     doc.text('Reposrte de Liquidación de Expensas', 14, 20);
 
@@ -165,11 +164,11 @@ export class ExpensesLiquidationComponent implements OnInit {
         .subscribe((data: LiquidationExpense[]) => {
           const doc = new jsPDF();
 
-          // Título del PDF
+
           doc.setFontSize(18);
           doc.text('Reposrte de Liquidación de Expensas', 14, 20);
 
-          // Usando autoTable para agregar la tabla
+
           autoTable(doc, {
             startY: 30,
             head: [['Categoria', 'Tipo', 'Cantidad', 'Monto']],
@@ -184,19 +183,15 @@ export class ExpensesLiquidationComponent implements OnInit {
               )
             ),
           });
-
-          // Guardar el PDF después de agregar la tabla
           const fecha = new Date();
-
-          const finalFileName = this.fileName+"-"+ moment(fecha).format("DD-MM-YYYY_HH-mm") +".pdf";
+          const finalFileName = this.fileName + "-" + moment(fecha).format("DD-MM-YYYY_HH-mm") + ".pdf";
           doc.save(finalFileName);
-          console.log('Impreso')
+
         });
     }
   }
 
   downloadTable() {
-    // Mapear los datos a un formato tabular adecuado
     const data = this.listLooking[0].liquidation_expenses_details.map(
       (liquidationExpense) => ({
         Categoria: `${liquidationExpense.category}`,
@@ -205,13 +200,11 @@ export class ExpensesLiquidationComponent implements OnInit {
         Monto: `${liquidationExpense.amount}`,
       })
     );
-
     const fecha = new Date();
-     const finalFileName = this.fileName+"-"+ moment(fecha).format("DD-MM-YYYY_HH-mm");
-
-      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-      const wb: XLSX.WorkBook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Liquidación de Expensas');
-      XLSX.writeFile(wb, `${finalFileName}.xlsx`);
+    const finalFileName = this.fileName + "-" + moment(fecha).format("DD-MM-YYYY_HH-mm");
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Liquidación de Expensas');
+    XLSX.writeFile(wb, `${finalFileName}.xlsx`);
   }
 }
