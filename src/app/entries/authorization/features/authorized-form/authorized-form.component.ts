@@ -12,6 +12,11 @@ import { ToastsContainer, ToastService, MainContainerComponent} from "ngx-dabd-g
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { AuthorizerCompleterService } from '../../../services/authorizer-completer.service';
+import { PlotService } from '../../../../users/services/plot.service';
+import { Plot } from '../../../../users/models/plot';
+import { OwnerPlotService } from '../../../../users/services/owner-plot.service';
+import { OwnerPlotHistoryDTO } from '../../../../users/models/ownerXplot';
+import { Contact, Owner } from '../../../../users/models/owner';
 
 @Component({
   selector: 'app-auth-form',
@@ -35,7 +40,10 @@ export class AuthFormComponent implements OnInit {
   modalService = inject(NgbModal);
   private toastService = inject(ToastService);
   userType: string = "ADMIN"
-  ownerPlotService = inject(AuthorizerCompleterService);
+
+  ownerPlotService = inject(OwnerPlotService);
+  plotsservice = inject(PlotService);
+  plotssss : Plot[] = [] 
 
   constructor(private fb: FormBuilder, private authService: AuthService,
      private loginService: LoginService, private router: Router, 
@@ -338,8 +346,38 @@ export class AuthFormComponent implements OnInit {
       },
       { id: 10, desc: 'María José', tel: '555-6780', name: '10 - María José' },
     ];*/
+
+    this.plotsservice.getAllPlots(0, 300).subscribe({
+      next: (data) => {
+        console.log('Data received from plotsservice:', data);
+        this.plotssss = data.content;
     
-    this.ownerPlotService.getPlotsWithOwnerInfo(0, 1000).subscribe({
+        this.plotssss.forEach(element => {
+          this.ownerPlotService.actualOwnerByPlot(element.id).subscribe({
+            next: (data) => {
+              const plotData = {
+                id: element.id,
+                desc: '',
+                contacts: data?.owner.contacts,
+                name: `${data?.owner.firstName} ${data?.owner.lastName}`
+              };
+              console.log(data)
+              this.plots.push(plotData);
+            },
+            error: (err) => {
+              console.error('Error in giveActualOwner:', err);
+            }
+          });
+        });
+      },
+      error: (err) => {
+        console.error('Error in getAllPlots:', err);
+      }
+    });
+    
+    console.log(this.plots + 'lotes')
+    
+   /* this.ownerPlotService.getPlotsWithOwnerInfo(0, 1000).subscribe({
       next: (data) => {
         console.log('Datos recibidos:', data); // Añadir log para debug
         if (data && data.content) {
@@ -356,7 +394,7 @@ export class AuthFormComponent implements OnInit {
         console.error('Error al obtener plots:', err);
         this.toastService.sendError('Error al cargar los lotes');
       }
-    });
+    });*/
     
   }
 
@@ -422,7 +460,7 @@ function formatFormDate(inputDate: string): string {
 export interface plot {
   id: number,
   desc: string,
-  tel: string,
+  contacts : Contact[] | Contact,
   name: string
 }
 

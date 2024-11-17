@@ -233,7 +233,6 @@ export class AccessListComponent implements OnInit, AfterViewInit {
         this.filteredList = [...this.list]
         this.lastPage = response.last
         this.totalItems = response.totalElements;
-        console.log(this.list)
       },
       error => {
         console.error('Error getting:', error);
@@ -409,28 +408,7 @@ export class AccessListComponent implements OnInit, AfterViewInit {
 
   //#endregion
 
-  //#region DELETE
-  /*  assignPlotToDelete(plot: Plot) {
-      //TODO: Este modal se va a modificar por otro mas especifico de Eliminar.
-      const modalRef = this.modalService.open(ConfirmAlertComponent)
-      modalRef.componentInstance.alertTitle = 'Confirmacion';
-      modalRef.componentInstance.alertMessage = `Estas seguro que desea eliminar el lote nro ${plot.plotNumber} de la manzana ${plot.blockNumber}?`;
-
-      modalRef.result.then((result) => {
-        if (result) {
-
-          this.plotService.deletePlot(plot.id, 1).subscribe(
-            response => {
-              this.toastService.sendSuccess('Lote eliminado correctamente.')
-              this.confirmFilter();
-            }, error => {
-              this.toastService.sendError('Error al eliminar lote.')
-            }
-          );
-        }
-      })
-    }*/
-
+  
   //#endregion
 
   //#region RUTEO
