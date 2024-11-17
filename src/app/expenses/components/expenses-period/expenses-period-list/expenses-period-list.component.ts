@@ -276,7 +276,7 @@ export class ExpensesPeriodListComponent implements OnInit {
   }
 
   filterChange($event: Record<string, any>) {
-    const { year, month, estate } = $event; // this.year = null;
+    const { year, month, estate } = $event; 
     this.year = year;
     this.month = month;
     estate === 'null' ? (this.state = null) : (this.state = estate);
@@ -288,7 +288,6 @@ export class ExpensesPeriodListComponent implements OnInit {
     this.periodService
       .getPage(500000, 0, this.state, this.month, this.year)
       .subscribe((period) => {
-        // Mapear los datos a un formato tabular adecuado
         const data = period.content.map((peri) => ({
           Fecha: `${peri.month + ' / ' + peri.year}`,
           'Total Extraordinarias': `${
@@ -309,8 +308,6 @@ export class ExpensesPeriodListComponent implements OnInit {
           }`,
           Estado: `${peri.state}`,
         }));
-
-        // Convertir los datos tabulares a una hoja de cálculo
         const fecha = new Date();
         const finalFileName =
           this.fileName + '-' + moment(fecha).format('DD-MM-YYYY_HH-mm');
@@ -324,16 +321,11 @@ export class ExpensesPeriodListComponent implements OnInit {
 
   imprimir() {
     const doc = new jsPDF();
-
-    // Título del PDF
     doc.setFontSize(18);
     doc.text('Reporte de Periodos de Liquidación', 14, 20);
-
-    // Llamada al servicio para obtener las expensas
     this.periodService
       .getPage(500000, 0, this.state, this.month, this.year)
       .subscribe((period) => {
-        // Usando autoTable para agregar la tabla
         autoTable(doc, {
           startY: 30,
           head: [
@@ -356,7 +348,6 @@ export class ExpensesPeriodListComponent implements OnInit {
             peri.state,
           ]),
         });
-        // Guardar el PDF después de agregar la tabla
         const fecha = new Date();
         const finalFileName =
           this.fileName +
