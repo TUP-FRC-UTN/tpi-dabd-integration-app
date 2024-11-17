@@ -10,17 +10,15 @@ import {
 } from "@ng-bootstrap/ng-bootstrap";
 import {EditCategoryModalComponent} from "../../modals/bills/edit-category-modal/edit-category-modal.component";
 import {DeleteCategoryModalComponent} from "../../modals/bills/delete-category-modal/delete-category-modal.component";
-import {RouterLink} from "@angular/router";
 import {CategoryBillInfoComponent} from "../../modals/info/category-bill-info/category-bill-info.component";
 import {
   Filter, FilterConfigBuilder,
   MainContainerComponent,
   TableColumn,
   TableComponent,
-  TableFiltersComponent,
   ToastService
 } from "ngx-dabd-grupo01";
-import {AsyncPipe, CommonModule, DatePipe} from "@angular/common";
+import { CommonModule, DatePipe} from "@angular/common";
 import * as XLSX from 'xlsx';
 import moment from "moment/moment";
 import jsPDF from "jspdf";
@@ -44,6 +42,7 @@ import {map} from 'rxjs';
   styleUrl: './expenses-category-bill.component.css'
 })
 export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
+
   // SERVICES
   private toastService = inject(ToastService);
   private categoryService = inject(CategoryService);
@@ -59,6 +58,7 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
   sortField = 'name';
   sortDirection: 'asc' | 'desc' = 'asc';
   searchParams: { [key: string]: any } = {};
+
   // TABLE PROPERTIES
   searchTerm = '';
   isLoading = false;
@@ -71,10 +71,10 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
       'isDeleted',
       'Seleccione el Estado',
       [
-                {value: "" , label: "Todas"},
-                {value: 'false', label: 'Activas'},
-                {value: 'true', label: 'Inactivas'}
-              ]
+        {value: "" , label: "Todas"},
+        {value: 'false', label: 'Activas'},
+        {value: 'true', label: 'Inactivas'}
+      ]
     ).build()
 
   onFilterValueChange(filters: Record<string, any>) {

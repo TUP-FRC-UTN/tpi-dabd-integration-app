@@ -273,7 +273,7 @@ export class BillService {
       'x-user-id': userId,
     });
 
-    return this.http.patch<Bill>(`${this.url}bills/status`, body , { headers })
+    return this.http.put<Bill>(`${this.url}bills/status`, body , { headers })
   }
   //#endregion
 }

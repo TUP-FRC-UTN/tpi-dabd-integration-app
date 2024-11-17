@@ -170,7 +170,6 @@ export class ExpensesAddBillComponent implements OnInit {
             this.toastService.sendSuccess(
               'El gasto se ha añadido correctamente.'
             );
-            this.resetForm();
             this.router.navigate([`expenses/gastos`]);
           },
           error: (error: any) => {
@@ -191,14 +190,9 @@ export class ExpensesAddBillComponent implements OnInit {
   }
   //#endregion
 
+  //#region Form Utilities
   onBack() {
     this.router.navigate([`expenses/gastos`]);
-  }
-
-  //#region Form Utilities
-  resetForm() {
-    //this.billForm.reset();
-    //this.loadSelectOptions();
   }
   //#endregion
 

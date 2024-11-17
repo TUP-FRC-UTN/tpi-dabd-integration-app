@@ -120,7 +120,7 @@ export class EditBillModalComponent implements OnInit {
         this.billTypesList = this.sortBillTypeAlphabetically(types);
       });
     } catch (error) {
-      console.error('Error al cargar las listas', error);
+      this.toastService.sendError('Error al cargar las listas');
     }
   }
 
@@ -178,8 +178,6 @@ export class EditBillModalComponent implements OnInit {
     let user = this.strageService.getFromSessionStorage('user') as User;
 
     if (this.updateBill.valid) {
-      console.log(`Valor de bill a actualizar:${JSON.stringify(this.updateBill.value)}`);
-      console.log(`Valor de bill a actualizar:${JSON.stringify(this.bill?.expenditureId)}`);
       const requestBill = {
         description: this.updateBill.value.description,
         amount: this.updateBill.value.amount,
@@ -195,12 +193,10 @@ export class EditBillModalComponent implements OnInit {
 
       this.billService.updateBill(requestBill, this.bill?.expenditureId, user.value.id).subscribe({
         next: (response: any) => {
-          console.log('Actualizado correctamente', response);
           this.toastService.sendSuccess('El gasto se ha actualizado correctamente.');
           this.activeModal.close('updated');
         },
         error: (error: any) => {
-          console.error('Error en el post', error);
           this.toastService.sendError('Ha ocurrido un error al actualizar el gasto. Por favor, inténtelo de nuevo.');
         },
       });
@@ -246,22 +242,19 @@ export class EditBillModalComponent implements OnInit {
 
       this.categoryService.addCategory(newCategory).subscribe({
         next: (response: any) => {
-          console.log('Añadido correctamente', response);
-          this.showModal('Éxito', 'La categoria se ha añadido correctamente.');
+          this.toastService.sendSuccess('La categoria se ha añadido correctamente')
           this.resetForm();
         },
         error: (error: any) => {
-          console.error('Error en el post', error);
           if (error.status === 409) {
-            this.showModal('Error', 'Ya existe una categoría con este nombre. Por favor, elija un nombre diferente.');
+            this.toastService.sendError('Ya existe una categoría con este nombre. Por favor, elija un nombre diferente');
           } else {
-            this.showModal('Error', 'Ha ocurrido un error al añadir la categoría. Por favor, inténtelo de nuevo.');
+            this.toastService.sendError('Ha ocurrido un error al añadir la categoría. Por favor, inténtelo de nuevo');
           }
         },
       });
     } else {
-      console.log('Formulario inválido');
-      this.showModal('Error', 'Por favor, complete todos los campos requeridos correctamente.');
+      this.toastService.sendError('Por favor, complete todos los campos requeridos correctamente');
     }
     this.modalService.dismissAll();
     this.newCategoryForm.reset();
