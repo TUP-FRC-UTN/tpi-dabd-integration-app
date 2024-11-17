@@ -125,9 +125,9 @@ export class FineService {
     return this.http.get<Fine>(`${this.apiUrl}/fine/${id}`);
   }
 
-  updateState(fine: UpdateFineStateDTO): Observable<Fine> {
+  updateState(fine: UpdateFineStateDTO, fineId: number): Observable<Fine> {
     return this.http
-      .put<Fine>(`${this.apiUrl}/fine/fine/state`, fine, {
+      .put<Fine>(`${this.apiUrl}/fine/${fineId}/state`, fine, {
         headers: this.userDataService.getHeaders(),
       })
       .pipe(

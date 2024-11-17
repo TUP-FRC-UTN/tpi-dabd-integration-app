@@ -14,7 +14,6 @@ import {
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClaimService } from '../../service/claim.service';
 import { SanctionTypeService } from '../../../sanction-type/services/sanction-type.service';
-import { CadastreService } from '../../../../cadastre/services/cadastre.service';
 import { SanctionType } from '../../../sanction-type/models/sanction-type.model';
 import { CommonModule, NgClass } from '@angular/common';
 import { ToastService } from 'ngx-dabd-grupo01';
