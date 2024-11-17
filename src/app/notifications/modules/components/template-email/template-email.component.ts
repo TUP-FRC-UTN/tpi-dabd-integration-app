@@ -1,4 +1,4 @@
-import { Component, ElementRef, Inject, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, inject, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 import { TemplateService } from '../../../services/template.service';
 import { AbstractControl, FormsModule, NgForm, ValidatorFn } from '@angular/forms';
@@ -33,6 +33,11 @@ export class TemplateEmailComponent {
   showModalToRenderHTML: boolean = false;
   @ViewChild('iframePreview') iframePreview!: ElementRef;
 
+  constructor(private cdr: ChangeDetectorRef) {}
+  ngAfterViewInit() {
+    this.cdr.detectChanges();
+  }
+
 
   template: TemplateModel = {
     id: 0,
@@ -52,12 +57,18 @@ export class TemplateEmailComponent {
     templateBodyControl.updateValueAndValidity();
 
     if (form.valid) {
-      return await this.sendEmailTemplate(
+       await this.sendEmailTemplate(
         form.value.templateNameModel,
         form.value.templateBodyModel
+        
       );
-
+      form.reset();
+     // templateBodyControl.markAsPristine();
     }
+   // form.form.markAsPristine();
+    //form.form.markAsUntouched();
+    //Object.values(this.form.controls).forEach
+    //podría ir un form.resetForm acá
   }
 
   async sendEmailTemplate(templateName: string, templateBody: string) {
@@ -68,7 +79,7 @@ export class TemplateEmailComponent {
     this.templateService.sendTemplate(this.template).subscribe({
       next: (response) => {
         this.toastService.sendSuccess("Plantilla guardada correctamente")
-        this.resetForm();
+       
       },
       error: (error: HttpErrorResponse) => {
          this.toastService.sendError("Hubo un error guardando la plantilla");
