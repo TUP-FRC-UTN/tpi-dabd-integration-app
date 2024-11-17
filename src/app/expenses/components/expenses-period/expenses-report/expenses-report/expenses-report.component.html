@@ -7,17 +7,37 @@
     style="display: flex; flex-wrap: wrap; padding-bottom: 20px"
   >
     <div class="d-flex">
-      <div class="col-auto pe-3 border-end border-1 px-2 mx-2">
-        <select class="form-select form-select-sm">
-          aria-label="Default select example" (change)="onPeriodChange($event)"
+      <!-- Filtro de Mes y Año -->
+      <div class="d-flex" [formGroup]="form">
+        <!-- Filtro Mes -->
+        <div class="d-flex align-items-center px-2">
+          <p class="mb-0 me-1">Mes:</p>
+          <select
+            class="form-select form-select-sm"
+            name=""
+            id=""
+            formControlName="mes"
           >
-          <option selected [value]="null">Periodos</option>
-          @for (period of periods; track $index) {
-          <option [value]="period.id">
-            {{ getMonthName(period.month) + "/" + period.year }}
-          </option>
-          }
-        </select>
+            <option value="" disabled selected></option>
+            @for (item of meses; track $index) {
+            <option value="{{ item.numero }}">{{ item.nombre }}</option>
+            }
+          </select>
+        </div>
+        <!-- Filtro Año -->
+        <div class="d-flex align-items-center border-end border-1 px-2 mx-2">
+          <p class="mb-0 me-1">Año:</p>
+          <select
+            class="form-select form-select-sm"
+            name=""
+            id=""
+            formControlName="anio"
+          >
+            <option value="" disabled selected></option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+          </select>
+        </div>
       </div>
       <div class="col-auto">
         <app-table-filters
