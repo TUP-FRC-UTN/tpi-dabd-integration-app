@@ -8,7 +8,7 @@
       <app-table-filters style="z-index: 1;" [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
     </div>
     <div class="d-flex align-items-center">
-      <button type="button" class="btn btn-outline-primary me-2" [routerLink]="['inventories/employees/form']">
+      <button type="button" class="btn btn-outline-primary me-2" [routerLink]="['/inventories/employees/form']">
         <i class="bi bi-plus"></i>
       </button>
       <button type="button" class="btn btn-success me-2" (click)="exportToExcel()">

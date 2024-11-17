@@ -95,8 +95,6 @@ export class EmployeeListComponent implements OnInit {
     .build();
 
     filterChange($event: Record<string, any>) {
-      console.log('[Filter Change] Evento originl:', $event);
-
       const filters = {
         ...$event
       };
@@ -209,82 +207,7 @@ export class EmployeeListComponent implements OnInit {
     this.currentPage = 0;
     this.getEmployees();
   }
-
-  // Metrics methods
-  calculateMetrics(): void {
-    this.inServiceCount = this.employeeList.filter(employee => employee.state === 'IN_SERVICE').length;
-    this.inactiveCount = this.employeeList.filter(employee => employee.state === 'DOWN').length;
-    
-    this.typeCountMap = this.employeeList.reduce((acc, employee) => {
-      const type = employee.employeeType;
-      if (type) {
-        acc[type] = (acc[type] || 0) + 1;
-      }
-      return acc;
-    }, {} as { [key: string]: number });
-  }
-
-  // Chart methods remain the same...
-  createPieChart(): void {
-    if (!this.pieChartRef?.nativeElement) {
-      console.warn('Elemento del gráfico circular no encontrado');
-      return;
-    }
-    if (this.pieChart) {
-      this.pieChart.destroy();
-    }
-    this.pieChart = new Chart(this.pieChartRef.nativeElement, {
-      type: 'pie' as ChartType,
-      data: {
-        labels: ['En Servicio', 'Inactivo'],
-        datasets: [{
-          data: [this.inServiceCount, this.inactiveCount],
-          backgroundColor: ['#28a745', '#dc3545'],
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'top'
-          }
-        }
-      }
-    });
-  }
-
-  createBarChart(): void {
-    if (this.barChart) {
-      this.barChart.destroy();
-    }
-
-    const ctx = document.getElementById('barChart') as HTMLCanvasElement;
-    const employeeTypes = Object.keys(this.typeCountMap);
-    const typeCounts = Object.values(this.typeCountMap);
-
-    this.barChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: employeeTypes,
-        datasets: [{
-          label: 'Cantidad de Empleados',
-          data: typeCounts,
-          backgroundColor: '#007bff'
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false }
-        },
-        scales: {
-          x: { title: { display: true, text: 'Tipo de Empleado' } },
-          y: { title: { display: true, text: 'Cantidad' }, beginAtZero: true }
-        }
-      }
-    });
-  }
-
+  
   // Export methods
   exportToPDF(): void {
     const doc = new jsPDF();

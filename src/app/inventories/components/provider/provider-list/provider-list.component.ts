@@ -448,7 +448,7 @@ getProviders(page: number = 0, size: number = this.pageSize, additionalFilters: 
 
   // Navigation methods
   editProvider(id: number): void {
-    this.router.navigate(['/providers/form', id]);
+    this.router.navigate(['inventories/providers/form', id]);
   }
 
   deleteProvider(id: number): void {
