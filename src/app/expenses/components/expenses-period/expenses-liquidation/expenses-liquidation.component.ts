@@ -3,10 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, Location } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
-import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-modal.component';
 import LiquidationExpense from '../../../models/liquidationExpense';
-import { TableComponent, ToastService } from 'ngx-dabd-grupo01';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { InfoModalComponent } from '../../modals/info-modal/info-modal.component';
 import { FormsModule } from '@angular/forms';
@@ -15,16 +13,16 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import moment from 'moment';
+import { ToastService } from 'ngx-dabd-grupo01';
+import { StorageService } from '../../../services/storage.service';
+import { User } from '../../../models/user';
 
 @Component({
   selector: 'app-expenses-liquidation-expenses-list',
   standalone: true,
   imports: [
-    PeriodSelectComponent,
     CommonModule,
     ExpensesModalComponent,
-    TableComponent,
-    NgModalComponent,
     InfoModalComponent,
     FormsModule,
     NgPipesModule,
@@ -38,6 +36,10 @@ export class ExpensesLiquidationComponent implements OnInit {
   );
 
   private readonly location = inject(Location);
+  private modalService = inject(NgbModal);
+  private storageService = inject(StorageService)
+
+
   toastService: ToastService = inject(ToastService);
   //table
 
@@ -52,7 +54,8 @@ export class ExpensesLiquidationComponent implements OnInit {
   isModalVisible = false;
   selectedPeriodId: number | null = null;
   //USO DEL MODAL CORRECTO.
-  private modalService = inject(NgbModal);
+
+  user: User | null = null;
 
   searchTerm = '';
 
@@ -79,8 +82,9 @@ export class ExpensesLiquidationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.user = this.storageService.getFromSessionStorage('usser') as User;
+
     this.loadId();
-    this.loadList(this.id);
     this.loadList(this.id);
   }
 
@@ -97,7 +101,6 @@ export class ExpensesLiquidationComponent implements OnInit {
         .subscribe((data: LiquidationExpense[]) => {
           this.liquidationExpensesList = data;
           this.loadLookList();
-          console.log(data)
         });
     }
   }
@@ -135,7 +138,7 @@ export class ExpensesLiquidationComponent implements OnInit {
 
   seeDetail(categoryId:number) {
     let id = this.listLooking[0].expense_id;
-    console.log(categoryId)
+
     this.router.navigate([`expenses/expense/periodo/${this.id}/liquidacion/${id}/${categoryId}`]);
   }
 
@@ -191,7 +194,7 @@ export class ExpensesLiquidationComponent implements OnInit {
 
           // Guardar el PDF después de agregar la tabla
           const fecha = new Date();
-          console.log(fecha);
+
           const finalFileName = this.fileName+"-"+ moment(fecha).format("DD-MM-YYYY_HH-mm") +".pdf";
           doc.save(finalFileName);
           console.log('Impreso')

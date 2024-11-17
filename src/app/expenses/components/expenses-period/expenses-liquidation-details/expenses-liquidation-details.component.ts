@@ -1,13 +1,8 @@
 import { Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule, DatePipe } from '@angular/common';
-import { CurrencyPipe } from '@angular/common';
 import { NgbActiveModal, NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
-import LiquidationExpense from '../../../models/liquidationExpense';
-import { FormsModule, NgControl, ReactiveFormsModule } from '@angular/forms';
-import { InfoModalComponent } from '../../modals/info-modal/info-modal.component';
-import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
+import { FormsModule } from '@angular/forms';
 import { BillService } from '../../../services/bill.service';
 import { Bill } from '../../../models/bill';
 import { CategoryService } from '../../../services/category.service';
@@ -16,29 +11,26 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import moment from 'moment';
-import { ConfirmAlertComponent, MainContainerComponent, TableFiltersComponent, TableComponent, Filter, SelectFilter, FilterOption, TableColumn, ToastService, RadioFilter} from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, MainContainerComponent, TableComponent, Filter, SelectFilter, FilterOption, TableColumn, ToastService, RadioFilter} from 'ngx-dabd-grupo01';
 import { ProviderService } from '../../../services/provider.service';
 import Period from '../../../models/period';
 import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal/edit-bill-modal.component';
 import { ViewBillModalComponent } from '../../modals/bills-modal/view-bill-modal/view-bill-modal.component';
 import { DeleteBillModalComponent } from '../../modals/bills/delete-bill-modal/delete-bill-modal.component';
+import { User } from '../../../models/user';
+import { StorageService } from '../../../services/storage.service';
 
 @Component({
   selector: 'app-expenses-liquidation-details',
   standalone: true,
   imports: [
-    CurrencyPipe,
     DatePipe,
     CommonModule,
     FormsModule,
-    InfoModalComponent,
-    NgModalComponent,
     NgPipesModule,
     NgbModule,
     TableComponent,
-    TableFiltersComponent,
     MainContainerComponent,
-    ConfirmAlertComponent
   ],
   providers: [DatePipe, NgbActiveModal],
   templateUrl: './expenses-liquidation-details.component.html',
@@ -53,7 +45,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   private readonly categoryService = inject(CategoryService);
   private readonly supplierService = inject(ProviderService);
   private readonly billTypeService = inject(BillService);
-
+  private readonly storage = inject(StorageService)
   private modalService = inject(NgbModal);
 
   //
@@ -119,12 +111,16 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
   fileName = 'reporte-gastos-liquidación';
 
+  user :User | null = null;
+
 
   //
   // Methods
   //
 
   ngOnInit(): void {
+    this.user = this.storage.getFromSessionStorage('user') as User;
+
     this.fechaTitulo = ''
 
     this.loadLiquidationExpenseDetails();

@@ -5,8 +5,7 @@ import {
 } from '@angular/core';
 import { PeriodService } from '../../../services/period.service';
 import Period from '../../../models/period';
-import { DatePipe, NgClass } from '@angular/common';
-import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-modal.component';
+import { DatePipe } from '@angular/common';
 import {
   NgbActiveModal,
   NgbModal,
@@ -25,12 +24,10 @@ import {
   MainContainerComponent,
   TableFiltersComponent,
   Filter,
-  TableComponent,
 } from 'ngx-dabd-grupo01';
 import * as XLSX from 'xlsx';
 import { NgPipesModule } from 'ngx-pipes';
 import moment from 'moment';
-import { InfoModalComponent } from '../../modals/info-modal/info-modal.component';
 import { RouterModule } from '@angular/router';
 import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
 import { forkJoin, mergeMap } from 'rxjs';
@@ -46,18 +43,13 @@ import { URLTargetType } from '../../../../users/models/role';
   standalone: true,
   imports: [
     ExpensesStatePeriodStyleComponent,
-    NgClass,
     ConfirmAlertComponent,
-    ExpensesModalComponent,
-    NgModalComponent,
     NgbModule,
     NgPipesModule,
     FormsModule,
-    InfoModalComponent,
     TableFiltersComponent,
     MainContainerComponent,
     RouterModule,
-    TableComponent,
   ],
   providers: [DatePipe, NgbActiveModal, NgbModule, NgbModal],
   templateUrl: './expenses-period-list.component.html',
@@ -89,10 +81,12 @@ export class ExpensesPeriodListComponent implements OnInit {
   year: number | null = null;
   month: number | null = null;
 
+  user: User | null = null;
+
   ngOnInit(): void {
-    let user = this.storage.getFromSessionStorage('user') as User;
-    
-    this.rolCode = user.value.roles.filter(rol => rol.code === URLTargetType.FINANCE).length == 1 ? true : false
+    this.user = this.storage.getFromSessionStorage('user') as User;
+
+    this.rolCode = this.user.value.roles.filter(rol => rol.code === URLTargetType.FINANCE).length == 1 ? true : false
     this.loadPaged(1);
   }
   searchTerm = '';
