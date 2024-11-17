@@ -206,16 +206,7 @@ addCharge() {
 
     this.rolCode = this.user.value.roles.filter(rol => rol.code === URLTargetType.FINANCE).length == 1 ? true : false
     this.loadSelect();
-    //this.loadCategoryCharge();
-    this.cargarPaginado();
-    this.columns = [
-      {headerName: 'Fecha', accessorKey: 'date', cellRenderer: this.dateTemplate},
-      {headerName: 'Número de lote', accessorKey: 'plotNumber'},
-      {headerName: 'Categoría', accessorKey: 'categoryCharge.name'},
-      {headerName: 'Descripción', accessorKey: 'description'},
-      {headerName: 'Monto', accessorKey: 'amount', cellRenderer: this.amountTemplate},
-      {headerName: 'Acciones', accessorKey: 'actions', cellRenderer: this.actionsTemplate},
-    ];
+    this.cargarPaginado();    
   }
 
   loadSelect() {
@@ -252,7 +243,6 @@ addCharge() {
         this.cargarPaginado();
       },
       error: (error) => {
-        console.error('Error al cargar los datos en loadSelect:', error);
       }
     });
   }
@@ -369,7 +359,6 @@ addCharge() {
   }
 
   downloadTable() {
-    debugger
     this.chargeService
       .getCharges(
         0,
@@ -546,31 +535,4 @@ addCharge() {
   }
 
   //#endregion
-
-
-
-
-  onFilterTextBoxChanged(event: Event){
-    // const target = event.target as HTMLInputElement;
-
-    // if (target.value?.length <= 2) {
-    //   this.filterSubject.next(this.itemsList);
-    // } else {
-    //   const filterValue = target.value.toLowerCase();
-
-    //   const filteredList = this.itemsList.filter(item => {
-    //     return Object.values(item).some(prop => {
-    //       const propString = prop ? prop.toString().toLowerCase() : '';
-
-    //       const translations = this.dictionaries && this.dictionaries.length
-    //         ? this.dictionaries.map(dict => this.translateDictionary(propString, dict)).filter(Boolean)
-    //         : [];
-
-    //       return propString.includes(filterValue) || translations.some(trans => trans?.toLowerCase().includes(filterValue));
-    //     });
-    //   });
-
-    //   this.filterSubject.next(filteredList.length > 0 ? filteredList : []);
-    // }
-  }
 }

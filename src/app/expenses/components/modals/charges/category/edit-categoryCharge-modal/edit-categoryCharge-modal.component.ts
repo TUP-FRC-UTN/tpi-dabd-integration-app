@@ -68,7 +68,6 @@ export class EditCategoryModalComponent implements OnInit{
 
       this.categoryService.updateCategory(updatedCategory,this.user.value.id).subscribe({
         next: (response: any) => {
-          console.log('Actualizado correctamente', response);
           this.activeModal.close({
             success: true,
             message: 'La categoría se ha actualizado correctamente.',
@@ -76,7 +75,6 @@ export class EditCategoryModalComponent implements OnInit{
           });
         },
         error: (error: any) => {
-          console.error('Error en el update', error);
           let errorMessage = 'Ha ocurrido un error al actualizar la categoría. Por favor, inténtelo de nuevo.';
 
           if (error.status === 409) {

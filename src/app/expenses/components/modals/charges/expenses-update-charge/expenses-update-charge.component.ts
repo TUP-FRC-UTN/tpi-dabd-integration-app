@@ -153,11 +153,9 @@ export class ExpensesUpdateChargeComponent implements OnInit {
       const charge = this.camelToSnake(updatedCharge);
       this.chargeService.updateCharge(updatedCharge,this.user.value.id).subscribe(
         (response) => {
-          console.log('Cargo actualizado con éxito:', response);
           this.activeModal.close(true);
         },
         (error) => {
-          console.error('Error al actualizar el cargo:', error);
         }
       );
     }
