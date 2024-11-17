@@ -2,13 +2,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TicketDto } from '../models/TicketDto';
+import { environment } from '../../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FilesServiceService {
-  private baseUrl = 'http://localhost:8080/files';
-  private baseUrl2 = 'http://localhost:8080/files';
+  private baseUrl = environment.apis.tickets + 'files';
+  private baseUrl2 = environment.apis.tickets + 'files';
   // private baseUrl = 'http://localhost:8087/files'; //DEV USSAGE
   // private baseUrl2 = 'http://localhost:8090/files';
 

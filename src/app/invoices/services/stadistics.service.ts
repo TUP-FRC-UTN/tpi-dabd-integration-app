@@ -4,16 +4,17 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { OtherReport, TicketFilter, TicketInfo, Top5, TopPayments } from '../models/stadistics';
 import { PaymentReportDto } from '../models/payments.report.model';
 import { TicketReportDto } from '../models/ticket.report.model';
+import { environment } from '../../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StadisticsService {
 
-  private readonly baseUrl = 'http://localhost:8080/report';
-  private readonly baseUrlTicket = 'http://localhost:8080/tickets';
-  private readonly baseUrlpayments = 'http://localhost:8080/report/topPayments';
-  private readonly baseUrlpaymentsReport = 'http://localhost:8080/report';
+  private readonly baseUrl = environment.apis.tickets + 'report';
+  private readonly baseUrlTicket = environment.apis.tickets + 'tickets';
+  private readonly baseUrlpayments = environment.apis.payments + 'topPayments';
+  private readonly baseUrlpaymentsReport = environment.apis.payments + 'report';
 
   // private readonly baseUrl = 'http://localhost:8087/report'; // DEV
   // private readonly baseUrlTicket = 'http://localhost:8087/tickets';

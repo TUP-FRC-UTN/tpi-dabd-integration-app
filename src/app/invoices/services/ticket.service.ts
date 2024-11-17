@@ -6,24 +6,31 @@ import { tick } from '@angular/core/testing';
 import { PaginatedResponse } from '../models/api-response';
 import { TransformTicketPipe } from '../pipes/ticket-mapper.pipe';
 import { RequestTicket, RequestTicketOwner } from '../models/RequestTicket';
+import { environment } from '../../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TicketService {
     // Base URL para el servicio de tickets
-  // private readonly baseUrl = 'http://localhost:8080/tickets';
-  private readonly baseUrl = 'http://localhost:8087/tickets';//DEV
+  private readonly baseUrl = environment.apis.tickets;
+  // private readonly baseUrl = 'https://lbsm4xgt-8080.brs.devtunnels.ms/tickets/tickets';//DEV
 
-  // Endpoints específicos
+  // Endpoints específicos prod
   private readonly apiUrl = this.baseUrl;
-  private readonly apiUrlPdf = this.baseUrl + '/generateTicket/';
-  private readonly apiGetAllByOwner = this.baseUrl + '/getAllTicketsByOwner';
-  private readonly apiGetAll = this.baseUrl + '/getAll';
+  private readonly apiUrlPdf = this.baseUrl + 'generateTicket/';
+  private readonly apiGetAllByOwner = this.baseUrl + 'getAllTicketsByOwner';
+  private readonly apiGetAll = this.baseUrl + 'getAll';
+  // // Endpoints específicos
+  // private readonly apiUrl = this.baseUrl;
+  // private readonly apiUrlPdf = this.baseUrl + '/generateTicket/';
+  // private readonly apiGetAllByOwner = this.baseUrl + '/getAllTicketsByOwner';
+  // private readonly apiGetAll = this.baseUrl + '/getAll';
     
   userId : Number;
     constructor(private http: HttpClient) { 
       this.userId = sessionStorage.getItem('userId') ? Number(sessionStorage.getItem('userId')) : 1;
+      console.log(this.userId);
     }
 
     filtrarfechas(dtobusqueda: any): Observable<any> {
@@ -189,7 +196,7 @@ export class TicketService {
       const request = this.buildRequestTicket(status, firstPeriod, lastPeriod);      
     
 
-    return this.http.post<PaginatedResponse<TicketDto>>(this.apiGetAll, request ,{ params, headers:header }).pipe(
+    return this.http.post<PaginatedResponse<TicketDto>>(this.apiGetAll, request ,{ params: params, headers:header }).pipe(
       map((response: PaginatedResponse<any>) => {
         const transformPipe = new TransformTicketPipe();
         const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
