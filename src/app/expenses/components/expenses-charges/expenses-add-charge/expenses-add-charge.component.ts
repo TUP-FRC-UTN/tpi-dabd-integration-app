@@ -10,20 +10,19 @@ import {
 } from '@angular/forms';
 import { ChargeService } from '../../../services/charge.service';
 import { CategoryCharge, Charge, ChargeType, Periods } from '../../../models/charge';
-import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import Lot from '../../../models/lot';
 import { PeriodService } from '../../../services/period.service';
 import { LotsService } from '../../../services/lots.service';
 import { CommonModule } from '@angular/common';
-import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 import { ChargeInfoComponent } from '../../modals/info/charge-info/charge-info.component';
-import { NgSelectComponent, NgOptionComponent } from '@ng-select/ng-select';
+import { NgSelectComponent } from '@ng-select/ng-select';
 import { map } from 'rxjs';
 import { NewCategoryChargeModalComponent } from '../../modals/charges/category/new-categoryCharge-modal/new-categoryCharge-modal.component';
 import { StorageService } from '../../../services/storage.service';
+import { URLTargetType } from '../../../../users/models/role';
 import { User } from '../../../models/user';
 @Component({
   selector: 'app-expenses-add-charge',
@@ -33,6 +32,9 @@ import { User } from '../../../models/user';
   styleUrl: './expenses-add-charge.component.css',
 })
 export class ExpensesAddChargeComponent implements OnInit{
+  //VARIABLE DE USER
+  user : User;
+  rolCode: boolean= false;
   //chargeForm: FormGroup;
   private fb: FormBuilder = inject(FormBuilder);
   private chargeService = inject(ChargeService);
@@ -124,6 +126,7 @@ export class ExpensesAddChargeComponent implements OnInit{
 
       this.ValidarMonto(this.categoriaCargos.find(c => c.categoryChargeId === id) as CategoryCharge);
     });
+    this.user = this.storage.getFromSessionStorage('user');
   }
   ValidarMonto(categoryCharge : CategoryCharge) {
     if (categoryCharge == undefined) return
@@ -174,7 +177,7 @@ export class ExpensesAddChargeComponent implements OnInit{
       }
       const charges = this.camelToSnake(charge) as Charge;
 
-      this.chargeService.addCharge(charges).subscribe(
+      this.chargeService.addCharge(charges,this.user.value.id).subscribe(
         (response) => {
           this.toastService.sendSuccess("El cargo se ha registrado correctamente");
 
@@ -225,7 +228,9 @@ export class ExpensesAddChargeComponent implements OnInit{
 
   ngOnInit(): void {
     let user = this.storage.getFromSessionStorage('user') as User;
-    this.storage.saveToStorage(user,'user');
+
+    this.rolCode = user.value.roles.filter(rol => rol.code === URLTargetType.FINANCE).length == 1 ? true : false
+
     this.loadSelect();
   }
 }
