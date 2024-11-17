@@ -10,7 +10,7 @@ import { PORTSuppliers } from '../../utils/const';
 export class CompanyService {
 
   //private apiCompanyUrl = 'http://localhost:8013/suppliers/companies';
-  private apiCompanyUrl = PORTSuppliers + 'companies';
+  private apiCompanyUrl = PORTSuppliers + 'suppliers/companies';
   
 
   constructor(private http: HttpClient) { }
