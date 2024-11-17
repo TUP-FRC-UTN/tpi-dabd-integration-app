@@ -58,7 +58,7 @@ export class AppComponent {
           routerLink: 'entries/auth-list',
         },
         {
-          label: 'Dashboards',
+          label: 'Reporte de Accesos',
           routerLink: 'entries/dashboard',
         },
       ],
