@@ -19,6 +19,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {OwnerPlotService} from '../../../services/owner-plot.service';
 import {plotForUserValidator} from '../../../validators/cadastre-plot-for-users';
 import {birthdateValidation} from '../../../validators/birthdate.validations';
+import { SessionService } from '../../../services/session.service';
 
 @Component({
   selector: 'app-user-user-form',
@@ -37,6 +38,7 @@ export class UserUserFormComponent {
     private router = inject(Router)
     private toastService = inject(ToastService)
     private modalService = inject(NgbModal)
+    private sessionService = inject(SessionService)
     //#endregion
 
     //#region ATT
@@ -56,6 +58,8 @@ export class UserUserFormComponent {
     countryOptions!: any;
     editMode: boolean = false;
     emailInput: string = ""
+    isSuperAdmin: boolean = false;
+    adminRoles: number[] = [999];
     //#endregion
 
   onEmailChange(userEmail: string): void {
@@ -160,6 +164,7 @@ export class UserUserFormComponent {
         this.userForm.controls['email'].setAsyncValidators(emailValidator(this.userService))
       }
       this.setEnums()
+      this.checkVisibility();
       this.getAllRoles()
     }
 
@@ -306,6 +311,11 @@ export class UserUserFormComponent {
     //#endregion
 
     //#region FUNCION ROLES
+
+    checkVisibility() {
+      this.isSuperAdmin = this.sessionService.hasRoleCodes(this.adminRoles);
+    }
+
     getRolValue() {
       const rolFormGroup = this.userForm.get('rolesForm') as FormGroup;
       return {
@@ -331,8 +341,14 @@ export class UserUserFormComponent {
 
     getAllRoles() {
       this.roleService.getAllRoles(0, 2147483647, true).subscribe(
-        response => this.rolesForCombo = response.content
-      )
+        response => {
+          if (!this.isSuperAdmin) {
+            this.rolesForCombo = response.content.filter(role => role.name !== 'SUPERADMIN');
+          } else {
+            this.rolesForCombo = response.content;
+          }
+        }
+      );
     }
 
     transformRoles(user: User): number[] | undefined {
