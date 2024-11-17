@@ -230,7 +230,7 @@ export class TicketService {
   }
 
   updateTicketStatus(id: number, status: string): Observable<TicketDto> {
-    const url = `${this.baseUrl}/updateTicketStatus/${id}`;
+    const url = `${this.baseUrl}/tickets/updateTicketStatus/${id}`;
     const params = new HttpParams().set('status', status);
     return this.http.put<TicketDto>(url, null, { params });
   }
