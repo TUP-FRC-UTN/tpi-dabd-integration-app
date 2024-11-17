@@ -11,21 +11,20 @@ import { SessionService } from './users/services/session.service';
 import { LoginService } from './users/services/login.service';
 import { ForgotPasswordComponent } from './users/components/forgot-password/forgot-password.component';
 import { BehaviorSubject, Observable } from 'rxjs';
-import {RoleSelectorComponent} from './penalties/shared/components/role-selector/role-selector.component';
+import { RoleSelectorComponent } from './penalties/shared/components/role-selector/role-selector.component';
 import { filter, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
-    RouterOutlet,
     RouterModule,
     MainLayoutComponent,
     ToastsContainer,
     AsyncPipe,
     LoginComponent,
-	ForgotPasswordComponent,
-	RoleSelectorComponent
+    ForgotPasswordComponent,
+
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -69,7 +68,20 @@ export class AppComponent {
           label: 'Lista de Expensas (Propietario)',
           routerLink: '/invoices/owner-list-expensas',
         },
-        { label: 'Estadísticas', routerLink: '/invoices/stadistics' },
+        {
+          label: 'Estadísticas', subMenu: [
+            {
+              label: 'Tickets',
+              routerLink: '/invoices/stadistics/1',
+            },
+            {
+              label: 'Payments',
+              routerLink: '/invoices/stadistics/2',
+            },
+            
+          ],
+        },
+
       ],
     },
     {
@@ -133,7 +145,7 @@ export class AppComponent {
     },
     {
       label: 'Gastos', //expensas
-      routerLink:'expenses',
+      routerLink: 'expenses',
       sidebarMenu: [
         {
           label: 'Gastos',
