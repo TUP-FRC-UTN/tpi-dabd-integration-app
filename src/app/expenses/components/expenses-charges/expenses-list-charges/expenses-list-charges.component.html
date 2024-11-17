@@ -38,102 +38,105 @@
       </div>
   </div>
   <!-- TABLA DE CARGOS-->
-  <div class="table-container">
-    <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;">
-      <thead>
-        <tr>
-          <th scope="col" style="text-align: left;" >Periodo</th>
-          <th scope="col" style="text-align: left;" >Fecha</th>
-          <th scope="col" style="text-align: left;">Número de lote</th>
-          <th scope="col" style="text-align: left;">Categoría</th>
-          <th scope="col" style="text-align: left;">Descripción</th>
-          <th scope="col" style="text-align: right;">Monto</th>
-          <th scope="col" style="text-align: left;">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (charge of chargesCompleted | filterBy: ['plotNumber', 'amount','description','categoryCharge.name','amountSign','date']: searchTerm; track $index) {<tr>
-          <td style="text-align: left;" >{{charge.period.month }}/{{charge.period.year}}</td>
-          <td style="text-align: left;" >{{charge.date | date:'MMM d, yyyy'}}</td>
-          <td style="text-align: left;">{{charge.plotNumber}}</td>
-          <td>{{charge.categoryCharge.name}}</td>
-          <td>{{charge.description}}</td>
-          @if (charge.amountSign.toString() == "Porcentaje") {
-            <td style="text-align: right;" >{{charge.amount.toLocaleString("es-AR", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2
-            }) }} %</td>
-          } @else {
-            <td style="text-align: right;" >{{charge.amount.toLocaleString("es-AR", {
-              style: "currency",
-              currency: "ARS",
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2
-            }) }}</td>
-          }
-          <td  style="text-align: left; justify-content: center;" >
-            @if(isFine(charge.categoryCharge.name)  ||charge.period.state == "CLOSE") {
-
-              <button class="btn btn-primary btn-sm m-1" (click)="openViewModal(charge)">
-                <i class="bi bi-eye"></i>
-              </button>
-
+   <div style="height: 500px; overflow-y: auto;">
+    <div class="table-container" id="table" >
+      <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th scope="col" style="text-align: left;" >Periodo</th>
+            <th scope="col" style="text-align: left;" >Fecha</th>
+            <th scope="col" style="text-align: left;">Número de lote</th>
+            <th scope="col" style="text-align: left;">Categoría</th>
+            <th scope="col" style="text-align: left;">Descripción</th>
+            <th scope="col" style="text-align: right;">Monto</th>
+            <th scope="col" style="text-align: left;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (charge of chargesCompleted | filterBy: ['plotNumber', 'amount','description','categoryCharge.name','amountSign','date']: searchTerm; track $index) {<tr>
+            <td style="text-align: left;" >{{charge.period.month }}/{{charge.period.year}}</td>
+            <td style="text-align: left;" >{{charge.date | date:'MMM d, yyyy'}}</td>
+            <td style="text-align: left;">{{charge.plotNumber}}</td>
+            <td>{{charge.categoryCharge.name}}</td>
+            <td>{{charge.description}}</td>
+            @if (charge.amountSign.toString() == "Porcentaje") {
+              <td style="text-align: right;" >{{charge.amount.toLocaleString("es-AR", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              }) }} %</td>
             } @else {
-              <div class="btn-group" role="group">
-                <button
-                  type="button"
-                  class="btn btn-sm btn-secondary dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i class="bi bi-three-dots-vertical"></i>
-                </button>
-                <ul class="dropdown-menu">
-                  <li>
-                    <a
-                      class="dropdown-item btn btn-primary"
-                      (click)="openViewModal(charge)"
-                      >Ver</a
-                    ><!--aca modal ver cargo-->
-                  </li>
-                  @if (charge.period.state != "CLOSE") {
-                  <li>
-                    <a
-                      class="dropdown-item btn btn-info"
-                      (click)="openUpdateModal(charge)"
-                      >Editar</a
-                    ><!--aca modal editar cargo-->
-                  </li>
-                  <li>
-                    <a
-                      class="dropdown-item btn btn-danger"
-                      data-bs-target="#exampleModal"
-                      data-bs-toggle="modal"
-                      (click)="open(modalTemplate, charge.chargeId)"
-                      >Eliminar</a
-                    >
-                  </li>
-                  }
-                </ul>
-              </div>
-
+              <td style="text-align: right;" >{{charge.amount.toLocaleString("es-AR", {
+                style: "currency",
+                currency: "ARS",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              }) }}</td>
             }
-          </td>
-
-
-      </tr>
-      }@empty {
-          <td colspan="7" class="text-center">
-            <div class="text-center p-3">
-              <div class="alert alert-secondary">
-                No hay cargos para mostrar
+            <td  style="text-align: left; justify-content: center;" >
+              @if(isFine(charge.categoryCharge.name)  ||charge.period.state == "CLOSE") {
+  
+                <button class="btn btn-primary btn-sm m-1" (click)="openViewModal(charge)">
+                  <i class="bi bi-eye"></i>
+                </button>
+  
+              } @else {
+                <div class="btn-group" role="group">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-secondary dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <i class="bi bi-three-dots-vertical"></i>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a
+                        class="dropdown-item btn btn-primary"
+                        (click)="openViewModal(charge)"
+                        >Ver</a
+                      ><!--aca modal ver cargo-->
+                    </li>
+                    @if (charge.period.state != "CLOSE") {
+                    <li>
+                      <a
+                        class="dropdown-item btn btn-info"
+                        (click)="openUpdateModal(charge)"
+                        >Editar</a
+                      ><!--aca modal editar cargo-->
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item btn btn-danger"
+                        data-bs-target="#exampleModal"
+                        data-bs-toggle="modal"
+                        (click)="open(modalTemplate, charge.chargeId)"
+                        >Eliminar</a
+                      >
+                    </li>
+                    }
+                  </ul>
+                </div>
+  
+              }
+            </td>
+  
+  
+        </tr>
+        }@empty {
+            <td colspan="7" class="text-center">
+              <div class="text-center p-3">
+                <div class="alert alert-secondary">
+                  No hay cargos para mostrar
+                </div>
               </div>
-            </div>
-          </td>
-      }
-      </tbody>
-    </table>
-  </div>
+            </td>
+        }
+        </tbody>
+      </table>
+    </div>
+   </div>
+  
 
   <div class="row d-flex justify-content-end " style="margin-right: 20px;">
     <div class="col">
@@ -172,6 +175,23 @@
   <!--POSIBLE IMPLEMENTACIÓN-->
 
 </app-main-container>
+<!-- <app-table
+  [items]="chargesCompleted"
+  [columns]="columns"
+  [showSearchBar]="true"
+  [showHeaderButton]="true"
+  (excelButtonClick)="downloadTable()"
+  (pdfButtonClick)="imprimir()"
+  [tableFilters]="filters"
+  [pagination]="{
+      totalItems: totalItems,
+      page: currentPage,
+      size: pageSize,
+      onPageChange: onPageChange,
+      onPageSizeChange: changesPageSize
+    }"
+>
+</app-table> -->
 
 
 <ng-template #modalTemplate let-modal >

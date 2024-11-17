@@ -23,6 +23,7 @@ import {
 } from "ngx-dabd-grupo01" ;
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {InfoExpensesListComponent} from "../../modals/info-expenses-list/info-expenses-list.component";
+import {MonthService} from "../../../services/month.service";
 
 
 @Component({
@@ -42,6 +43,7 @@ export class ExpensesListComponent implements OnInit{
   private readonly lotsService = inject(LotsService)
   private readonly service = inject(ExpenseServiceService)
   private readonly billService = inject(BillService)
+  private readonly monthService = inject(MonthService);
 
   selectedLotId: number = 0;
   selectedTypeId: number = 0;
@@ -168,6 +170,9 @@ export class ExpensesListComponent implements OnInit{
     new SelectFilter('Periodos','period','Seleccione un periodo',this.periods)
   ]
 
+  toMonthAbbr(month:number){
+    return this.monthService.getMonthAbbr(month);
+  }
 
   loadSelect() {
 
@@ -179,7 +184,7 @@ export class ExpensesListComponent implements OnInit{
       this.periods.push({value: null, label: 'Todos'})
       data.forEach(item => {
         // @ts-ignore
-        this.periods.push({value: item.id, label: item.month +'/'+ item.year})
+        this.periods.push({value: item.id, label: this.toMonthAbbr(item.month)+'/'+ item.year})
       })
     })}
     this.lotsService.get().subscribe((data: Lot[]) => {

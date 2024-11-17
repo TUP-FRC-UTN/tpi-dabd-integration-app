@@ -1,19 +1,25 @@
 import { Component, ViewChild, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ContactService } from '../../../services/contact.service';
+import { ContactModel } from '../../../models/contacts/contactModel';
 import { Router } from '@angular/router';
 import { NgbPagination, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { MainContainerComponent } from 'ngx-dabd-grupo01';
-import { ToastService } from 'ngx-dabd-grupo01';
+import { MainContainerComponent, ToastService, TableFiltersComponent, Filter, FilterConfigBuilder } from 'ngx-dabd-grupo01';
+import { SubscriptionService } from '../../../services/subscription.service';
 import { map } from 'rxjs';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { ContactModel } from '../../../models/contacts/contactModel';
-import { ContactService } from '../../../services/contact.service';
-import { SubscriptionService } from '../../../services/subscription.service';
+import { PaginatedContacts } from '../../../models/contacts/paginated/PaginatedContact';
+import { TelegramSenderComponent } from '../telegram-sender/telegram-sender.component';
+import { ActiveSearchTerm } from '../../../models/contacts/filters/activeSearchTerm';
+import { TemplateModel } from '../../../models/templates/templateModel';
+import { EmailService } from '../../../services/emailService';
+import { TemplateService } from '../../../services/template.service';
+import { EmailDataContact } from '../../../models/notifications/emailDataContact';
 
 @Component({
   selector: 'app-contact-list',
@@ -25,15 +31,19 @@ import { SubscriptionService } from '../../../services/subscription.service';
     NgbPagination,
     NgbDropdownModule,
     MainContainerComponent,
+    TableFiltersComponent,
+    TelegramSenderComponent
   ],
   templateUrl: './contact-list.component.html',
   styleUrls: ['./contact-list.component.css'],
+  providers: [DatePipe]
 })
 export class ContactListComponent implements OnInit {
   private router = inject(Router);
   private contactService = inject(ContactService);
   toastService: ToastService = inject(ToastService);
   suscriptionService: SubscriptionService = inject(SubscriptionService);
+  isTelegramModalOpen = false;
 
   availableSubscriptions: string[] = [];
 
@@ -45,18 +55,22 @@ export class ContactListComponent implements OnInit {
 
   // Paginación
   currentPage = 1;
-  itemsPerPage = 10;
+  pageSize = 10;
   totalItems = 0;
+  totalPages = 0;
   sizeOptions: number[] = [10, 25, 50];
 
   // Filtros
-  searchTerm = '';
+  globalSearchTerm = '';
+  filteredSearchTerm = '';
+
+
   isActiveContactFilter: boolean | undefined = true;
   selectedContactType: string = '';
 
   // Datos y estados
   contacts: ContactModel[] = [];
-  filteredContacts: ContactModel[] = [];
+
 
   // Estados de modales
   isModalOpen = false;
@@ -67,8 +81,119 @@ export class ContactListComponent implements OnInit {
   isDetailModalOpen = false;
   selectedContact: ContactModel | null = null;
 
-  //Estado de filtors
-  showInput: boolean = false;
+  //Estado de filtro de texto; global o filtrado
+  activeSearchTerm : ActiveSearchTerm = ActiveSearchTerm.GLOBAL;
+
+  //Envio a varios contactos
+  emailService = inject(EmailService)
+  templateService = inject(TemplateService)
+  selectedContacts : number[] = []
+  minimunContacts : boolean = false
+  isEmailModalOpen : boolean = false
+  emailSubject : string = ""
+  emailBody : string = ""
+  allTemplates : TemplateModel[] = []
+  selectedTemplate : number = 0
+  allSelected: boolean = false
+
+  loadTemplates() {
+    this.templateService.getAllTemplatesWithoutVariables().subscribe(data => {
+      this.allTemplates = data
+    })
+  }
+  selectContact(contactId: number, event: Event) {
+    const inputElement = event.target as HTMLInputElement
+    
+    if (inputElement && inputElement.checked !== undefined) {
+      const isSelected = inputElement.checked;
+  
+      // Si el checkbox está seleccionado, agregar el contacto al array
+      if (isSelected) {        
+        this.selectedContacts.push(contactId);
+        
+      } else {
+        // Si el checkbox está desmarcado, eliminar el contacto del array
+        
+        const index = this.selectedContacts.indexOf(contactId);
+        if (index > -1) {
+          this.selectedContacts.splice(index, 1);
+        }
+      }
+    }
+  
+    this.minimunContacts = this.selectedContacts.length >= 2;
+  }
+  openEmailModal() {
+    this.isEmailModalOpen = true
+  }
+  closeEmailModal() {
+    this.isEmailModalOpen = false
+  }
+  sendEmail() {
+    const data : EmailDataContact = {
+      subject: this.emailSubject,
+      variables: [],
+      templateId: this.selectedTemplate,
+      contactIds: this.selectedContacts
+    }    
+    this.emailService.sendEmailWithContacts(data).subscribe({
+      next: () => {
+        this.isEmailModalOpen = false
+        this.loadContacts()
+        this.toastService.sendSuccess("Enviado correctamente a los contactos")
+      },
+      error: (error) => {
+        console.error(error)
+        this.isEmailModalOpen = false
+        this.loadContacts()
+        this.toastService.sendError("Hubo un error al enviar a los contactos")
+      }
+    })
+  }
+  showNameById(id: number) {
+    let name
+    name = this.contacts.find(c => c.id === id)?.contactValue
+    return name
+  }
+  selectAllContacts() {
+    if (!this.allSelected) {
+      this.minimunContacts = true
+      this.allSelected = true
+      this.selectedContacts = this.contacts.map(contact => contact.id);
+    } else {
+      this.minimunContacts = false
+      this.allSelected = false
+      this.selectedContacts = [];
+    }
+    this.updateSelectAllStatus();
+  }
+  updateSelectAllStatus() {
+    this.allSelected = this.contacts.length === this.selectedContacts.length;
+  }
+  isContactSelected(contactId: number): boolean {
+    return this.selectedContacts.includes(contactId);
+  }
+  //Envio a varios contactos
+
+
+
+
+
+  filterConfig : Filter[] = new FilterConfigBuilder()
+  .textFilter('Refinar búsqueda', 'filteredSearch', 'Buscar...')
+  .selectFilter('Estado', 'status', 'Seleccione un estado', [
+    {value: 'ALL', 'label': 'Todos' },
+    {value: 'ACTIVE', label: 'Activos'},
+    {value: 'INACTIVE', label: 'Inactivos'}
+  ])
+  .selectFilter('Tipo', 'contactType', 'Seleccione un tipo de contacto', [
+    {value: 'EMAIL', label: 'Correo electrónico'},
+    {value: 'PHONE', label: 'Teléfono'},
+    {value: 'SOCIAL_MEDIA_LINK', label: 'Red social'}
+  ])
+  .build();
+
+
 
   // Referencias
   @ViewChild('editForm') editForm!: NgForm;
@@ -81,8 +206,10 @@ export class ContactListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadContacts();
-    this.getAllContacts();
+    this.loadTemplates()
   }
+
+
 
   private getEmptyContact(): ContactModel {
     return {
@@ -95,82 +222,97 @@ export class ContactListComponent implements OnInit {
     };
   }
 
-  getFilteredContacts(): void {
-    this.contactService
-      .getFilteredContactsFromBackend(
-        this.isActiveContactFilter,
-        this.searchTerm,
-        this.selectedContactType
-      )
-      .subscribe((filteredContacts) => {
-        this.contacts = filteredContacts;
-      });
-  }
 
-  filterByStatus(status: 'all' | 'active' | 'inactive') {
-    if (status === 'all') {
-      this.isActiveContactFilter = undefined;
-    } else if (status === 'active') {
-      this.isActiveContactFilter = true;
-    } else if (status === 'inactive') {
-      this.isActiveContactFilter = false;
+
+
+  filterChange($event: Record<string, any>) {
+    this.clearFilters();
+    if($event['status']  && $event['status'].trim() !== '' ) {
+      if($event['status']==='ACTIVE'){
+        this.isActiveContactFilter = true;
+
+     } else if ($event['status']==='INACTIVE' ) {
+       this.isActiveContactFilter = false;
+     } else {
+       this.isActiveContactFilter = undefined;
+     }
     }
-    this.getFilteredContacts();
+
+    if($event['contactType']  && $event['contactType'].trim() !== '' ) {
+      this.selectedContactType = $event['contactType']
+    }
+
+    if($event['filteredSearch']  && $event['filteredSearch'].trim() !== '' ) {
+      this.activeSearchTerm = ActiveSearchTerm.FILTERED;
+      this.filteredSearchTerm = $event['filteredSearch']
+    }
+
+    this.applyFilters();
+
+
   }
 
-  onSearchTextChange(searchTerm: string) {
-    this.searchTerm = searchTerm;
-    this.getFilteredContacts();
+  private applyFilters() {
+    this.currentPage = 1; // Resetear a la primera página al filtrar
+    this.loadContacts(
+      this.isActiveContactFilter, 
+      this.activeSearchTerm === ActiveSearchTerm.FILTERED ? this.filteredSearchTerm : this.globalSearchTerm , 
+      this.selectedContactType
+    );
   }
 
-  filterByContactType(contactType: string): void {
-    this.contactService
-      .getFilteredContactsFromBackend(
-        this.isActiveContactFilter,
-        this.searchTerm,
-        contactType
-      )
-      .subscribe((filteredContacts) => {
-        this.contacts = filteredContacts;
-      });
-    this.showInput = true;
+
+
+
+  onGlobalSearchTextChange(searchTerm: string) {
+    this.activeSearchTerm = ActiveSearchTerm.GLOBAL;
+    this.globalSearchTerm = searchTerm;
+    this.applyFilters();
   }
+
+
+
+  
+
+
 
   // Carga de datos
-  loadContacts() {
-    this.contactService
-      .getFilteredContactsFromBackend(
-        this.isActiveContactFilter,
-        this.searchTerm,
-        this.selectedContactType
-      )
-      .subscribe({
-        next: (contacts) => {
-          this.contacts = contacts;
-          this.filteredContacts = [...this.contacts];
-          this.updatePagination();
-        },
-        error: (error) => {
-          this.showModal('Error', 'Error al cargar los contactos');
-          console.error('Error loading contacts:', error);
-        },
-      });
+  loadContacts(active?: boolean, searchText?: string, contactType?: string) {
+    this.contactService.getPaginatedContacts(this.currentPage, this.pageSize, active, searchText, contactType).subscribe(
+      (response: PaginatedContacts) => {
+        this.contacts = response.content; // Asigna los contactos paginados
+        this.totalItems = response.totalElements; // Total de elementos
+        this.totalPages = response.totalPages; // Total de páginas
+      },
+      error => {
+        console.error('Error fetching contacts:', error);
+      }
+    );
   }
 
-  getAllContacts() {
-    this.contactService.getAllContacts().subscribe((data: ContactModel[]) => {
-      this.contacts = data.sort((a, b) =>
-        a.contactValue.toLowerCase().localeCompare(b.contactValue.toLowerCase())
-      );
-    });
+  nextPage() {
+    if (this.currentPage < this.totalPages - 1) {
+      this.currentPage++;
+      this.loadContacts(this.isActiveContactFilter, this.globalSearchTerm, this.selectedContactType);
+    }
+  }
+  
+  previousPage() {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.loadContacts(this.isActiveContactFilter, this.globalSearchTerm, this.selectedContactType);
+    }
   }
 
-  clearSearch() {
-    this.searchTerm = '';
+
+
+  clearFilters() {
+    this.activeSearchTerm = ActiveSearchTerm.GLOBAL;
+    this.filteredSearchTerm = '';
+    this.globalSearchTerm = '';
     this.selectedContactType = '';
     this.isActiveContactFilter = true;
-    this.showInput = false; // Ocultar input al limpiar
-    this.loadContacts();
+    this.currentPage = 1;
   }
 
   // Paginación
@@ -191,6 +333,8 @@ export class ContactListComponent implements OnInit {
     this.currentPage = page;
     this.loadContacts();
   }
+
+  
 
   saveContact() {
     this.router.navigate(['/contact/new']);
@@ -358,7 +502,6 @@ export class ContactListComponent implements OnInit {
     this.contactService.getAllContacts().subscribe({
       next: (contacts) => {
         const data = contacts.map((contact) => ({
-          ID: contact.id,
           Tipo: contact.contactType,
           Valor: contact.contactValue,
           Activo: contact.active ? 'Activo' : 'Inactivo',
@@ -390,19 +533,17 @@ export class ContactListComponent implements OnInit {
       next: (contacts) => {
         autoTable(doc, {
           startY: 30,
-          head: [['ID', 'Tipo', 'Valor', 'Activo']],
+          head: [['Tipo', 'Valor', 'Activo']],
           body: contacts.map((contact) => [
-            contact.id,
             contact.contactType,
             contact.contactValue,
             contact.active ? 'Activo' : 'Inactivo',
           ]),
           columnStyles: {
             // para que no se rompa por si el body es muy grande
-            0: { cellWidth: 15 }, // ID
-            1: { cellWidth: 40 }, // Tipo
-            2: { cellWidth: 100 }, // Valor
-            3: { cellWidth: 20 }, // Activo
+            0: { cellWidth: 40 }, // Tipo
+            1: { cellWidth: 100 }, // Valor
+            2: { cellWidth: 20 }, // Activo
           },
           styles: { overflow: 'linebreak' },
         });
@@ -436,10 +577,12 @@ export class ContactListComponent implements OnInit {
 
     this.showModal('Información', message);
   }
-  //Pagination
-  get paginatedContacts() {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    return this.contacts.slice(startIndex, endIndex);
+
+  openTelegramModal() {
+    this.isTelegramModalOpen = true;
+  }
+  
+  closeTelegramModal() {
+    this.isTelegramModalOpen = false;
   }
 }

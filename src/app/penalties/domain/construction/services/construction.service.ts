@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, finalize, map } from 'rxjs';
 import {
@@ -7,6 +7,9 @@ import {
   ConstructionUpdateRequestDto,
   ConstructionUpdateStatusRequestDto,
 } from '../models/construction.model';
+import { environment } from '../../../../../environments/environment';
+import { SessionService } from '../../../../users/services/session.service';
+import { User } from '../../../../users/models/user';
 
 type OneConstruction = ConstructionResponseDto | undefined;
 
@@ -14,7 +17,8 @@ type OneConstruction = ConstructionResponseDto | undefined;
   providedIn: 'root',
 })
 export class ConstructionService {
-  private apiUrl = 'http://localhost:8080/constructions';
+  private apiUrl =
+    environment.apis.constructions.slice(0, -1) + '/constructions';
 
   private oneConstruction = new BehaviorSubject<OneConstruction>(undefined);
   oneConstruction$ = this.oneConstruction.asObservable();
@@ -29,6 +33,19 @@ export class ConstructionService {
   isLoading$ = this.isLoadingSubject.asObservable();
 
   private readonly http = inject(HttpClient);
+
+  private readonly sessionService = inject(SessionService);
+
+  getHeaders(): HttpHeaders {
+    const user: User = this.sessionService.getItem('user');
+    const userId = user?.id || 1;
+
+    return new HttpHeaders().set('x-user-id', userId.toString());
+  }
+
+  getAllItems(): Observable<ConstructionResponseDto[]> {
+    return this.http.get<ConstructionResponseDto[]>(this.apiUrl);
+  }
 
   getAllConstructions(
     page: number,
@@ -71,7 +88,9 @@ export class ConstructionService {
     construction: ConstructionRequestDto
   ): Observable<ConstructionResponseDto> {
     return this.http
-      .post<ConstructionResponseDto>(this.apiUrl, construction)
+      .post<ConstructionResponseDto>(this.apiUrl, construction, {
+        headers: this.getHeaders(),
+      })
       .pipe(
         map((newItem) => {
           const updatedItems = [...this.itemsSubject.value, newItem];
@@ -86,7 +105,8 @@ export class ConstructionService {
   ): Observable<ConstructionResponseDto> {
     return this.http.put<ConstructionResponseDto>(
       `${this.apiUrl}/status`,
-      updateStatusRequestDto
+      updateStatusRequestDto,
+      { headers: this.getHeaders() }
     );
   }
 
@@ -104,21 +124,44 @@ export class ConstructionService {
   ): Observable<ConstructionResponseDto> {
     return this.http.put<ConstructionResponseDto>(
       `${this.apiUrl}/${id}`,
-      updateStatusRequestDto
+      updateStatusRequestDto,
+      { headers: this.getHeaders() }
     );
   }
 
   approveConstruction(id: number): Observable<ConstructionResponseDto> {
     return this.http.put<ConstructionResponseDto>(
       `${this.apiUrl}/approve/${id}`,
-      {}
+      {},
+      { headers: this.getHeaders() }
+    );
+  }
+
+  startConstruction(id: number): Observable<ConstructionResponseDto> {
+    return this.http.put<ConstructionResponseDto>(
+      `${this.apiUrl}/start/${id}`,
+      {},
+      { headers: this.getHeaders() }
+    );
+  }
+
+  finishConstruction(
+    id: number,
+    userId: number
+  ): Observable<ConstructionResponseDto> {
+    const params = new HttpParams().set('userId', userId);
+    return this.http.put<ConstructionResponseDto>(
+      `${this.apiUrl}/complete/${id}`,
+      {},
+      { params, headers: this.getHeaders() }
     );
   }
 
   onReviewConstruction(id: number): Observable<ConstructionResponseDto> {
     return this.http.put<ConstructionResponseDto>(
       `${this.apiUrl}/review/${id}`,
-      {}
+      {},
+      { headers: this.getHeaders() }
     );
   }
 
@@ -128,11 +171,20 @@ export class ConstructionService {
   ): Observable<ConstructionResponseDto> {
     return this.http.put<ConstructionResponseDto>(
       `${this.apiUrl}/reject/${id}`,
-      { rejectionReason: reason }
+      { rejectionReason: reason },
+      { headers: this.getHeaders() }
     );
   }
 
-  /* rejectConstruction(id: number): Observable<ConstructionResponseDto> {
-    return this.http.put<ConstructionResponseDto>(`${this.apiUrl}/reject/${id}`, {});
-  } */
+  getMonthlyConstructionStats(searchParams: any = {}): Observable<any[]> {
+    let params = new HttpParams();
+
+    Object.keys(searchParams).forEach((key) => {
+      if (searchParams[key]) {
+        params = params.set(key, searchParams[key]);
+      }
+    });
+
+    return this.http.get<any[]>(`${this.apiUrl}/stats/monthly`, { params });
+  }
 }

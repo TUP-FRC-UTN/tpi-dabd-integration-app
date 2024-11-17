@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { InfractionDto } from '../../infraction/models/infraction.model';
 import {
   BehaviorSubject,
@@ -10,14 +10,14 @@ import {
   throwError,
 } from 'rxjs';
 import { ClaimDTO, ClaimNew, UpdateClaimDTO } from '../models/claim.model';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ClaimService {
   private http = inject(HttpClient);
-  private apiUrl = environment.moderationApiUrl; // URL de la API
+  private apiUrl = environment.apis.moderations.slice(0, -1); // URL de la API
 
   // private oneClaim = new BehaviorSubject<OneConstruction>(undefined);
   // oneClaim$ = this.oneClaim.asObservable();
@@ -42,18 +42,27 @@ export class ClaimService {
     this.totalItemsSubject.next(total);
   }
 
-  createClaim(claimData: FormData): Observable<any> {
-    return this.http.post(`${this.apiUrl}/claims`, claimData);
+  createClaim(claimData: FormData, userId: number): Observable<any> {
+    const headers = new HttpHeaders({
+      'x-user-id': userId.toString(),
+    });
+    return this.http.post(`${this.apiUrl}/claims`, claimData, { headers });
   }
 
   updateClaim(claimDTO: ClaimDTO, userId: number): Observable<ClaimDTO> {
+    const headers = new HttpHeaders({
+      'x-user-id': userId.toString(),
+    });
     return this.http
-      .put<ClaimDTO>(`${this.apiUrl}/claims/${claimDTO.id}`, {
-        description: claimDTO.description,
-        plot_id: claimDTO.plot_id,
-        sanction_type_entity_id: claimDTO.sanction_type.id,
-        user_id: userId,
-      })
+      .put<ClaimDTO>(
+        `${this.apiUrl}/claims/${claimDTO.id}`,
+        {
+          description: claimDTO.description,
+          plot_id: claimDTO.plot_id,
+          sanction_type_entity_id: claimDTO.sanction_type.id,
+        },
+        { headers }
+      )
       .pipe(
         map((newItem) => {
           return newItem;
@@ -65,10 +74,16 @@ export class ClaimService {
   }
 
   disapproveClaim(claimId: number, userId: number): Observable<ClaimDTO> {
+    const headers = new HttpHeaders({
+      'x-user-id': userId.toString(),
+    });
+
     return this.http
-      .put<ClaimDTO>(`${this.apiUrl}/claims/${claimId}/disapprove`, {
-        user_id: userId,
-      })
+      .put<ClaimDTO>(
+        `${this.apiUrl}/claims/${claimId}/disapprove`,
+        {},
+        { headers }
+      )
       .pipe(
         map((newItem) => {
           return newItem;
@@ -78,6 +93,22 @@ export class ClaimService {
         })
       );
   }
+
+  getAllItems(page: number, limit: number) {
+    let params = new HttpParams()
+      .set('page', (page - 1).toString())
+      .set('size', limit.toString());
+
+    return this.http
+      .get<any>(`${this.apiUrl}/claims/pageable`, { params })
+      .pipe(
+        map((data) => {
+          return data.content;
+        }),
+        finalize(() => this.isLoadingSubject.next(false))
+      );
+  }
+
   getPaginatedClaims(
     page: number,
     limit: number,
@@ -147,8 +178,6 @@ export class ClaimService {
   }
 
   getClaimByInfractionId(id: number): Observable<ClaimDTO[]> {
-    return this.http.get<ClaimDTO[]>(
-      `${this.apiUrl}/claims/infraction/${id}`
-    );
+    return this.http.get<ClaimDTO[]>(`${this.apiUrl}/claims/infraction/${id}`);
   }
 }

@@ -59,6 +59,8 @@ export class NewInfractionModalComponent {
   @Input() claims: ClaimDTO[] = [];
   @Input() sanctionTypeNumber: number | undefined;
   @Input() plotId: number | undefined;
+  @Input() userId: number | undefined;
+
 
   description: string | undefined;
 
@@ -97,22 +99,18 @@ export class NewInfractionModalComponent {
   submitInfraction() {
     if (this.plotId && this.sanctionTypeNumber && this.description) {
       const newInfraction: InfractionDto = {
-        plotId: this.plotId,
+        plot_id: this.plotId,
         description: this.description,
-        sanctionTypeId: this.sanctionTypeNumber,
-        claimsId: this.claims.map((claim) => claim.id),
+        sanction_type_id: this.sanctionTypeNumber,
+        claims_ids: this.claims.map((claim) => claim.id),
       };
 
-      this.infractionService.createInfraction(newInfraction).subscribe({
+      this.infractionService.createInfraction(newInfraction, this.userId!).subscribe({
         next: (response) => {
           this.toastService.sendSuccess(
             'Infracción ' + response.id + ' creada exitosamente'
           );
-          if (response.fine_id !== null) {
-            this.toastService.sendSuccess(
-              'Multa ' + response.fine_id + ' creada exitosamente'
-            );
-          }
+
           this.activeModal.close(response);
         },
         error: (error) => {

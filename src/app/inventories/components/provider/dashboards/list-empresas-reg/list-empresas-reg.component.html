@@ -1,0 +1,36 @@
+
+    <ng-template #activeCompaniesModal let-modal>
+      <div class="modal-header">
+        <h4 class="modal-title">Empresas Activas</h4>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead class="bg-light">
+              <tr>
+                <th>Empresa</th>
+                <th>Estado</th>
+                <th>Fecha de Actualizacion</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (company of companies; track company.id) {
+                @if (company.enabled) {
+                  <tr>
+                    <td>{{company.name}}</td>
+                    <td>
+                      <span class="badge bg-success">Activo</span>
+                    </td>
+                    <td>{{company.registration | date:'dd/MM/yyyy' }}</td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.close()">Cerrar</button>
+      </div>
+    </ng-template>

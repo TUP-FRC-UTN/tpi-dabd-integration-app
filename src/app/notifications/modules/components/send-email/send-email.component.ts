@@ -1,60 +1,111 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, inject, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { Form, FormsModule } from '@angular/forms';
-
-import { ToastService } from 'ngx-dabd-grupo01';
-import { EmailData } from '../../../models/notifications/emailData';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
+import { EmailService } from '../../../services/emailService';
 import { TemplateModel } from '../../../models/templates/templateModel';
+import { EmailData } from '../../../models/notifications/emailData';
 import { Variable } from '../../../models/variables';
 import { Base64Service } from '../../../services/base64-service.service';
-import { EmailService } from '../../../services/emailService';
+import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 import { TemplateService } from '../../../services/template.service';
 
-
 @Component({
-  selector: 'app-send-email',
+  selector: 'app-send-notification',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [CommonModule, ReactiveFormsModule, MainContainerComponent],
   templateUrl: './send-email.component.html',
   styleUrl: './send-email.component.css'
 })
-
-@Inject('EmailService')
-@Inject('Base64Service')
-@Inject('TemplateService')
 export class SendEmailComponent implements OnInit {
-  toastService: ToastService = inject(ToastService)
+  emailForm: FormGroup;
+  templates: TemplateModel[] = [];
+  isLoading = false;
+  showModalToRenderHTML = false;
+  informationModalTitle: string = '';
+  isModalOpen: boolean = false;
+  @ViewChild('iframePreview') iframePreview!: ElementRef;
+  toastService: ToastService = inject(ToastService);
+  templateService: TemplateService = inject(TemplateService);
+  emailService: EmailService = inject(EmailService);
+  base64Service: Base64Service = inject(Base64Service);
 
-  @ViewChild('iframePreview', { static: false }) iframePreview!: ElementRef;
-
-  emailService = new EmailService();
-  templateService = new TemplateService();
-
-  base64Service: Base64Service = new Base64Service();
-
-  emailToSend: string = ""
-  subject: string = ""
-  name: string = ""
-  value: string = ""
-  templateID: string = '';
-
-  variables: Variable[] = []
-  templates: TemplateModel[] = []
-
-  showModalToRenderHTML: boolean = false;
-
-
-  ngOnInit(): void {
-
-    this.templateService.getAllTemplates().subscribe((data:any) => {
-      this.templates = data;
+  constructor(private formBuilder: FormBuilder) {
+    this.emailForm = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email]],
+      subject: ['', [Validators.required, Validators.minLength(3)]],
+      templateID: ['', Validators.required],
+      variables: this.formBuilder.array([]),
     });
   }
 
+  ngOnInit(): void {
+    this.templateService.getAllTemplates().subscribe((templates: TemplateModel[]) => {
+      this.templates = templates;
+    });
+    this.emailForm.valueChanges.subscribe(() => {
+      this.emailForm.updateValueAndValidity()
+    })
+  }
+
+  get variables() {
+    return (this.emailForm.get('variables') as FormArray);
+  }
+
+  addVariable() {
+    const variableGroup = this.formBuilder.group({
+      key: [''],  // Variable "key" con validación requerida
+      value: [''],  // Variable "value" con validación requerida
+    });
+  
+    this.variables.push(variableGroup);  // Agregar el grupo al FormArray
+    this.emailForm.updateValueAndValidity();  // Actualiza la validez del formulario
+  }
+  
+  
+  removeVariable(index: number) {
+    this.variables.removeAt(index);  // Eliminar la variable del FormArray
+    this.emailForm.updateValueAndValidity();  // Actualiza la validez del formulario
+  }
+  
+  
+
+  submit() {
+    this.isLoading = true;
+
+    const variables = this.variables.value.map((variable: any) => ({
+      key: variable.key,
+      value: variable.value,
+    }));
+
+    const data: EmailData = {
+      recipient: this.emailForm.get('email')?.value,
+      subject: this.emailForm.get('subject')?.value,
+      variables: variables,
+      templateId: Number(this.emailForm.get('templateID')?.value),
+    };
+    console.log(data);
+    
+
+    this.emailService.sendEmail(data).subscribe({
+      next: () => {
+        this.toastService.sendSuccess('Enviado con éxito');
+        this.clean();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        if (err.status === 400) {
+          this.toastService.sendError("Las variables no coinciden. Por favor, verifique y vuelva a intentar.");
+        }
+
+       else this.toastService.sendError('Hubo un error al enviar el correo, pruebe más tarde');
+        this.isLoading = false;
+      },
+    });
+  }
 
   previewSelectedTemplate(): void {
 
-    const selectedTemplate = this.templates.find(t => t.id == parseInt(this.templateID));
+    const selectedTemplate = this.templates.find(t => t.id == parseInt(this.emailForm.get('templateID')?.value));
 
     if (selectedTemplate) {
       this.showModalToRenderHTML = true;
@@ -77,49 +128,13 @@ export class SendEmailComponent implements OnInit {
     this.showModalToRenderHTML = false;
   }
 
-
-  enviar(form: Form) {
-
-    const data: EmailData = {
-      recipient: this.emailToSend,
-      subject: this.subject,
-      variables: this.variables,
-      templateId: Number(this.templateID)
-    }
-    this.emailService.sendEmail(data).subscribe({
-      next: (data:any) => {
-        this.toastService.sendSuccess("Enviado con exito")
-        this.clean()
-      },
-      error: (errr: any) => {
-        this.toastService.sendError("Hubo un error al enviar el correo, pruebe más tarde")
-      }
-    })
-  }
-  addVariables() {
-    if (this.name != null && this.name !== "" && this.value != null && this.value !== "") {
-
-      const newVariable: Variable = {
-        key: this.name,
-        value: this.value
-      }
-
-      this.variables.push(newVariable)
-      this.name = "";
-      this.value = "";
-    }
-  }
   clean() {
-    this.emailToSend = ""
-    this.subject = ""
-    this.name = ""
-    this.value = ""
-    this.templateID = '';
-    this.variables = []
+    this.emailForm.reset();
+    this.variables.clear();
   }
 
-
-
-
-
+  showInfo() {
+    this.isModalOpen = true;
+    this.informationModalTitle = 'Información sobre el Envío de Notificaciones';
+  }  
 }

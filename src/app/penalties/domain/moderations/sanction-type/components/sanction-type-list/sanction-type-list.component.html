@@ -1,6 +1,17 @@
 <ng-template #actionsTemplate let-item>
-  <button class="btn btn-primary btn-sm me-2" (click)="goToDetails(item.id)">
-    Ver más
+  @if(userHasRole('FINES_ADMIN')) {
+  <button
+    class="btn btn-warning btn-sm me-2"
+    (click)="goToDetails(item.id, 'edit')"
+  >
+    <i class="bi bi-pencil"></i>
+  </button>
+  }
+  <button
+    class="btn btn-primary btn-sm me-2"
+    (click)="goToDetails(item.id, 'detail')"
+  >
+    <i class="bi bi-eye"></i>
   </button>
 </ng-template>
 <ng-template #chargeType let-item>
@@ -11,7 +22,7 @@
   {{ item.description | truncate : 40 }}
 </ng-template>
 
-<app-main-container title="Tipos de sanciones">
+<app-main-container title="Listado de Tipos de Sanciones" (infoButtonClick)="infoModal()">
   <app-table
     [items]="(items$ | async) || []"
     [columns]="columns"
@@ -23,11 +34,16 @@
       onPageSizeChange: onPageSizeChange
     }"
     [isLoading]="(isLoading$ | async) || false"
-    (searchValueChange)="onSearchValueChange('partialName', $event)"
-    searchPlaceHolder="Nombre..."
-    [headerButtonText]="'Nuevo'"
+    (searchValueChange)="onSearchValueChange('searchValue', $event)"
     (headerButtonClick)="openFormModal()"
-    (infoButtonClick)="infoModal()"
+    [headerButtonIcon]="'bi bi-plus'"
+    [headerButtonText]="''"
+    [showHeaderButton]="userHasRole('FINES_ADMIN')"
+    [showExportOptions]="false"
+    [showTableFiltersButton]="false"
   >
+    @if (userHasRole('FINES_ADMIN')){
+    <app-appeal-days-form></app-appeal-days-form>
+    }
   </app-table>
 </app-main-container>

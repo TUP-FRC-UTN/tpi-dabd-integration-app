@@ -21,9 +21,12 @@ import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-
 import { TruncatePipe } from '../../../../../shared/pipes/truncate.pipe';
 import { ClaimService } from '../../service/claim.service';
 import { ClaimDTO, ClaimStatusEnum } from '../../models/claim.model';
-import { RoleService } from '../../../../../shared/services/role.service';
 import { NewInfractionModalComponent } from '../../../infraction/components/new-infraction-modal/new-infraction-modal.component';
 import { FormsModule } from '@angular/forms';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-claim-list',
@@ -48,7 +51,6 @@ export class ClaimListComponent {
   private modalService = inject(NgbModal);
   private readonly toastService = inject(ToastService);
 
-  private roleService = inject(RoleService);
   ClaimStatusEnum = ClaimStatusEnum;
 
   // Properties:
@@ -58,10 +60,6 @@ export class ClaimListComponent {
   searchSubject: Subject<{ key: string; value: any }> = new Subject();
   checkedClaims: ClaimDTO[] = [];
   claimStatusKeys: string[] = [];
-
-  role: string = '';
-  userId: number | undefined;
-  userPlotsIds: number[] = [];
 
   page: number = 1;
   size: number = 10;
@@ -77,28 +75,31 @@ export class ClaimListComponent {
   @ViewChild('date') date!: TemplateRef<any>;
   @ViewChild('claimStatus') claimStatus!: TemplateRef<any>;
   @ViewChild('infraction') infraction!: TemplateRef<any>;
+  @ViewChild('infoModal') infoModal!: TemplateRef<any>;
 
   @ViewChild('check') check!: TemplateRef<any>;
 
   columns: TableColumn[] = [];
 
+  userDataService = inject(UserDataService);
+  userData!: UserData;
+
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+        this.loadItems();
+      }
+    });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData?.roles.some((userRole) => userRole?.name === role);
+  }
+
   // Methods:
   ngOnInit(): void {
-    this.roleService.currentUserId$.subscribe((userId: number) => {
-      this.userId = userId;
-      this.loadItems();
-    });
-
-    this.roleService.currentLotes$.subscribe((plots: number[]) => {
-      this.userPlotsIds = plots;
-      this.loadItems();
-    });
-
-    this.roleService.currentRole$.subscribe((role: string) => {
-      this.role = role;
-
-      this.loadItems();
-    });
+    this.loadUserData();
 
     this.claimStatusKeys = Object.keys(ClaimStatusEnum) as Array<
       keyof typeof ClaimStatusEnum
@@ -151,7 +152,6 @@ export class ClaimListComponent {
         },
         {
           headerName: 'Acciones',
-          accessorKey: 'actions',
           cellRenderer: this.actionsTemplate,
         },
       ];
@@ -159,11 +159,11 @@ export class ClaimListComponent {
   }
 
   updateFiltersAccordingToUser() {
-    if (this.role !== 'ADMIN') {
+    if (!this.userHasRole('FINES_ADMIN')) {
       this.searchParams = {
         ...this.searchParams,
-        plotsIds: this.userPlotsIds,
-        userId: this.userId!,
+        plotsIds: this.userData?.plotIds,
+        userId: this.userData?.id,
       };
     } else {
       if (this.searchParams['userId']) {
@@ -176,13 +176,15 @@ export class ClaimListComponent {
   }
 
   loadItems(): void {
-    this.updateFiltersAccordingToUser();
-    this.claimService
-      .getPaginatedClaims(this.page, this.size, this.searchParams)
-      .subscribe((response) => {
-        this.claimService.setItems(response.items);
-        this.claimService.setTotalItems(response.total);
-      });
+    if (this.userData) {
+      this.updateFiltersAccordingToUser();
+      this.claimService
+        .getPaginatedClaims(this.page, this.size, this.searchParams)
+        .subscribe((response) => {
+          this.claimService.setItems(response.items);
+          this.claimService.setTotalItems(response.total);
+        });
+    }
   }
 
   onPageChange = (page: number): void => {
@@ -200,10 +202,18 @@ export class ClaimListComponent {
   };
 
   goToDetails = (id: number, mode: 'detail' | 'edit'): void => {
-    this.router.navigate(['claim', id, mode]);
+    this.router.navigate(['penalties/claim', id, mode]);
   };
 
   openFormModal(sanctionTypeToEdit: number | null = null): void {
+    if (this.checkedClaims.length !== 0) {
+      this.openCreateInfractionModal();
+    } else {
+      this.openNewCaimModal();
+    }
+  }
+
+  openNewCaimModal() {
     const modalRef = this.modalService.open(NewClaimModalComponent);
     modalRef.result
       .then((result) => {
@@ -248,6 +258,7 @@ export class ClaimListComponent {
     modalRef.componentInstance.sanctionTypeNumber =
       this.checkedClaims[0].sanction_type.id;
     modalRef.componentInstance.plotId = this.checkedClaims[0].plot_id;
+    modalRef.componentInstance.userId = this.userData.id;
 
     modalRef.result
       .then((result) => {
@@ -285,12 +296,9 @@ export class ClaimListComponent {
     this.loadItems();
   }
   onInfoButtonClick() {
-    const modalRef = this.modalService.open(ConfirmAlertComponent);
-    modalRef.componentInstance.alertType = 'info';
-
-    modalRef.componentInstance.alertTitle = 'Ayuda';
-    modalRef.componentInstance.alertMessage = `Esta pantalla te permite consultar tus reclamos recibidos y realizado, y al administrador gestionarlo para generar multas. \n Considerá que depende del administrador rechazar un reclamo o agrupar alguno de ellos para generar una infracción para el lote.`;
+    this.modalService.open(this.infoModal, { size: 'lg' });
   }
+
   disapproveClaim(claimId: number) {
     const modalRef = this.modalService.open(ConfirmAlertComponent);
     modalRef.componentInstance.alertTitle = 'Confirmación';
@@ -298,16 +306,24 @@ export class ClaimListComponent {
 
     modalRef.result.then((result) => {
       if (result) {
-        this.claimService.disapproveClaim(claimId, this.userId!).subscribe({
-          next: () => {
-            this.toastService.sendSuccess(`Reclamo desaprobado exitosamente.`);
-            this.loadItems();
-          },
-          error: () => {
-            this.toastService.sendError(`Error desaprobando reclamo.`);
-          },
-        });
+        this.claimService
+          .disapproveClaim(claimId, this.userData.id!)
+          .subscribe({
+            next: () => {
+              this.toastService.sendSuccess(
+                `Reclamo desaprobado exitosamente.`
+              );
+              this.loadItems();
+            },
+            error: () => {
+              this.toastService.sendError(`Error desaprobando reclamo.`);
+            },
+          });
       }
     });
   }
+
+  getAllItems = (): Observable<any> => {
+    return this.claimService.getAllItems(1, 1000);
+  };
 }

@@ -1,59 +1,65 @@
-<div class="card mt-5">
+<app-main-container title="Registrar plantilla" (infoButtonClick)="showInfo()">
 
-  <div class="card-body">
-    <h1>Registrar plantilla</h1><br>
+  <div class="d-flex justify-content-end">
+    <button type="button" class="btn btn-outline-primary" (click)="openIaModal()">
+      Asistente IA
+      <i class="bi bi-stars"></i>
+    </button>
+  </div>
 
-    <form #form="ngForm" (ngSubmit)="sendForm(form)" class="row g-3 container">
+      <form #form="ngForm" (ngSubmit)="sendForm(form)" class="row g-3 container">
       <div class="mb-3">
         <label for="templateNameCustomValidation" class="form-label">Nombre:</label>
-     
-          <input #templateNameModel="ngModel"
-            [ngClass]="{'is-invalid': templateNameModel.invalid  && (templateNameModel.dirty || templateNameModel.touched) ,'is-valid': templateNameModel.valid }"
-            type="text"
-            style="max-width: 400px;"
-            class="form-control" id="templateNameModel" name="templateNameModel" [(ngModel)]="templateName"
-            required minlength="5">
-          @if(templateNameModel.invalid  && (templateNameModel.dirty || templateNameModel.touched)  ){
-          @if(templateNameModel.getError('minlength')) {
-          <div class="text-danger">El nombre es obligatorio</div>
-          }@else{
-          <div class="text-danger">Debe contener como minimo 1 caracter.</div>
-          }}
-   
+
+        <input #templateNameModel="ngModel"
+          [ngClass]="{'is-invalid': templateNameModel.invalid  && (templateNameModel.dirty || templateNameModel.touched) ,'is-valid': templateNameModel.valid }"
+          type="text" style="max-width: 400px;" class="form-control" id="templateNameModel" name="templateNameModel"
+          [(ngModel)]="templateName" required minlength="5">
+        @if(templateNameModel.invalid && (templateNameModel.dirty || templateNameModel.touched) ){
+        @if(templateNameModel.getError('minlength')) {
+        <div class="text-danger">El nombre es obligatorio</div>
+        }@else{
+        <div class="text-danger">Debe contener como minimo 1 caracter.</div>
+        }}
+
       </div>
-  
+
       <!-- Campo para el Cuerpo del Correo -->
       <div class="mb-3">
         <label for="templateBodyModelCustomValidation" class="form-label">Contenido:</label>
-        
-          <textarea #templateBodyModel="ngModel"
-            [ngClass]="{'is-invalid': templateBodyModel.invalid  && (templateBodyModel.dirty || templateBodyModel.touched)  ,'is-valid': templateBodyModel.valid }"
-            class="form-control" id="templateBodyModel" name="templateBodyModel"
-            style="max-width: 400px;"
-            [(ngModel)]="templateBody" required minlength="100" rows="10"></textarea>
-          @if(templateBodyModel.invalid  && (templateBodyModel.dirty || templateBodyModel.touched)  ){
+
+        <textarea #templateBodyModel="ngModel"
+          [ngClass]="{'is-invalid': templateBodyModel.invalid  && (templateBodyModel.dirty || templateBodyModel.touched) ,'is-valid': templateBodyModel.valid }"
+          class="form-control" id="templateBodyModel" name="templateBodyModel" style="max-width: 400px;"
+          [(ngModel)]="templateBody" required minlength="100" rows="10"
+          ></textarea>
+        @if(templateBodyModel.invalid && (templateBodyModel.dirty || templateBodyModel.touched)) {
+
           @if(templateBodyModel.getError('minlength')) {
           <div class="text-danger">El HTML es obligatorio</div>
-          }@else{
-          <div class="text-danger">Debe contener como minimo 100 caracteres.</div>
-          }}
-       
+          }
+          @else if(templateBodyModel.getError('invalidHtml')) {
+          <div class="text-danger">El HTML ingresado no es válido.</div>
+          }
+          @else {
+          <div class="text-danger">Debe contener como mínimo 100 caracteres.</div>
+          }
+        }
+
       </div>
-  
+
       <!-- Botones de Acción alineados a la derecha -->
       <div class="d-flex justify-content-end mb-3">
         <button type="button" class="btn btn-danger me-2">Cancelar</button>
         <!-- <button type="submit" class="btn btn-primary"
           (click)="sendEmailTemplate(this.templateName,this.templateBody)">Guardar</button> -->
-        <button type="submit" class="btn btn-primary">Registrar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="!form.valid">Registrar</button>
       </div>
     </form>
-  </div>
-  
-  </div>
 
 
 
+</app-main-container>
 
 <!-- Modal -->
 <div [class.show]="isModalOpen" [style.display]="isModalOpen ? 'block' : 'none'" class="modal fade" id="myModal"
@@ -75,3 +81,136 @@
 </div>
 <!-- Backdrop para la modal -->
 <div *ngIf="isModalOpen" class="modal-backdrop fade show"></div>
+
+<!-- Modal para Asistente IA -->
+<div [class.show]="isIaModalOpen" [style.display]="isIaModalOpen ? 'block' : 'none'" class="modal fade" id="iaModal" tabindex="-1" aria-labelledby="iaModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="iaModalLabel">Asistente IA</h5>
+        <button type="button" class="btn-close" (click)="closeIaModal()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6" style="margin-bottom: 20px;">
+            <label for="iaTemplateBodyModel" class="form-label">Descripción de la plantilla:</label>
+            <textarea
+              #iaTemplateBodyModel="ngModel"
+              class="form-control"
+              [ngClass]="{
+                'is-invalid': iaTemplateBodyModel.invalid && (iaTemplateBodyModel.dirty || iaTemplateBodyModel.touched),
+                'is-valid': iaTemplateBodyModel.valid
+              }"
+              id="iaTemplateBodyModel"
+              name="iaTemplateBodyModel"
+              [(ngModel)]="iaInputText"
+              required
+              minlength="10"
+              rows="12"
+              placeholder="Describe aquí cómo te gustaría que sea tu plantilla, incluyendo detalles como el tono, el contenido, y cualquier especificación importante que desees..."></textarea>
+
+            <div *ngIf="iaTemplateBodyModel.invalid && (iaTemplateBodyModel.dirty || iaTemplateBodyModel.touched)">
+              <div *ngIf="iaTemplateBodyModel.errors?.['required']" class="text-danger">
+                El contenido no puede estar vacío.
+              </div>
+              <div *ngIf="iaTemplateBodyModel.errors?.['minlength']" class="text-danger">
+                El contenido debe tener al menos 10 caracteres.
+              </div>
+            </div>
+            <div class="d-flex justify-content-end mt-2">
+              <button type="button" class="btn btn-primary mt-2" [disabled]="iaTemplateBodyModel.invalid || isLoadingIA" (click)="sendToIa()">Enviar mensaje</button>
+            </div>
+          </div>
+
+          <div class="col-md-6" style="margin-bottom: 20px;">
+            <label for="iaResponse" class="form-label">Respuesta de la IA:</label>
+            <textarea
+              class="form-control"
+              id="iaResponse"
+              [(ngModel)]="iaResponse"
+              readonly
+              rows="12"
+              placeholder="La respuesta de la IA aparecerá aquí..."></textarea>
+            <div class="d-flex justify-content-end mt-2">
+              <button type="button" class="btn btn-secondary mt-2" [disabled]="iaResponse.length === 0" (click)="previewContent()">Previsualizar</button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="isLoadingIA" class="text-center">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeIaModal()">Volver</button>
+        <button type="button" class="btn btn-primary" [disabled]="iaResponse.length === 0" (click)="sendBodyIa()">Enviar al cuerpo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal para Previsualización -->
+<div class="modalTemplate" *ngIf="showModalToRenderHTML" (click)="closeModalToRenderHTML()">
+  <div class="modal-template-content" (click)="$event.stopPropagation()">
+    <span class="close" (click)="closeModalToRenderHTML()">&times;</span>
+    <iframe #iframePreview style="width: 100%; border: none;"></iframe>
+    <div class="mt-3 text-end">
+      <button type="button" class="btn btn-secondary" (click)="closeModalToRenderHTML()">Volver</button>
+    </div>
+  </div>
+</div>
+
+<div [class.show]="isModalOpen" [style.display]="isModalOpen ? 'block' : 'none'" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ modalTitle }}</h5>
+        <button type="button" class="btn-close" (click)="isModalOpen = false"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+          <!-- Introducción -->
+          <div class="alert alert-info mb-2">
+            <h5 class="alert-heading">Información sobre Plantillas HTML</h5>
+            <p class="mb-0 small">Este editor te permite crear y gestionar plantillas HTML para el envío de correos electrónicos.</p>
+          </div>
+
+          <!-- Descripción de las secciones -->
+          <div class="card mb-2">
+            <div class="card-header">
+              <h5 class="mb-0">Descripción de los Campos</h5>
+            </div>
+            <div class="card-body">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                  <strong>Nombre de Plantilla:</strong> Identificador único para tu plantilla de correo.
+                </li>
+                <li class="list-group-item">
+                  <strong>Contenido HTML:</strong> El código HTML que define la estructura y diseño de tu correo.
+                </li>
+                <li class="list-group-item">
+                  <strong>Asistente IA:</strong> Herramienta que te ayuda a generar plantillas HTML automáticamente.
+                </li>
+                <li class="list-group-item">
+                  <strong>Vista Previa:</strong> Visualización de cómo se verá tu correo electrónico.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Nota sobre el Editor -->
+          <div class="alert alert-warning mb-0">
+            <h5 class="alert-heading">Nota sobre el Editor:</h5>
+            <p class="mb-0 small">Puedes escribir directamente el código HTML o usar el asistente IA para generar una plantilla base. Asegúrate de probar tu plantilla antes de guardarla.</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="isModalOpen = false">Volver</button>
+      </div>
+    </div>
+  </div>
+</div>

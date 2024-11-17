@@ -44,9 +44,6 @@ ngOnInit(): void {
   }
 }
 
-
-
-
   loadTransactions(inventoryId: string): void {
     this.inventoryService.getTransactionsInventory(inventoryId.toString()).subscribe({
       next: (transactions) => {

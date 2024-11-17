@@ -5,6 +5,7 @@ import { InventoryService } from '../../../../services/inventory.service';
 import { Inventory } from '../../../../models/inventory.model';
 import { MapperService } from '../../../../services/MapperCamelToSnake/mapper.service';
 import { Router } from '@angular/router';
+import { ToastService } from 'ngx-dabd-grupo01';
 
 @Component({
   selector: 'app-inventory-inventories-update',
@@ -17,6 +18,8 @@ export class InventoryInventoriesUpdateComponent {
 
   private mapperService = inject(MapperService);
   private router = inject(Router);
+  private toastService = inject(ToastService);
+
 
   @Input() inventory: Inventory | null = null;
   @Output() closeModal = new EventEmitter<void>();
@@ -61,11 +64,13 @@ console.log(this.inventory)
       if(this.inventory.id) {
         this.inventoryService.updateInventory(this.inventory.id, inventoryUpdateFormatted).subscribe(
           (data) => {
+            this.toastService.sendSuccess('Inventario actualizado correctamente.');
             console.log('Inventario actualizado:', data);
             this.onClose(); // Cierra el modal después de guardar
 
           },
           (error) => {
+            this.toastService.sendError('Error al actualizar el inventario.');
             console.error("Error al actualizar el inventario", error);
           }
         );

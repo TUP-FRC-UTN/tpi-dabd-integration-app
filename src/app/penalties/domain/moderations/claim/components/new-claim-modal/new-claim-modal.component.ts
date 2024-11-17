@@ -3,7 +3,6 @@ import {
   ElementRef,
   inject,
   OnInit,
-  TemplateRef,
   ViewChild,
 } from '@angular/core';
 import {
@@ -12,20 +11,19 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { Plot } from '../../../../cadastre/plot/models/plot.model';
-import {
-  ModalDismissReasons,
-  NgbActiveModal,
-  NgbModal,
-} from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClaimService } from '../../service/claim.service';
 import { SanctionTypeService } from '../../../sanction-type/services/sanction-type.service';
 import { CadastreService } from '../../../../cadastre/services/cadastre.service';
 import { SanctionType } from '../../../sanction-type/models/sanction-type.model';
 import { CommonModule, NgClass } from '@angular/common';
-import { ClaimNew } from '../../models/claim.model';
-import { RoleService } from '../../../../../shared/services/role.service';
 import { ToastService } from 'ngx-dabd-grupo01';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../../shared/services/user-data.service';
+import { PlotService } from '../../../../../../users/services/plot.service';
+import { Plot } from '../../../../../../users/models/plot';
 
 @Component({
   selector: 'app-new-claim-modal',
@@ -36,44 +34,52 @@ import { ToastService } from 'ngx-dabd-grupo01';
 })
 export class NewClaimModalComponent implements OnInit {
   //services
-  private cadastreService = inject(CadastreService);
   private sanctionService = inject(SanctionTypeService);
   private claimService = inject(ClaimService);
-  private roleService = inject(RoleService);
 
   private toastService = inject(ToastService);
+  private plotService = inject(PlotService);
 
   //variables
-  plots: Plot[] | undefined;
   sanctionTypes: SanctionType[] | undefined;
   plotId: number | undefined;
   sanctionTypeId: number | undefined;
   description: string | undefined;
-
-  userId: number | undefined;
+  plotList: Plot[] = [];
 
   //variable para los archivos
   selectedFiles: File[] = [];
 
   // Modal logic
-  private modalService = inject(NgbModal);
   closeResult = '';
   activeModal = inject(NgbActiveModal);
 
-  ngOnInit() {
-    this.roleService.currentUserId$.subscribe((userId: number) => {
-      this.userId = userId;
-    });
+  userDataService = inject(UserDataService);
+  userData!: UserData;
 
-    // Obtener lotes
-    this.cadastreService.getPlots().subscribe({
-      next: (response) => {
-        this.plots = response.content;
-      },
-      error: (error) => {
-        console.error('Error fetching plots:', error);
-      },
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
     });
+  }
+
+  loadPlots() {
+    this.plotService.getAllPlots(0, 100000, true).subscribe((response) => {
+      if (response) {
+        this.plotList = response.content;
+      }
+    });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles.some((userRole) => userRole.name === role);
+  }
+
+  ngOnInit() {
+    this.loadUserData();
+    this.loadPlots();
 
     // Obtener tipos de sanción
     this.sanctionService.getSanctionTypes().subscribe({
@@ -123,7 +129,7 @@ export class NewClaimModalComponent implements OnInit {
         formData.append('files', imageBlob, 'captured-image.png');
       }
 
-      this.claimService.createClaim(formData).subscribe({
+      this.claimService.createClaim(formData, this.userData.id).subscribe({
         next: (response) => {
           this.activeModal.close(response);
           this.toastService.sendSuccess(

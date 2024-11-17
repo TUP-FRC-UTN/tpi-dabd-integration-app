@@ -1,0 +1,351 @@
+<app-main-container title="Dashboard de Proveedores" (infoButtonClick)="showInfo()">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="input-group w-25">
+      <span class="input-group-text">
+        <i class="bi bi-search"></i>
+      </span>
+      <app-table-filters
+        style="z-index: 1;"
+        [filters]="filterConfig"
+        (filterValueChange)="applyDateFilters($event)">
+      </app-table-filters>
+    </div>
+  </div>
+  
+  <!-- KPIs Principales -->
+  <div class="row g-4 mb-4">
+    <!-- Totales -->
+    <div class="col-md-4">
+      <div class="card shadow-sm" (click)=" navigateToProvidersList()">
+
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <div class="icon-circle bg-primary text-white me-3">
+              <i class="bi bi-people"></i>
+            </div>
+            <h6 class="card-subtitle mb-2">Proveedores Registrados</h6>
+          </div>
+          
+          <div class="d-flex align-items-baseline mt-2">
+            <h2 class="card-title mb-0">{{metrics.activeCount}}</h2>
+            <div class="ms-2" *ngIf="metrics.monthlyGrowthRate !== 0">
+              <span class="badge" 
+                    [ngClass]="{
+                      'bg-success': metrics.providersGrowthCount > 0,
+                      'bg-danger': metrics.providersGrowthCount < 0,
+                      'bg-secondary': metrics.providersGrowthCount === 0
+                    }">
+                <i class="bi" [ngClass]="{
+                  'bi-arrow-up': metrics.providersGrowthCount > 0,
+                  'bi-arrow-down': metrics.providersGrowthCount < 0
+                }"></i>
+                {{metrics.monthlyGrowthRate | number:'1.0-1'}}%
+              </span>
+            </div>
+          </div>
+    
+          <div class="mt-2">
+            <small [ngClass]="{
+              'text-muted': metrics.providersGrowthCount === 0,
+              'text-success': metrics.providersGrowthCount > 0,
+              'text-danger': metrics.providersGrowthCount < 0
+            }">
+              {{getGrowthDescription()}}
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activación -->
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <!-- Título y badge de activación -->
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center">
+              <div class="icon-circle bg-success text-white me-3">
+                <i class="bi bi-activity"></i>
+              </div>
+              <h6 class="card-subtitle mb-0">Tasa de Activación</h6>
+            </div>
+          </div>
+          
+          <!-- Porcentaje principal y tendencia -->
+          <div class="d-flex align-items-center">
+            <h2 class="card-title mb-0">{{metrics.activationRate}}%</h2>
+              <div class="ms-2">
+                <span class="badge"
+                [ngClass]="{
+                  'bg-success': !metrics.isNegativeTrendActive,
+                  'bg-danger': metrics.isNegativeTrendActive
+                }">
+                <i class="bi" [ngClass]="{
+                'bi-arrow-up': !metrics.isNegativeTrendActive,
+                'bi-arrow-down': metrics.isNegativeTrendActive
+                }"></i>
+              </span>
+            </div>
+          </div>
+
+          <!-- Barra de progreso -->
+          <div class="progress mt-2" style="height: 10px;">
+            <!-- Barra de activos (verde) -->
+            <div class="progress-bar bg-success" 
+              role="progressbar" 
+              [style.width]="metrics.activationRate + '%'"
+              [attr.aria-valuenow]="metrics.activationRate" 
+              aria-valuemin="0" 
+              aria-valuemax="100">
+            </div>
+            <!-- Barra de inactivos (roja) -->
+            <div class="progress-bar bg-danger" 
+              role="progressbar" 
+              [style.width]="(100 - metrics.activationRate) + '%'"
+              [attr.aria-valuenow]="100 - metrics.activationRate" 
+              aria-valuemin="0" 
+              aria-valuemax="100">
+            </div>
+          </div>
+          
+          <!-- Detalles -->
+          <div class="mt-2 d-flex justify-content-between">
+            <small class="text-success">
+              {{metrics.activeCount}} activos
+            </small>
+            <small class="text-danger">
+              {{metrics.inactiveCount}} inactivos
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empresas -->
+
+<div class="col-md-4">
+  <div class="card shadow-sm" (click)="openActiveCompaniesModal()">
+    <div class="card-body">
+      <!-- Título y badge -->
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="d-flex align-items-center">
+          <div class="icon-circle bg-gray text-white me-3">
+            <i class="bi bi-building"></i>
+          </div>
+          <h6 class="card-subtitle mb-0">Empresas Registradas</h6>
+        </div>
+      </div>
+
+      <!-- Cantidad principal y tendencia -->
+      <div class="d-flex align-items-center">
+        <h2 class="card-title mb-0">{{metrics.activeCompaniesCount}}</h2>
+        <div class="ms-2" *ngIf="metrics.companiesGrowthCount !== 0">
+          <span class="badge"
+            [ngClass]="{
+              'bg-success': !metrics.isNegativeTrend,
+              'bg-danger': metrics.isNegativeTrend
+            }">
+            <i class="bi" [ngClass]="{
+              'bi-arrow-up': !metrics.isNegativeTrend,
+              'bi-arrow-down': metrics.isNegativeTrend
+            }"></i>
+            {{metrics.companiesActivationRate | number:'1.0-1'}}%
+          </span>
+        </div>
+      </div>
+
+      <!-- Barra de progreso -->
+      <div class="progress mt-2" style="height: 10px;">
+        <!-- Barra de empresas activas (verde) -->
+        <div class="progress-bar bg-success" 
+          role="progressbar" 
+          [style.width]="metrics.companiesActivationRate + '%'"
+          [attr.aria-valuenow]="metrics.companiesActivationRate" 
+          aria-valuemin="0" 
+          aria-valuemax="100">
+        </div>
+        <!-- Barra de empresas inactivas (roja) -->
+        <div class="progress-bar bg-danger" 
+          role="progressbar" 
+          [style.width]="(100 - metrics.companiesActivationRate) + '%'"
+          [attr.aria-valuenow]="100 - metrics.companiesActivationRate" 
+          aria-valuemin="0" 
+          aria-valuemax="100">
+        </div>
+      </div>
+
+      <!-- Detalles de activación -->
+      <div class="mt-2 d-flex justify-content-between">
+        <small class="text-success">
+          {{metrics.activeCompaniesCount}} activas
+        </small>
+        <small class="text-danger">
+          {{metrics.inactiveCompaniesCount}} inactivas
+        </small>
+      </div>
+    </div>
+  </div>
+</div>
+  </div>
+  <!-- Gráficos -->
+  
+    <div class="row g-4 mb-4"> 
+      <!-- TOP PROVEEDORES ANTIGUOS -->
+    <div class="col-md-6">
+      <div class="card border-0 shadow-lg rounded-4">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-3">
+            <div class="icon-circle bg-info text-white me-3">
+              <i class="bi bi-trophy"></i>
+            </div>
+            <h5 class="card-title text-secondary mb-0">Top 5 Proveedores más Antiguos</h5>
+          </div>
+          
+          <!-- Lista de proveedores -->
+          <div class="top-providers-list">
+            <div *ngFor="let provider of topProviders; let i = index" 
+                class="provider-item p-3 mb-2 rounded-3"
+                [ngClass]="{'bg-light': i % 2 === 0}">
+              <div class="d-flex align-items-center">
+                <!-- Número de ranking -->
+                <div class="ranking-badge me-3">
+                  <span class="badge" 
+                        [ngClass]="{
+                          'bg-warning text-dark': i === 0,
+                          'bg-secondary text-white': i === 1,
+                          'bg-bronze text-white': i === 2,
+                          'bg-light text-dark': i > 2
+                        }">
+                    #{{i + 1}}
+                  </span>
+                </div>
+                
+                <!-- Información del proveedor -->
+                <div class="provider-info flex-grow-1">
+                  <h6 class="mb-1">{{provider.name}}</h6>
+                  <div class="small text-muted">
+                    <span class="me-2">
+                      <i class="bi bi-building"></i> {{provider.companyName}}
+                    </span>
+                    <span>
+                      <i class="bi bi-gear"></i> {{provider.serviceName}}
+                    </span>
+                  </div>
+                </div>
+                
+                <!-- Tiempo activo -->
+                <div class="time-active text-end">
+                  <span class="badge bg-success">
+                    {{provider.timeActive}}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-0 shadow-lg rounded-4 h-100">
+        <div class="card-body">
+          <h5 class="card-title text-secondary">Proveedores por Compañía</h5>
+          <div class="chart-container" style="height: 300px;">
+            <canvas baseChart
+              [data]="companyBarChartData"
+              [options]="chartConfigs.companyBarChart"
+              [type]="'bar'">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+ 
+  </div>
+
+  <div class="row g-4 mb-4">
+    
+   <!-- Prov Independientes vs Corporativos -->
+   <div class="col-md-6">
+    <div class="card border-0 shadow-lg rounded-4">
+      <div class="card-body">
+        <!-- Título con icono -->
+        <div class="d-flex align-items-center mb-3">
+          <div class="icon-circle bg-primary text-white me-3">
+            <i class="bi bi-pie-chart-fill"></i>
+          </div>
+          <h5 class="card-title text-secondary mb-0">Independientes vs Corporativos</h5>
+        </div>
+  
+        <!-- Contenedor de métricas -->
+        <div class="row mb-4">
+          <!-- Métricas de Independientes -->
+          <div class="col-6">
+            <div class="p-3 rounded-3 bg-light">
+              <div class="d-flex align-items-center">
+                <div class="icon-circle bg-success text-white me-2" style="width: 30px; height: 30px;">
+                  <i class="bi bi-person"></i>
+                </div>
+                <div>
+                  <h6 class="mb-0">Independientes</h6>
+                  <div class="fs-4 fw-bold text-success">{{metrics.independentProvidersCount}}</div>
+                  <small class="text-muted">{{metrics.independentPercentage}}% del total</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Métricas de Corporativos -->
+          <div class="col-6">
+            <div class="p-3 rounded-3 bg-light">
+              <div class="d-flex align-items-center">
+                <div class="icon-circle bg-primary text-white me-2" style="width: 30px; height: 30px;">
+                  <i class="bi bi-building"></i>
+                </div>
+                <div>
+                  <h6 class="mb-0">Corporativos</h6>
+                  <div class="fs-4 fw-bold text-primary">{{metrics.corporateProvidersCount}}</div>
+                  <small class="text-muted">{{metrics.corporatePercentage}}% del total</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Gráfico -->
+        <div class="chart-container" style="height: 300px;">
+          <canvas baseChart
+            [data]="independentVsCorporateChartData"
+            [options]="chartConfigs.independentVsCorporateChart"
+            [type]="'doughnut'">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+    <!-- Proveedores registrados x mes -->
+    <div class="col-md-6">
+      <div class="card border-0 shadow-lg rounded-4 h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <div class="icon-circle bg-indigo text-white me-3">
+              <i class="bi bi-calendar3"></i>
+            </div>
+            <h5 class="card-title text-secondary mb-0">Registro Mensual de Proveedores</h5>
+          </div>
+          <div class="chart-container" style="height: 300px;">
+            <canvas baseChart
+              [data]="monthlyRegistrationChartData"
+              [options]="chartConfigs.monthlyRegistrationChart"
+              [type]="'bar'">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-main-container>
+<app-list-empresas-reg></app-list-empresas-reg>
+<!-- <app-list-provider-reg></app-list-provider-reg> -->

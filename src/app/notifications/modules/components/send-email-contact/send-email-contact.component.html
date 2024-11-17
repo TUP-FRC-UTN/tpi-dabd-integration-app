@@ -1,116 +1,256 @@
-<div class="card mt-5">
-    <div class="card-body">
-        <h1> Notificaciones a varios Contactos </h1> <br>
-        <form #form="ngForm" (submit)="submit()">
-            <!---->
-            <div class="row">
-                <div class="col-6">
-                    <label class="form-label">Elegir Contactos:</label>
-                    <div class="d-flex align-items-center">
-                        <select #contactos="ngModel" class="form-select me-2" style="max-width: 350px;" name="Contactos" id="contactos" [(ngModel)]="selectedContactId"
-                        required
-                        [ngClass]="{'is-invalid': contactos.invalid && (contactos.dirty || contactos.touched), 'is-valid': contactos.valid && (contactos.dirty || contactos.touched)}">
-                            @for (c of allContacts; track $index) {
-                                <option [value]="c.id"> {{c.contactValue}} </option>
-                            }
-                            @if (contactos.invalid && (contactos.dirty || contactos.touched)) {
-                                @if (contactos.getError('required')) {
-                                    <div class="text-danger"> Campo Obligatorio </div>
-                                }
-                            }
-                        </select>
-                        <button type="button" class="btn btn-secondary"(click)="addContact()"> + </button>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <h6>Contactos Seleccionados:</h6>
-                    @for (selectedContactId of contacts_id; track $index) {
-                        <p> {{showContactById(selectedContactId)}} </p>
-                    }
-                    @if (contacts_id.length == 0) {
-                        <div class="text-danger"> Debe seleccionar al menos un contacto </div>
-                    }
-                </div>
-            </div>
-            <!---->
-            <label class="form-label mt-3">Asunto:</label>
-            <input #asunto="ngModel" name="subject" type="text" class="form-control mb-3" style="max-width: 350px;" [(ngModel)]="subjectToSend"
-            required minlength="3"
-                [ngClass]="{'is-invalid' : asunto.invalid && (asunto.dirty || asunto.touched), 'is-valid' : asunto.valid}"/>
-                @if (asunto.invalid && (asunto.dirty || asunto.touched)) {
-                    @if (asunto.getError('minlength')) {
-                        <div class="text-danger"> Debe contener mínimo tres caracteres </div>
-                    }@else {
-                        <div class="text-danger"> Campo Obligatorio </div>
-                    }
-                }
-            <!--
-            <h6 class="mt-3">Variables</h6>
-            <div class="mb-3">
+<app-main-container
+  title="Notificaciones a varios Contactos"
+  (infoButtonClick)="showInfo()"
+>
+  <form #form="ngForm" (submit)="submit()">
+    <!---->
+    <div class="row">
+      <div class="col-6">
+        <label class="form-label">Selecciona contactos:</label>
+        <div class="d-flex align-items-center">
+          <ng-select 
+            #contactSelect="ngModel"
+            [items]="allContacts" 
+            bindLabel="contactValue"
+            bindValue="id"
+            placeholder=""
+            [(ngModel)]="selectedContactId"
+            name="contactSelector"
+            [multiple]="true"
+            [searchable]="true"
+            [clearable]="true"
+            [closeOnSelect]="false"
+            [clearOnBackspace]="true"
+            [virtualScroll]="true"
+            [hideSelected]="true"
+            
+            class="form-select"
+            [ngClass]="{
+              'is-invalid':
+                contactSelect.invalid &&
+                (contactSelect.dirty || contactSelect.touched)
+            }"
+            style="max-width: 700px"
+          >
+            <ng-template ng-option-tmp let-item="item">
+              {{ item.contactValue }}
+            </ng-template>
+          </ng-select>
+          <button
+            type="button"
+            class="btn btn-secondary ms-2"
+            (click)="addContact()"
+          >
+            <i class="bi bi-plus"></i>
+
+          </button>
+        </div>
+      </div>
+      <div class="col-6">
+        <h6>Contactos Seleccionados:</h6>
+        <div class="contact-list">
+          <!-- Muestra cada contacto seleccionado -->
+          <ng-container *ngFor="let selectedContactId of contacts_id; let i = index">
+            <p>{{ showContactById(selectedContactId) }}</p>
+          </ng-container>
+      
+          <!-- Mensaje si no hay contactos seleccionados -->
+          <div *ngIf="contacts_id.length === 0" class="text-danger">
+            Debe seleccionar al menos un contacto
+          </div>
+        </div>
+      </div>
+    </div>
+    <!---->
+    <label class="form-label mt-3">Asunto:</label>
+    <input
+      #asunto="ngModel"
+      name="subject"
+      type="text"
+      class="form-control mb-3"
+      style="max-width: 350px"
+      [(ngModel)]="subjectToSend"
+      required
+      minlength="3"
+      [ngClass]="{
+        'is-invalid': asunto.invalid && (asunto.dirty || asunto.touched),
+        'is-valid': asunto.valid
+      }"
+    />
+    @if (asunto.invalid && (asunto.dirty || asunto.touched)) { @if
+    (asunto.getError('minlength')) {
+    <div class="text-danger">Debe contener mínimo tres caracteres</div>
+    }@else {
+    <div class="text-danger">Campo Obligatorio</div>
+    } }
+    
+            <h6 class="mt-2">Variables</h6>
+            <div class="mb-3 m5-4">
                 <div class="row">
-                    <div class="col-6">
-                        <label class="form-label">Nombre:</label>
+                    <div class="col-5">
+                        <label class="form-label strong mt-3">Nombre:</label>
                         <input type="text" class="form-control" id="nombre" name="nombre" style="max-width: 200px;"
                         [(ngModel)]="variableName"/>
-                        <label class="form-label">Valor:</label>
+                        <label class="form-label mt-2" > Valor:</label>
                         <input type="text" class="form-control" id="valor" name="valor" style="max-width: 200px;"
                         [(ngModel)]="variableValue"/>
                     </div>
-                    <div class="col-6">
-                        <button type="button" class="btn btn-secondary mb-3" (click)="addVariables()">+</button>
+                    <div class="col-3 ms-4 mt-5">
+                        <button type="button" class="btn btn-secondary mb-3" (click)="addVariables()"><i class="bi bi-plus"></i></button>
                         <br>
                         <h6>Tus Variables:</h6>
                         @for (item of variables; track $index) {
-                            <p>Nombre: {{item.key}} Valor: {{item.value}}</p>
+                            <p><strong>Nombre:</strong> {{item.key}} | <strong>Valor</strong>: {{item.value}}</p>
                         }
                     </div>
                 </div>
             </div>
-            -->
-            <h6>Plantillas</h6>
-                <select #plantillas="ngModel" class="form-select" style="max-width: 200px;" name="plantillas" id="plantillas"
-                [(ngModel)]="template_id"
-                required
-                [ngClass]="{'is-invalid': plantillas.invalid && (plantillas.dirty || plantillas.touched), 'is-valid': plantillas.valid && (plantillas.dirty || plantillas.touched)}">
+           
+    <h6 class="mt-3">Plantillas</h6>
+    <select
+      #plantillas="ngModel"
+      class="form-select"
+      style="max-width: 200px"
+      name="plantillas"
+      id="plantillas"
+      [(ngModel)]="template_id"
+      required
+      [ngClass]="{
+        'is-invalid':
+          plantillas.invalid && (plantillas.dirty || plantillas.touched),
+        'is-valid': plantillas.valid && (plantillas.dirty || plantillas.touched)
+      }"
+    >
+      @for (item of allTemplates; track $index) {
+      <option [value]="item.id">{{ item.name }}</option>
+      }
+    </select>
+    @if (plantillas.invalid && (plantillas.dirty || plantillas.touched)) { @if
+    (plantillas.getError('required')) {
+    <div class="text-danger">Campo Obligatorio</div>
+    } }
+    <button
+      type="button"
+      class="btn btn-secondary mt-3"
+      (click)="previewSelectedTemplate()"
+    >
+      Previsualizar
+    </button>
+    <!-- Si encuentran otra forma de hacerlo, haganlo-->
+    <div class="row">
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+      <div class="col-1"></div>
+        <div class="col-1">
+          <button type="submit" class="btn btn-primary" [disabled]="form.invalid || isLoading || contacts_id.length === 0">
+            <ng-container *ngIf="isLoading; else sendButton">
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Enviando...
+            </ng-container>
+            <ng-template #sendButton>
+              Enviar
+            </ng-template>
+          </button>
+        </div>
+      </div>
+  </form>
+</app-main-container>
 
-                @for (item of allTemplates; track $index) {
-                    <option [value]=item.id> {{item.name}} </option>
-                }
-                </select>
-                @if (plantillas.invalid && (plantillas.dirty || plantillas.touched)) {
-                    @if (plantillas.getError('required')) {
-                        <div class="text-danger"> Campo Obligatorio </div>
-                    }
-                }
-            <button type="button" class="btn btn-secondary mt-3" (click)="previewSelectedTemplate()">Previsualizar</button>
-            <!-- Si encuentran otra forma de hacerlo, haganlo-->
-            <div class="row">
-                <div class="col-1"></div>
-                <div class="col-1"></div>
-                <div class="col-1"></div>
-                <div class="col-1"></div>
-                <div class="col-1"></div>
-                <div class="col-1"></div>
-                <div class="col-1"></div>
-                <div class="col-1"></div>
-                <div class="col-1"></div>
-                <div class="col-1"></div>
-                <div class="col-1"></div>
-                <div class="col-1"><button type="submit" class="btn btn-primary" [disabled]="form.invalid">Enviar</button></div>
-            </div>
-        </form>
-    </div>
-    
+<!-- Modal Notificación -->
+<div class="modal" *ngIf="showModalToRenderHTML" (click)="closeModalToRenderHTML()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+      <span class="close" (click)="closeModalToRenderHTML()">&times;</span>
+      <iframe #iframePreview style="width: 100%; border: none;"></iframe>
+      <div class="mt-3 text-end">
+        <button type="button" class="btn btn-secondary" (click)="closeModalToRenderHTML()">Volver</button>
+      </div>
+  </div>
 </div>
 
+<!-- Modal de Notificaciones a Varios Contactos -->
+<!-- Modal de Información sobre Envíos de Notificaciones -->
+<div
+  [class.show]="isModalOpen"
+  [style.display]="isModalOpen ? 'block' : 'none'"
+  class="modal fade"
+  tabindex="-1"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ informationModalTitle }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="isModalOpen = false"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+          <!-- Introducción -->
+          <div class="alert alert-info mb-2">
+            <h5 class="alert-heading">
+              Información sobre el Envío de Notificaciones
+            </h5>
+            <p class="mb-0 small">
+              Esta página permite enviar notificaciones a múltiples contactos de
+              forma sencilla y rápida. Es fundamental asegurarse de seleccionar
+              al menos un contacto antes de proceder con el envío.
+            </p>
+          </div>
 
-<!-- Modal de previsualización -->
-<div class="modal" *ngIf="showModalToRenderHTML" (click)="closeModalToRenderHTML()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-        <span class="close" (click)="closeModalToRenderHTML()">&times;</span>
-        <iframe #iframePreview style="width: 100%; border: none;"></iframe>
-        <div class="mt-3 text-end">
-          <button type="button" class="btn btn-secondary" (click)="closeModalToRenderHTML()">Aceptar</button>
+          <!-- Descripción de los campos -->
+          <div class="card mb-2">
+            <div class="card-header">
+              <h5 class="mb-0">Descripción de los Campos</h5>
+            </div>
+            <div class="card-body">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                  <strong>Elegir Contactos:</strong> Seleccione los contactos a
+                  los que desea enviar la notificación. Puede agregar múltiples
+                  contactos antes de enviar.
+                </li>
+                <li class="list-group-item">
+                  <strong>Asunto:</strong> Escriba el tema o asunto de la
+                  notificación que se enviará.
+                </li>
+                <li class="list-group-item">
+                  <strong>Plantillas:</strong> Seleccione una plantilla
+                  predefinida para personalizar el mensaje de la notificación.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Nota (OPCIONAL) -->
+          <div class="alert alert-warning mb-0">
+            <h5 class="alert-heading">Nota:</h5>
+            <p class="mb-0 small">
+              Asegúrese de que todos los campos estén completos antes de hacer
+              clic en "Enviar". Si no selecciona ningún contacto, no podrá
+              proceder con el envío.
+            </p>
+          </div>
         </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="isModalOpen = false"
+        >
+          Volver
+        </button>
+      </div>
     </div>
   </div>
+</div>

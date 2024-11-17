@@ -13,12 +13,12 @@
         <button ngbDropdownItem (click)="goToDetails(item.id, 'detail')">
           Ver detalle
         </button>
-        @if((this.role === 'ADMIN' || userId === item.created_by) &&
+        @if((userHasRole('FINES_ADMIN') || userData.id === item.created_by) &&
         item.claim_status === 'SENT') {
         <button ngbDropdownItem (click)="goToDetails(item.id, 'edit')">
           Editar
         </button>
-        } @if((this.role === 'ADMIN' ) && item.claim_status === 'SENT') {
+        } @if((userHasRole('FINES_ADMIN') ) && item.claim_status === 'SENT') {
         <button ngbDropdownItem (click)="disapproveClaim(item.id)">
           Desaprobar
         </button>
@@ -34,7 +34,7 @@
 
 <ng-template #infraction let-item>
   @if (item.infraction_id) {
-  <a [href]="['/infraction/' + item.infraction_id]">
+  <a [href]="['/penalties/infraction/' + item.infraction_id]">
     {{ item.infraction_id }}
   </a>
   }@else { N/A }
@@ -46,17 +46,23 @@
 
 <ng-template #claimStatus let-item>
   @if(item.claim_status === 'APPROVED') {
-  <span class="badge border border-success text-success p-2">{{
-    item.claim_status | getValueByKeyForEnum : ClaimStatusEnum
-  }}</span>
+  <span
+    class="badge border border-success text-success p-2 w-100"
+    style="max-width: 160px"
+    >{{ item.claim_status | getValueByKeyForEnum : ClaimStatusEnum }}</span
+  >
   } @else if(item.claim_status === 'REJECTED') {
-  <span class="badge border border-danger text-danger p-2">{{
-    item.claim_status | getValueByKeyForEnum : ClaimStatusEnum
-  }}</span>
+  <span
+    class="badge border border-danger text-danger p-2 w-100"
+    style="max-width: 160px"
+    >{{ item.claim_status | getValueByKeyForEnum : ClaimStatusEnum }}</span
+  >
   } @else if (item.claim_status === 'SENT') {
-  <span class="badge text-secondary border border-secondary p-2">{{
-    item.claim_status | getValueByKeyForEnum : ClaimStatusEnum
-  }}</span>
+  <span
+    class="badge text-secondary border border-secondary p-2 w-100"
+    style="max-width: 160px"
+    >{{ item.claim_status | getValueByKeyForEnum : ClaimStatusEnum }}</span
+  >
   }
 </ng-template>
 
@@ -65,7 +71,7 @@
     <div
       class="form-check me-2"
       [ngClass]="{
-        invisible: !(item.claim_status === 'SENT' && role === 'ADMIN')
+        invisible: !(item.claim_status === 'SENT' && userHasRole('FINES_ADMIN'))
       }"
     >
       <input
@@ -86,7 +92,7 @@
   {{ item.description | truncate : 60 }}
 </ng-template>
 
-<app-main-container title="Reclamos">
+<app-main-container title="Listado de Reclamos" (infoButtonClick)="onInfoButtonClick()">
   <app-table
     [items]="(items$ | async) || []"
     [columns]="columns"
@@ -99,99 +105,112 @@
     }"
     [isLoading]="(isLoading$ | async) || false"
     (searchValueChange)="onSearchValueChange('partialSearch', $event)"
-    searchPlaceHolder="Nº, Descripción..."
-    [headerButtonText]="'Nuevo'"
     (headerButtonClick)="openFormModal()"
     (infoButtonClick)="onInfoButtonClick()"
+    [headerButtonIcon]="'bi bi-plus'"
+    [headerButtonText]="''"
+    [showExportPdfButton]="false"
+    [getAllItems]="getAllItems"
+    [showTableFiltersButton]="false"
   >
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <div class="btn-group me-5" role="group">
-        <div class="d-flex align-items-center">
-          <div class="btn-group me-2">
-            <button
-              type="button"
-              class="btn btn-outline-danger"
-              (click)="clearFilters()"
-            >
-              <i class="bi bi-trash-fill"></i> Limpiar
-            </button>
-            <div
-              class="btn-group"
-              ngbDropdown
-              role="group"
-              aria-label="Button group with nested dropdown"
-            >
-              <button
-                type="button"
-                class="btn btn-outline-info dropdown-toggle"
-                ngbDropdownToggle
-              >
-                <i class="bi bi-funnel-fill"></i> Filtros
-              </button>
-              <div class="dropdown-menu" ngbDropdownMenu>
-                <button ngbDropdownItem (click)="setFilterType('fecha')">
-                  Por fecha
-                </button>
-                <button ngbDropdownItem (click)="setFilterType('estado')">
-                  Por estado
-                </button>
-              </div>
-            </div>
-          </div>
-          <!-- Fecha -->
-          @if(filterType === 'fecha'){
-          <div class="d-flex">
-            <input
-              type="date"
-              class="form-control me-2"
-              placeholder="Fecha de inicio"
-              [(ngModel)]="startDate"
-              [max]="endDate"
-            />
-            <input
-              type="date"
-              class="form-control me-2"
-              placeholder="Fecha de fin"
-              [(ngModel)]="endDate"
-              [min]="startDate"
-            />
-            <button class="btn btn-dark" type="button" (click)="applyFilters()">
-              Buscar
-            </button>
-          </div>
-
-          }
-          <!-- Estado -->
-          @if(filterType === 'estado'){
-          <div class="d-flex">
-            <select class="form-select me-2" [(ngModel)]="status">
-              <option [ngValue]="''">Todos</option>
-              @for (key of claimStatusKeys; track $index) {
-              <option [value]="key">
-                {{ key | getValueByKeyForEnum : ClaimStatusEnum }}
-              </option>
-              }
-            </select>
-            <button class="btn btn-dark" type="button" (click)="applyFilters()">
-              Buscar
-            </button>
-          </div>
-          }
-        </div>
-      </div>
-    </div>
-    @if(checkedClaims.length!=0){
-    <div class="row justify-content-end align-items-center g-2 mb-2">
-      <div class="col-2">
-        <button
-          class="btn btn-outline-primary"
-          (click)="openCreateInfractionModal()"
-        >
-          Crear Infracción
-        </button>
-      </div>
-    </div>
-
-    }
   </app-table>
 </app-main-container>
+
+<ng-template #infoModal let-modal>
+  <div class="modal-header fs-6 py-1">
+    <h4 class="modal-title">Información de la Lista de Reclamos</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss()"
+    ></button>
+  </div>
+  <div class="modal-body fs-6 py-2">
+    <div class="container-fluid">
+      <!-- Introducción -->
+      <div class="alert alert-info mb-2 py-2">
+        <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
+        <p class="mb-0 small">
+          Esta pantalla permite a los usuarios visualizar y gestionar la lista
+          completa de reclamos, así como acceder a información detallada y
+          realizar acciones específicas sobre cada reclamo. A continuación, se
+          describen las principales funcionalidades disponibles:
+        </p>
+      </div>
+
+      <!-- Campos Principales -->
+      <div class="card mb-2">
+        <div class="card-header py-1">
+          <h5 class="mb-0">Datos de Reclamos</h5>
+        </div>
+        <div class="card-body py-2">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item py-1">
+              <strong>Lista de Reclamos:</strong> Muestra los detalles de cada
+              reclamo, incluyendo el tipo de sanción, descripción, fecha de
+              creación, infracción relacionada y estado del reclamo.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Filtros:</strong> Puedes aplicar filtros específicos para
+              encontrar reclamos rápidamente, ajustando la búsqueda a tus
+              necesidades.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Paginación:</strong> Control para navegar entre múltiples
+              páginas de reclamos.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Exportar:</strong> Opción para exportar la lista de
+              reclamos a formatos PDF o Excel.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="card mb-2">
+        <div class="card-header py-1">
+          <h5 class="mb-0">Acciones Disponibles</h5>
+        </div>
+        <div class="card-body py-2">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item py-1">
+              <strong>Ver Detalle:</strong> Accede a información detallada de
+              cada reclamo seleccionando "Ver detalle" en el menú de acciones.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Editar:</strong> Modifica la información de un reclamo si
+              tienes permisos de administrador o eres el creador y el reclamo
+              está en estado "Enviado".
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Desaprobar:</strong> Los administradores pueden desaprobar
+              reclamos que se encuentran en estado "Enviado".
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Seleccionar Reclamos:</strong> Marca reclamos específicos
+              si tienes permisos de administrador y el estado del reclamo es
+              "Enviado".
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Nota -->
+      <div class="alert alert-warning py-2 mb-0">
+        <h5 class="alert-heading">Nota:</h5>
+        <p class="mb-0 small">
+          Asegúrate de verificar la información antes de realizar cambios o
+          rechazar reclamos. La exactitud de los datos es fundamental para el
+          correcto seguimiento de los casos.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer py-2">
+    <button type="button" class="btn btn-primary" (click)="modal.close()">
+      Entendido
+    </button>
+  </div>
+</ng-template>

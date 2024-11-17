@@ -1,14 +1,16 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, map, throwError } from 'rxjs';
 import { WorkerRequestDto, WorkerResponseDTO } from '../models/worker.model';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../../environments/environment';
+import { User } from '../../../../users/models/user';
+import { SessionService } from '../../../../users/services/session.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WorkerService {
-  private apiUrl = environment.constructionApiUrl;
+  private apiUrl = environment.apis.constructions.slice(0, -1);
 
   private readonly http = inject(HttpClient);
 
@@ -22,9 +24,20 @@ export class WorkerService {
     message: string;
   } | null> = this.messageSubject.asObservable();
 
+  private readonly sessionService = inject(SessionService);
+
+  getHeaders(): HttpHeaders {
+    const user: User = this.sessionService.getItem('user');
+    const userId = user?.id || 1;
+
+    return new HttpHeaders().set('x-user-id', userId.toString());
+  }
+
   registerWorker(worker: WorkerRequestDto): Observable<WorkerResponseDTO> {
     return this.http
-      .post<WorkerResponseDTO>(`${this.apiUrl}/workers`, worker)
+      .post<WorkerResponseDTO>(`${this.apiUrl}/workers`, worker, {
+        headers: this.getHeaders(),
+      })
       .pipe(
         map((response) => {
           this.messageSubject.next({
@@ -43,9 +56,13 @@ export class WorkerService {
       );
   }
 
-  unAssignWorker(id: number): Observable<string> {
+  unAssignWorker(id: number, userId: number): Observable<string> {
+    const headers = new HttpHeaders().set('x-user-id', userId.toString());
+
     return this.http
-      .put<string>(`${this.apiUrl}/workers/${id}/unassign`, undefined)
+      .put<string>(`${this.apiUrl}/workers/${id}/unassign`, undefined, {
+        headers,
+      })
       .pipe(
         map((response) => {
           return response;

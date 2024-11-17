@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import {
   BehaviorSubject,
@@ -14,13 +14,15 @@ import {
   ConstructionDocResponseDto,
   ConstructionDocUpdateStatusRequestDto,
 } from '../models/construction-doc.model';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../../environments/environment';
+import { User } from '../../../../users/models/user';
+import { SessionService } from '../../../../users/services/session.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConstructionDocumentationService {
-  private apiUrl = environment.constructionApiUrl;
+  private apiUrl = environment.apis.constructions.slice(0, -1);
 
   private documentationTypesSubject = new BehaviorSubject<
     ConstructionDocumentationTypeResponseDTO[]
@@ -35,12 +37,22 @@ export class ConstructionDocumentationService {
   private itemsSubject = new BehaviorSubject<ConstructionDocResponseDto[]>([]);
   items$ = this.itemsSubject.asObservable();
 
+  private readonly sessionService = inject(SessionService);
+
+  getHeaders(): HttpHeaders {
+    const user: User = this.sessionService.getItem('user');
+    const userId = user?.id || 1;
+
+    return new HttpHeaders().set('x-user-id', userId.toString());
+  }
+
   updateConstructionDocStatus(
     updateStatusRequestDto: ConstructionDocUpdateStatusRequestDto
   ): Observable<ConstructionDocResponseDto> {
     return this.http.put<ConstructionDocResponseDto>(
       `${this.apiUrl}/constructions/documentation/status`,
-      updateStatusRequestDto
+      updateStatusRequestDto,
+      { headers: this.getHeaders() }
     );
   }
 

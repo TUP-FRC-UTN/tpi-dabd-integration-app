@@ -7,7 +7,15 @@ import { FormsModule } from '@angular/forms';
 
 import { NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
-import { ConfirmAlertComponent, MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
+import {
+  ConfirmAlertComponent,
+  MainContainerComponent,
+  ToastService,
+} from 'ngx-dabd-grupo01';
+import {
+  UserData,
+  UserDataService,
+} from '../../../../../shared/services/user-data.service';
 
 @Component({
   selector: 'app-sanction-type-detail',
@@ -29,22 +37,41 @@ export class SanctionTypeDetailComponent {
   private modalService = inject(NgbModal);
   private router = inject(Router);
   private readonly toastService = inject(ToastService);
+  userDataService = inject(UserDataService);
 
   ChargeTypeEnum = ChargeTypeEnum;
   sanctionType: SanctionType | undefined;
   initialSanctionType: SanctionType | undefined;
   chargeTypeKeys: string[] = [];
   editing: boolean = false;
-  isAdmin: boolean = true;
+  userData!: UserData;
+
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
+    });
+  }
+  userHasRole(role: string): boolean {
+    return this.userData?.roles?.some((userRole) => userRole?.name === role);
+  }
 
   constructor() {
     this.chargeTypeKeys = this.sanctionTypeService.getChargeTypeKeys();
+    console.log(
+      this.chargeTypeKeys,
+      this.sanctionTypeService.getChargeTypeKeys()
+    );
   }
 
   ngOnInit(): void {
+    this.loadUserData();
     this.activatedRoute.params.subscribe((params) => {
       const id = params['id'];
+      const mode = params['mode'];
       this.getSanctionTypeById(id);
+      this.editing = mode === 'edit';
     });
   }
 
@@ -57,12 +84,20 @@ export class SanctionTypeDetailComponent {
       });
   }
 
+  onInfoButtonClick() {
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+    modalRef.componentInstance.alertType = 'info';
+
+    modalRef.componentInstance.alertTitle = 'Ayuda';
+    modalRef.componentInstance.alertMessage = `Esta pantalla te permite observar los detalles específicos de un tipo de sanción. \n Considera que los costos pueden ser fijos o variables y la cantidad de infracciones que generan una multa dependen del tipo.`;
+  }
+
   goBack = (): void => {
-    this.router.navigate(['sanctionType']);
+    this.router.navigate(['penalties/sanctionType']);
   };
 
   viewDetail(id: number) {
-    this.router.navigate([`/sanctionType/${id}`]);
+    this.router.navigate([`penalties/sanctionType/${id}`]);
   }
 
   edit() {
@@ -82,7 +117,7 @@ export class SanctionTypeDetailComponent {
     modalRef.result.then((result) => {
       if (result) {
         this.sanctionTypeService
-          .updateSanctionType(this.sanctionType!)
+          .updateSanctionType(this.sanctionType!, this.userData.id)
           .subscribe({
             next: () => {
               this.toastService.sendSuccess(`Tipo actualizado exitosamente.`);

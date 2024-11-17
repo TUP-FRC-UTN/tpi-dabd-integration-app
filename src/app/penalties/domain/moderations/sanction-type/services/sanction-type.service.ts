@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import {
   ChargeTypeEnum,
@@ -13,7 +13,7 @@ import {
   Observable,
   throwError,
 } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../../../../environments/environment';
 
 type OneSanctionType = SanctionType | undefined;
 @Injectable({
@@ -22,7 +22,7 @@ type OneSanctionType = SanctionType | undefined;
 export class SanctionTypeService {
   private http = inject(HttpClient);
 
-  private apiUrl = environment.moderationApiUrl;
+  private apiUrl = environment.apis.moderations.slice(0, -1);
 
   private oneSanctionType = new BehaviorSubject<OneSanctionType>(undefined);
   oneSanctionType$ = this.oneSanctionType.asObservable();
@@ -38,10 +38,10 @@ export class SanctionTypeService {
 
   ChargeTypeEnum = ChargeTypeEnum;
 
-  getSanctionTypes(name: string ='') {
+  getSanctionTypes(name: string = '') {
     let params = new HttpParams();
     if (name && name !== '') {
-      params = params.set('partialName', name);
+      params = params.set('searchValue', name);
     }
 
     return this.http.get<Array<SanctionType>>(`${this.apiUrl}/sanction-type`, {
@@ -116,16 +116,25 @@ export class SanctionTypeService {
       );
   }
 
-  updateSanctionType(sanctionType: SanctionType): Observable<SanctionType> {
+  updateSanctionType(
+    sanctionType: SanctionType,
+    userId: number
+  ): Observable<SanctionType> {
+    const headers = new HttpHeaders().set('x-user-id', userId.toString());
+
     return this.http
-      .put<SanctionType>(`${this.apiUrl}/sanction-type/${sanctionType.id}`, {
-        description: sanctionType.description,
-        amount: sanctionType.amount,
-        charge_type: sanctionType.charge_type,
-        infraction_days_to_expire: sanctionType.infraction_days_to_expire,
-        amount_of_infractions_for_fine:
-          sanctionType.amount_of_infractions_for_fine,
-      })
+      .put<SanctionType>(
+        `${this.apiUrl}/sanction-type/${sanctionType.id}`,
+        {
+          description: sanctionType.description,
+          amount: sanctionType.amount,
+          charge_type: sanctionType.charge_type,
+          infraction_days_to_expire: sanctionType.infraction_days_to_expire,
+          amount_of_infractions_for_fine:
+            sanctionType.amount_of_infractions_for_fine,
+        },
+        { headers }
+      )
       .pipe(
         map((newItem) => {
           return newItem;

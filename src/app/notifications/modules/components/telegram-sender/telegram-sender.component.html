@@ -1,0 +1,174 @@
+<div class="container">
+  <h2 class="text-center mb-4">
+    <i class="bi bi-telegram"></i> 
+    Enviar a Telegram
+  </h2>
+
+  <div class="text-center mb-4">
+    <div class="btn-group" role="group">
+      <button 
+        *ngFor="let type of messageTypes" 
+        class="btn" 
+        [class.btn-primary]="selectedType === type"
+        [class.btn-outline-primary]="selectedType !== type"
+        (click)="selectType(type)">
+        <i [class]="getTypeIcon(type)"></i>
+        {{ type | titlecase }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Texto -->
+  <div *ngIf="selectedType === 'texto'" class="mb-3">
+    <textarea 
+      class="form-control" 
+      rows="3" 
+      [(ngModel)]="message"
+      placeholder="Escribe tu mensaje aquí... (Obligatorio)"
+      maxlength="4096">
+    </textarea>
+    <small class="form-text text-muted">
+      Máximo de caracteres: 4096
+    </small>
+    <div class="text-end mt-2">
+      <button 
+        class="btn btn-primary" 
+        (click)="sendMessage()"
+        [disabled]="!message.trim() || isSending">
+        {{ isSending ? 'Enviando...' : 'Enviar' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Audio -->
+  <div *ngIf="selectedType === 'audio'" class="text-center">
+    <button (click)="toggleRecording()" class="btn btn-primary me-2" [disabled]="isProcessing">
+      <i *ngIf="!isRecording" class="bi bi-record"></i>
+      <i *ngIf="isRecording" class="bi bi-stop"></i>
+      {{ isRecording ? ' Detener' : ' Grabar' }}
+    </button>
+
+    <div *ngIf="audioUrl" class="mt-3">
+      <audio controls>
+        <source [src]="audioUrl" type="audio/webm">
+        Tu navegador no soporta la etiqueta de audio.
+      </audio>
+
+      <div class="text-end mt-2">
+        <button 
+          class="btn btn-primary" 
+          (click)="sendMessage()" 
+          [disabled]="isSending">
+          {{ isSending ? 'Enviando...' : 'Enviar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Video -->
+  <div *ngIf="selectedType === 'video'" class="text-center">
+    <input 
+      type="file" 
+      #videoInput
+      accept="video/*" 
+      class="d-none"
+      (change)="handleVideoSelect($event)">
+    
+    <button 
+      class="btn btn-primary me-2" 
+      (click)="videoInput.click()">
+      <i class="bi bi-camera-video"></i>
+      Seleccionar Video
+    </button>
+
+    <div *ngIf="selectedVideo" class="mt-3">
+      <video controls class="max-w-full">
+        <source [src]="videoUrl" type="video/mp4">
+        Tu navegador no soporta la etiqueta de video.
+      </video>
+      
+      <small class="form-text text-muted">
+        Tamaño máximo: 20 MB
+      </small>
+      
+      <div class="mt-3">
+        <textarea 
+          class="form-control" 
+          rows="2" 
+          [(ngModel)]="message"
+          placeholder="Añade una descripción (Obligatorio)"
+          maxlength="4096">
+        </textarea>
+        <small class="form-text text-muted">
+          Máximo de caracteres: 4096
+        </small>
+      </div>
+
+      <div class="text-end mt-2">
+        <button 
+          class="btn btn-primary" 
+          (click)="sendMessage()"
+          [disabled]="!message.trim() || isSending">
+          {{ isSending ? 'Enviando...' : 'Enviar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Imagen -->
+  <div *ngIf="selectedType === 'imagen'" class="text-center">
+    <input 
+      type="file" 
+      #imageInput
+      accept="image/*" 
+      class="d-none"
+      (change)="handleImageSelect($event)">
+    
+    <button 
+      class="btn btn-primary me-2" 
+      (click)="imageInput.click()">
+      <i class="bi bi-image"></i>
+      Seleccionar Imagen
+    </button>
+
+    <div *ngIf="selectedImage" class="mt-3">
+      <img [src]="imageUrl" class="max-w-full max-h-96 mb-3">
+      
+      <small class="form-text text-muted">
+        Tamaño máximo: 10 MB
+      </small>
+      
+      <div class="mt-3">
+        <textarea 
+          class="form-control" 
+          rows="2" 
+          [(ngModel)]="message"
+          placeholder="Añade una descripción (Obligatorio)"
+          maxlength="4096">
+        </textarea>
+        <small class="form-text text-muted">
+          Máximo de caracteres: 4096
+        </small>
+      </div>
+
+      <div class="text-end mt-2">
+        <button 
+          class="btn btn-primary" 
+          (click)="sendMessage()"
+          [disabled]="!message.trim() || isSending">
+          {{ isSending ? 'Enviando...' : 'Enviar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensajes de estado -->
+  <div class="mt-3">
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+    </div>
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+  </div>
+</div>

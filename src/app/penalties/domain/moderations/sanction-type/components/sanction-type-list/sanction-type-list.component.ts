@@ -9,7 +9,17 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SanctionTypeFormComponent } from '../sanction-type-form/sanction-type-form.component';
 import { GetValueByKeyForEnumPipe } from '../../../../../shared/pipes/get-value-by-key-for-status.pipe';
 import { TruncatePipe } from '../../../../../shared/pipes/truncate.pipe';
-import { ConfirmAlertComponent, MainContainerComponent, TableColumn, TableComponent } from 'ngx-dabd-grupo01';
+import {
+  ConfirmAlertComponent,
+  MainContainerComponent,
+  TableColumn,
+  TableComponent,
+} from 'ngx-dabd-grupo01';
+import {
+  UserDataService,
+  UserData,
+} from '../../../../../shared/services/user-data.service';
+import { AppealDaysFormComponent } from '../appeal-days-form/appeal-days-form.component';
 
 @Component({
   selector: 'app-sanction-type-list',
@@ -20,6 +30,7 @@ import { ConfirmAlertComponent, MainContainerComponent, TableColumn, TableCompon
     MainContainerComponent,
     GetValueByKeyForEnumPipe,
     TruncatePipe,
+    AppealDaysFormComponent,
   ],
   templateUrl: './sanction-type-list.component.html',
   styleUrl: './sanction-type-list.component.scss',
@@ -47,8 +58,25 @@ export class SanctionTypeListComponent {
 
   columns: TableColumn[] = [];
 
+  userDataService = inject(UserDataService);
+  userData!: UserData;
+
+  loadUserData() {
+    this.userDataService.loadNecessaryData().subscribe((response) => {
+      if (response) {
+        this.userData = response;
+      }
+    });
+  }
+
+  userHasRole(role: string): boolean {
+    return this.userData.roles?.some((userRole) => userRole?.name === role);
+  }
+
   // Methods:
   ngOnInit(): void {
+    this.loadUserData();
+
     this.searchSubject
       .pipe(
         debounceTime(200), // Espera 200 ms después de la última emisión
@@ -66,7 +94,7 @@ export class SanctionTypeListComponent {
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.columns = [
-        { headerName: 'N°', accessorKey: 'id' },
+        { headerName: 'N.°', accessorKey: 'id' },
         { headerName: 'Nombre', accessorKey: 'name' },
         {
           headerName: 'Descripción',
@@ -111,8 +139,8 @@ export class SanctionTypeListComponent {
     this.searchSubject.next({ key, value: searchValue });
   };
 
-  goToDetails = (id: number): void => {
-    this.router.navigate(['sanctionType', id]);
+  goToDetails = (id: number, mode: string): void => {
+    this.router.navigate(['penalties/sanctionType', id, mode]);
   };
 
   openFormModal(sanctionTypeToEdit: number | null = null): void {
@@ -125,8 +153,5 @@ export class SanctionTypeListComponent {
 
     modalRef.componentInstance.alertTitle = 'Ayuda';
     modalRef.componentInstance.alertMessage = `Aquí podrás consultar los tipos de sanciones y sus criterios para ser aplicados. \n Considerá que los costos pueden ser fijos o variables y la cantidad de infracciones que generan una multa dependen del tipo. `;
-
-
   }
-  
 }

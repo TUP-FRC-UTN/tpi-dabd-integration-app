@@ -13,3 +13,31 @@
 .custom-button i {
     vertical-align: middle;    
 }
+
+.filter-panel {
+    width: 300px;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+  }
+  
+  .filter-panel .form-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+  }
+  
+  .filter-panel .form-select,
+  .filter-panel .form-control {
+    font-size: 0.875rem;
+    border-radius: 4px;
+  }
+  
+  .filter-panel .btn {
+    font-size: 0.875rem;
+    padding: 0.375rem 1rem;
+  }
+  
+  .badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+  }

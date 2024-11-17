@@ -1,7 +1,12 @@
 <ng-template #statusTemplate let-item>
-  <span class="badge text-secondary border border-secondary p-2">{{
-    item.construction_status | getValueByKeyForEnum : CONSTRUCTION_STATUSES_ENUM
-  }}</span>
+  <span
+    class="badge text-secondary border border-secondary p-2 w-100"
+    style="max-width: 160px"
+    >{{
+      item.construction_status
+        | getValueByKeyForEnum : CONSTRUCTION_STATUSES_ENUM
+    }}</span
+  >
 </ng-template>
 
 <ng-template #actionsTemplate let-item>
@@ -22,7 +27,7 @@
         >
           Ver detalle
         </button>
-        @if(role !== "ADMIN") {
+        @if(!userHasRole('CONSTRUCTION_ADMIN')) {
         <button
           ngbDropdownItem
           (click)="goToDetails(item.construction_id, 'edit')"
@@ -35,7 +40,10 @@
   </div>
 </ng-template>
 
-<app-main-container title="Obras">
+<app-main-container
+  title="Lista de Obras"
+  (infoButtonClick)="onInfoButtonClick()"
+>
   <app-table
     [items]="(items$ | async) || []"
     [columns]="columns"
@@ -49,84 +57,114 @@
     [isLoading]="(isLoading$ | async) || false"
     (searchValueChange)="onSearchValueChange($event)"
     (headerButtonClick)="openFormModal()"
-    [showHeaderButton]="role === 'OWNER'"
-    (infoButtonClick)="infoModal()"
+    [showHeaderButton]="userHasRole('OWNER')"
+    [tableFilters]="filterConfig"
+    (filterValueChange)="onFilterValueChange($event)"
+    [showExportPdfButton]="false"
+    [getAllItems]="getAllItems"
+    [headerButtonIcon]="'bi bi-plus'"
+    [headerButtonText]="''"
   >
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <div class="btn-group me-5" role="group">
-        <div class="d-flex align-items-center">
-          <div class="btn-group me-2">
-            <button
-              type="button"
-              class="btn btn-outline-danger"
-              (click)="clearFilters()"
-            >
-              <i class="bi bi-trash-fill"></i> Limpiar
-            </button>
-            <div
-              class="btn-group"
-              ngbDropdown
-              role="group"
-              aria-label="Button group with nested dropdown"
-            >
-              <button
-                type="button"
-                class="btn btn-outline-info dropdown-toggle"
-                ngbDropdownToggle
-              >
-                <i class="bi bi-funnel-fill"></i> Filtros
-              </button>
-              <div class="dropdown-menu" ngbDropdownMenu>
-                <button ngbDropdownItem (click)="setFilterType('fecha')">
-                  Por fecha
-                </button>
-                <button ngbDropdownItem (click)="setFilterType('estado')">
-                  Por estado
-                </button>
-              </div>
-            </div>
-          </div>
-          <!-- Fecha -->
-          @if(filterType === 'fecha'){
-          <div class="d-flex">
-            <input
-              type="date"
-              class="form-control me-2"
-              [(ngModel)]="startDate"
-              placeholder="Fecha de inicio"
-            />
-            <input
-              type="date"
-              class="form-control me-2"
-              [(ngModel)]="endDate"
-              placeholder="Fecha de fin"
-            />
-            <button class="btn btn-dark" type="button" (click)="applyFilters()">
-              Buscar
-            </button>
-          </div>
-          }
-          <!-- Estado -->
-          @if(filterType === 'estado'){
-          <div class="d-flex">
-            <select class="form-select me-2" [(ngModel)]="status">
-              <option value="">Selecciona estado</option>
-              <option value="LOADING">En carga</option>
-              <option value="ON_REVISION">En revisión</option>
-              <option value="APPROVED">Aprobado</option>
-              <option value="REJECTED">Rechazado</option>
-              <option value="IN_PROGRESS">En proceso</option>
-              <option value="COMPLETED">Completado</option>
-              <option value="STOPPED">Parado</option>
-              <option value="CANCELLED">Cancelado</option>
-            </select>
-            <button class="btn btn-dark" type="button" (click)="applyFilters()">
-              Buscar
-            </button>
-          </div>
-          }
-        </div>
-      </div>
-    </div>
   </app-table>
 </app-main-container>
+
+<ng-template #infoModal let-modal>
+  <div class="modal-header fs-6 py-1">
+    <h4 class="modal-title">Información de la Lista de Construcciones</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss()"
+    ></button>
+  </div>
+  <div class="modal-body fs-6 py-2">
+    <div class="container-fluid">
+      <!-- Introducción -->
+      <div class="alert alert-info mb-2 py-2">
+        <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
+        <p class="mb-0 small">
+          Esta pantalla permite a los usuarios visualizar y gestionar la lista
+          completa de obras en curso, así como acceder a información detallada y
+          realizar acciones específicas. A continuación, se describen las
+          principales funcionalidades disponibles:
+        </p>
+      </div>
+
+      <!-- Campos Principales -->
+      <div class="card mb-2">
+        <div class="card-header py-1">
+          <h5 class="mb-0">Datos de Obras</h5>
+        </div>
+        <div class="card-body py-2">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item py-1">
+              <strong>Lista de Obras:</strong> Muestra los detalles de cada
+              obra, incluyendo el número de construcción, descripción, lote,
+              fechas de inicio y finalización, nombre y dirección.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Filtros:</strong> Puedes aplicar filtros específicos para
+              encontrar obras rápidamente, ajustando la búsqueda a tus
+              necesidades.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Paginación:</strong> Control para navegar entre múltiples
+              páginas de obras.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Exportar:</strong> Opción para exportar la lista de obras
+              a un archivo Excel para su análisis externo.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="card mb-2">
+        <div class="card-header py-1">
+          <h5 class="mb-0">Acciones Disponibles</h5>
+        </div>
+        <div class="card-body py-2">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item py-1">
+              <strong>Buscar:</strong> Filtra la lista de obras utilizando el
+              campo de búsqueda para localizar registros específicos.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Limpiar Filtros:</strong> Restablece los filtros aplicados
+              para mostrar la lista completa de obras.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Ver Detalle:</strong> Accede a información detallada de
+              cada obra seleccionando "Ver detalle" en el menú de acciones.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Editar:</strong> Modifica la información de una obra si
+              tienes permisos, seleccionando "Editar" en el menú de acciones.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Agregar Nueva Obra:</strong> Haz clic en "Nuevo" para
+              crear una nueva obra ingresando los datos correspondientes.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Nota -->
+      <div class="alert alert-warning py-2 mb-0">
+        <h5 class="alert-heading">Nota:</h5>
+        <p class="mb-0 small">
+          Verifica la información antes de realizar cambios o eliminar obras.
+          Asegúrate de que los datos de las obras estén actualizados y sean
+          correctos.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer py-2">
+    <button type="button" class="btn btn-primary" (click)="modal.close()">
+      Entendido
+    </button>
+  </div>
+</ng-template>

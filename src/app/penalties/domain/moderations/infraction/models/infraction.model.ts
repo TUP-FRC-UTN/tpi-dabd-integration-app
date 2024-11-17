@@ -2,10 +2,10 @@ import { ClaimDTO } from '../../claim/models/claim.model';
 import { EntityBase } from '../../../../shared/models/entity-base.model';
 
 export interface InfractionDto {
-  plotId: number;
+  plot_id: number;
   description: string;
-  sanctionTypeId: number;
-  claimsId: number[];
+  sanction_type_id: number;
+  claims_ids: number[];
 }
 
 export interface InfractionModel extends EntityBase {
@@ -22,14 +22,22 @@ export interface InfractionResponseDTO {
   createdBy: number;
   created_date: Date;
   description: string;
-  infraction_state: InfractionStatusEnum;
+  infraction_status: InfractionStatusEnum;
   plot_id: number;
   claims: ClaimDTO[];
+  proofs: Proof[];
+  notes: any[];
 }
 
 export enum InfractionStatusEnum {
-  ON_APPEALING = 'En apelación',
+  APPEALED = 'Apelada',
   APPROVED = 'Aprobado',
   REJECTED = 'Desestimado',
   CREATED = 'Creado',
+}
+
+export type InfractionTab = 'claims' | 'proofs' | 'notes';
+
+export interface Proof extends EntityBase {
+  document_identifier: string;
 }

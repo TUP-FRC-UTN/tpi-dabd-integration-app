@@ -126,8 +126,6 @@ export class ClaimDocumentsComponent {
   }
 
   downnload(documentationId: number, filename: string): void {
-
-    console.log("AAAAAAAAAAAAAAAAA")
     this.claimService.downloadDocumentation(documentationId, filename);
   }
 }
