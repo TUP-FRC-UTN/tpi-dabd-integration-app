@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ConfirmAlertComponent, Filter, FilterConfigBuilder, MainContainerComponent, TableFiltersComponent } from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, Filter, FilterConfigBuilder, MainContainerComponent, TableFiltersComponent, ToastService } from 'ngx-dabd-grupo01';
 import { ProviderTypeUpdateComponent } from "../provider-type-update/provider-type-update.component";
 import { CompanyService } from '../../../services/suppliers/company.service';
 import { Company } from '../../../models/suppliers/company.model';
@@ -35,6 +35,7 @@ export class ProvideConfigComponent implements OnInit {
 
   private modalService = inject(NgbModal);
   private companyService = inject(CompanyService);
+  private toastService = inject(ToastService);
   currentFilters! : Record<string,any>;
 
   @ViewChild('infoModal') infoModal!: TemplateRef<any>;
@@ -150,14 +151,21 @@ export class ProvideConfigComponent implements OnInit {
     modalRef.componentInstance.alertTitle = 'Confirmación';
     modalRef.componentInstance.alertMessage = '¿Está seguro que desea eliminar esta compañía?';
     modalRef.componentInstance.alertVariant = 'delete';
-    this.companyService.deleteCompany(id).subscribe({
-      next: () => {
-        this.loadCompanies();
-      },
-      error: (error) => {
-        console.error('Error deleting company:', error);
+    
+    modalRef.result.then((result) => {
+      if (result){
+        this.companyService.deleteCompany(id).subscribe({
+          next: () => {
+            this.toastService.sendSuccess('Compañía eliminada exitosamente');
+            this.loadCompanies();
+          },
+          error: (error) => {
+            this.toastService.sendError('Error al eliminar la compañía');
+            console.error('Error deleting company:', error);
+        }
+      });
       }
-    });
+    })
   }
 
   clearFilters() {
