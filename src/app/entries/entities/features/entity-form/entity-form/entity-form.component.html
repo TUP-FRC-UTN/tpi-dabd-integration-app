@@ -37,10 +37,12 @@
         <input type="number" id="doc-number" class="form-control" formControlName="docNumber" [ngClass]="{
              'is-invalid': entityForm.get('docNumber')?.invalid && entityForm.get('docNumber')?.touched
            }" />
-        <small class="text-danger ms-2"
-            *ngIf="entityForm.get('docNumber')?.invalid && entityForm.get('docNumber')?.touched">
-            Por favor, ingrese el número de documento del visitante
-        </small>
+            <small class="text-danger ms-2" 
+            *ngIf="entityForm.get('docNumber')?.touched">
+            {{entityForm.get('docNumber')?.errors?.['min'] ? 
+            'El número de documento no puede ser negativo' : 
+            (entityForm.get('docNumber')?.errors?.['required'] ? 'Por favor, ingrese el número de documento del visitante' : '')}}
+            </small>
     </div>
 
     <div class="col-md-6 mt-3">
