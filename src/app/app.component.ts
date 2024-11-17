@@ -82,7 +82,7 @@ export class AppComponent {
               routerLink: '/invoices/stadistics/1',
             },
             {
-              label: 'Payments',
+              label: 'Pagos',
               routerLink: '/invoices/stadistics/2',
             },
             
