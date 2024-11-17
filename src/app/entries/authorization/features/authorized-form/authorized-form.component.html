@@ -9,12 +9,16 @@
               <label for="plot-select" class="form-label mb-2 mb-sm-0">Número de lote<span class="text-danger">*</span></label>
             </div>
             <div class="col-12 col-sm-8">
-              <ng-select id="plot-select" [items]="plots" bindLabel="name" autofocus 
+              <ng-select id="plot-select" [items]="plots$ | async" bindLabel="name" autofocus 
                 bindValue="id" formControlName="plotId"
                 (change)="onPlotSelected($event)">
               </ng-select>
               <div>
-                <small *ngIf="plot">Telefono: {{ plot.tel }}</small>
+
+                @if(plot){
+                  <small>Contacto: {{ plot.contacts[0].contactValue }}</small>
+                }
+               
                 <small class="text-danger d-block" *ngIf="authForm.get('plotId')?.invalid && authForm.get('plotId')?.touched">
                   Por favor, ingrese un número de lote
                 </small>

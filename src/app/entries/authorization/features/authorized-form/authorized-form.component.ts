@@ -17,6 +17,8 @@ import { Plot } from '../../../../users/models/plot';
 import { OwnerPlotService } from '../../../../users/services/owner-plot.service';
 import { OwnerPlotHistoryDTO } from '../../../../users/models/ownerXplot';
 import { Contact, Owner } from '../../../../users/models/owner';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { PlotsByOwnerService } from '../../../services/authorized-range/plots-by-owner.service';
 
 @Component({
   selector: 'app-auth-form',
@@ -27,13 +29,15 @@ import { Contact, Owner } from '../../../../users/models/owner';
     NgClass,
     NgSelectComponent,
     ToastsContainer,
-    MainContainerComponent
+    MainContainerComponent,
+    CommonModule
   ],
   templateUrl: './authorized-form.component.html',
 })
 export class AuthFormComponent implements OnInit {
   authForm: FormGroup = {} as FormGroup;
-  plots: plot[] = []
+  plots$ = new BehaviorSubject<plot[]>([]);
+  plots: plot[] = [];
   plot: any = null
   isUpdate = false
   paramRoutes = inject(ActivatedRoute);
@@ -41,9 +45,9 @@ export class AuthFormComponent implements OnInit {
   private toastService = inject(ToastService);
   userType: string = "ADMIN"
 
-  ownerPlotService = inject(OwnerPlotService);
+  ownerPlotService = inject(PlotsByOwnerService);
   plotsservice = inject(PlotService);
-  plotssss : Plot[] = [] 
+  plotsFromService : Plot[] = [] 
 
   constructor(private fb: FormBuilder, private authService: AuthService,
      private loginService: LoginService, private router: Router, 
@@ -63,6 +67,11 @@ export class AuthFormComponent implements OnInit {
     }
 
   ngOnInit(): void {
+
+    this.plots$.subscribe(plots => {
+      this.plots = plots;
+    });
+
     this.initPlots()
     this.authForm = this.createForm();
   
@@ -299,103 +308,72 @@ export class AuthFormComponent implements OnInit {
   }
 
   initPlots() {
-    /*this.plots = [
-      {
-        id: 1,
-        desc: 'Andrés Torres',
-        tel: '555-1234',
-        name: '1 - Andrés Torres',
-      },
-      { id: 2, desc: 'Ana María', tel: '555-5678', name: '2 - Ana María' },
-      {
-        id: 3,
-        desc: 'Carlos Pérez',
-        tel: '555-2345',
-        name: '3 - Carlos Pérez',
-      },
-      {
-        id: 4,
-        desc: 'Luisa Fernández',
-        tel: '555-6789',
-        name: '4 - Luisa Fernández',
-      },
-      {
-        id: 5,
-        desc: 'Miguel Ángel',
-        tel: '555-3456',
-        name: '5 - Miguel Ángel',
-      },
-      {
-        id: 6,
-        desc: 'Sofía Martínez',
-        tel: '555-7890',
-        name: '6 - Sofía Martínez',
-      },
-      { id: 7, desc: 'David Gómez', tel: '555-4567', name: '7 - David Gómez' },
-      {
-        id: 8,
-        desc: 'Isabel García',
-        tel: '555-8901',
-        name: '8 - Isabel García',
-      },
-      {
-        id: 9,
-        desc: 'Fernando López',
-        tel: '555-5679',
-        name: '9 - Fernando López',
-      },
-      { id: 10, desc: 'María José', tel: '555-6780', name: '10 - María José' },
-    ];*/
-
     this.plotsservice.getAllPlots(0, 300).subscribe({
       next: (data) => {
-        console.log('Data received from plotsservice:', data);
-        this.plotssss = data.content;
-    
-        this.plotssss.forEach(element => {
-          this.ownerPlotService.actualOwnerByPlot(element.id).subscribe({
-            next: (data) => {
-              const plotData = {
-                id: element.id,
-                desc: '',
-                contacts: data?.owner.contacts,
-                name: `${data?.owner.firstName} ${data?.owner.lastName}`
-              };
-              console.log(data)
-              this.plots.push(plotData);
-            },
-            error: (err) => {
-              console.error('Error in giveActualOwner:', err);
+
+        console.log( 'get all '+ data )
+        if (!data?.content) {
+          console.warn('no hay lotes');
+          return;
+        }
+  
+        this.plotsFromService = data.content;
+        const tempPlots: plot[] = [];
+        
+        const ownerPromises = this.plotsFromService.map(element => 
+          new Promise<void>((resolve) => {
+            if (!element?.id) {
+              resolve();
+              return;
             }
+  
+            this.ownerPlotService.actualOwnerByPlot(element.id).subscribe({
+              next: (ownerData) => {
+                console.log(ownerData);
+                // Verificar que tenga owner con firstName, lastName y al menos un contacto
+                if (ownerData?.owner?.firstName && 
+                    ownerData?.owner?.lastName && 
+                    ownerData?.owner?.contacts && 
+                    Array.isArray(ownerData.owner.contacts) && 
+                    ownerData.owner.contacts.length > 0) {
+                  
+                  const plotData = {
+                    id: element.id,
+                    desc: '',
+                    contacts: ownerData.owner.contacts,
+                    name: `${element.plotNumber} - ${ownerData.owner.firstName} ${ownerData.owner.lastName}`
+                  };
+                  tempPlots.push(plotData);
+                }
+                resolve();
+              },
+              error: (err) => {
+                console.error(`Error obteniendo dueños para el lote ${element.id}:`, err);
+                resolve();
+              }
+            });
+          })
+        );
+  
+        Promise.all(ownerPromises).then(() => {
+          // Ordenar los plots por número
+          tempPlots.sort((a, b) => {
+            const numA = parseInt(a.name.split('-')[0].trim()) || 0;
+            const numB = parseInt(b.name.split('-')[0].trim()) || 0;
+            return numA - numB;
           });
+          
+          this.plots$.next(tempPlots);
+        }).catch(err => {
+          console.error('Error procesando lotes:', err);
+          this.plots$.next([]);
         });
       },
       error: (err) => {
-        console.error('Error in getAllPlots:', err);
+        console.error('Error obteniendo los lotes:', err);
+        this.plots$.next([]);
       }
     });
-    
-    console.log(this.plots + 'lotes')
-    
-   /* this.ownerPlotService.getPlotsWithOwnerInfo(0, 1000).subscribe({
-      next: (data) => {
-        console.log('Datos recibidos:', data); // Añadir log para debug
-        if (data && data.content) {
-          this.plots = data.content.map(element => ({
-            id: element.plotId,
-            desc: element.ownerName,
-            tel: element.ownerContact,
-            name: `${element.plotId} - ${element.ownerName}`
-          }));
-          console.log('Plots procesados:', this.plots); // Añadir log para debug
-        }
-      },
-      error: (err) => {
-        console.error('Error al obtener plots:', err);
-        this.toastService.sendError('Error al cargar los lotes');
-      }
-    });*/
-    
   }
 
   onPlotSelected(selectedPlot: plot) {

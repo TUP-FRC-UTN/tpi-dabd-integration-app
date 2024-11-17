@@ -11,30 +11,15 @@ import { environment } from '../../../environments/environment';
 import { CaseTransformerService } from '../../entries/services/case-transformer.service';
 
 
-export interface ownerPlotResponse{
-  plot_id: number;
-  owner: Owner;
-}
-
 @Injectable({
   providedIn: 'root'
 })
 export class OwnerPlotService {
   constructor(private http: HttpClient) { }
-
-  caseTransformer = inject(CaseTransformerService)
-
+  
   host: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}`;
   giveActualOwner(plotId : number) {
     return this.http.get<Owner>(`${this.host}/owner/current/plot/${plotId}`);
-  }
-
-  actualOwnerByPlot(plotId : number){
-    return this.http.get<ownerPlotResponse>(`${this.host}/owner/current/plot/${plotId}`).pipe(
-      map((response) =>{
-        return this.caseTransformer.toCamelCase(response)
-      })
-    );
   }
 
   giveAllOwnersByPlot(plotId: number | string, page: number, size: number) {
