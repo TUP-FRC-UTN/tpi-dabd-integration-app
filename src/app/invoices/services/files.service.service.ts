@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TicketDto } from '../models/TicketDto';
@@ -7,21 +7,33 @@ import { TicketDto } from '../models/TicketDto';
   providedIn: 'root',
 })
 export class FilesServiceService {
-  private baseUrl = 'http://localhost:8087/files';
-  private baseUrl2 = 'http://localhost:8090/files';
+  private baseUrl = 'http://localhost:8080/files';
+  private baseUrl2 = 'http://localhost:8080/files';
+  // private baseUrl = 'http://localhost:8087/files'; //DEV USSAGE
+  // private baseUrl2 = 'http://localhost:8090/files';
 
+  userId : Number;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    this.userId = sessionStorage.getItem('userId') ? Number(sessionStorage.getItem('userId')) : 1;
+  }
 
   downloadFile(fileUrl: string): Observable<Blob> {
+    const headers = new HttpHeaders({
+      'x-user-id': this.userId.toString(),
+    });
     return this.http.get(`${this.baseUrl}/download?fileUrl=${fileUrl}`, {
       responseType: 'blob',
     });
   }
 
   downloadFilePayment(fileUrl: string): Observable<Blob> {
+    const headers = new HttpHeaders({
+      'x-user-id': this.userId.toString(),
+    });
     return this.http.get(`${this.baseUrl2}/download?fileUrl=${fileUrl}`, {
       responseType: 'blob',
+      headers: headers,
     });
   }
 
@@ -30,6 +42,10 @@ export class FilesServiceService {
     fileType: string,
     files: File[]
   ): Observable<TicketDto[]> {
+    const headers = new HttpHeaders({
+      'x-user-id': this.userId.toString(),
+      enctype: 'multipart/form-data',
+    });
     const formData: FormData = new FormData();
     formData.append('type', JSON.stringify({ type: fileType }));
 
@@ -41,9 +57,7 @@ export class FilesServiceService {
       `${this.baseUrl}/${ownerId}/files`,
       formData,
       {
-        headers: {
-          enctype: 'multipart/form-data',
-        },
+        headers: headers,
       }
     );
   }

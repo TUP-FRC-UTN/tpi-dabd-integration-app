@@ -12,7 +12,8 @@ import { RequestTicket, RequestTicketOwner } from '../models/RequestTicket';
 })
 export class TicketService {
     // Base URL para el servicio de tickets
-  private readonly baseUrl = 'http://localhost:8087/tickets';
+  // private readonly baseUrl = 'http://localhost:8080/tickets';
+  private readonly baseUrl = 'http://localhost:8087/tickets';//DEV
 
   // Endpoints específicos
   private readonly apiUrl = this.baseUrl;
@@ -20,17 +21,29 @@ export class TicketService {
   private readonly apiGetAllByOwner = this.baseUrl + '/getAllTicketsByOwner';
   private readonly apiGetAll = this.baseUrl + '/getAll';
     
-
-    constructor(private http: HttpClient) { }
+  userId : Number;
+    constructor(private http: HttpClient) { 
+      this.userId = sessionStorage.getItem('userId') ? Number(sessionStorage.getItem('userId')) : 1;
+    }
 
     filtrarfechas(dtobusqueda: any): Observable<any> {
-      return this.http.post<any>(this.apiUrl + '/search', dtobusqueda);
+      const header = {
+        'x-user-id': this.userId.toString(),
+      };
+      return this.http.post<any>(this.apiUrl + '/search', dtobusqueda, {
+        headers: header
+      });
     }
 
 
 
     getAllTicketsContent(): Observable<TicketDto[]> {
-      return this.http.get<{ content: TicketDto[] }>( this.baseUrl + '/tickets/getAll').pipe(
+      const header = {
+        'x-user-id': this.userId.toString(),
+      };
+      return this.http.get<{ content: TicketDto[] }>( this.baseUrl + '/tickets/getAll', {
+        headers: header
+      }).pipe(
         map(response => response.content) // Extrae solo content del objeto de respuesta
       );
     }
@@ -39,8 +52,10 @@ export class TicketService {
       let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
-        
-      return this.http.post<PaginatedResponse<TicketDto>>(this.apiGetAll, requestTicket, { params }).pipe(
+      const header = {
+        'x-user-id': this.userId.toString(),
+      };
+      return this.http.post<PaginatedResponse<TicketDto>>(this.apiGetAll, requestTicket, { params, headers: header }).pipe(
         map((response: PaginatedResponse<any>) => {
           const transformPipe = new TransformTicketPipe();
           const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
@@ -95,8 +110,11 @@ export class TicketService {
       let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
+      const header = {
+        'x-user-id': this.userId.toString(),
+      };
         
-      return this.http.post<PaginatedResponse<TicketDto>>(this.apiGetAllByOwner, requestTicket, { params }).pipe(
+      return this.http.post<PaginatedResponse<TicketDto>>(this.apiGetAllByOwner, requestTicket, { params, headers: header }).pipe(
         map((response: PaginatedResponse<any>) => {
           const transformPipe = new TransformTicketPipe();
           const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
@@ -113,12 +131,14 @@ export class TicketService {
       // .set('owner;
       // .set('page', page.toString())
       // .set('size', size.toString());
-        
+      const header = {
+        'x-user-id': this.userId.toString(),
+      };
 
       if (status) {
         params = params.set('status', status);
       }
-      return this.http.get<PaginatedResponse<TicketDto>>(this.apiGetAllByOwner, { params }).pipe(
+      return this.http.get<PaginatedResponse<TicketDto>>(this.apiGetAllByOwner, { params, headers: header }).pipe(
         map((response: PaginatedResponse<any>) => {
           const transformPipe = new TransformTicketPipe();
           const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
@@ -136,7 +156,10 @@ export class TicketService {
       .set('ownerId', ownerId.toString())
       .set('page', page.toString())
       .set('size', size.toString());
-      return this.http.get<PaginatedResponse<TicketDto>>(this.apiGetAll, { params }).pipe(
+      const header = {
+        'x-user-id': this.userId.toString(),
+      };
+      return this.http.get<PaginatedResponse<TicketDto>>(this.apiGetAll, { params, headers: header }).pipe(
         map((response: PaginatedResponse<any>) => {
           const transformPipe = new TransformTicketPipe();
           const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
@@ -160,11 +183,13 @@ export class TicketService {
       .set('size', size.toString());
     console.log(params);
       
-    
+    const header = {
+      'x-user-id': this.userId.toString(),
+    };
       const request = this.buildRequestTicket(status, firstPeriod, lastPeriod);      
     
 
-    return this.http.post<PaginatedResponse<TicketDto>>(this.apiGetAll, request ,{ params }).pipe(
+    return this.http.post<PaginatedResponse<TicketDto>>(this.apiGetAll, request ,{ params, headers:header }).pipe(
       map((response: PaginatedResponse<any>) => {
         const transformPipe = new TransformTicketPipe();
         const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));

@@ -10,50 +10,81 @@ import { TicketReportDto } from '../models/ticket.report.model';
 })
 export class StadisticsService {
 
-  private readonly baseUrl = 'http://localhost:8087/report';
-  private readonly baseUrlTicket = 'http://localhost:8087/tickets';
-  private readonly baseUrlpayments = 'http://localhost:8092/report/topPayments';
-  private readonly baseUrlpaymentsReport = 'http://localhost:8092/report';
+  private readonly baseUrl = 'http://localhost:8080/report';
+  private readonly baseUrlTicket = 'http://localhost:8080/tickets';
+  private readonly baseUrlpayments = 'http://localhost:8080/report/topPayments';
+  private readonly baseUrlpaymentsReport = 'http://localhost:8080/report';
+
+  // private readonly baseUrl = 'http://localhost:8087/report'; // DEV
+  // private readonly baseUrlTicket = 'http://localhost:8087/tickets';
+  // private readonly baseUrlpayments = 'http://localhost:8092/report/topPayments';
+  // private readonly baseUrlpaymentsReport = 'http://localhost:8092/report';
 
   // Endpoints específicos
   private readonly apiUrl = this.baseUrl;
-
+  userId : Number;
   constructor(private http: HttpClient) {
-
+    this.userId = sessionStorage.getItem('userId') ? Number(sessionStorage.getItem('userId')) : 1;
   }
 
   getBaseReport(fechas: TicketFilter): Observable<Top5> {
-    return this.http.post<Top5>(this.apiUrl + '/top5', fechas);
+    const header = {
+      'x-user-id': this.userId.toString(),
+    };
+    return this.http.post<Top5>(this.apiUrl + '/top5', fechas, {
+      headers: header
+    });
   }
 
   getOtherReport(fechas: TicketFilter): Observable<OtherReport> {
-    return this.http.post<OtherReport>(this.apiUrl + '/otherReports', fechas);
+    const header = {
+      'x-user-id': this.userId.toString(),
+    };
+    return this.http.post<OtherReport>(this.apiUrl + '/otherReports', fechas, {
+      headers: header
+    });
   }
 
   getAmountByDate(fechas: TicketFilter): Observable<TicketInfo[]> {
-    return this.http.post<TicketInfo[]>(this.apiUrl + '/totalPayments', fechas);
+    const header = {
+      'x-user-id': this.userId.toString(),
+    };
+    return this.http.post<TicketInfo[]>(this.apiUrl + '/totalPayments', fechas, {
+      headers: header
+    });
   }
 
   getPreferredApproved(fechas: TicketFilter): Observable<TopPayments> {
     console.log(fechas);
-
-    return this.http.post<TopPayments>(this.baseUrlpaymentsReport + '/topPaymentsApproved', fechas);
+    const header = {
+      'x-user-id': this.userId.toString(),
+    };
+    return this.http.post<TopPayments>(this.baseUrlpaymentsReport + '/topPaymentsApproved', fechas, {
+      headers: header
+    });
   }
 
   getPreferredRejected(fechas: TicketFilter): Observable<TopPayments> {
-    return this.http.post<TopPayments>(this.baseUrlpaymentsReport + '/topPaymentsRejected', fechas);
+    const header = {
+      'x-user-id': this.userId.toString(),
+    };
+    return this.http.post<TopPayments>(this.baseUrlpaymentsReport + '/topPaymentsRejected', fechas, {
+      headers: header
+    });
   }
 
   getDinamycFilters(filters: any) {
     let httpParams = new HttpParams()
-
+    const header = {
+      'x-user-id': this.userId.toString(),
+    };
     for (const key in filters) {
       if (filters.hasOwnProperty(key) && filters[key] !== undefined && filters[key] !== '') {
         httpParams = httpParams.set(key, filters[key].toString());
       }
     }
 
-    return this.http.get<PaymentReportDto[]>(this.baseUrlpaymentsReport + '/filters', {params: httpParams});
+    return this.http.get<PaymentReportDto[]>(this.baseUrlpaymentsReport + '/filters', {params: httpParams, headers : header});
   }
 
   getDinamycFilterTickets(filters: any) : Observable<TicketReportDto[]> {
@@ -63,6 +94,9 @@ export class StadisticsService {
     //   filters.startExpirationDate = filters.startExpirationDate + '-01';
     //   filters.endExpirationDate = filters.endExpirationDate + '-01';
     // }
+    const header = {
+      'x-user-id': this.userId.toString(),
+    };
     let params = new HttpParams()
     for (const key in filters) {
       if (filters.hasOwnProperty(key) && filters[key] !== undefined && filters[key] !== '') {
@@ -70,6 +104,6 @@ export class StadisticsService {
       }
     }
 
-    return this.http.get<TicketReportDto[]>(this.baseUrlTicket + '/filters', {params});
+    return this.http.get<TicketReportDto[]>(this.baseUrlTicket + '/filters', {params, headers: header});
   }
 }
