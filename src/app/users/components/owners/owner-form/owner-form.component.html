@@ -376,7 +376,7 @@
                   [ngClass]="{'is-invalid': ownerForm.get('addressForm')?.get('province')?.invalid && ownerForm.get('addressForm')?.get('province')?.touched,
                   'is-valid': ownerForm.get('addressForm')?.get('province')?.valid && ownerForm.get('addressForm')?.get('province')?.touched}"
             >
-            <option [value]="provinceOptions.OTHER" selected >Otra</option>
+            <option [value]="'OTHER'" selected >Otra</option>
             </select>
           }
         </div>

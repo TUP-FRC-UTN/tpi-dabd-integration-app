@@ -95,7 +95,7 @@
                   </button>
                   <ul class="dropdown-menu">
                     @if (user.isActive == false) {
-                      <li><a class="dropdown-item btn btn-danger" (click)="reactivateUser(user.id)">Reactivar</a></li>
+                     <!--  <li><a class="dropdown-item btn btn-danger" (click)="reactivateUser(user.id)">Reactivar</a></li> -->
                     } @else {
                       <li><a class="dropdown-item btn btn-info" (click)="updateUser(user.id)" >Editar</a></li>
                       <li><a class="dropdown-item btn btn-danger" (click)="assignUserToDelete(user)" data-bs-target="#exampleModal" data-bs-toggle="modal">Eliminar</a></li>

@@ -92,7 +92,7 @@ export class PlotsListComponent {
 
   filterConfig: Filter[] = new FilterConfigBuilder()
 
-    .numberFilter('Nro. Manzana', 'blockNumber', 'Seleccione una Manzana')
+    //.numberFilter('Nro. Manzana', 'blockNumber', 'Seleccione una Manzana')
     .selectFilter('Tipo', 'plotType', 'Seleccione un tipo', [
       { value: 'COMMERCIAL', label: 'Comercial' },
       { value: 'PRIVATE', label: 'Privado' },
@@ -208,10 +208,11 @@ export class PlotsListComponent {
   }
 
   dinamicFilter() {
-    this.plotService.dinamicFilters(this.currentPage, this.pageSize, this.filters).subscribe({
+    const page = this.currentPage == 0 ? this.currentPage : this.currentPage - 1;
+    this.plotService.dinamicFilters(page, this.pageSize, this.filters).subscribe({
       next: (result) => {
         this.plotsList = result.content;
-        this.filteredPlotsList.next([...this.plotsList]);
+        this.filteredPlotsList.next([...result.content]);
         this.lastPage = result.last;
         this.totalItems = result.totalElements;
       },

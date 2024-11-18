@@ -301,7 +301,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
       "isActive": true
     }
     this.plotService
-      .dinamicFilters(0, 1000, filters)
+      .dinamicFilters(0, 2147483647, filters)
       .pipe(
         map((response: PaginatedResponse<Plot>) => {
           this.plots = response.content;
@@ -318,7 +318,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
 
   loadAccounts(
     page: number = 0,
-    size: number = 1000,
+    size: number = 2147483647,
     isActive?: boolean,
     sortProperty: string = 'isActive,createdDate',
     sortDirection: 'ASC' | 'DESC' = 'DESC'

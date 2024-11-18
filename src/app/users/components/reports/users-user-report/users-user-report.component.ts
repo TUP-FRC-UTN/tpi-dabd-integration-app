@@ -152,7 +152,7 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
 
 
     this.userService
-    .dinamicFilters(0, 1000, filters)
+    .dinamicFilters(0, 2147483647, filters)
     .pipe(
       map((response: PaginatedResponse<any>) => {
         this.users = response.content;
@@ -250,7 +250,7 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
       "isActive" : true
     }
     this.userService
-      .dinamicFilters(0, 1000, cleanFilters)
+      .dinamicFilters(0, 2147483647, cleanFilters)
       .pipe(
         map((response: PaginatedResponse<any>) => {
           this.users = response.content;
