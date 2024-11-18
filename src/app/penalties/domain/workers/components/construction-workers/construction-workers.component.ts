@@ -86,7 +86,7 @@ export class ConstructionWorkersComponent implements AfterViewInit {
   unAssignWorker(worker: any) {
     const modalRef = this.modalService.open(ConfirmAlertComponent);
     modalRef.componentInstance.alertTitle = 'Confirmación';
-    modalRef.componentInstance.alertMessage = `¿Estás seguro de que deseas desasignar a ${worker.lastName}, ${worker.name} ?`;
+    modalRef.componentInstance.alertMessage = `¿Estás seguro de que deseas desasignar a ${worker.last_name}, ${worker.name} ?`;
 
     modalRef.result
       .then((result) => {
