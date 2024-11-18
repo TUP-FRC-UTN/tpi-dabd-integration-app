@@ -91,6 +91,11 @@ export class OwnerDetailComponent implements OnInit {
   }
 
   fillFieldsToDetail(owner: any): void {
+
+    // seteo el primer address en el form de address
+    if(this.addresses.length > 0) {
+      this.setAddressValue(0);
+    }
     console.log('DETAIL->', owner);
     this.ownerForm.patchValue({
       firstName: owner.firstName,

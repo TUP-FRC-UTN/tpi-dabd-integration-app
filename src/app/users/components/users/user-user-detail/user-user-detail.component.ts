@@ -165,6 +165,10 @@ export class UserUserDetailComponent {
 
           if (this.user.addresses) {
             this.addresses = [...this.user.addresses];
+            // seteo el primer address en el form de address
+            if(this.addresses.length > 0) {
+              this.setAddressValue(0);
+            }
           }
 
           if (this.user.contacts) {
