@@ -150,6 +150,40 @@ export class ExpensesListBillsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.columns = [
+      { headerName: 'Tipo', accessorKey: 'billType.name' },
+      { headerName: 'Proveedor', accessorKey: 'supplier.name' },
+      {
+        headerName: 'Monto',
+        accessorKey: 'amount',
+        cellRenderer: this.amountTemplate,
+        align: 'right'
+      },
+      {
+        headerName: 'Periodo',
+        accessorKey: 'period.end_date',
+        cellRenderer: this.periodTemplate,
+      },
+      { headerName: 'Categoría', accessorKey: 'category.name' },
+      {
+        headerName: 'Fecha',
+        accessorKey: 'date',
+        cellRenderer: this.dateTemplate,
+      },
+      {
+        headerName: 'Estado',
+        accessorKey: 'status',
+        cellRenderer: this.statusTemplate,
+
+      },
+      {
+        headerName: 'Acciones',
+        accessorKey: 'actions',
+        cellRenderer: this.actionsTemplate,
+      },
+    ];
+
+    
     this.userId = Number(this.sessionService.getItem('user').id);
     this.filteredBills = this.bills;
     this.getAllLists();
