@@ -2,7 +2,6 @@ import {Component, inject, OnInit, TemplateRef, ViewChild,} from '@angular/core'
 import {FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule, FormArray} from '@angular/forms';
 import {CommonModule, NgClass} from '@angular/common';
 import {AuthService} from "../../../services/authorized-range/auth.service";
-import {LoginService} from "../../../services/access/login.service";
 import {NgIf} from "@angular/common";
 import {ActivatedRoute, NavigationStart, Router} from "@angular/router";
 import {UserTypeService} from "../../../services/user-type.service";
@@ -45,12 +44,14 @@ export class AuthFormComponent implements OnInit {
   private toastService = inject(ToastService);
   userType: string = "ADMIN"
 
+  private plotsCache = new BehaviorSubject<Plot[]>([]);
+  isLoaded = true;
+
   ownerPlotService = inject(PlotsByOwnerService);
   plotsservice = inject(PlotService);
   plotsFromService : Plot[] = [] 
 
-  constructor(private fb: FormBuilder, private authService: AuthService,
-     private loginService: LoginService, private router: Router, 
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, 
      private userTypeService: UserTypeService, private route: ActivatedRoute) {
   
     this.router.events.subscribe(event => {
@@ -308,15 +309,23 @@ export class AuthFormComponent implements OnInit {
   }
 
   initPlots() {
+    // Si ya tenemos plots cacheados, retornamos el observable
+    if (this.plotsCache.value.length > 0) {
+      return this.plotsCache.asObservable();
+    }
+
+    // Si no hay plots cacheados, creamos un nuevo observable
+    const plotsObservable = new BehaviorSubject<plot[]>([]);
+    
     this.plotsservice.getAllPlots(0, 300).subscribe({
       next: (data) => {
-
-        console.log( 'get all '+ data )
+        console.log('get all ' + data)
         if (!data?.content) {
-          console.warn('no hay lotes');
+          console.warn('no hay lotes');          
+          plotsObservable.next([]);
           return;
         }
-  
+
         this.plotsFromService = data.content;
         const tempPlots: plot[] = [];
         
@@ -326,7 +335,7 @@ export class AuthFormComponent implements OnInit {
               resolve();
               return;
             }
-  
+
             this.ownerPlotService.actualOwnerByPlot(element.id).subscribe({
               next: (ownerData) => {
                 console.log(ownerData);
@@ -354,7 +363,7 @@ export class AuthFormComponent implements OnInit {
             });
           })
         );
-  
+
         Promise.all(ownerPromises).then(() => {
           // Ordenar los plots por número
           tempPlots.sort((a, b) => {
@@ -364,17 +373,24 @@ export class AuthFormComponent implements OnInit {
           });
           
           this.plots$.next(tempPlots);
+          plotsObservable.next(tempPlots);
         }).catch(err => {
           console.error('Error procesando lotes:', err);
           this.plots$.next([]);
+          plotsObservable.next([]);
         });
       },
       error: (err) => {
         console.error('Error obteniendo los lotes:', err);
+        this.toastService.sendError("Error al obtener lotes, cargue manualmente.")
+        this.isLoaded = false;
         this.plots$.next([]);
+        plotsObservable.next([]);
       }
     });
-  }
+
+    return plotsObservable.asObservable();
+}
 
   onPlotSelected(selectedPlot: plot) {
     console.log('Plot seleccionado:', selectedPlot);
