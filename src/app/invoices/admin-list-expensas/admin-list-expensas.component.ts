@@ -596,25 +596,38 @@ export class AdminListExpensasComponent implements OnInit {
     console.log($event); // Muestra los valores actuales de los filtros en la consola
     this.eventSaved = $event;
     this.isFilter = true;
+
     if(!this.ticketService.isValidYearFilter($event['initYear']) || !this.ticketService.isValidYearFilter($event['endYear'])) {
       return;
     }
+
     const initYear = this.ticketService.cutYearFilter($event['initYear']);
     const endYear = this.ticketService.cutYearFilter($event['endYear']);
     const monthInit = $event['initMonth'];
     const monthEnd = $event['endMonth'];
 
+    const dateInit = new Date(Number(initYear), Number(monthInit) - 1, 1);
+    const dateEnd = new Date(Number(endYear), Number(monthEnd) - 1, 1);
+
+    if(dateInit > dateEnd) {
+      this.toastService.sendError('La fecha de inicio no puede ser mayor a la fecha de fin');
+      return;
+    }
+
     const concatDateInit = !this.ticketService.isValidPeriod(monthInit, initYear) ? `${monthInit}/${initYear}` : '/';
     const concatDateEnd = !this.ticketService.isValidPeriod(monthEnd, endYear) ? `${monthEnd}/${endYear}` : '/';
-  
+
     console.log('Fecha Inicio:', concatDateInit);
     console.log('Fecha Fin:', concatDateEnd);
 
-    
     if(!this.ticketService.isValidateFullDate($event['initYear'], $event['initMonth'])){
       return;
     }
 
+
+    if($event['status'] == ''){
+      $event['status'] = null;
+    }
 
     this.ticketService
       .getAllWithFilters(
