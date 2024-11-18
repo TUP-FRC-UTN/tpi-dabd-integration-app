@@ -74,7 +74,7 @@ export class OwnerService {
     });
 
     return this.http.post<Owner>(
-      `http://localhost:8004/owner/${ownerId}/plot/${plotId}`,
+      `${this.host}/${ownerId}/plot/${plotId}`,
       undefined,
       { headers }
     );

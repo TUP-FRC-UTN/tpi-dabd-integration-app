@@ -100,7 +100,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     '#BCAAAC',  // rgba(188, 170, 164)
     '#90CAF9'   // rgba(144, 202, 249)
   ];
-  
+
   public pieChartPlugins: any = [ChartDataLabels];
 
 
@@ -113,7 +113,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     this.OwnerStatusDictionary,
   ];
 
-  
+
 
   plotTypeDictionary = PlotTypeDictionary;
   plotStatusDictionary = PlotStatusDictionary;
@@ -151,10 +151,10 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
         { value: 'CANCELED', label: 'Cancelado' },
       ]
     )
-    .selectFilter('Activo', 'is_active', '', [
-      { value: 'true', label: 'Activo' },
-      { value: 'false', label: 'Inactivo' },
-    ])
+    // .selectFilter('Activo', 'is_active', '', [
+    //   { value: 'true', label: 'Activo' },
+    //   { value: 'false', label: 'Inactivo' },
+    // ])
     .build();
 
   // Configuración de Filtros
@@ -173,11 +173,11 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
       { value: 'CONSTRUCTION_PROCESS', label: 'En construcciones' },
       { value: 'EMPTY', label: 'Vacío' },
     ])
-    .selectFilter('Activo', 'isActive', '', [
-      { value: 'true', label: 'Activo' },
-      { value: 'false', label: 'Inactivo' },
-      { value: '', label: 'Todo' },
-    ])
+    // .selectFilter('Activo', 'isActive', '', [
+    //   { value: 'true', label: 'Activo' },
+    //   { value: 'false', label: 'Inactivo' },
+    //   { value: '', label: 'Todo' },
+    // ])
     .build();
   //#end region
 
@@ -197,7 +197,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     //Convierto el string en un date
     const dateFilter = new Date(date)
     //Verifico primero si no existe la prop en el objeto de charFilters
-    //Si existe la piso con lo nuevo    
+    //Si existe la piso con lo nuevo
     if(this.chartFilters['dateFrom']){
       //Paso la prop de esta forma sino el Java se queja
       this.chartFilters['dateFrom'] = dateFilter.toISOString().slice(0, 16)
@@ -208,9 +208,9 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
         ...this.chartFilters,
         birthdateStart: dateFilter.toISOString().slice(0, 10)
       }
-    }    
+    }
     //console.log(this.chartFilters);
-    this.filterReports()   
+    this.filterReports()
   }
 
   //Acá manejo lo de la fecha hasta (Mismo funcionamiento que la fecha desde)
@@ -218,13 +218,13 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     const dateFilter = new Date(date)
     if(this.chartFilters['dateTo']){
       this.chartFilters['dateTo'] = dateFilter.toISOString().slice(0, 16)
-    }    
+    }
     else{
       this.chartFilters = {
         ...this.chartFilters,
         birthdateEnd: dateFilter.toISOString().slice(0, 10)
       }
-    }    
+    }
     //console.log(this.chartFilters);
     this.filterReports()
   }
@@ -237,16 +237,16 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
       ...filters,
     }
     ///console.log(this.chartFilters);
-    this.filterReports()    
+    this.filterReports()
   }
 
   //Esta es una función que basicamente recorre los filtros o más bien el objeto que le pases por parámetro
   //Y te arma un objeto nuevo validando que cada prop tenga contenido, es decir que no sea nulo, undefined o ''
   private cleanFilters(filters: Record<string, any>): Record<string, any> {
     return Object.entries(filters).reduce((acc, [key, value]) => {
-      const isEmpty = 
-        value === null || 
-        value === undefined || 
+      const isEmpty =
+        value === null ||
+        value === undefined ||
         value === '';
 
       if (!isEmpty) {
@@ -272,13 +272,17 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
   //#region Load Data
   //Acá esto lo modifiqué para que siempre haga la petición entonces le con la funcion cleanFilters que te devuelve el objeto
   //de filtros limpios, hace la petición bien sin filtros residuales, si no hay nada en chartFilters no le incluye ningún filtro
-  filterReports() {  
-    const cleanFilters = this.cleanFilters(this.chartFilters)
+  filterReports() {
+    let cleanFilters = this.cleanFilters(this.chartFilters)
+    cleanFilters = {
+      ...cleanFilters,
+      "is_active": true
+    }
     this.ownerService
       .dinamicFilters(0, 2147483647, cleanFilters)
       .pipe(
         map((response: PaginatedResponse<Owner>) => {
-          
+
           this.owners = response.content;
           this.updateOwnerCharts();
           this.calculateKPIs();
@@ -292,6 +296,10 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
   }
 
   loadPlots(filters: Record<string, any> = {}) {
+    filters = {
+      ...filters,
+      "isActive": true
+    }
     this.plotService
       .dinamicFilters(0, 1000, filters)
       .pipe(
@@ -315,6 +323,7 @@ export class CadastreOwnerReportComponent implements AfterViewInit {
     sortProperty: string = 'isActive,createdDate',
     sortDirection: 'ASC' | 'DESC' = 'DESC'
   ): void {
+    isActive = true;
     this.accountService
       .getAccountsBalances(page, size, isActive, sortProperty, sortDirection)
       .pipe(
