@@ -78,6 +78,7 @@ export class ExpensesLiquidationComponent implements OnInit {
   ngOnInit(): void {
     this.loadId();
     this.loadList(this.id);
+    this.loadList(this.id);
   }
 
   private loadId(): void {
