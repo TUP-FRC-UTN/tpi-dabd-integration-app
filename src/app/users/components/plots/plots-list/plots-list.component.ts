@@ -300,9 +300,15 @@ export class PlotsListComponent {
 
   //#region REACTIVAR
   reactivatePlot(plotId: number) {
-    this.plotService.reactivatePlot(plotId).subscribe((response) => {
-      location.reload();
-    });
+    this.plotService.reactivatePlot(plotId).subscribe({
+      next: (response) => {
+        this.toastService.sendSuccess("Lote reactivado")
+        location.reload();
+      },
+      error: (error) => {
+        this.toastService.sendError("No se pudo reactivar el lote")
+      }
+    })
   }
   //#endregion
 

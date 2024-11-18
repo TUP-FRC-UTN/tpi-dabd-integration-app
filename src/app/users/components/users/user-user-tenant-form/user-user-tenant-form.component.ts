@@ -210,6 +210,10 @@ export class UserUserTenantFormComponent {
   //#region SETEAR VALORES AL FORM
   setEditValues() {
     if (this.id) {
+      
+      // por las dudas dejo estas lineas comentadas
+      // this.userForm.controls['documentType'].disable();
+      // this.userForm.controls['documentNumber'].disable();
       this.userService.getUserById(Number(this.id)).subscribe(
         response => {
           console.log(response)
