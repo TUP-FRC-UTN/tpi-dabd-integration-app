@@ -128,7 +128,7 @@
 
     <div class="col-md-6">
       <div class="flex-row d-flex align-items-center">
-        <label for="cuit-number" class="col-form-label col-md-2">CUIT<label class="text-danger">*</label></label>
+        <label for="cuit-number" class="col-form-label col-md-2">CUIT</label>
         <input
           type="text"
           class="form-control m-2"
@@ -139,11 +139,8 @@
       </div>
       <div>
         @if (ownerForm.get('cuit')?.invalid && ownerForm.get('cuit')?.touched) {
-          @if (ownerForm.get('cuit')?.errors?.['required']) {
-            <small class="text-danger">Requerido</small>
-          }
           @if (ownerForm.get('cuit')?.errors?.['pattern']) {
-            <small class="text-danger">Solo números</small>
+            <small class="text-danger">Solo números </small>
           }
           @if (ownerForm.get('cuit')?.errors?.['invalidCuit']) {
             <small class="text-danger">CUIT no válido</small>
@@ -154,7 +151,7 @@
 
     <div class="col-md-6">
       <div class="flex-row d-flex align-items-center">
-        <label for="bank-account" class="col-form-label col-md-2">Cuenta Bancaria<label class="text-danger">*</label></label>
+        <label for="bank-account" class="col-form-label col-md-2">Cuenta Bancaria</label>
         <input
           type="text"
           class="form-control m-2"
@@ -165,9 +162,6 @@
       </div>
       <div>
         @if (ownerForm.get('bankAccount')?.invalid && ownerForm.get('bankAccount')?.touched) {
-          @if (ownerForm.get('bankAccount')?.errors?.['required']) {
-            <small class="text-danger">Requerido</small>
-          }
           @if (ownerForm.get('bankAccount')?.errors?.['pattern']) {
             <small class="text-danger">Solo números</small>
           }
