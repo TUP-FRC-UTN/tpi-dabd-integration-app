@@ -59,7 +59,7 @@ export class UserUserTenantFormComponent {
   provinceOptions!: any;
   countryOptions!: any;
   actualPlotOfOwner!: Plot[]
-  actualUserId!: any
+  actualUser!: any
   actualOwnerId!: any
   minDate :any
   //#endregion
@@ -172,9 +172,10 @@ export class UserUserTenantFormComponent {
 
   //#region ngOnInit
   ngOnInit(): void {
-    this.actualUserId = sessionStorage.getItem("user");
-    this.actualUserId = 1
-    this.userService.getUserById(this.actualUserId).subscribe({
+    this.actualUser = sessionStorage.getItem("user");
+    const userObject = JSON.parse(this.actualUser);
+
+    this.userService.getUserById(userObject.value.id).subscribe({
       next : response => {
         this.actualOwnerId = response.ownerId
         this.getPlotsOfOwner();
@@ -187,7 +188,6 @@ export class UserUserTenantFormComponent {
       this.userForm.controls['email'].setAsyncValidators(emailValidator(this.userService))
     }
     this.setEnums()
-    this.getAllRoles()
 
     const tomorrow = new Date();
     tomorrow.setDate(new Date().getDate() + 7);
