@@ -1,4 +1,4 @@
-<app-main-container title="Lista de Cargos" (infoButtonClick)="showInfo()">
+<app-main-container title="listado de Cargos" (infoButtonClick)="showInfo()">
     <div class="d-flex justify-content-between align-items-center mb-3 mt-16">
       <!-- Sección de búsqueda y filtros -->
       <div class="btn-group me-5" role="group">
@@ -74,11 +74,11 @@
             }
             <td  style="text-align: left; justify-content: center;" >
               @if(isFine(charge.categoryCharge.name)  ||charge.period.state == "CLOSE") {
-  
+
                 <button class="btn btn-primary btn-sm m-1" (click)="openViewModal(charge)">
                   <i class="bi bi-eye"></i>
                 </button>
-  
+
               } @else {
                 <div class="btn-group" role="group">
                   <button
@@ -117,11 +117,11 @@
                     }
                   </ul>
                 </div>
-  
+
               }
             </td>
-  
-  
+
+
         </tr>
         }@empty {
             <td colspan="7" class="text-center">
@@ -136,7 +136,7 @@
       </table>
     </div>
    </div>
-  
+
 
   <div class="row d-flex justify-content-end " style="margin-right: 20px;">
     <div class="col">

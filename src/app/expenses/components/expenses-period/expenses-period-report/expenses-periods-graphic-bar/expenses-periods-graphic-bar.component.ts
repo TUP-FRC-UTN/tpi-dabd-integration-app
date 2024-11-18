@@ -68,7 +68,7 @@ export class ExpensesPeriodsGraphicBarComponent implements OnChanges  {
   prepareChartData() {
     let reportMap = new Map<string, Report>();
 
-    // Procesar la lista 'ordinary'
+    // Procesar la listado 'ordinary'
     this.ordinary.map((ord) => {
       let category = ord.category;
       let amount = this.getValueByType(ord.data); // Usamos la función que determina el valor según el tipo
@@ -89,7 +89,7 @@ export class ExpensesPeriodsGraphicBarComponent implements OnChanges  {
       }
     });
 
-    // Procesar la lista 'extraordinary'
+    // Procesar la listado 'extraordinary'
     this.extraordinary.map((extr) => {
       let category = extr.category;
       let amount = this.getValueByType(extr.data); // Usamos la función que determina el valor según el tipo
