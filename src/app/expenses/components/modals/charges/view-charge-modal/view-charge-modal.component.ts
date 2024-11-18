@@ -6,7 +6,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import moment from 'moment';
 import { PeriodService } from '../../../../services/period.service';
 import { LotsService } from '../../../../services/lots.service';
-import Lot from '../../../../models/lot';
+import Lot, { Lots } from '../../../../models/lot';
 import { CommonModule } from '@angular/common';
 import Period from '../../../../models/period';
 import { forkJoin, map, Observable, tap } from 'rxjs';
@@ -34,7 +34,7 @@ export class ViewChargeModalComponent implements OnInit {
   private readonly lotsService = inject(LotsService);
   isEditing: boolean = false;
   @Input() charge?: Charge;
-  lots: Lot[] = [];
+  lots: Lots[] = [];
   selectedCharges: number[] = [];
   categoryCharges: CategoryCharge[] = [];
   periodos : Period[] = [];

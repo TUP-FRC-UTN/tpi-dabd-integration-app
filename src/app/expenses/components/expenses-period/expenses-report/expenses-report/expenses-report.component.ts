@@ -91,6 +91,7 @@ export class ExpensesReportComponent {
   periods: Period[] = [];
   categories: FilterOption[] = [];
   types: FilterOption[] = [];
+  listYear: number[]=[]
   filterConfig: Filter[] = [
     new SelectFilter(
       'Tipo de Top',
@@ -111,6 +112,7 @@ export class ExpensesReportComponent {
   ngOnInit(): void {
     this.loadSelect();
     this.loadExpenseData();
+    this.loadYear();
     this.loadKpis();
     this.form.valueChanges.subscribe((values) => {
       if (values.anio != null && values.mes != null) {
@@ -129,6 +131,14 @@ export class ExpensesReportComponent {
       }
     });
   }
+    loadYear(){
+      const currentYear = new Date().getFullYear();
+      
+      for (let year = currentYear; year >= 2024; year--) {
+        this.listYear.push(year);
+      }
+    }
+
   form = new FormGroup({
     mes: new FormControl(),
     anio: new FormControl(),

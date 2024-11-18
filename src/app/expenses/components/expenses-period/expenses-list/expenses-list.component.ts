@@ -7,7 +7,7 @@ import Period from '../../../models/period';
 import {CommonModule, DatePipe} from '@angular/common';
 import { PeriodService } from '../../../services/period.service';
 import { LotsService } from '../../../services/lots.service';
-import Lot from '../../../models/lot';
+import Lot, { Lots } from '../../../models/lot';
 import { BillService } from '../../../services/bill.service';
 import BillType from '../../../models/billType';
 import * as XLSX from 'xlsx'
@@ -205,7 +205,7 @@ export class ExpensesListComponent implements OnInit{
         this.periods.push({value: item.id, label: this.toMonthAbbr(item.month)+'/'+ item.year})
       })
     })}
-    this.lotsService.get().subscribe((data: Lot[]) => {
+    this.lotsService.get().subscribe((data: Lots[]) => {
       // @ts-ignore
       this.lotss.push({value: null, label: 'Todos'})
       data.forEach(l => {

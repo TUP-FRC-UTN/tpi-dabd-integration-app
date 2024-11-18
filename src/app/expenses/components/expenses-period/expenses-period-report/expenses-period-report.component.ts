@@ -107,12 +107,15 @@ export class ExpensesPeriodReportComponent implements OnInit {
   valueKPI2: number = 0;
   valueKPI3: number = 0;
 
+  listYear : number[]=[];
+
   constructor() {
     Chart.register(...registerables); 
   }
 
   ngOnInit(): void {
     this.loadPeriodsList();
+    this.loadYear();
     this.form.valueChanges.subscribe(values => {
       if(values.anio!=null && values.mes != null){
         const period = this.periodsList.find((p)=>p.month===Number(values.mes) && p.year===Number(values.anio))
@@ -135,6 +138,14 @@ export class ExpensesPeriodReportComponent implements OnInit {
         this.loadReportPeriod(this.listPeriodFind.map(p=>p.id))
       }
     });
+    
+  }
+  loadYear(){
+    const currentYear = new Date().getFullYear();
+    
+    for (let year = currentYear; year >= 2024; year--) {
+      this.listYear.push(year);
+    }
   }
   
   loadPeriodsList() {
