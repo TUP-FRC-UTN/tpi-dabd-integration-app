@@ -60,6 +60,8 @@ export class OwnerListComponent implements OnInit {
   private excelService = inject(CadastreExcelService);
   //#end region
 
+  dinamicFilterInput: string = ""
+
   //#region Variables
   currentPage: number = 0;
   pageSize: number = 10;
@@ -206,7 +208,10 @@ export class OwnerListComponent implements OnInit {
     .build();
 
   filterChange($event: Record<string, any>) {
-    this.filters = $event;
+    this.filters = {
+      ...this.filters,
+      ...$event
+    };
     this.currentPage = 0
     this.confirmSearch();
   }
@@ -225,6 +230,7 @@ export class OwnerListComponent implements OnInit {
   clearFilter() {
     this.filters = undefined;
     this.currentPage = 0
+    this.dinamicFilterInput = ""
     this.confirmSearch();
   }
 
@@ -241,34 +247,18 @@ export class OwnerListComponent implements OnInit {
    */
   onFilterTextBoxChanged(event: Event) {
     const target = event.target as HTMLInputElement;
-    const filterValue = target.value.toLowerCase();
-
-
-
-
-    let filteredList = this.ownersList.filter((owner) => {
-      return Object.values(owner).some((prop) => {
-        const propString = prop
-          ? prop
-              .toString()
-              .toLowerCase()
-              .normalize('NFD')
-              .replace(/[\u0300-\u036f.]/g, '')
-          : '';
-
-        // Validar que dictionaries esté definido y tenga elementos antes de mapear
-        const translations = this.ownerDicitionaries && this.ownerDicitionaries.length
-          ? this.ownerDicitionaries.map(dict => this.translateDictionary(propString, dict)).filter(Boolean)
-          : [];
-
-        // Se puede usar `includes` para verificar si hay coincidencias
-        return propString.includes(filterValue); //|| translations.some(trans => trans?.toLowerCase().includes(filterValue));
-      });
-    });
-
-    //console.log("LISTA FILTRADA->", filteredList);
-
-    this.filteredOwnersList.next(filteredList);
+    if (target.value?.length >= 3) {
+      this.filters = {
+        ...this.filters,
+        "searchValue" : target.value
+      }
+    } else {
+      this.filters = {
+        ...this.filters,
+        "searchValue" : ""
+      }
+    }
+    this.confirmSearch()
   }
 
   //#end region
@@ -355,7 +345,7 @@ export class OwnerListComponent implements OnInit {
     doc.setFontSize(18);
     doc.text('Propietarios', 14, 20);
 
-    this.ownerService.getOwners(0, this.LIMIT_32BITS_MAX, true).subscribe({
+    this.ownerService.dinamicFilters(0, this.LIMIT_32BITS_MAX, this.filters).subscribe({
       next: (data) => {
         autoTable(doc, {
           startY: 30,
@@ -375,7 +365,7 @@ export class OwnerListComponent implements OnInit {
   }
 
   exportToExcel() {
-    this.ownerService.getOwners(0, this.LIMIT_32BITS_MAX, true).subscribe({
+    this.ownerService.dinamicFilters(0, this.LIMIT_32BITS_MAX, this.filters).subscribe({
       next: (data) => {
         const toExcel = data.content.map(owner => ({
           'Nombre': owner.firstName,

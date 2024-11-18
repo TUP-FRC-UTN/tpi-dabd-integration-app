@@ -7,13 +7,14 @@
       <div class="col-sm-12 col-md-8 col-xl-8">
         <div class="input-group" >
           <span class="input-group-text" id="search-icon">
-                  <i class="bi bi-search"></i>
-                </span>
+            <i class="bi bi-search"></i>
+          </span>
           <input
             type="text"
             class="form-control flex-grow-1"
             id="filter-text-box"
             (input)="onFilterTextBoxChanged($event)"
+            [(ngModel)]="dinamicFilterInput"
             placeholder="Buscar..."
           />
           <app-table-filters style="z-index: 1;" [filters]="filterConfig" (filterValueChange)="filterChange($event)" (filterValueClear)="clearFilter()"></app-table-filters>
