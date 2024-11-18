@@ -48,7 +48,9 @@ export class UserUserFormComponent {
     addresses: Address[] = [];
     addressIndex:number | undefined = undefined;
     contact!: Contact;
-    contacts: Contact[] = [];
+    contacts: Contact[] = [
+      { contactType: "EMAIL", contactValue:"" }
+    ];
     contactIndex:number | undefined = undefined;
     rol!: Role;
     plot! : Plot;
@@ -57,25 +59,22 @@ export class UserUserFormComponent {
     provinceOptions!: any;
     countryOptions!: any;
     editMode: boolean = false;
-    emailInput: string = ""
     isSuperAdmin: boolean = false;
     adminRoles: number[] = [999];
+    
+  title: string = "Registrar Usuario";
     //#endregion
 
   onEmailChange(userEmail: string): void {
-    if (this.userForm.controls["email"].valid) {
-      const index = this.contacts.findIndex(contact => contact.contactValue === userEmail);
+
+    if (this.userForm.controls["email"].errors == null) {
 
       let userContactEmail : Contact = {
         contactValue: userEmail,
         contactType: "EMAIL"
       }
 
-      if (index !== -1) {
-        this.contacts[index] = userContactEmail;
-      } else {
-        this.contacts.push(userContactEmail);
-      }
+      this.contacts[0] = userContactEmail
     }
   }
 
@@ -170,6 +169,9 @@ export class UserUserFormComponent {
       this.id = this.activatedRoute.snapshot.paramMap.get('id');
       if (this.id !== null) {
         this.userForm.controls['email'].disable();
+        this.userForm.controls['documentType'].disable();
+        this.userForm.controls['documentNumber'].disable();
+        this.title = "Editar Usuario";
         this.editMode = true
         this.setEditValues();
       } else {
@@ -212,11 +214,6 @@ export class UserUserFormComponent {
         this.userService.getUserById(Number(this.id)).subscribe(
           response => {
             this.user = response;
-            let formattedDate: any
-            if (this.user.birthdate) {
-              const [day, month, year] = this.user.birthdate?.split('/');
-              formattedDate = `${year}-${month}-${day}`;
-            }
             this.userForm.patchValue({
               email: this.user.email,
               firstName: this.user.firstName,
@@ -224,7 +221,7 @@ export class UserUserFormComponent {
               userName: this.user.userName,
               documentType: this.user.documentType,
               documentNumber: this.user.documentNumber,
-              birthdate: formattedDate
+              birthdate: this.user.birthdate
             });
 
 

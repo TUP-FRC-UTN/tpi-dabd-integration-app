@@ -149,11 +149,6 @@ export class UserUserDetailComponent {
       this.userService.getUserById(Number(this.id)).subscribe(
         response => {
           this.user = response;
-          let formattedDate: any
-          if (this.user.birthdate) {
-            const [day, month, year] = this.user.birthdate?.split('/');
-            formattedDate = `${year}-${month}-${day}`;
-          }
           this.userForm.patchValue({
             email: this.user.email,
             firstName: this.user.firstName,
@@ -161,7 +156,7 @@ export class UserUserDetailComponent {
             userName: this.user.userName,
             documentType: this.user.documentType,
             documentNumber: this.user.documentNumber,
-            birthdate: formattedDate
+            birthdate: this.user.birthdate
           });
 
           if (response.plotId !== undefined) {
@@ -170,6 +165,10 @@ export class UserUserDetailComponent {
 
           if (this.user.addresses) {
             this.addresses = [...this.user.addresses];
+            // seteo el primer address en el form de address
+            if(this.addresses.length > 0) {
+              this.setAddressValue(0);
+            }
           }
 
           if (this.user.contacts) {

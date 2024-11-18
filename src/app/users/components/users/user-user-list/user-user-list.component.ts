@@ -70,10 +70,10 @@ export class UserUserListComponent {
   ];
 
   filterConfig: Filter[] = new FilterConfigBuilder()
-    .textFilter('Nombre', 'firstName', 'Nombre')
-    .textFilter('Apellido', 'lastName', 'Apellido')
-    .textFilter('Nombre de Usuario', 'userName', 'Nombre de Usuario')
-    .textFilter('Correo Electrónico', 'email', 'Correo Electrónico')
+    // .textFilter('Nombre', 'firstName', 'Nombre')
+    // .textFilter('Apellido', 'lastName', 'Apellido')
+    // .textFilter('Nombre de Usuario', 'userName', 'Nombre de Usuario')
+    // .textFilter('Correo Electrónico', 'email', 'Correo Electrónico')
     .selectFilter('Activo', 'isActive', '', [
       { value: 'true', label: 'Activo' },
       { value: 'false', label: 'Inactivo' },
@@ -95,11 +95,12 @@ export class UserUserListComponent {
 
   //#region User crud
   getAllUsers() {
+    let filter = { "isActive" : true }
     this.userService
-      .getAllUsers(
+      .dinamicFilters(
         this.currentPage - 1,
         this.pageSize,
-        this.retrieveUsersByActive
+        filter
       )
       .subscribe(
         (response) => {
@@ -125,6 +126,7 @@ export class UserUserListComponent {
         this.userService.deleteUser(user.id).subscribe(
           (response) => {
             this.toastService.sendSuccess('Usuario eliminado correctamente');
+            this.confirmSearch();
           },
           (error) => {
             this.toastService.sendError('Error al eliminar usuario');
@@ -148,12 +150,16 @@ export class UserUserListComponent {
   filters?: Record<string, any>
 
   filterChange($event: Record<string, any>) {
-    this.filters = $event
+    this.filters = {
+      ...this.filters,
+      ...$event
+    };
+    this.currentPage = 0
     this.confirmSearch();
   }
 
   dinamicFilter() {
-    this.userService.dinamicFilters(0, this.pageSize, this.filters).subscribe({
+    this.userService.dinamicFilters(this.currentPage - 1, this.pageSize, this.filters).subscribe({
       next: (result) => {
         this.usersList = result.content;
         this.filteredUsersList.next([...result.content]);
@@ -163,9 +169,12 @@ export class UserUserListComponent {
     });
   }
 
+  dinamicFilterInput: string = ""
+
   clearFilter() {
     this.filters = undefined;
-    this.currentPage = 0
+    this.currentPage = -1
+    this.dinamicFilterInput = ""
     this.confirmSearch();
   }
 
@@ -175,34 +184,19 @@ export class UserUserListComponent {
 
   onFilterTextBoxChanged(event: Event) {
     const target = event.target as HTMLInputElement;
-
-    if (target.value?.length <= 2) {
-      this.filteredUsersList.next(this.usersList);
+    this.currentPage = 0
+    if (target.value?.length >= 3) {
+      this.filters = {
+        ...this.filters,
+        "searchValue" : target.value
+      }
     } else {
-      const filterValue = target.value.toLowerCase();
-
-      const filteredList = this.usersList.filter((item) => {
-        return Object.values(item).some((prop) => {
-          const propString = prop ? prop.toString().toLowerCase() : '';
-
-          const translations =
-            this.dictionaries && this.dictionaries.length
-              ? this.dictionaries
-                  .map((dict) => this.translateDictionary(propString, dict))
-                  .filter(Boolean)
-              : [];
-
-          return (
-            propString.includes(filterValue) ||
-            translations.some((trans) =>
-              trans?.toLowerCase().includes(filterValue)
-            )
-          );
-        });
-      });
-
-      this.filteredUsersList.next(filteredList.length > 0 ? filteredList : []);
+      this.filters = {
+        ...this.filters,
+        "searchValue" : ""
+      }
     }
+    this.confirmSearch()
   }
 
   //#region Pageable
@@ -264,7 +258,7 @@ export class UserUserListComponent {
     doc.setFontSize(18);
     doc.text('Usuarios', 14, 20);
 
-    this.userService.getAllUsers(0, this.LIMIT_32BITS_MAX).subscribe({
+    this.userService.dinamicFilters(0, this.LIMIT_32BITS_MAX, this.filters).subscribe({
       next: (data) => {
         autoTable(doc, {
           startY: 30,
@@ -287,7 +281,7 @@ export class UserUserListComponent {
    * Calls the `exportTableToExcel` method from the `CadastreExcelService`.
    */
   exportToExcel() {
-    this.userService.getAllUsers(0, this.LIMIT_32BITS_MAX).subscribe({
+    this.userService.dinamicFilters(0, this.LIMIT_32BITS_MAX, this.filters).subscribe({
       next: (data) => {
         const toExcel = data.content.map(user => ({
           'Nombre completo': user.firstName + ' ' + user.lastName,

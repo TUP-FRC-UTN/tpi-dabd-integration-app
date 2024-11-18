@@ -15,6 +15,7 @@
           (input)="onFilterTextBoxChanged($event)"
           placeholder="Buscar..."
         />
+        <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)" (filterValueClear)="clearFilter()"></app-table-filters>
       </div>
     </div>
   </div>
@@ -34,14 +35,14 @@
     </button>
   </div>
   </div>
-    
+
   <!-- Tabla de archivos para validar -->
   <div class="table-container">
     <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;">
-      
+
       @if (( filter$ | async)?.length === 0) {
         <thead>
-          <td colspan="7"> 
+          <td colspan="7">
             <div class="text-center p-2">
               <div class="alert alert-secondary text-center" role="alert">
                 No se encontraron propietarios
@@ -50,7 +51,7 @@
           </td>
         </thead>
       } @else {
-        
+
         <thead>
           <tr>
             <th scope="col">Nombre</th>
@@ -70,7 +71,7 @@
               <td>{{ owner.documentNumber }}</td>
               <td>{{ translateTable(owner.kycStatus, ownerStatusDictionary) }}</td>
               <td>
-                
+
                 <a class="btn btn-outline-primary" (click)="ownerFilesDetail(owner.id)"><i class="bi bi-eye"></i></a>
               </td>
             </tr>
@@ -79,7 +80,7 @@
       }
     </table>
   </div>
-  
+
   <!-- Paginación y elementos por página
   <div class="d-flex justify-content-between align-items-center mt-3">
     <ngb-pagination
@@ -119,7 +120,7 @@
 
   </div>
 
-  
+
   <!-- <div class="col-12 d-flex justify-content-end">
     <button type="submit" class="btn btn-secondary" (click)="goBack()">Volver</button>
   </div> -->

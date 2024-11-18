@@ -92,7 +92,7 @@ export class PlotsListComponent {
 
   filterConfig: Filter[] = new FilterConfigBuilder()
 
-    .numberFilter('Nro. Manzana', 'blockNumber', 'Seleccione una Manzana')
+    //.numberFilter('Nro. Manzana', 'blockNumber', 'Seleccione una Manzana')
     .selectFilter('Tipo', 'plotType', 'Seleccione un tipo', [
       { value: 'COMMERCIAL', label: 'Comercial' },
       { value: 'PRIVATE', label: 'Privado' },
@@ -146,11 +146,12 @@ export class PlotsListComponent {
 
   //#region Plot Crud
   getAllPlots() {
+    let filter = { "is_active" : true }
     this.plotService
-      .getAllPlots(
+      .dinamicFilters(
         this.currentPage - 1,
         this.pageSize,
-        this.retrievePlotsByActive
+        filter
       )
       .subscribe(
         (response) => {
@@ -176,7 +177,7 @@ export class PlotsListComponent {
         this.plotService.deletePlot(plot.id).subscribe(
           (response) => {
             this.toastService.sendSuccess('Lote eliminado correctamente.');
-            //this.confirmFilterPlot();
+            this.confirmSearch();
           },
           (error) => {
             this.toastService.sendError('Error al eliminar lote.');
@@ -188,22 +189,30 @@ export class PlotsListComponent {
   //#endregion
 
   //#region Filters
+  dinamicFilterInput: string = ""
+
   filterChange($event: Record<string, any>) {
-    this.filters = $event
+    this.filters = {
+      ...this.filters,
+      ...$event
+    };
+    this.currentPage = -1
     this.confirmSearch()
   }
 
   clearFilter() {
     this.filters = undefined;
-    this.currentPage = 0
+    this.currentPage = -1
+    this.dinamicFilterInput = ""
     this.confirmSearch();
   }
 
-  dinamicFilter($event: Record<string, any>) {
-    this.plotService.dinamicFilters(0, this.pageSize, $event).subscribe({
+  dinamicFilter() {
+    const page = this.currentPage == 0 ? this.currentPage : this.currentPage - 1;
+    this.plotService.dinamicFilters(page, this.pageSize, this.filters).subscribe({
       next: (result) => {
         this.plotsList = result.content;
-        this.filteredPlotsList.next([...this.plotsList]);
+        this.filteredPlotsList.next([...result.content]);
         this.lastPage = result.last;
         this.totalItems = result.totalElements;
       },
@@ -212,40 +221,24 @@ export class PlotsListComponent {
   }
 
   confirmSearch() {
-    this.filters == undefined ? this.getAllPlots() : this.dinamicFilter(this.filters);
+    this.filters == undefined ? this.getAllPlots() : this.dinamicFilter();
   }
 
   onFilterTextBoxChanged(event: Event) {
     const target = event.target as HTMLInputElement;
-
-    if (target.value?.length <= 2) {
-      this.filteredPlotsList.next(this.plotsList);
+    this.currentPage = 0
+    if (target.value?.length >= 3) {
+      this.filters = {
+        ...this.filters,
+        "searchValue" : target.value
+      }
     } else {
-      const filterValue = target.value.toLowerCase();
-
-      const filteredList = this.plotsList.filter((item) => {
-        return Object.values(item).some((prop) => {
-          const propString = prop ? prop.toString().toLowerCase() : '';
-
-          const translations =
-            this.dictionaries && this.dictionaries.length
-              ? this.dictionaries
-                  .map((dict) => this.translateDictionary(propString, dict))
-                  .filter(Boolean)
-              : [];
-
-          return (
-            propString.includes(filterValue) ||
-            translations.some((trans) =>
-              trans?.toLowerCase().includes(filterValue)
-            )
-          );
-        });
-      });
-      console.log(filteredList);
-
-      this.filteredPlotsList.next(filteredList.length > 0 ? filteredList : []);
+      this.filters = {
+        ...this.filters,
+        "searchValue" : ""
+      }
     }
+    this.confirmSearch()
   }
 
   /**
@@ -307,9 +300,15 @@ export class PlotsListComponent {
 
   //#region REACTIVAR
   reactivatePlot(plotId: number) {
-    this.plotService.reactivatePlot(plotId).subscribe((response) => {
-      location.reload();
-    });
+    this.plotService.reactivatePlot(plotId).subscribe({
+      next: (response) => {
+        this.toastService.sendSuccess("Lote reactivado")
+        location.reload();
+      },
+      error: (error) => {
+        this.toastService.sendError("No se pudo reactivar el lote")
+      }
+    })
   }
   //#endregion
 
@@ -354,7 +353,7 @@ export class PlotsListComponent {
     doc.setFontSize(18);
     doc.text('Lotes', 14, 20);
 
-    this.plotService.getAllPlots(0, this.LIMIT_32BITS_MAX, true).subscribe({
+    this.plotService.dinamicFilters(0, this.LIMIT_32BITS_MAX, this.filters).subscribe({
       next: (data) => {
         autoTable(doc, {
           startY: 30,
@@ -377,7 +376,7 @@ export class PlotsListComponent {
   }
 
   exportToExcel() {
-    this.plotService.getAllPlots(0, this.LIMIT_32BITS_MAX, true).subscribe({
+    this.plotService.dinamicFilters(0, this.LIMIT_32BITS_MAX, this.filters).subscribe({
       next: (data) => {
         const toExcel = data.content.map(plot => ({
           'Nro. de Manzana': plot.blockNumber,

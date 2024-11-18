@@ -48,7 +48,9 @@ export class UserUserTenantFormComponent {
   addresses: Address[] = [];
   addressIndex:number | undefined = undefined;
   contact!: Contact;
-  contacts: Contact[] = [];
+  contacts: Contact[] = [
+    { contactType: "EMAIL", contactValue:"" }
+  ];
   contactIndex:number | undefined = undefined;
   rol!: Role;
   plot! : Plot;
@@ -57,7 +59,7 @@ export class UserUserTenantFormComponent {
   provinceOptions!: any;
   countryOptions!: any;
   actualPlotOfOwner!: Plot[]
-  actualUserId!: any
+  actualUser!: any
   actualOwnerId!: any
   minDate :any
   //#endregion
@@ -98,6 +100,22 @@ export class UserUserTenantFormComponent {
     }),
   });
   //#endregion
+
+  onEmailChange(userEmail: string): void {
+
+    console.log(this.userForm.controls["email"].errors);
+
+
+    if (this.userForm.controls["email"].errors == null) {
+
+      let userContactEmail : Contact = {
+        contactValue: userEmail,
+        contactType: "EMAIL"
+      }
+
+      this.contacts[0] = userContactEmail
+    }
+  }
 
   hasContactEmail():boolean{
     let hasEmail= this.contacts.filter(c => c.contactType === "EMAIL")
@@ -154,9 +172,10 @@ export class UserUserTenantFormComponent {
 
   //#region ngOnInit
   ngOnInit(): void {
-    this.actualUserId = sessionStorage.getItem("user");
-    this.actualUserId = 1
-    this.userService.getUserById(this.actualUserId).subscribe({
+    this.actualUser = sessionStorage.getItem("user");
+    const userObject = JSON.parse(this.actualUser);
+
+    this.userService.getUserById(userObject.value.id).subscribe({
       next : response => {
         this.actualOwnerId = response.ownerId
         this.getPlotsOfOwner();
@@ -169,7 +188,6 @@ export class UserUserTenantFormComponent {
       this.userForm.controls['email'].setAsyncValidators(emailValidator(this.userService))
     }
     this.setEnums()
-    this.getAllRoles()
 
     const tomorrow = new Date();
     tomorrow.setDate(new Date().getDate() + 7);
@@ -192,6 +210,10 @@ export class UserUserTenantFormComponent {
   //#region SETEAR VALORES AL FORM
   setEditValues() {
     if (this.id) {
+      
+      // por las dudas dejo estas lineas comentadas
+      // this.userForm.controls['documentType'].disable();
+      // this.userForm.controls['documentNumber'].disable();
       this.userService.getUserById(Number(this.id)).subscribe(
         response => {
           console.log(response)
@@ -510,7 +532,8 @@ export class UserUserTenantFormComponent {
     });
 
     modalRef.componentInstance.title = 'Registrar usuario inquilino';
-    modalRef.componentInstance.description = 'En esta pantalla permite crear un usuario para un inquilino.';
+    modalRef.componentInstance.description = 'En esta pantalla permite crear un usuario para un inquilino y asignarlo al' +
+                                              'lote que usted tenga en tenencia.';
     modalRef.componentInstance.body = [
       {
         title: 'Datos del Usuario',
@@ -534,28 +557,15 @@ export class UserUserTenantFormComponent {
         ]
       },
       {
-        title: 'Añadir Roles',
-        content: [
-          {
-            strong: 'Roles:',
-            detail: 'Menú desplegable para seleccionar el rol del usuario.'
-          },
-          {
-            strong: 'Agregar Rol:',
-            detail: 'Botón con símbolo de "+" para agregar el rol seleccionado.'
-          }
-        ]
-      },
-      {
         title: 'Asociar un lote',
         content: [
           {
-            strong: 'Número de Manzana:',
-            detail: 'Campo de texto para ingresar el número de manzana.'
+            strong: 'Lotes en tenencia:',
+            detail: 'Usted seleccionara el lote que le quiere asignar el inquilino.'
           },
           {
-            strong: 'Número de Lote:',
-            detail: 'Campo de texto para ingresar el número de lote.'
+            strong: 'Tiempo en tenencia:',
+            detail: 'Seleccionara el rango de meses que el inquilino estara en el lote.'
           }
         ]
       },

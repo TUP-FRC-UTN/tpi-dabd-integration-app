@@ -83,7 +83,7 @@ export class CadastreOwnerAssignPlotComponent {
   }
 
   getAllOwners(isActive?: boolean) {
-    let filters : Record<string, any> = {"owner_kyc" : 'VALIDATED'}
+    let filters : Record<string, any> = {"owner_kyc" : 'VALIDATED', "is_active" : true}
     this.ownerService.dinamicFilters(this.currentPage - 1, this.pageSize, filters).subscribe({
       next: (response) => {
         this.owners = response.content;
@@ -114,7 +114,8 @@ export class CadastreOwnerAssignPlotComponent {
   dinamicFilter() {
     this.filters = {
       ...this.filters,
-      "owner_kyc" : 'VALIDATED'
+      "owner_kyc" : 'VALIDATED',
+      "is_active" : true
     }
     this.ownerService.dinamicFilters(this.currentPage - 1, this.pageSize, this.filters).subscribe({
       next : (result) => {

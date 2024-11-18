@@ -65,9 +65,9 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
     '#C4C4C4',  // rgba(196, 196, 196)
     '#BCAAAC',  // rgba(188, 170, 164)
     '#90CAF9'   // rgba(144, 202, 249)
-  ];
+];
 
-  
+
   chartFilters: Record<string, any> = {};
   dateFilterTo: any;
   dateFilterFrom: any;
@@ -93,11 +93,11 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
 
       ]
     )
-    .selectFilter('Activo', 'isActive', '', [
-      { value: 'true', label: 'Activo' },
-      { value: 'false', label: 'Inactivo' },
-      { value: '', label: 'Todos' },
-    ])
+    // .selectFilter('Activo', 'isActive', '', [
+    //   { value: 'true', label: 'Activo' },
+    //   { value: 'false', label: 'Inactivo' },
+    //   { value: '', label: 'Todos' },
+    // ])
     // .dateFilter(
     //   'Fecha de Nacimiento Desde',
     //   'birthdateStart',
@@ -149,10 +149,10 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
   }
 
   loadData(filters: Record<string, any> = {}): void {
-    
-    
+
+
     this.userService
-    .dinamicFilters(0, 1000, filters)
+    .dinamicFilters(0, 2147483647, filters)
     .pipe(
       map((response: PaginatedResponse<any>) => {
         this.users = response.content;
@@ -180,9 +180,9 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
         ...this.chartFilters,
         startDate: dateFilter.toISOString().slice(0, 16)
       }
-    }    
+    }
     //console.log(this.chartFilters);
-    this.filterReports()   
+    this.filterReports()
   }
 
   //Acá manejo lo de la fecha hasta (Mismo funcionamiento que la fecha desde)
@@ -190,13 +190,13 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
     const dateFilter = new Date(date)
     if(this.chartFilters['endDate']){
       this.chartFilters['endDate'] = dateFilter.toISOString().slice(0, 16)
-    }    
+    }
     else{
       this.chartFilters = {
         ...this.chartFilters,
         endDate: dateFilter.toISOString().slice(0, 16)
       }
-    }    
+    }
     //console.log(this.chartFilters);
     this.filterReports()
   }
@@ -210,16 +210,16 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
       ...filters
     }
     ///console.log(this.chartFilters);
-    this.filterReports()    
+    this.filterReports()
   }
 
   //Esta es una función que basicamente recorre los filtros o más bien el objeto que le pases por parámetro
   //Y te arma un objeto nuevo validando que cada prop tenga contenido, es decir que no sea nulo, undefined o ''
   private cleanFilters(filters: Record<string, any>): Record<string, any> {
     return Object.entries(filters).reduce((acc, [key, value]) => {
-      const isEmpty = 
-        value === null || 
-        value === undefined || 
+      const isEmpty =
+        value === null ||
+        value === undefined ||
         value === '';
 
       if (!isEmpty) {
@@ -244,10 +244,13 @@ export class UsersUserReportComponent implements OnInit, AfterViewInit {
   //#endregion
 
   filterReports(): void {
-    const cleanFilters = this.cleanFilters(this.chartFilters)
-    
+    let cleanFilters = this.cleanFilters(this.chartFilters)
+    cleanFilters = {
+      ...cleanFilters,
+      "isActive" : true
+    }
     this.userService
-      .dinamicFilters(0, 1000, cleanFilters)
+      .dinamicFilters(0, 2147483647, cleanFilters)
       .pipe(
         map((response: PaginatedResponse<any>) => {
           this.users = response.content;

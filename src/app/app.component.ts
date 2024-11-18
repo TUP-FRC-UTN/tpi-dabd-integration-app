@@ -305,6 +305,33 @@ export class AppComponent {
       ],
     },
     {
+      label: 'Propietarios',
+      routerLink: 'users',
+      sidebarMenu: [
+        {
+          label: 'Reporte Propietarios',
+          routerLink: '/users/owner/reports',
+        },
+        {
+          label: 'Propietarios',
+          subMenu: [
+            {label: 'Listado de Propietarios', routerLink: '/users/owner/list'},
+            {label: 'Cargar Propietario', routerLink: '/users/owner/form'},
+            {label: 'Asignar Lote', routerLink: '/users/owner/assign'},
+            {label: 'Cargar Archivo', routerLink: '/users/files/form'},
+            {label: 'Validar Archivos', routerLink: '/users/files/view'},
+          ],
+        },
+        {
+          label: 'Lotes',
+          subMenu: [
+            { label: 'Listado de Lotes', routerLink: '/users/plot/list' },
+            { label: 'Cargar Lote', routerLink: '/users/plot/form' },
+          ],
+        },
+      ]
+    },
+    {
       label: 'Proveedores',
       routerLink: 'inventories/providers',
       sidebarMenu: [
@@ -341,48 +368,8 @@ export class AppComponent {
       routerLink: 'users',
       sidebarMenu: [
         {
-          label: 'Dashboards',
-          subMenu: [
-            {
-              label: 'Reporte Propietarios',
-              routerLink: '/users/owner/reports',
-            },
-            { label: 'Reporte Usuarios', routerLink: '/users/user/reports' },
-          ],
-        },
-        // {
-        //   label: 'Perfil',
-        //   subMenu: [
-        //     {
-        //       label: 'Consultar Perfil',
-        //       routerLink: '/users/profile/detail',
-        //     },
-        //     {
-        //       label: 'Editar Perfil',
-        //       routerLink: '/users/profile/edit',
-        //     },
-        //     {
-        //       label: 'Cambiar contraseña',
-        //       routerLink: '/users/changepassword',
-        //     },
-        //   ],
-        // },
-        {
-          label: 'Propietarios',
-          subMenu: [
-            { label: 'Listado de Propietarios', routerLink: '/users/owner/list' },
-            { label: 'Cargar Propietario', routerLink: '/users/owner/form' },
-            { label: 'Asignar Lote', routerLink: '/users/owner/assign' },
-            { label: 'Cargar Archivo', routerLink: '/users/files/form' },
-            { label: 'Validar Archivos', routerLink: '/users/files/view' },
-          ],
-        },
-        {
-          label: 'Lotes',
-          subMenu: [
-            { label: 'Listado de Lotes', routerLink: '/users/plot/list' },
-            { label: 'Cargar Lote', routerLink: '/users/plot/form' },
-          ],
+          label: 'Reporte Usuarios',
+          routerLink: '/users/user/reports',
         },
         {
           label: 'Usuarios',
@@ -399,7 +386,7 @@ export class AppComponent {
             { label: 'Usuarios por Rol', routerLink: '/users/user/role' },
           ],
         },
-      ],
+        ]
     },
   ];
 

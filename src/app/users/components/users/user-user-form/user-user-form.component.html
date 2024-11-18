@@ -1,4 +1,4 @@
-<app-main-container title="Registrar Usuario" (infoButtonClick)="openInfo()">
+<app-main-container title="{{title}}" (infoButtonClick)="openInfo()">
   <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
 
       <div class="col-md-6">
@@ -6,7 +6,7 @@
               <label for="emailForm" class="col-form-label col-md-2">Email<label class="text-danger">*</label></label>
               <input type="email" class="form-control m-2" id="emailForm" formControlName="email"
               [ngClass]="{'is-invalid': userForm.get('email')?.invalid && userForm.get('email')?.touched, 'is-valid': userForm.get('email')?.valid && userForm.get('email')?.touched}"
-              [(ngModel)]="emailInput" (ngModelChange)="onEmailChange($event)">
+              (ngModelChange)="onEmailChange($event)">
           </div>
           <div>
               @if (userForm.get('email')?.invalid && userForm.get('email')?.touched) {
@@ -334,7 +334,7 @@
                       [ngClass]="{'is-invalid': userForm.get('addressForm')?.get('province')?.invalid && userForm.get('addressForm')?.get('province')?.touched,
                       'is-valid': userForm.get('addressForm')?.get('province')?.valid && userForm.get('addressForm')?.get('province')?.touched}"
                     >
-                    <option [value]="provinceOptions.OTHER" selected >Otra</option>
+                    <option [value]="'OTHER'" selected >Otra</option>
                     </select>
                   }
               </div>
@@ -513,7 +513,7 @@
                           (click)="setContactValue($index)">
                           {{ setContactType(contact.contactType) }} - {{ contact.contactValue }}
                           </button>
-                          @if (!id) {
+                          @if (!id && $index != 0) {
                             <button type="button" class="btn btn-danger btn-sm" (click)="removeContact($index)">
                                 <i class="bi bi-trash-fill"></i>
                             </button>
