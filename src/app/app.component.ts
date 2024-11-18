@@ -87,7 +87,7 @@ export class AppComponent {
               label: 'Pagos',
               routerLink: '/invoices/stadistics/2',
             },
-            
+
           ],
         },
 
@@ -160,7 +160,7 @@ export class AppComponent {
         {
           label: 'Gastos',
           subMenu: [
-            { label: 'Lista de gastos', routerLink: 'expenses/gastos' },
+            { label: 'Listado de gastos', routerLink: 'expenses/gastos' },
             {
               label: 'Categorias de gastos',
               routerLink: 'expenses/gastos/categorias',
@@ -174,7 +174,7 @@ export class AppComponent {
         {
           label: 'Cargos',
           subMenu: [
-            { label: 'Lista de cargos', routerLink: 'expenses/cargos' },
+            { label: 'Listado de cargos', routerLink: 'expenses/cargos' },
             {
               label: 'Categorias de cargos',
               routerLink: 'expenses/cargos/categorias',
@@ -184,7 +184,7 @@ export class AppComponent {
         {
           label: 'Periodo',
           subMenu: [
-            { label: 'Lista de periodos', routerLink: 'expenses/periodo' },
+            { label: 'Listado de periodos', routerLink: 'expenses/periodo' },
             { label: 'Histórico de expensas', routerLink: 'expenses/expenses' },
             {
               label: 'Reporte de expensas',
