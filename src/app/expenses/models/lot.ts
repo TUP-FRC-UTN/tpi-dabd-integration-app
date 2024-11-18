@@ -7,10 +7,10 @@ export default class Lot {
   export interface Lots {
     id:                     number;
     plot_number:            number;
-    block_number:           number;
+    //block_number:           number;
     total_area:             number;
     built_area:             number;
-    plot_status:            string;
+    //plot_status:            string;
     plot_type:              string;
     percentage_for_expense: number;
 }
