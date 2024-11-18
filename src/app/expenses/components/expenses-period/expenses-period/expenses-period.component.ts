@@ -109,16 +109,16 @@ export class ExpensesPeriodComponent implements OnInit {
       return;
     }
 
-
+    
 
     this.expenseService
       .getByPeriod(Number(this.periodId))
       .pipe(
         tap(() => {
-
+          
         }),
         switchMap(() => {
-
+          
           return this.expenseService.getExpenses(
             this.currentPage - 1,
             this.size,
@@ -137,8 +137,8 @@ export class ExpensesPeriodComponent implements OnInit {
           this.cantPages = data.totalElements;
         },
         (error) => {
-
-          this.toastService.sendError('Error al cargar la listado de gastos');
+          
+          this.toastService.sendError('Error al cargar la lista de gastos');
         }
       );
   }

@@ -86,7 +86,7 @@ export class ExpensesPeriodListComponent implements OnInit {
   ngOnInit(): void {
     this.user = this.storage.getFromSessionStorage('user') as User;
 
-    this.rolCode = this.user.value.roles.filter(rol => rol.code === URLTargetType.FINANCE || rol.code === URLTargetType.SUPERADMIN ).length == 1 ? true : false
+    this.rolCode = this.user.value.roles.filter(rol => rol.code === URLTargetType.FINANCE).length == 1 ? true : false
     this.loadPaged(1);
   }
   searchTerm = '';

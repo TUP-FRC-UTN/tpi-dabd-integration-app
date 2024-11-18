@@ -1,4 +1,4 @@
-<app-main-container title="listado de Expensas" (infoButtonClick)="showInfo()">
+<app-main-container title="Lista de Expensas" (infoButtonClick)="showInfo()">
     <div class="row" style="align-items:end" >
 
       <div class="d-flex justify-content-between align-items-center mb-3">
@@ -19,9 +19,9 @@
             </div>
           </div>
         </div>
-
+        
         <div class="d-flex align-items-center">
-
+          
           <div class="vertical-line mx-3"></div>
           <button class="btn btn-success me-2" (click)="downloadTable()">
             <i class="bi bi-file-earmark-excel"></i>
@@ -79,7 +79,7 @@
               <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
             </svg>
           </button>
-
+         
           <button type="button" class="btn btn-outline-primary" (click)="applyFilters()" data-bs-dismiss="modal">
             <i class="bi bi-search"></i>
           </button>
@@ -145,19 +145,19 @@
         <div class="col d-flex justify-content-end align-items-center">
           <nav aria-label="Page navigation example">
             <ul class="pagination mb-0">
-
+              
               <li class="page-item" [class.disabled]="currentPage === 0">
                 <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
                   <span aria-hidden="true">&laquo;</span>
                 </a>
               </li>
 
-
+              
               <li class="page-item" *ngFor="let page of visiblePages" [class.active]="page === currentPage">
                 <a class="page-link" (click)="onPageChange(page)">{{ page + 1 }}</a>
               </li>
 
-
+              
               <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
                 <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
                   <span aria-hidden="true">&raquo;</span>
