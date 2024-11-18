@@ -24,7 +24,7 @@ import { KpiPeakTimeService, PeakHourStats } from '../../../services/dashboard/k
 import { FrequentContactStats, KpiMostFrequentContactService } from '../../../services/dashboard/kpi/kpi-most-frequent-contact.service';
 import { ActiveDayStats, KpiMostDayliActiveService } from '../../../services/dashboard/kpi/kpi-most-dayli-active.service';
 import { KpiAverageRetentionService } from '../../../services/dashboard/kpi/kpi-retention-optional-notifications.service';
-
+import { KpiHighestRetentionService } from '../../../services/dashboard/kpi/kpi-highest-retention.service';
 
 @Component({
   selector: 'app-notification-chart',
@@ -57,7 +57,8 @@ export class NotificationChartComponent implements OnInit {
     private kpiPeakTimeService: KpiPeakTimeService,
     private kpiMostFrequentContactService: KpiMostFrequentContactService,
     private kpiMostDayliActiveService: KpiMostDayliActiveService,
-    private kpiAverageRetentionService: KpiAverageRetentionService
+    private kpiAverageRetentionService: KpiAverageRetentionService,
+    private kpiHighestRetentionService: KpiHighestRetentionService
 
   ) {
 
@@ -249,6 +250,15 @@ export class NotificationChartComponent implements OnInit {
         this.retentionKPIs.averageRetention = stats.averageRetention;
       });
 
+      this.kpiHighestRetentionService.getRetentionStats()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(stats => {
+        console.log('stats: ', stats)
+        this.retentionKPIs.highestRetention = stats.highestRetentionSubscription || '';
+      })
+
+
+
 
     this.loadData();
 
@@ -332,6 +342,7 @@ export class NotificationChartComponent implements OnInit {
     this.kpiMostFrequentContactService.loadNotifications();
     this.kpiMostDayliActiveService.loadNotifications();
     this.kpiAverageRetentionService.loadData();
+    this.kpiHighestRetentionService.loadData();
   }
 
   //END REFACTOR NEW REFACTOR NEW REFACTOR NEW REFACTOR NEW REFACTOR NEW REFACTOR NEW REFACTOR NEW REFACTOR NEW REFACTOR NEW
