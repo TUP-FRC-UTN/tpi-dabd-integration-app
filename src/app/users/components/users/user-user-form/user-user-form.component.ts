@@ -169,6 +169,8 @@ export class UserUserFormComponent {
       this.id = this.activatedRoute.snapshot.paramMap.get('id');
       if (this.id !== null) {
         this.userForm.controls['email'].disable();
+        this.userForm.controls['documentType'].disable();
+        this.userForm.controls['documentNumber'].disable();
         this.title = "Editar Usuario";
         this.editMode = true
         this.setEditValues();
