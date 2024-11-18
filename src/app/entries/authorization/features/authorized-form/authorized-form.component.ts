@@ -317,7 +317,7 @@ export class AuthFormComponent implements OnInit {
     // Si no hay plots cacheados, creamos un nuevo observable
     const plotsObservable = new BehaviorSubject<plot[]>([]);
     
-    this.plotsservice.getAllPlots(0, 300).subscribe({
+    this.plotsservice.getAllPlots(0, 2147483647, true).subscribe({
       next: (data) => {
         console.log('get all ' + data)
         if (!data?.content) {
@@ -325,7 +325,7 @@ export class AuthFormComponent implements OnInit {
           plotsObservable.next([]);
           return;
         }
-
+      
         this.plotsFromService = data.content;
         const tempPlots: plot[] = [];
         
@@ -350,7 +350,7 @@ export class AuthFormComponent implements OnInit {
                     id: element.id,
                     desc: '',
                     contacts: ownerData.owner.contacts,
-                    name: `${element.plotNumber} - ${ownerData.owner.firstName} ${ownerData.owner.lastName}`
+                    name: `${element.plotNumber}- ${element.blockNumber} - ${ownerData.owner.firstName} ${ownerData.owner.lastName}`
                   };
                   tempPlots.push(plotData);
                 }

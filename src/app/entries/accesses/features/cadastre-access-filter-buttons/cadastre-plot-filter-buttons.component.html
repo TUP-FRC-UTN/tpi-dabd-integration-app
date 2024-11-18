@@ -1,9 +1,10 @@
 <div class="row align-items-center mb-3">
   <div class="col-sm-12 col-md-8 col-xl-8">
-    <div class="input-group" style="max-width: 280px">
+    <div class="input-group btn-group" style="max-width: 280px">
       <span class="input-group-text" id="search-icon">
         <i class="bi bi-search"></i>
       </span>
+
       <input type="text" class="form-control" id="filter-text-box" placeholder="Buscar..."
         (input)="onFilterTextBoxChanged($event)" [(ngModel)]="filterText" />
       <app-table-filters class="btn-group" [filters]="tableFilters"
@@ -11,6 +12,7 @@
 
     </div>
   </div>
+
   <div
     class="col-sm-12 col-md-4 col-xl-64 text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-end">
 
