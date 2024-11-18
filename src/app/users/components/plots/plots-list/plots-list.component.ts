@@ -146,11 +146,12 @@ export class PlotsListComponent {
 
   //#region Plot Crud
   getAllPlots() {
+    let filter = { "is_active" : true }
     this.plotService
-      .getAllPlots(
+      .dinamicFilters(
         this.currentPage - 1,
         this.pageSize,
-        true
+        filter
       )
       .subscribe(
         (response) => {

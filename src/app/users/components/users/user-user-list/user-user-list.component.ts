@@ -95,11 +95,12 @@ export class UserUserListComponent {
 
   //#region User crud
   getAllUsers() {
+    let filter = { "isActive" : true }
     this.userService
-      .getAllUsers(
+      .dinamicFilters(
         this.currentPage - 1,
         this.pageSize,
-        true
+        filter
       )
       .subscribe(
         (response) => {
