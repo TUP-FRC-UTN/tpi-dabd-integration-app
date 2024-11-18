@@ -542,7 +542,7 @@ export class OwnerListExpensasComponent {
     doc.text('Tickets Report', 14, 20);
 
     this.ticketService
-      .getAllTicketsPageForExports(0, this.LIMIT_32BITS_MAX)
+      .getAllTicketsOwnerPageForExportsPDF(this.requestTicketOwner, 0, this.LIMIT_32BITS_MAX)
       .subscribe(
         (response: PaginatedResponse<TicketDto>) => {
           // Accede a la propiedad `content` que contiene los tickets
@@ -576,12 +576,27 @@ export class OwnerListExpensasComponent {
   //#region TIENEN QUE MODIFICAR EL SERIVCIO CON SU GETALL
   exportToExcel() {
     this.ticketService
-      .getAllTicketsPageForExports(0, this.LIMIT_32BITS_MAX)
+      .getAllTicketsOwnerPageForExportsPDF(this.requestTicketOwner, 0, this.LIMIT_32BITS_MAX)
       .subscribe(
         (response) => {
-          const modifiedContent = response.content.map(
-            ({ id, ownerId, ...rest }) => rest
-          );
+          // Accede a la propiedad `content` que contiene los tickets
+          const expenses = response.content;
+        
+          // Prepara los datos para exportar a Excel
+          const modifiedContent = expenses.map((expense: TicketDto) => ({
+            propietario: `${expense.ownerId.first_name} ${expense.ownerId.last_name}`,
+            periodo: expense.issueDate instanceof Date
+              ? expense.issueDate.toLocaleDateString()
+              : new Date(expense.issueDate).toLocaleDateString(),
+            estado: this.translateStatus(expense.status),
+            expirationDate: expense.expirationDate instanceof Date
+              ? expense.expirationDate.toLocaleDateString()
+              : new Date(expense.expirationDate).toLocaleDateString(),
+            ticketNumber: expense.ticketNumber,
+            lotId: expense.lotId,
+          }));
+        
+          // Exporta los datos a Excel
           this.excelService.exportListToExcel(
             modifiedContent,
             `${this.getActualDayFormat()}_${this.objectName}`
