@@ -61,6 +61,8 @@ export class UserUserFormComponent {
     editMode: boolean = false;
     isSuperAdmin: boolean = false;
     adminRoles: number[] = [999];
+    
+  title: string = "Registrar Usuario";
     //#endregion
 
   onEmailChange(userEmail: string): void {
@@ -167,6 +169,7 @@ export class UserUserFormComponent {
       this.id = this.activatedRoute.snapshot.paramMap.get('id');
       if (this.id !== null) {
         this.userForm.controls['email'].disable();
+        this.title = "Editar Usuario";
         this.editMode = true
         this.setEditValues();
       } else {
@@ -209,11 +212,6 @@ export class UserUserFormComponent {
         this.userService.getUserById(Number(this.id)).subscribe(
           response => {
             this.user = response;
-            let formattedDate: any
-            if (this.user.birthdate) {
-              const [day, month, year] = this.user.birthdate?.split('/');
-              formattedDate = `${year}-${month}-${day}`;
-            }
             this.userForm.patchValue({
               email: this.user.email,
               firstName: this.user.firstName,
@@ -221,7 +219,7 @@ export class UserUserFormComponent {
               userName: this.user.userName,
               documentType: this.user.documentType,
               documentNumber: this.user.documentNumber,
-              birthdate: formattedDate
+              birthdate: this.user.birthdate
             });
 
 
