@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
-import { Notification, NotificationKPIViewedModel, NotificationModelChart } from '../models/notifications/notification';
+import { Notification, NotificationModelChart } from '../models/notifications/notification';
 import { forkJoin, map, Observable, switchMap, throwError } from 'rxjs';
 import { NotificationFilter } from '../models/notifications/filters/notificationFilter';
 import { PageRequest } from '../models/pagination/PageRequest';
@@ -160,12 +160,13 @@ export class NotificationService {
     return date;
   }
 
-  getAllNotificationsNotFiltered(): Observable<NotificationKPIViewedModel[]> {
+
+  getAllNotificationsNotFiltered(): Observable<NotificationModelChart[]> {
 
     const url = `http://localhost:8011/notifications`;
 
 
-    return this.http.get<NotificationKPIViewedModel[]>(url);
+    return this.http.get<NotificationModelChart[]>(url);
 
   }
 

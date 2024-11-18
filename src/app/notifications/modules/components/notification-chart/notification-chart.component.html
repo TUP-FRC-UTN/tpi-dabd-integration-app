@@ -49,7 +49,7 @@
                         <i class="bi bi-funnel-fill fs-5"></i>
                         <i class="bi bi-caret-down-fill ms-1 small"></i>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
-                          {{ 2 }}
+                          {{ getActiveFiltersCount() }}
                         </span>
                       </div>
                     </button>
@@ -91,10 +91,8 @@
           </div>
           <h6 class="card-subtitle text-muted mb-0">Tasa de Visualización</h6>
         </div>
-        <h2 class="card-title mb-0 text-success"> {{ viewedRate | number:'1.0-1' }}%</h2>
-        <small class="text-muted">
-          {{ viewedCount }} de {{ totalCount }} Notificaciones Visualizadas
-        </small>
+        <h2 class="card-title mb-0 text-success">{{kpis.viewedRate ? (kpis.viewedRate | number:'1.0-1') + '%' : 'N/A'}}</h2>
+        <small class="text-muted">Notificaciones Visualizadas</small>
       </div>
     </div>
   </div>
@@ -108,7 +106,7 @@
           </div>
           <h6 class="card-subtitle text-muted mb-0">Promedio Diario</h6>
         </div>
-        <h2 class="card-title mb-0">{{dailyAverage | number:'1.0-1'}}</h2>
+        <h2 class="card-title mb-0">{{kpis.dailyAverage ? (kpis.dailyAverage | number:'1.0-1') : 'N/A'}}</h2>
         <small class="text-muted">Notificaciones por día</small>
       </div>
     </div>
@@ -125,8 +123,8 @@
           </div>
           <h6 class="card-subtitle text-muted mb-0">Hora Pico</h6>
         </div>
-        <h2 class="card-title mb-0">{{peakHour.hour}}:00</h2>
-        <small class="text-muted">{{peakHour.count}} notificaciones</small>
+        <h2 class="card-title mb-0">{{kpis.peakHour.hour}}:00</h2>
+        <small class="text-muted">{{kpis.peakHour.count}} notificaciones</small>
       </div>
     </div>
   </div>
@@ -140,7 +138,7 @@
           </div>
           <h6 class="card-subtitle text-muted mb-0">Contacto más Frecuente</h6>
         </div>
-        <small class="text-muted text-truncate d-block mt-4">{{frequentContact.email}}</small>
+        <small class="text-muted text-truncate d-block mt-4">{{kpis.mostFrequentContact?.email || 'N/A'}}</small>
       </div>
     </div>
   </div>
@@ -154,8 +152,9 @@
           </div>
           <h6 class="card-subtitle text-muted mb-0">Día más Activo</h6>
         </div>
-        <h2 class="card-title mb-0">{{mostActiveDay.day}}</h2>
-        <small class="text-muted">{{mostActiveDay.count}} envíos ({{mostActiveDay.percentage | number:'1.0-1'}}%)</small>
+        <h2 class="card-title mb-0">{{kpis.mostActiveDay?.day || 'N/A'}}</h2>
+        <small class="text-muted">{{kpis.mostActiveDay?.count || 'N/A'}} envíos ({{kpis.mostActiveDay?.percentage ? (kpis.mostActiveDay.percentage | number:'1.0-1') + '%' : 'N/A'}})</small>
+        
       </div>
     </div>
   </div>
@@ -173,7 +172,7 @@
           <h6 class="card-subtitle text-muted mb-0">Retención Promedio</h6>
         </div>
         <h2 class="card-title mb-0">{{retentionKPIs.averageRetention | number:'1.0-1'}}%</h2>
-        <small class="text-muted">De retención de suscripciones opcionales</small>
+        <small class="text-muted">De suscripciones opcionales</small>
       </div>
     </div>
   </div>
@@ -187,12 +186,11 @@
           </div>
           <h6 class="card-subtitle text-muted mb-0">Alta Retención</h6>
         </div>
-        <h2 class="card-title mb-0">{{retentionKPIs.highestRetention}}</h2>
-        <small class="text-muted">Suscripción con mayor retención</small>
+        <h2 class="card-title mb-0">{{retentionKPIs.highestRetention | number:'1.0-1'}}%</h2>
+        <small class="text-muted">De suscripciones con alta interacción</small>
       </div>
     </div>
   </div>
-  
 </div>
 
 
@@ -203,8 +201,8 @@
             <div class="card-body">
               <h5 class="card-title text-center">Tipos de Contacto</h5>
               <div class="chart-container">
-                <canvas baseChart #contactTypeChart="base-chart" [data]="chartDataContactType"
-                  [options]="chartOptionsContactType" [type]="'pie'">
+                <canvas baseChart #contactTypeChart="base-chart" [data]="contactTypeChartData"
+                  [options]="contactTypeChartOptions" [type]="'pie'">
                 </canvas>
               </div>
             </div>
@@ -218,7 +216,7 @@
                 <h5 class="card-title text-center hover-underline">Estado de Notificaciones</h5>
               </a>
               <div class="chart-container">
-                <canvas baseChart #statusChart="base-chart" [data]="chartDataNotificationStatus" [options]="chartOptionsNotificationStatus"
+                <canvas baseChart #statusChart="base-chart" [data]="statusChartData" [options]="statusChartOptions"
                   [type]="'pie'">
                 </canvas>
               </div>
@@ -235,7 +233,7 @@
             <div class="card-body">
               <h5 class="card-title text-center">Actividad Semanal</h5>
               <div class="chart-container" style="height: 100%; width: 100%;">
-                <canvas baseChart #weeklyChart="base-chart" [data]="chartDataNotificationWeekly" [options]="chartOptionsNotificationWeekly"
+                <canvas baseChart #weeklyChart="base-chart" [data]="weeklyChartData" [options]="weeklyChartOptions"
                   [type]="'bar'">
                 </canvas>
               </div>
@@ -251,7 +249,7 @@
             <div class="card-body">
               <h5 class="card-title text-center">Tasa de Retención por Suscripción</h5>
               <div style="height: 100%; width: 100%;">
-                <canvas baseChart [data]="chartDataSuscriptionRetention" [options]="chartOptionsSuscriptionRetention" [type]="'bar'">
+                <canvas baseChart [data]="retentionChartData" [options]="retentionChartOptions" [type]="'bar'">
                 </canvas>
               </div>
             </div>
@@ -266,8 +264,8 @@
             <div class="card-body">
               <h5 class="card-title text-center">Análisis de Suscripciones Opcionales</h5>
               <div style="height: 400px;">
-                <canvas baseChart #subscriptionAnalysisChart="base-chart" [data]="chartDataSubscriptionOptionalAnalysis"
-                  [options]="chartOptionsSubscriptionOptionalAnalysis" [type]="'bar'">
+                <canvas baseChart #subscriptionAnalysisChart="base-chart" [data]="subscriptionAnalysisData"
+                  [options]="subscriptionAnalysisOptions" [type]="'bar'">
                 </canvas>
               </div>
             </div>
