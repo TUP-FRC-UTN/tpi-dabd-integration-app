@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
 import { Notification, NotificationKPIViewedModel, NotificationModelChart } from '../models/notifications/notification';
-import { forkJoin, map, Observable, switchMap } from 'rxjs';
+import { forkJoin, map, Observable, switchMap, throwError } from 'rxjs';
 import { NotificationFilter } from '../models/notifications/filters/notificationFilter';
 import { PageRequest } from '../models/pagination/PageRequest';
 import { Page } from '../models/pagination/Page';
@@ -31,7 +31,7 @@ export class NotificationService {
     
 
     if (!contactId) {
-      throw new Error('No contact ID found in session.');
+      return throwError(() => new Error('No contact ID found in session.'));
     }
 
     const params = new HttpParams().set('contactId', contactId);
