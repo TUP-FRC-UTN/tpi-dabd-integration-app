@@ -125,6 +125,7 @@ export class UserUserListComponent {
         this.userService.deleteUser(user.id).subscribe(
           (response) => {
             this.toastService.sendSuccess('Usuario eliminado correctamente');
+            this.confirmSearch();
           },
           (error) => {
             this.toastService.sendError('Error al eliminar usuario');

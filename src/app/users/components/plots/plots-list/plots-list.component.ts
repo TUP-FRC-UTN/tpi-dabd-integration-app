@@ -176,7 +176,7 @@ export class PlotsListComponent {
         this.plotService.deletePlot(plot.id).subscribe(
           (response) => {
             this.toastService.sendSuccess('Lote eliminado correctamente.');
-            //this.confirmFilterPlot();
+            this.confirmSearch();
           },
           (error) => {
             this.toastService.sendError('Error al eliminar lote.');

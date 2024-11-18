@@ -104,7 +104,7 @@ export class UserUserTenantFormComponent {
   onEmailChange(userEmail: string): void {
 
     console.log(this.userForm.controls["email"].errors);
-    
+
 
     if (this.userForm.controls["email"].errors == null) {
 
@@ -528,7 +528,8 @@ export class UserUserTenantFormComponent {
     });
 
     modalRef.componentInstance.title = 'Registrar usuario inquilino';
-    modalRef.componentInstance.description = 'En esta pantalla permite crear un usuario para un inquilino.';
+    modalRef.componentInstance.description = 'En esta pantalla permite crear un usuario para un inquilino y asignarlo al' +
+                                              'lote que usted tenga en tenencia.';
     modalRef.componentInstance.body = [
       {
         title: 'Datos del Usuario',
@@ -552,28 +553,15 @@ export class UserUserTenantFormComponent {
         ]
       },
       {
-        title: 'Añadir Roles',
-        content: [
-          {
-            strong: 'Roles:',
-            detail: 'Menú desplegable para seleccionar el rol del usuario.'
-          },
-          {
-            strong: 'Agregar Rol:',
-            detail: 'Botón con símbolo de "+" para agregar el rol seleccionado.'
-          }
-        ]
-      },
-      {
         title: 'Asociar un lote',
         content: [
           {
-            strong: 'Número de Manzana:',
-            detail: 'Campo de texto para ingresar el número de manzana.'
+            strong: 'Lotes en tenencia:',
+            detail: 'Usted seleccionara el lote que le quiere asignar el inquilino.'
           },
           {
-            strong: 'Número de Lote:',
-            detail: 'Campo de texto para ingresar el número de lote.'
+            strong: 'Tiempo en tenencia:',
+            detail: 'Seleccionara el rango de meses que el inquilino estara en el lote.'
           }
         ]
       },

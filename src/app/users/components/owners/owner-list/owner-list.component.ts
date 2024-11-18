@@ -124,8 +124,7 @@ export class OwnerListComponent implements OnInit {
             this.toastService.sendSuccess(
               'Propietario eliminado correctamente.'
             );
-            //this.confirmFilterOwner();
-            location.reload();
+            this.confirmSearch();
           },
           error: () =>
             this.toastService.sendError('Error al eliminar propietario.'),
