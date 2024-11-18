@@ -26,6 +26,8 @@ import {
   MainContainerComponent,
   TableComponent,
   TableFiltersComponent,
+  ToastsContainer, 
+  ToastService
 } from 'ngx-dabd-grupo01';
 import { NgbModal, NgbModule, NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateStatusTicketPipe } from '../pipes/translate-status-ticket.pipe';
@@ -60,6 +62,7 @@ registerLocaleData(localeEs, 'es');
     NgbModule,
     PeriodToMonthYearPipe,
     CurrencyFormatPipe,
+    ToastsContainer
   ],
   templateUrl: './owner-list-expensas.component.html',
   styleUrl: './owner-list-expensas.component.css',
@@ -156,16 +159,27 @@ export class OwnerListExpensasComponent {
     const monthInit = $event['initMonth'];
     const monthEnd = $event['endMonth'];
 
-    const concatDateInit = !this.ticketService.isValidPeriod(initYear, monthInit) ? `${monthInit}/${initYear}` : '/';
+    const dateInit = new Date(Number(initYear), Number(monthInit) - 1, 1);
+    const dateEnd = new Date(Number(endYear), Number(monthEnd) - 1, 1);
+
+    if(dateInit > dateEnd) {
+      this.toastService.sendError('La fecha de inicio no puede ser mayor a la fecha de fin');
+      return;
+    }
+
+    const concatDateInit = !this.ticketService.isValidPeriod(monthInit , initYear) ? `${monthInit}/${initYear}` : '/';
     const concatDateEnd = !this.ticketService.isValidPeriod(monthEnd, endYear) ? `${monthEnd}/${endYear}` : '/';
 
     if (!this.ticketService.isValidateFullDate($event['initYear'], $event['initMonth'])) {
       return;
     }
 
+    if($event['status'] == ''){
+      $event['status'] = null;
+    }
 
     this.ticketService
-      .getAllWithFilters(
+      .getAllByOwnerWithFilters(
         this.currentPage--,
         this.pageSize,
         $event['status'],
@@ -183,6 +197,8 @@ export class OwnerListExpensasComponent {
         },
         (error) => {
           console.error('Error al obtener los tickets con filtros:', error);
+          const msg = 'Error al obtener los tickets:' + error.error.message
+          this.toastService.sendError(msg);
         },
         () => {
           console.log('Obtención de tickets con filtros completada.');
@@ -226,7 +242,8 @@ export class OwnerListExpensasComponent {
     private excelService: PaymentExcelService,
     private fileService: FilesServiceService,
     private periodToMonthYearPipe: PeriodToMonthYearPipe,
-    private paymentService: PaymentServiceService
+    private paymentService: PaymentServiceService,
+    private toastService: ToastService
   ) {
     this.fechasForm = this.formBuilder.group({
       fechaInicio: [''],
