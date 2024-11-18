@@ -48,7 +48,9 @@ export class UserUserTenantFormComponent {
   addresses: Address[] = [];
   addressIndex:number | undefined = undefined;
   contact!: Contact;
-  contacts: Contact[] = [];
+  contacts: Contact[] = [
+    { contactType: "EMAIL", contactValue:"" }
+  ];
   contactIndex:number | undefined = undefined;
   rol!: Role;
   plot! : Plot;
@@ -98,6 +100,22 @@ export class UserUserTenantFormComponent {
     }),
   });
   //#endregion
+
+  onEmailChange(userEmail: string): void {
+
+    console.log(this.userForm.controls["email"].errors);
+    
+
+    if (this.userForm.controls["email"].errors == null) {
+
+      let userContactEmail : Contact = {
+        contactValue: userEmail,
+        contactType: "EMAIL"
+      }
+
+      this.contacts[0] = userContactEmail
+    }
+  }
 
   hasContactEmail():boolean{
     let hasEmail= this.contacts.filter(c => c.contactType === "EMAIL")
