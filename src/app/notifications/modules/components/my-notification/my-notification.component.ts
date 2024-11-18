@@ -77,7 +77,7 @@ export class MyNotificationComponent implements OnInit {
           },
           error: (err) => {
             console.log("Error al cargar las notificacione")
-            this.toastService.sendError("Error cargando las notificaciones del usuario.")
+            this.toastService.sendError("No se encontró un contacto válido en el usuario con la sesión inicada.")
           }
         }
       );
