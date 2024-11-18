@@ -135,7 +135,7 @@ export class TicketService {
       );
     }
 
-    getAllByOwnerWithFilters(page : number, size : number, status?:string): Observable<PaginatedResponse<TicketDto>> {
+    getAllByOwnerWithFilters(page: number, size: number, status?: string, lotId?:string, firstPeriod?: string, lastPeriod?: string, ownerId?: number): Observable<PaginatedResponse<TicketDto>> {
       let params = new HttpParams().set('ownerId', 1);
       // .set('owner;
       // .set('page', page.toString())
@@ -147,7 +147,61 @@ export class TicketService {
       if (status) {
         params = params.set('status', status);
       }
+
+      const request = this.buildRequestTicketOwner(ownerId ?? 1, status, firstPeriod, lastPeriod);
+
+      return this.getAllByOwner(request, page, size);
+
       return this.http.get<PaginatedResponse<TicketDto>>(this.apiGetAllByOwner, { params, headers: header }).pipe(
+        map((response: PaginatedResponse<any>) => {
+          const transformPipe = new TransformTicketPipe();
+          const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
+          return {
+            ...response,
+            content: transformedPlots 
+          };
+        })
+      );
+    }
+
+    getAllTicketsPageForExportsPDF(page : number, size : number): Observable<PaginatedResponse<TicketDto>> {
+      let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+      const header = {
+        'x-user-id': this.userId.toString(),
+      };
+
+      const requestTicket: RequestTicket = {
+        status: null,
+        firstPeriod: null,
+        lastPeriod: null,
+      }
+
+      return this.http.post<PaginatedResponse<TicketDto>>(this.apiGetAll, requestTicket, { params, headers: header }).pipe(
+        map((response: PaginatedResponse<any>) => {
+          const transformPipe = new TransformTicketPipe();
+          const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
+          return {
+            ...response,
+            content: transformedPlots 
+          };
+        })
+      );
+    }
+
+    
+
+    getAllTicketsOwnerPageForExportsPDF(requestTicket: RequestTicketOwner, page : number, size : number): Observable<PaginatedResponse<TicketDto>> {
+      requestTicket.ownerId = 1;
+      let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+      const header = {
+        'x-user-id': this.userId.toString(),
+      };
+        
+      return this.http.post<PaginatedResponse<TicketDto>>(this.apiGetAllByOwner, requestTicket, { params, headers: header }).pipe(
         map((response: PaginatedResponse<any>) => {
           const transformPipe = new TransformTicketPipe();
           const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
@@ -198,17 +252,19 @@ export class TicketService {
     };
       const request = this.buildRequestTicket(status, firstPeriod, lastPeriod);      
     
+      
+      return this.getAll(request, page, size);
 
-    return this.http.post<PaginatedResponse<TicketDto>>(this.apiGetAll, request ,{ params: params, headers:header }).pipe(
-      map((response: PaginatedResponse<any>) => {
-        const transformPipe = new TransformTicketPipe();
-        const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
-        return {
-          ...response,
-          content: transformedPlots 
-        };
-      })
-    );
+    // return this.http.post<PaginatedResponse<TicketDto>>(this.apiGetAll, request ,{ params: params, headers:header }).pipe(
+    //   map((response: PaginatedResponse<any>) => {
+    //     const transformPipe = new TransformTicketPipe();
+    //     const transformedPlots = response.content.map((plot: any) => transformPipe.transform(plot));
+    //     return {
+    //       ...response,
+    //       content: transformedPlots 
+    //     };
+    //   })
+    // );
   }
 
 
