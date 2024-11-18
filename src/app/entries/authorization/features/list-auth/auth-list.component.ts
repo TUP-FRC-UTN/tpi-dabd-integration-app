@@ -15,7 +15,6 @@ import {NgbModal, NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {AccessActionDictionary, AccessModel} from "../../../models/accesses/access.model";
 import {TransformResponseService} from "../../../services/transform-response.service";
 import {UserTypeService} from "../../../services/user-type.service";
-import {LoginService} from "../../../services/access/login.service";
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import {NgClass} from "@angular/common";
@@ -46,12 +45,12 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
 
   //#region SERVICIOS
   private router = inject(Router)
-  private authService = inject(AuthService)
+  authService = inject(AuthService)
   private transformResponseService = inject(TransformResponseService)
   private toastService = inject(ToastService)
   private modalService = inject(NgbModal)
   private userTypeService = inject(UserTypeService)
-  private loginService = inject(LoginService)
+
   //#endregion
 
   //#region FILTRADO
@@ -207,6 +206,7 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
 
   //#region NgOnInit | BUSCAR
   ngOnInit() {
+    this.authService.getRoleCode();
     this.confirmFilter();
     this.getAll();
   }

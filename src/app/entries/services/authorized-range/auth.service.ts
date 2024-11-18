@@ -13,11 +13,12 @@ import { Role } from '../../../users/models/role';
   providedIn: 'root',
 })
 export class AuthService {
- 
+
   private apiUrl: string = environment.production
   ? `${environment.apis.accesses+`auths`}`
   : 'http://localhost:8001/';
-  
+
+  role$? : number[];
   sessionService = inject(SessionService);
 
   constructor(
@@ -44,6 +45,17 @@ export class AuthService {
       )
       .pipe(map((response) => this.caseTransformer.toCamelCase(response)));
   }
+
+  getRoleCode(){
+    const user =  this.sessionService.getItem('user');
+    
+    for(let r of user.roles){
+      console.log(r);
+      if(r.code === 102 || r.code === 999){
+        this.role$?.push(r.code);
+      }
+    }
+   }
 
   updateAuth(
     ownerData: any

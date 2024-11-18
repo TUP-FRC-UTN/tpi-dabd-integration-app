@@ -59,6 +59,7 @@ export class CadastrePlotFilterButtonsComponent<T extends Record<string, any>> {
   @Input() dictionaries: Array<{ [key: string]: any }> = [];
 
   @Input() tableFilters: Filter[] = [];
+  @Input() showNewButtton : boolean = true
 
   @Input() modalComponent!: Type<any>;
   modalService = inject(NgbModal);

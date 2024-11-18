@@ -5,6 +5,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 
 import { ConfirmAlertComponent , ToastsContainer, ToastService } from 'ngx-dabd-grupo01';
 import { QrService, sendQRByEmailRequest } from '../services/qr/qr.service';
+import { SessionService } from '../../users/services/session.service';
 
 @Component({
   selector: 'app-qr',
@@ -20,6 +21,7 @@ export class QrComponent implements OnInit{
     email: new FormControl('' , [Validators.required, Validators.email]),
   });
 
+sessionService = inject(SessionService);
 
 showAlert: boolean = false;
 
@@ -27,9 +29,12 @@ showAlert: boolean = false;
 sendQRByEmail() {
 
   if(this.form.valid){
+
+    const user = this.sessionService.getItem('user');
+
     const request: sendQRByEmailRequest = {
       email: this.form.value.email,
-      invitor_name: 'Lucas Angel',
+      invitor_name: user.first_name +' '+ user.last_name,
       doc_number: this.docNumber
     }
 
@@ -37,7 +42,7 @@ sendQRByEmail() {
     this.qrService.sendQRByEmail(request , 1).subscribe({
       next:(data)=>{
         console.log(data)
-        this.toastService.sendSuccess("El qr Ha sido enviado con exito")
+        this.toastService.sendSuccess("El QR ha sido enviado con exito")
        
       },
       error:(error)=>{

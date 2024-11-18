@@ -12,7 +12,6 @@ import {
 } from 'ngx-scanner-qrcode';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AccessService } from '../../../services/access/access.service';
-import { LoginService } from '../../../services/access/login.service';
 import { VisitorService } from '../../../services/visitors/visitor.service';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../services/auth.service';
@@ -55,7 +54,6 @@ export class AccessFormComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private accessService: AccessService,
-    private loginService: LoginService,
     private router: Router,
     private visitorService: VisitorService
   ) {

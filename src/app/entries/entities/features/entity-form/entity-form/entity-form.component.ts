@@ -6,7 +6,6 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastsContainer, ToastService } from 'ngx-dabd-grupo01';
 import { VisitorService } from '../../../../services/visitors/visitor.service';
 import { LoginModel } from '../../../../models/login.model';
-import { LoginService } from '../../../../services/access/login.service';
 
 
 @Component({
@@ -34,7 +33,6 @@ export class EntityFormComponent {
   @Output() entityCreated = new EventEmitter<void>();
   fb = inject(FormBuilder);
   router = inject(Router);
-  loginService = inject(LoginService);
   visitorService = inject(VisitorService);
 
   constructor() {
