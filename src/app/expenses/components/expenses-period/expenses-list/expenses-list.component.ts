@@ -91,7 +91,6 @@ export class ExpensesListComponent implements OnInit{
     if (this.periodPath != null) {
       this.selectedPeriodId = Number(this.periodPath)
       this.service.getByPeriod(Number(this.periodPath)).subscribe(data=>{
-        console.log(data)
         this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
           this.expenses = data.content.map(expense => {
             const expenses = this.keysToCamel(expense) as Expense;
@@ -99,7 +98,6 @@ export class ExpensesListComponent implements OnInit{
               ...expenses,
               month: this.getMonthName(expense.period.month),
             };
-
           });
         })
 

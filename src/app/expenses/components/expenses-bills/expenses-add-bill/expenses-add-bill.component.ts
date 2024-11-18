@@ -170,7 +170,7 @@ export class ExpensesAddBillComponent implements OnInit {
             this.toastService.sendSuccess(
               'El gasto se ha añadido correctamente.'
             );
-            this.router.navigate([`expenses/gastos`]);
+            this.router.navigate([`expenses/expenses`]);
           },
           error: (error: any) => {
             if (error.status === 409) {

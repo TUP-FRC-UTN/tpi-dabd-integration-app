@@ -577,4 +577,5 @@ export class ExpensesReportComponent {
     this.loadExpenseData();
     this.loadKpis();
   }
+  
 }

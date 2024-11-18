@@ -17,6 +17,8 @@ import Period from '../../../models/period';
 import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal/edit-bill-modal.component';
 import { ViewBillModalComponent } from '../../modals/bills-modal/view-bill-modal/view-bill-modal.component';
 import { DeleteBillModalComponent } from '../../modals/bills/delete-bill-modal/delete-bill-modal.component';
+import { StorageService } from '../../../services/storage.service';
+import { User } from '../../../models/user';
 
 @Component({
   selector: 'app-expenses-liquidation-details',
@@ -42,6 +44,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   private readonly supplierService = inject(ProviderService);
   private readonly billTypeService = inject(BillService);
   private modalService = inject(NgbModal);
+  private readonly storage = inject(StorageService);
 
   private readonly route = inject(ActivatedRoute);
 
@@ -58,6 +61,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   period: Period = new Period();
   fechaTitulo = '';
   columns: TableColumn[] = [];
+  user : User |undefined;
 
   isFiltering: boolean = false;
   categories: FilterOption[] = [];
@@ -108,6 +112,8 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
       {headerName: 'Monto', accessorKey: 'amount', cellRenderer: this.amountTemplate, align:'right'},
       {headerName: 'Acciones', accessorKey: 'actions', cellRenderer: this.actionsTemplate},
     ];
+    
+    
   }
 
   private loadBillTypes() {
@@ -181,7 +187,15 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
         data.pagination.subscribe(data => {
           this.totalItems = data.totalElements
           this.originalTotalItems = this.totalItems
-        });
+        })
+        data.bills.subscribe(data=>{
+          let user = this.storage.getFromSessionStorage('user') as User;
+          const newBills =  data.filter(data=>data.status==="Nuevo")
+          newBills.forEach(bill=>{
+            this.billsService.patchBill(bill.expenditureId,"Activo",user.value.id).subscribe((data)=>{
+            })
+          })
+        })
       });
   }
 
