@@ -27,6 +27,8 @@ import {
   MainContainerComponent,
   TableComponent,
   TableFiltersComponent,
+  ToastsContainer, 
+  ToastService
 } from 'ngx-dabd-grupo01';
 import {
   NgbDropdownModule,
@@ -69,6 +71,7 @@ registerLocaleData(localeEs, 'es');
     PeriodToMonthYearPipe,
     CapitalizePipe,
     CurrencyFormatPipe,
+    ToastsContainer
   ],
   templateUrl: './admin-list-expensas.component.html',
   styleUrls: ['./admin-list-expensas.component.css'],
@@ -109,6 +112,7 @@ export class AdminListExpensasComponent implements OnInit {
       key: key,
       value: TicketStatus[key as keyof typeof TicketStatus],
     }));
+
   }
 
   requestTicket: RequestTicket = {
@@ -168,7 +172,8 @@ export class AdminListExpensasComponent implements OnInit {
     private excelService: PaymentExcelService,
     private datePipe: DatePipe,
     private paymentService: PaymentServiceService,
-    private fileService : FilesServiceService
+    private fileService : FilesServiceService,
+    private toastService: ToastService
   ) {
     this.fechasForm = this.formBuilder.group({
       fechaInicio: [''],
@@ -227,7 +232,9 @@ export class AdminListExpensasComponent implements OnInit {
         this.totalItems = response.totalElements;
       },
       error: (error) => {
-        console.error('Error al obtener los tickets:', error);
+        const msg = 'Error al obtener los tickets:' + error.message
+        this.toastService.sendError(msg);
+        // console.error('Error al obtener los tickets:', error);
       },
       complete: () => {
         console.log('Obtención de tickets completada.');
@@ -550,7 +557,7 @@ export class AdminListExpensasComponent implements OnInit {
   ];
 
   filterConfig: Filter[] = new FilterConfigBuilder()
-    .numberFilter('Numero de lote', 'lotId', 'Ingrese un numero de lote')
+    // .numberFilter('Numero de lote', 'lotId', 'Ingrese un numero de lote')
     .selectFilter('Estado', 'status', 'Estado', this.filteroptions)
     .numberFilter('Año desde', 'initYear', 'Seleccione un año ')
     .selectFilter('Mes desde', 'initMonth', 'Seleccione un mes', [
@@ -627,7 +634,11 @@ export class AdminListExpensasComponent implements OnInit {
           this.totalItems = response.totalElements;
         },
         (error) => {
-          console.error('Error al obtener los tickets con filtros:', error);
+
+          console.log('Error al obtener los tickets con filtros:', error);
+          const msg = 'Error al obtener los tickets:' + error.error.message
+          this.toastService.sendError(msg);
+          // console.error('Error al obtener los tickets con filtros:', error);
         },
         () => {
           console.log('Obtención de tickets con filtros completada.');
