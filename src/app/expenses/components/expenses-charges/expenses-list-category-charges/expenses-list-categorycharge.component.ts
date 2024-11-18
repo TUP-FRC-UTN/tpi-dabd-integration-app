@@ -24,6 +24,9 @@ import { DeleteCategoryModalComponent } from '../../modals/charges/category/dele
 import { NewCategoryChargeModalComponent } from '../../modals/charges/category/new-categoryCharge-modal/new-categoryCharge-modal.component';
 import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-modal.component';
 import { CategoryChargeInfoComponent } from '../../modals/info/category-charge-info/category-charge-info.component';
+import { StorageService } from '../../../services/storage.service';
+import { User } from '../../../models/user';
+import { URLTargetType } from '../../../../users/models/role';
 
 @Component({
   selector: 'app-expenses-list-category-charges',
@@ -39,6 +42,12 @@ import { CategoryChargeInfoComponent } from '../../modals/info/category-charge-i
   styleUrl: './expenses-list-categorycharge.component.css'
 })
 export class ExpensesListCategoryChargesComponent {
+  private storage = inject(StorageService);
+
+  //VARIABLE DE USER
+  user: User | undefined;
+  rolCode: boolean= false;
+  
 getStatusBadgeClass(arg0: string) {
 throw new Error('Method not implemented.');
 }
@@ -140,6 +149,10 @@ throw new Error('Method not implemented.');
   };
 
   ngOnInit(): void {
+    this.user = this.storage.getFromSessionStorage('user') as User;
+
+    this.rolCode = this.user.value.roles.filter(rol => rol.code === URLTargetType.FINANCE || rol.code === URLTargetType.SUPERADMIN ).length == 1 ? true : false
+   
     this.searchParams = { 'isDeleted':'false' };
     this.cargarPaginado();
   }

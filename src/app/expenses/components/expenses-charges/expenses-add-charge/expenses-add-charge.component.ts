@@ -159,7 +159,6 @@ export class ExpensesAddChargeComponent implements OnInit{
   }
 
   onSubmit(): void {
-
     if (this.chargeForm.valid) {
       const formValue = this.chargeForm.value;
       const charge: Charge = {
