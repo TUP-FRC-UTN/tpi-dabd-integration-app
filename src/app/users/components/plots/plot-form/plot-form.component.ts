@@ -40,7 +40,7 @@ export class PlotFormComponent {
     plotNumber:  new FormControl('', [Validators.required, Validators.min(1)], [plotValidator(this.plotService)]),
     blockNumber: new FormControl('', [Validators.required, Validators.min(1)]),
     totalArea: new FormControl('', [Validators.required, Validators.min(1)]),
-    builtArea: new FormControl('', [Validators.required, Validators.min(1)]),
+    builtArea: new FormControl('', [Validators.required, Validators.min(0)]),
     plotType: new FormControl('', [Validators.required]),
     plotStatus: new FormControl('', [Validators.required])
   });
@@ -72,8 +72,20 @@ export class PlotFormComponent {
   }
   //#endregion
 
+  onTotalAreaChange(event: any) {
+    if(this.plotForm.controls['totalArea'].value) {
+      const totalArea = parseFloat(this.plotForm.controls['totalArea'].value);
+      console.log("cambiando a ", totalArea);
+      this.plotForm.controls['builtArea'].setValidators([Validators.required, Validators.min(0), Validators.max(totalArea)])
+      this.plotForm.controls['builtArea'].updateValueAndValidity({onlySelf: true})
+    }
+    
+  }
+
   //#region ON SUBMIT
   onSubmit(): void {
+    console.log(this.plotForm.controls['builtArea']);
+    
     if (this.plotForm.valid) {
       if (this.id === null) {
         let plotFormData: any = {
@@ -118,6 +130,8 @@ export class PlotFormComponent {
           }
         );
       }
+    } else {
+      this.plotForm.markAllAsTouched();
     }
   }
   //#endregion
