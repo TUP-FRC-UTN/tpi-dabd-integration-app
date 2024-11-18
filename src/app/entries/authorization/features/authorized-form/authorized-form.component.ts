@@ -109,7 +109,6 @@ export class AuthFormComponent implements OnInit {
         this.authForm.get('visitorType')?.disable()
         this.authForm.get('plotId')?.enable()
       }
-
       const documentParam = this.paramRoutes.snapshot.queryParamMap.get('docNumber');
      console.log(documentParam)
 
@@ -122,6 +121,7 @@ export class AuthFormComponent implements OnInit {
     const documentParam = this.paramRoutes.snapshot.queryParamMap.get('authId');
     if (documentParam) {
       this.isUpdate = true
+      this.authForm.get('plotId')?.disable();
       this.authService.getById(parseInt(documentParam, 10)).subscribe(datas => {
         let data = datas[0]
         // Completa el formulario
