@@ -597,9 +597,13 @@ export class AdminListExpensasComponent implements OnInit {
     const monthInit = $event['initMonth'];
     const monthEnd = $event['endMonth'];
 
-    const concatDateInit = !this.ticketService.isValidPeriod(initYear, monthInit) ? `${monthInit}/${initYear}` : '/';
+    const concatDateInit = !this.ticketService.isValidPeriod(monthInit, initYear) ? `${monthInit}/${initYear}` : '/';
     const concatDateEnd = !this.ticketService.isValidPeriod(monthEnd, endYear) ? `${monthEnd}/${endYear}` : '/';
+  
+    console.log('Fecha Inicio:', concatDateInit);
+    console.log('Fecha Fin:', concatDateEnd);
 
+    
     if(!this.ticketService.isValidateFullDate($event['initYear'], $event['initMonth'])){
       return;
     }
