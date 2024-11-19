@@ -74,6 +74,7 @@ export class ExpensesAddBillComponent implements OnInit {
   types: Observable<BillType[]> | undefined;
   employees: Observable<Provider[]>|undefined;
   userID: number;
+  lastSupplierType: string = '';
   //#endregion
 
   constructor() {
@@ -124,7 +125,29 @@ export class ExpensesAddBillComponent implements OnInit {
     })
     
   }
+  clearComponent(){
+    this.loadSelectOptions();
   
+  // Usar setTimeout para asegurar que los datos estén disponibles
+  setTimeout(() => {
+    this.billForm.reset();
+    this.billForm.patchValue({
+      supplierEmployeeType: this.lastSupplierType,
+      description: '',
+    });
+    this.newCategoryForm.reset();
+    
+    
+    // Procesar periods después de que los datos estén cargados
+    this.periods = this.periods?.pipe(
+      map((periods) => periods.map(period => ({
+        ...period,
+        displayPeriod: `${period.month}/${period.year}`
+      })))
+    );
+  });
+    
+  }
   
   
   //#endregion
@@ -184,7 +207,8 @@ export class ExpensesAddBillComponent implements OnInit {
             this.toastService.sendSuccess(
               'El gasto se ha añadido correctamente.'
             );
-            this.router.navigate([`expenses/expenses`]);
+            this.lastSupplierType = this.billForm.get('supplierEmployeeType')?.value;
+            this.clearComponent();
           },
           error: (error: any) => {
             if (error.status === 409) {
