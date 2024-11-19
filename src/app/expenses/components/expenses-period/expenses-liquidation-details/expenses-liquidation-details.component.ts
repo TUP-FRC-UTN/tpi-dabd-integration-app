@@ -201,7 +201,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
 
   filterTableByText(value: string) {
-    debugger
     const filterValue = value?.toLowerCase() || '';
     if(filterValue === '') {
       this.billsFiltered = this.originalBills;
@@ -219,7 +218,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   }
 
   filterTableBySelects(value: Record<string, any>) {
-    debugger
     this.filterCategory = value['category']?.toLowerCase() || null;
     this.filterSupplier = value['supplier']?.toLowerCase() || null;
     this.filterType = value['type']?.toLowerCase() || null;

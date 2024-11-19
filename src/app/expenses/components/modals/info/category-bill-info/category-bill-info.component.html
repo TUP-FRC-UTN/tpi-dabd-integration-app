@@ -9,7 +9,6 @@
       <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
       <p class="mb-0 small">Esta pantalla te permite gestionar las categorías de gastos. Aquí podrás ver, crear,
         editar y eliminar las diferentes categorías que uses para clasificar tus gastos.
-        El sistema no permite cargar dos 
       </p>
     </div>
 
@@ -70,10 +69,10 @@
       <div class="card-body py-2">
         <ul class="list-group list-group-flush">
           <li class="list-group-item py-1">
-            <strong>Editar <i class="bi bi-pencil"></i>:</strong> Modifica una categoría existente.
+            <strong>Editar:</strong> Modifica una categoría existente.
           </li>
           <li class="list-group-item py-1">
-            <strong>Eliminar <i class="bi bi-trash"></i>:</strong> Elimina una categoría del sistema.
+            <strong>Eliminar:</strong> Elimina una categoría del sistema.
           </li>
         </ul>
       </div>
@@ -82,10 +81,12 @@
     <!-- Nota -->
     <div class="alert alert-warning py-2 mb-0">
       <h5 class="alert-heading">Nota:</h5>
-      <p class="mb-0 small">Algunas categorías del sistema no pueden ser modificadas ni eliminadas ya que son esenciales para el funcionamiento del sistema.</p>
+      <p class="mb-0 small">Algunas categorías del sistema no pueden ser modificadas ni eliminadas ya que son esenciales para el funcionamiento del sistema.
+        Además, no se pueden cargar dos categorías con el mismo nombre.
+      </p>
     </div>
   </div>
 </div>
 <div class="modal-footer py-2">
-  <button type="button" class="btn btn-primary" (click)="activeModal.close()">Entendido</button>
+  <button type="button" class="btn btn-secondary" (click)="activeModal.close()">Volver</button>
 </div>
