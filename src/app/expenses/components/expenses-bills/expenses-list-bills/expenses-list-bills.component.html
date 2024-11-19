@@ -81,7 +81,31 @@
 
 
 
-<app-main-container title="listado de Gastos" (infoButtonClick)="showInfo()">
+<app-main-container title="Listado de Gastos" (infoButtonClick)="showInfo()">
+  <!-- Radio Buttons -->
+  <div class="d-flex align-items-center mb-3 ms-2">
+    <label class="me-3"></label>
+    <div class="form-check form-check-inline mb-0">
+      <input class="form-check-input" 
+             type="radio" 
+             [formControl]="supplierType" 
+             id="supplierRadio"
+             value="SUPPLIER">
+      <label class="form-check-label" for="supplierRadio">
+        Proveedores
+      </label>
+    </div>
+    <div class="form-check form-check-inline mb-0">
+      <input class="form-check-input" 
+             type="radio" 
+             [formControl]="supplierType" 
+             id="employeeRadio"
+             value="EMPLOYEE">
+      <label class="form-check-label" for="employeeRadio">
+        Empleados
+      </label>
+    </div>
+  </div>
   <app-table [items]="filteredBills" [columns]="columns" [pagination]="{
     totalItems: totalItems,
     page: page,
@@ -90,6 +114,6 @@
     onPageSizeChange: onPageSizeChange
   }" [showSearchBar]="true" [isLoading]="isLoading" (searchValueChange)="onSearchValueChange($event)"
     (headerButtonClick)="nuevoGasto()" [showHeaderButton]="true" (filterValueChange)="onFilterValueChange($event)"
-    [tableFilters]="filterConfig" (pdfButtonClick)="imprimir()" [headerButtonIcon]="'bi bi-plus'" [headerButtonText]="''" [getAllItems]="getAllItems">
+    [tableFilters]="filterConfig" (pdfButtonClick)="imprimir()" [headerButtonIcon]="'bi bi-plus'" [headerButtonText]="''" (excelButtonClick)="getAllItems()">
   </app-table>
 </app-main-container>

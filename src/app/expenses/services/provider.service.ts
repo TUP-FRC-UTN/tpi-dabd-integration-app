@@ -10,17 +10,24 @@ import {PORT} from "../const";
 export class ProviderService {
 
   private http = inject(HttpClient);
-  private url = PORT + "providers?supplierOrEmployeeType=SUPPLIER"
+  private url = PORT + "providers?supplierOrEmployeeType"
   // private url ="https://my-json-server.typicode.com/113898-KUMIEC/getSupplier/suppliers"
 
   constructor() { }
 
-  getAllProviders():Observable<Provider[]>{
+  getAllProviders(type?:any):Observable<Provider[]>{
     try {
-      return this.http.get<Provider[]>(this.url)
+      console.log(type);
+      if(type !== null|| type !== undefined){
+        return this.http.get<Provider[]>(`${this.url}=${type}`);
+      }
+      return this.http.get<Provider[]>(`${this.url}=SUPPLIER`);
 
     } catch (error) {
       throw error;
     }
+  }
+  getAllEmployees(): Observable<Provider[]> {
+    return this.http.get<Provider[]>(`${this.url}=EMPLOYEES`);
   }
 }

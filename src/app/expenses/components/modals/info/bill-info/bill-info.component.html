@@ -1,59 +1,59 @@
 <div class="modal-header fs-6 py-1">
-  <h4 class="modal-title">Información del Formulario de Gastos</h4>
+  <h4 class="modal-title">Información del Registro de Gastos</h4>
   <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
-</div>
-<div class="modal-body fs-6 py-2">
+ </div>
+ <div class="modal-body fs-6 py-2">
   <div class="container-fluid">
     <!-- Introducción -->
     <div class="alert alert-info mb-2 py-2">
       <h5 class="alert-heading">¿Qué es este formulario?</h5>
-      <p class="mb-0 small">Este formulario te permite registrar los gastos. Cada campo
-        ha sido diseñado para mantener un registro detallado y organizado de tus transacciones.</p>
+      <p class="mb-0 small">Este formulario permite registrar nuevos gastos en el sistema. 
+        Asegúrese de completar todos los campos marcados como obligatorios (*) y verificar que la información sea correcta antes de guardar.</p>
     </div>
-
+ 
     <!-- Campos Principales -->
     <div class="card mb-2">
       <div class="card-header py-1">
         <h5 class="mb-0">Campos Principales</h5>
       </div>
       <div class="card-body py-2">
-        <ul class="list-group list-group-flush">
+        <ul class="list-group list-group-flush">            
           <li class="list-group-item py-1">
-            <strong>Proveedor:</strong> Selecciona la empresa que proporciona el servicio o producto.
+            <strong>Proveedor :</strong> Seleccione el proveedor o empleado asociado al gasto.
           </li>
           <li class="list-group-item py-1">
-            <strong>Categoría:</strong> Clasifica el gasto para un mejor análisis (puedes crear nuevas categorías con el <b>+</b>).
+            <strong>Categoría :</strong> Elija la categoría del gasto. Use el botón (+) para crear una nueva si es necesario.
           </li>
           <li class="list-group-item py-1">
-            <strong>Periodo:</strong> Mes y año al que corresponde el gasto.
+            <strong>Período :</strong> Seleccione el mes y año correspondiente al gasto.
           </li>
           <li class="list-group-item py-1">
-            <strong>Tipo:</strong> Clasificación adicional del gasto, con opciones "Extraordinaria" y "Ordinaria."
+            <strong>Tipo :</strong> Indique si es un gasto Ordinario o Extraordinario.
           </li>
         </ul>
       </div>
     </div>
-
+ 
     <!-- Datos del Gasto -->
     <div class="card mb-2">
       <div class="card-header py-1">
-        <h5 class="mb-0">Datos del Gasto</h5>
+        <h5 class="mb-0">Detalles del Gasto</h5>
       </div>
       <div class="card-body py-2">
         <ul class="list-group list-group-flush">
           <li class="list-group-item py-1">
-            <strong>Descripción:</strong> Espacio para detallar información adicional.
+            <strong>Monto :</strong> Ingrese el valor monetario del gasto.
           </li>
           <li class="list-group-item py-1">
-            <strong>Monto:</strong> Cantidad monetaria del gasto.
+            <strong>Fecha :</strong> Seleccione la fecha del gasto (debe corresponder al período seleccionado).
           </li>
           <li class="list-group-item py-1">
-            <strong>Fecha:</strong> Día en que se realizó el gasto.
+            <strong>Descripción:</strong> Campo opcional para agregar detalles adicionales sobre el gasto.
           </li>
         </ul>
       </div>
     </div>
-
+ 
     <!-- Acciones -->
     <div class="card mb-2">
       <div class="card-header py-1">
@@ -62,22 +62,23 @@
       <div class="card-body py-2">
         <ul class="list-group list-group-flush">
           <li class="list-group-item py-1">
-            <strong>Cancelar:</strong> Limpiar todos los campos.
+            <strong>Cancelar:</strong> Vuelve al listado de gastos sin guardar cambios.
           </li>
           <li class="list-group-item py-1">
-            <strong>Guardar:</strong> Registrar el gasto.
+            <strong>Guardar:</strong> Registra el nuevo gasto con la información ingresada.
           </li>
         </ul>
       </div>
     </div>
-
-    <!-- Nota (OPCIONAL) -->
+ 
+    <!-- Nota -->
     <div class="alert alert-warning py-2 mb-0">
       <h5 class="alert-heading">Nota:</h5>
-      <p class="mb-0 small">Los campos marcados con un asterisco (*) son obligatorios.</p>
+      <p class="mb-0 small">Los campos marcados con asterisco (*) son obligatorios.
+         Al crear una nueva categoría, tenga en cuenta que no se permiten nombres duplicados en el sistema.</p>
     </div>
   </div>
-</div>
-<div class="modal-footer py-2">
+ </div>
+ <div class="modal-footer py-2">
   <button type="button" class="btn btn-primary" (click)="activeModal.close()">Entendido</button>
-</div>
+ </div>

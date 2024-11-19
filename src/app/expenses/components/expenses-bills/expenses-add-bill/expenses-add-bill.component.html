@@ -1,23 +1,93 @@
 <app-main-container title="Registrar Gasto" (infoButtonClick)="showInfo()">
   <form [formGroup]="billForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
 
+<!-- Grupo de radio buttons en fila completa -->
+<div class="col-12 mb-3">
+  <div class="d-flex align-items-center">
+    <label class="col-form-label me-4"><span class="text-danger"></span></label>
+    <div class="d-flex gap-4">
+      <div class="form-check">
+        <input class="form-check-input" 
+               type="radio" 
+               id="supplierRadio" 
+               formControlName="supplierEmployeeType" 
+               value="SUPPLIER"
+               [ngClass]="{
+                 'is-invalid': billForm.get('supplierEmployeeType')?.invalid && billForm.get('supplierEmployeeType')?.touched,
+                 'is-valid': billForm.get('supplierEmployeeType')?.valid && billForm.get('supplierEmployeeType')?.touched
+               }">
+        <label class="form-check-label" for="supplierRadio">
+          Proveedores
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" 
+               type="radio" 
+               id="employeeRadio" 
+               formControlName="supplierEmployeeType" 
+               value="EMPLOYEE"
+               [ngClass]="{
+                 'is-invalid': billForm.get('supplierEmployeeType')?.invalid && billForm.get('supplierEmployeeType')?.touched,
+                 'is-valid': billForm.get('supplierEmployeeType')?.valid && billForm.get('supplierEmployeeType')?.touched
+               }">
+        <label class="form-check-label" for="employeeRadio">
+          Empleados
+        </label>
+      </div>
+    </div>
+    @if(billForm.get('supplierEmployeeType')?.invalid && billForm.get('supplierEmployeeType')?.touched){
+      <div class="invalid-feedback">
+        Debe seleccionar un tipo.
+      </div>
+    }
+    
+  </div>
+</div>
     <!-- Primera fila con Proveedor y Categoría -->
     <div class="col-md-6">
       <div class="d-flex align-items-center">
-        <label for="supplierId" class="col-sm-2 col-form-label">Proveedor<span class="text-danger">*</span></label>
+        @if(billForm.get('supplierEmployeeType')?.value==='SUPPLIER') {
+          <label for="supplierId" class="col-sm-2 col-form-label">Proveedor<span class="text-danger">*</span></label>
+        }
+        @else if (billForm.get('supplierEmployeeType')?.value==='EMPLOYEE') {
+
+          <label for="supplierId" class="col-sm-2 col-form-label">Empleado<span class="text-danger">*</span></label>
+        }
         <div class="col-sm-10">
           <div class="input-group">
-            <ng-select [clearable]="false" id="supplierId" [items]="providers | async | orderBy: 'name'"
-              bindLabel="name" bindValue="id" formControlName="supplierId"
-              [placeholder]="billForm.get('supplierId')?.value ? '' : 'Seleccione un proveedor'" [appendTo]="'body'"
-              [ngClass]="{
-      'is-invalid': billForm.get('supplierId')?.invalid && (billForm.get('supplierId')?.dirty || billForm.get('supplierId')?.touched),
-      'is-valid': billForm.get('supplierId')?.valid && (billForm.get('supplierId')?.dirty || billForm.get('supplierId')?.touched)
-    }" [searchable]="true" notFoundText="No se encontraron proveedores" class="form-select rounded-end-3 bg-body">
-            </ng-select>
-            <div class="invalid-feedback">
-              El proveedor es obligatorio.
-            </div>
+            @if(this.billForm.get('supplierEmployeeType')?.value === 'EMPLOYEE'){
+              <ng-select [clearable]="false" id="supplierId" [items]="providers | async | orderBy: 'name'"
+                bindLabel="name" bindValue="id" formControlName="supplierId"
+                [placeholder]="billForm.get('supplierId')?.value ? '' : 'Seleccione un empleado'" [appendTo]="'body'"
+                [ngClass]="{
+        'is-invalid': billForm.get('supplierId')?.invalid && (billForm.get('supplierId')?.dirty || billForm.get('supplierId')?.touched),
+        'is-valid': billForm.get('supplierId')?.valid && (billForm.get('supplierId')?.dirty || billForm.get('supplierId')?.touched)
+      }" [searchable]="true" notFoundText="No se encontraron empleados" class="form-select rounded-end-3 bg-body">
+              </ng-select>
+
+            }
+            @else if (this.billForm.get('supplierEmployeeType')?.value === 'SUPPLIER'){
+              <ng-select [clearable]="false" id="supplierId" [items]="providers | async | orderBy: 'name'"
+                bindLabel="name" bindValue="id" formControlName="supplierId"
+                [placeholder]="billForm.get('supplierId')?.value ? '' : 'Seleccione un proveedor'" [appendTo]="'body'"
+                [ngClass]="{
+        'is-invalid': billForm.get('supplierId')?.invalid && (billForm.get('supplierId')?.dirty || billForm.get('supplierId')?.touched),
+        'is-valid': billForm.get('supplierId')?.valid && (billForm.get('supplierId')?.dirty || billForm.get('supplierId')?.touched)
+      }" [searchable]="true" notFoundText="No se encontraron proveedor" class="form-select rounded-end-3 bg-body">
+              </ng-select>
+            }
+            @if(billForm.get('supplierEmployeeType')?.value==='SUPPLIER') {
+              <div class="invalid-feedback">
+                El proveedor es obligatorio.
+              </div>
+            }
+            @else if (billForm.get('supplierEmployeeType')?.value==='EMPLOYEE') {
+    
+              
+              <div class="invalid-feedback">
+                El empleado es obligatorio.
+              </div>
+            }
           </div>
         </div>
       </div>
