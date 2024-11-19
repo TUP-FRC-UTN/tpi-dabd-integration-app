@@ -1,79 +1,92 @@
 <div class="modal-header fs-6 py-1">
-  <h4 class="modal-title">Información de la listado de expensas</h4>
+  <h4 class="modal-title">Información del Listado de Expensas</h4>
   <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
 </div>
 <div class="modal-body fs-6 py-2">
   <div class="container-fluid">
     <!-- Introducción -->
     <div class="alert alert-info mb-2 py-2">
-      <h5 class="alert-heading">Descripción de la Pantalla</h5>
-      <p class="mb-0 small">
-        Esta pantalla permite gestionar y visualizar las expensas relacionadas con los distintos lotes y periodos. Desde aquí, puedes aplicar filtros, ordenar y exportar los datos a diferentes formatos.
-      </p>
+      <h5 class="alert-heading">¿Qué es este listado?</h5>
+      <p class="mb-0 small">Este listado muestra el detalle de las expensas generadas para cada lote, 
+        permitiendo visualizar los montos totales y porcentajes correspondientes. La información puede ser 
+        filtrada y exportada según las necesidades del usuario.</p>
     </div>
 
-    <!-- Funcionalidades Principales -->
-    <div class="card mb-3 shadow-sm">
-      <div class="card-header bg-light py-2">
-        <h5 class="mb-0 fw-bold">Funcionalidades Principales</h5>
+    <!-- Columnas del Listado -->
+    <div class="card mb-2">
+      <div class="card-header py-1">
+        <h5 class="mb-0">Columnas del Listado</h5>
       </div>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item d-flex align-items-start py-2">
-            <div>
-              <strong>Exportación de Datos:</strong>
-              <p class="mb-0 text-muted small">
-                Usa los botones de la parte superior para exportar los datos de expensas en formato Excel o PDF.
-              </p>
-            </div>
+      <div class="card-body py-2">
+        <ul class="list-group list-group-flush">            
+          <li class="list-group-item py-1">
+            <strong>Número de Lote:</strong> Identificador numérico de cada unidad.
           </li>
-          <li class="list-group-item d-flex align-items-start py-2">
-            <div>
-              <strong>Búsqueda y Filtros:</strong>
-              <p class="mb-0 text-muted small">
-                Permite buscar y filtrar expensas según lote, periodo, y tipo de expensa. Puedes ajustar los filtros en el modal de selección.
-              </p>
-            </div>
+          <li class="list-group-item py-1">
+            <strong>Tipo de lote:</strong> Clasificación del lote según sus características.
           </li>
-          <li class="list-group-item d-flex align-items-start py-2">
-            <div>
-              <strong>Paginación:</strong>
-              <p class="mb-0 text-muted small">
-                Navega entre las páginas de resultados y ajusta la cantidad de elementos mostrados por página.
-              </p>
-            </div>
+          <li class="list-group-item py-1">
+            <strong>Periodo:</strong> Mes y año al que corresponde la expensa.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Porcentaje:</strong> Porcentaje que le corresponde al lote sobre el total.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Tipo de expensa:</strong> Clasificación de la expensa generada.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Fecha de liquidación:</strong> Fecha en que se realizó la liquidación.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Monto Total:</strong> Importe total a pagar por el lote.
           </li>
         </ul>
       </div>
     </div>
 
-    <!-- Acciones Disponibles -->
+    <!-- Opciones de Filtrado -->
     <div class="card mb-2">
       <div class="card-header py-1">
-        <h5 class="mb-0">Acciones Disponibles</h5>
+        <h5 class="mb-0">Opciones de Filtrado</h5>
       </div>
       <div class="card-body py-2">
         <ul class="list-group list-group-flush">
           <li class="list-group-item py-1">
-            <strong>Expensas:</strong> Redirige a la página de expensas del periodo seleccionado.
+            <strong>Por Lote:</strong> Permite buscar expensas de un lote específico.
           </li>
           <li class="list-group-item py-1">
-            <strong>Liquidación:</strong> Muestra cada gasto dentro de la liquidación de expensas del periodo.
+            <strong>Por Tipo de Expensa:</strong> Filtra según la clasificación de la expensa.
           </li>
           <li class="list-group-item py-1">
-            <strong>Finalizar Periodo:</strong> Marca el periodo como finalizado y envía una notificación al área de pagos.
-          </li>
-          <li class="list-group-item py-1">
-            <strong>Cerrar Liquidación:</strong> Bloquea la carga de nuevos gastos hasta que el periodo esté finalizado.
-          </li>
-          <li class="list-group-item py-1">
-            <strong>Abrir Liquidación:</strong> Permite añadir nuevos gastos en la liquidación del periodo actual.
-          </li>
-          <li class="list-group-item py-1">
-            <strong>Cambiar Fecha de Fin:</strong> Ajusta la fecha de finalización del periodo activo.
+            <strong>Por Periodo:</strong> Muestra expensas de un mes/año específico.
           </li>
         </ul>
       </div>
+    </div>
+
+    <!-- Exportación -->
+    <div class="card mb-2">
+      <div class="card-header py-1">
+        <h5 class="mb-0">Opciones de Exportación</h5>
+      </div>
+      <div class="card-body py-2">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item py-1">
+            <strong>Excel:</strong> Botón verde para exportar a formato Excel.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>PDF:</strong> Botón rojo para exportar a formato PDF.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Nota -->
+    <div class="alert alert-warning py-2 mb-0">
+      <h5 class="alert-heading">Nota:</h5>
+      <p class="mb-0 small">Puede utilizar los filtros de manera individual o combinada para 
+        encontrar información específica. Los montos mostrados reflejan el total calculado 
+        según el porcentaje correspondiente a cada lote.</p>
     </div>
   </div>
 </div>

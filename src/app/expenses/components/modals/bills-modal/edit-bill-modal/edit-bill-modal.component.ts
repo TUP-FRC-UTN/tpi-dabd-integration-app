@@ -104,7 +104,7 @@ export class EditBillModalComponent implements OnInit {
       this.categoryService.getAllCategories().subscribe((categories) => {
         this.categoriesList = this.sortCategoriesAlphabetically(categories);
       });
-      this.supplierService.getAllProviders().subscribe((suppliers) => {
+      this.supplierService.getAllProviders("SUPPLIER").subscribe((suppliers) => {
         this.suppliersList = this.sortSuppliersAlphabetically(suppliers);
       });
       this.periodService.get().subscribe((periods) => {
