@@ -1,92 +1,86 @@
 <div class="modal-header fs-6 py-1">
-  <h4 class="modal-title">Información de listado de Categorías</h4>
+  <h4 class="modal-title">Información del Listado de Categorías</h4>
   <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
-</div>
-<div class="modal-body fs-6 py-2">
+ </div>
+ <div class="modal-body fs-6 py-2">
   <div class="container-fluid">
     <!-- Introducción -->
     <div class="alert alert-info mb-2 py-2">
-      <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
-      <p class="mb-0 small">Esta pantalla te permite gestionar las categorías de gastos. Aquí podrás ver, crear,
-        editar y eliminar las diferentes categorías que uses para clasificar tus gastos.
-      </p>
+      <h5 class="alert-heading">¿Qué es este listado?</h5>
+      <p class="mb-0 small">Este listado muestra todas las categorías disponibles para la clasificación de gastos. 
+        Permite gestionar las categorías existentes y crear nuevas según las necesidades del sistema.</p>
     </div>
-
-    <!-- Funcionalidades Principales -->
+ 
+    <!-- Columnas del Listado -->
     <div class="card mb-2">
       <div class="card-header py-1">
-        <h5 class="mb-0">Funcionalidades Principales</h5>
+        <h5 class="mb-0">Columnas del Listado</h5>
       </div>
       <div class="card-body py-2">
-        <ul class="list-group list-group-flush">
+        <ul class="list-group list-group-flush">            
           <li class="list-group-item py-1">
-            <strong>Buscar:</strong> Campo de búsqueda para filtrar categorías por nombre o descripción.
+            <strong>Nombre:</strong> Identificador único de la categoría.
           </li>
           <li class="list-group-item py-1">
-            <strong>Filtro:</strong> Filtar entre las categorias inactivas y activas.
+            <strong>Descripción:</strong> Detalle del propósito y alcance de la categoría.
           </li>
           <li class="list-group-item py-1">
-            <strong>Nuevo:</strong> Botón para crear una nueva categoría.
-          </li>
-          <li class="list-group-item py-1">
-            <strong>Exportar a Excel:</strong> Botón para exportar el estado actual de la tabla a Excel (xlsx).
-          </li>
-          <li class="list-group-item py-1">
-            <strong>Exportar a PDF:</strong> Botón para exportar el estado actual de la tabla a PDF (pdf).
+            <strong>Estado:</strong> Puede ser Activo o Inactivo.
           </li>
         </ul>
       </div>
     </div>
-
-    <!-- Tabla de Categorías -->
+ 
+    <!-- Funcionalidades -->
     <div class="card mb-2">
       <div class="card-header py-1">
-        <h5 class="mb-0">Tabla de Categorías</h5>
+        <h5 class="mb-0">Funcionalidades Disponibles</h5>
       </div>
       <div class="card-body py-2">
         <ul class="list-group list-group-flush">
           <li class="list-group-item py-1">
-            <strong>Nombre:</strong> Identificador de la categoría.
+            <strong>Filtrado:</strong> Permite filtrar las categorías por su estado:
+            - Activas
+            - Inactivas
+            - Todas
           </li>
           <li class="list-group-item py-1">
-            <strong>Descripción:</strong> Detalle o explicación de la categoría.
+            <strong>Exportación:</strong> 
+            - Botón verde para formato Excel
+            - Botón rojo para formato PDF
           </li>
           <li class="list-group-item py-1">
-            <strong>Estado:</strong> Icono de color que indica si la categoría está activa (verde) o inactiva (rojo).
-          </li>
-          <li class="list-group-item py-1">
-            <strong>Acciones:</strong> Botones para editar o eliminar categorías (solo disponibles para categorías editables).
+            <strong>Creación:</strong> Botón (+) para agregar nuevas categorías.
           </li>
         </ul>
       </div>
     </div>
-
-    <!-- Acciones Disponibles -->
+ 
+    <!-- Acciones -->
     <div class="card mb-2">
       <div class="card-header py-1">
-        <h5 class="mb-0">Acciones en la Tabla</h5>
+        <h5 class="mb-0">Acciones por Categoría</h5>
       </div>
       <div class="card-body py-2">
         <ul class="list-group list-group-flush">
           <li class="list-group-item py-1">
-            <strong>Editar:</strong> Modifica una categoría existente.
+            <strong>Modificar:</strong> Permite editar la información de la categoría.
           </li>
           <li class="list-group-item py-1">
-            <strong>Eliminar:</strong> Elimina una categoría del sistema.
+            <strong>Eliminar:</strong> Cambia el estado de la categoría a Inactivo.
           </li>
         </ul>
       </div>
     </div>
-
+ 
     <!-- Nota -->
     <div class="alert alert-warning py-2 mb-0">
       <h5 class="alert-heading">Nota:</h5>
-      <p class="mb-0 small">Algunas categorías del sistema no pueden ser modificadas ni eliminadas ya que son esenciales para el funcionamiento del sistema.
-        Además, no se pueden cargar dos categorías con el mismo nombre.
-      </p>
+      <p class="mb-0 small">Las categorías inactivas no estarán disponibles para la carga de nuevos gastos, 
+        pero se mantendrán visibles en los registros históricos donde fueron utilizadas.</p>
     </div>
   </div>
-</div>
-<div class="modal-footer py-2">
-  <button type="button" class="btn btn-secondary" (click)="activeModal.close()">Volver</button>
-</div>
+ </div>
+ <div class="modal-footer py-2">
+  <button type="button" class="btn btn-primary" (click)="activeModal.close()">Entendido</button>
+ </div>
