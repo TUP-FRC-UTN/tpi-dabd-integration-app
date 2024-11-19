@@ -26,6 +26,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { InventoryDashboardInfoComponent } from './inventory-dashboard-info/inventory-dashboard-info.component';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { InventoryStockMinModalComponent } from './inventory-dashboard-StockMin/Inventory-StockMin';
 Chart.register(...registerables, ChartDataLabels);
 Chart.register(
   ArcElement,
@@ -42,6 +43,7 @@ interface InventoryMetrics {
   totalItems: number;
   totalValue: number;
   lowStockItems: number;
+  lowStockItemsList: Inventory[];
   mostArticleUsed: string;
   stockByCategory: Map<string, number>;
   stockByCondition: Map<ArticleCondition, number>;
@@ -103,6 +105,7 @@ export class InventoryDashboardComponent implements OnInit {
     totalItems: 0,
     totalValue: 0,
     lowStockItems: 0,
+    lowStockItemsList: [],
     mostArticleUsed: '',
     stockByCategory: new Map(),
     stockByCondition: new Map(),
@@ -210,10 +213,8 @@ export class InventoryDashboardComponent implements OnInit {
       // Cargar tendencias de transacciones basadas en las fechas y unidad seleccionada
       this.inventoryService.getFilteredInventory(unit, startDate, endDate).subscribe({
         next: (filteredInventories: Inventory[]) => {
-          console.log('Respuesta del backend:', filteredInventories);
 
           const camelCaseInventories = filteredInventories.map(inv => this.mapperService.toCamelCase(inv));
-          console.log('Datos mapeados a camelCase:', camelCaseInventories);
 
           // Actualizar métricas específicas de transacciones
           this.calculateTransactionMetrics(camelCaseInventories);
@@ -231,12 +232,10 @@ export class InventoryDashboardComponent implements OnInit {
       startDate: this.getDateOneMonthAgo(),
       endDate: this.getToday(),
     });
-    console.log('Filtros restablecidos:', this.filtersForm.value);
     this.applyFilters();
   }
 
   private calculateMetrics(allInventories: Inventory[]): void {
-    console.log('Calculando métricas para inventarios:', allInventories);
 
     // Filtrar inventarios según la unidad seleccionada
     const selectedUnit = this.filtersForm.get('unit')?.value;
@@ -246,8 +245,6 @@ export class InventoryDashboardComponent implements OnInit {
       .filter(inv => inv.article?.measurementUnit === selectedUnit)
       .reduce((sum, inv) => sum + (inv.stock || 0), 0);
 
-    console.log('Total de artículos:', this.metrics.totalItems);
-
     // Calcular el valor total del inventario sin importar la unidad
     this.metrics.totalValue = allInventories.reduce((sum, inv) => {
       const lastTransactionWithPrice = inv.transactions?.slice().reverse().find(t => t.price !== null && t.price !== undefined);
@@ -255,16 +252,12 @@ export class InventoryDashboardComponent implements OnInit {
       return sum + ((inv.stock || 0) * price);
     }, 0);
 
-    console.log('Valor total del inventario:', this.metrics.totalValue);
-
     // Identificar los artículos con bajo stock
     const lowStockItems = allInventories.filter(inv => {
       const isLowStock = inv.stock !== null && inv.minStock !== null && inv.stock <= inv.minStock && inv.stock > 0;
       return isLowStock;
     });
     this.metrics.lowStockItems = lowStockItems.length;
-
-    console.log('Artículos con stock bajo:', this.metrics.lowStockItems);
 
     // Agrupar por categoría
     this.metrics.stockByCategory = new Map<string, number>();
@@ -276,23 +269,22 @@ export class InventoryDashboardComponent implements OnInit {
       }
     });
 
-    console.log('Stock por categoría:', Array.from(this.metrics.stockByCategory.entries()));
-
     // Calcular el artículo con más movimiento considerando todos los inventarios
     this.calculateMostMovedArticle(allInventories);
 
-    console.log('Artículo con más movimiento:', this.metrics.mostArticleUsed);
+    this.metrics.lowStockItemsList = allInventories.filter(inv => {
+      const isLowStock = inv.stock !== null && inv.minStock !== null && inv.stock <= inv.minStock && inv.stock > 0;
+      return isLowStock;
+    });
+    this.metrics.lowStockItems = this.metrics.lowStockItemsList.length; // Cantidad total de artículos con bajo stock
   }
 
 
   private calculateTransactionMetrics(inventories: Inventory[]): void {
-    console.log('Inventarios para métricas de transacciones:', inventories);
-
     const transactionTrends = new Map<string, { entries: number; outputs: number }>();
 
     inventories.forEach(inv => {
       inv.transactions.forEach(trans => {
-        console.log('Procesando transacción:', trans);
 
         if (trans.transactionDate) {
           const date = new Date(trans.transactionDate);
@@ -315,8 +307,6 @@ export class InventoryDashboardComponent implements OnInit {
       entries: Array.from(transactionTrends.values()).map(v => v.entries),
       outputs: Array.from(transactionTrends.values()).map(v => v.outputs)
     };
-
-    console.log('Tendencias de transacciones calculadas:', this.metrics.transactionTrends);
   }
 
 
@@ -341,13 +331,11 @@ export class InventoryDashboardComponent implements OnInit {
     }
 
     if (!this.categoryPieChart || data.length === 0) {
-      console.warn('No hay datos para el gráfico de pie.');
       return;
     }
 
     const ctx = this.categoryPieChart.nativeElement.getContext('2d');
     if (!ctx) {
-      console.error('No se pudo obtener el contexto del canvas.');
       return;
     }
 
@@ -467,5 +455,16 @@ export class InventoryDashboardComponent implements OnInit {
 
   showInventoryItems() {
     this.router.navigate(['/inventories/inventories']);
+  }
+
+  showItemsStockMin() {
+   const lowStockItems = this.metrics.lowStockItemsList;
+
+   const modalRef = this.modalService.open(InventoryStockMinModalComponent, {
+     size: 'lg',
+     centered: true
+   });
+
+   modalRef.componentInstance.lowStockItems = lowStockItems;
   }
 }

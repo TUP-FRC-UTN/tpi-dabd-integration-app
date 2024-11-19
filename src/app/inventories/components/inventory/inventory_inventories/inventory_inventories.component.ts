@@ -172,32 +172,6 @@ export class InventoryTableComponent implements OnInit {
      || inv.article.articleType.toLowerCase().includes(this.searchInput.value.toLowerCase() ?? '')
    );
   }
-  /*getInventories(): void {
-  this.isLoading = true;
-  this.searchInput.valueChanges.subscribe( data => {
-    if(data === null || data === ''){
-      this.loadInventories();
-    }
-    this.inventories = this.inventories.filter(
-      x => x.article.name.toLowerCase().includes(data!.toLowerCase())
-      || x.location?.toLowerCase().includes(data!.toLowerCase())
-    )
-  })
-
-  this.inventoryService.getInventories().subscribe((inventories: Inventory[]) => {
-    this.inventories = inventories.map( inventory => ({
-      ...this.mapperService.toCamelCase(inventory),
-    }));
-    this.inventories = inventories;
-    this.filteredInventories = inventories;
-    this.isLoading = false;
-    this.inventoryService.getInventories().subscribe((inventories: any[]) => {
-
-      this.inventories = inventories.map(inventory => ({
-        ...this.mapperService.toCamelCase(inventory),
-      }));
-  console.log(this.inventories)
-  })};*/
 
   // Método para convertir la unidad de medida a una representación amigable
   getDisplayUnit(unit: MeasurementUnit): string {
@@ -260,8 +234,6 @@ export class InventoryTableComponent implements OnInit {
   }
 
   onRegisterTransactionClose() {
-    console.log('onRegisterTransactionClose');
-    debugger
     this.showRegisterTransactionForm = this.showRegisterTransactionForm;
     this.selectedInventory = null;
     this.loadInventories();
@@ -271,7 +243,6 @@ export class InventoryTableComponent implements OnInit {
     this.selectedInventory = null;
   }
   onInventoryUpdateClose() {
-    debugger
     this.showInventoryUpdate = false;
     this.selectedInventory = null;
     this.loadInventories();
@@ -386,7 +357,6 @@ filterActiveInventories(): void {
     try {
       let element = document.getElementById('inventoryTable');
       if (!element) {
-        console.warn('No se encontró el elemento con el ID "inventoryTable"');
         element = this.createTableFromData();
       }
       const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(element);
