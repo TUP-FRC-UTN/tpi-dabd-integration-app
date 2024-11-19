@@ -26,7 +26,7 @@
   }
 </ng-template>
 
-<app-main-container title="listado de Categorías" (infoButtonClick)="showInfo()">
+<app-main-container title="Listado de Categorías" (infoButtonClick)="showInfo()">
   <app-table
     [isLoading]="isLoading"
     [items]="categories"
@@ -45,7 +45,7 @@
     [showHeaderButton]="true"
     [tableFilters]="filterConfig"
     (filterValueChange)="onFilterValueChange($event)"
-    [getAllItems]="downloadTable"
+    (onExcelButtonClick)="downloadTable()"
     (pdfButtonClick)="imprimirPDF()"
     [headerButtonIcon]="'bi bi-plus'"
     [headerButtonText]="''"

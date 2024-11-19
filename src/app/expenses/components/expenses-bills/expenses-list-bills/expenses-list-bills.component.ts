@@ -77,6 +77,7 @@ export class ExpensesListBillsComponent implements OnInit {
   filteredBills: Bill[] = [];
   currentPage: number = 1;
   userId: number | undefined;
+  supplierType = new FormControl<string>('SUPPLIER');
   filterConfig: Filter[] = [];
   categoryList: { value: string; label: string }[] = [];
   supplierList: { value: string; label: string }[] = [];
@@ -149,10 +150,11 @@ export class ExpensesListBillsComponent implements OnInit {
     this.filterTableByText(searchTerm);
   }
 
-  ngOnInit(): void {
+  initializeColumns(){
+    
     this.columns = [
       { headerName: 'Tipo', accessorKey: 'billType.name' },
-      { headerName: 'Proveedor', accessorKey: 'supplier.name' },
+      { headerName: this.getSupplierName(), accessorKey: 'supplier.name' },
       {
         headerName: 'Monto',
         accessorKey: 'amount',
@@ -174,7 +176,7 @@ export class ExpensesListBillsComponent implements OnInit {
         headerName: 'Estado',
         accessorKey: 'status',
         cellRenderer: this.statusTemplate,
-
+  
       },
       {
         headerName: 'Acciones',
@@ -182,10 +184,23 @@ export class ExpensesListBillsComponent implements OnInit {
         cellRenderer: this.actionsTemplate,
       },
     ];
+  }
 
-    
+  ngOnInit(): void {
+    this.initializeColumns();
+    this.filters.get('selectedProvider')?.setValue('SUPPLIER'); 
+    this.supplierType.valueChanges.subscribe(() => {
+      this.filters.reset();
+      this.searchTerm = '';
+      this.filters.get('selectedProvider')?.setValue(this.supplierType.value);
+      this.initializeColumns();
+      this.getProviders();
+      this.initializeFilters();
+      this.loadBills();
+    });
     this.userId = Number(this.sessionService.getItem('user').id);
-    this.filteredBills = this.bills;
+    
+  
     this.getAllLists();
     this.initializeFilters();
   }
@@ -236,7 +251,9 @@ export class ExpensesListBillsComponent implements OnInit {
   }
 
   getProviders() {
-    this.providerService.getAllProviders().subscribe((providers) => {
+    let value = this.filters.get('selectedProvider')?.value;
+    console.log(value);
+    this.providerService.getAllProviders(value).subscribe((providers) => {
       this.supplierList = providers.map((provider: any) => ({
         value: provider.id,
         label: provider.name,
@@ -254,7 +271,10 @@ export class ExpensesListBillsComponent implements OnInit {
       this.initializeFilters();
     });
   }
-
+  getSupplierName():string {
+    return this.supplierType.value === 'SUPPLIER' ? 'Proveedor' : 'Empleado';
+  }
+  
   initializeFilters(): void {
     this.filterConfig = new FilterConfigBuilder()
       .selectFilter(
@@ -264,7 +284,7 @@ export class ExpensesListBillsComponent implements OnInit {
         this.typesList
       )
       .selectFilter(
-        'Proveedor',
+        this.getSupplierName(),
         'supplier.name',
         'Seleccione un proveedor',
         this.supplierList
@@ -287,10 +307,6 @@ export class ExpensesListBillsComponent implements OnInit {
         { value: 'NEW', label: 'Nuevo' },
         { value: 'undefined', label: 'Todo' },
       ])
-      .radioFilter('Tipo de proveedor', 'supplier.type', [
-        { value: 'SUPPLIER', label: 'Proveedor' },
-        { value: 'EMPLOYEE', label: 'Empleado' }
-      ])
       .build();
   }
 
@@ -300,7 +316,6 @@ export class ExpensesListBillsComponent implements OnInit {
       selectedCategory: $event['category.name'] === "" ? undefined : $event['category.name'],
       selectedPeriod: $event['period.id'] === "" ? undefined : $event['period.id'],
       selectedSupplier: $event['supplier.name'] === "" ? undefined : $event['supplier.name'],
-      selectedProvider: $event['supplier.type'] === "" ? undefined : $event['supplier.type'],
       selectedStatus: $event['isActive'] === "" ? undefined : $event['isActive'],
       selectedType: $event['billType.name'] === "" ? undefined : $event['billType.name'],
     })
@@ -514,12 +529,10 @@ export class ExpensesListBillsComponent implements OnInit {
           'Tipo de gasto': bill.bill_type?.name,
           Descripción: bill.description,
         }));
-
-        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-        const wb: XLSX.WorkBook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
-        XLSX.writeFile(wb, this.fileName);
-        return response.content;
+        
+        return response.content;  
+        
+        
       })
     );
   };
