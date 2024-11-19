@@ -309,7 +309,7 @@ export class AppComponent {
       routerLink: 'users',
       sidebarMenu: [
         {
-          label: 'Reporte Propietarios',
+          label: 'Reporte de Propietarios',
           routerLink: '/users/owner/reports',
         },
         {
@@ -368,7 +368,7 @@ export class AppComponent {
       routerLink: 'users',
       sidebarMenu: [
         {
-          label: 'Reporte Usuarios',
+          label: 'Reporte de Usuarios',
           routerLink: '/users/user/reports',
         },
         {
