@@ -86,7 +86,6 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
     this.loadCategories();
   }
 
-  // Handlers for pagination
   onPageChange = (page: number) => {
     this.page = (page);
     this.loadCategories();
@@ -209,7 +208,7 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
     });
   }
 
-  downloadTable = () => {
+  downloadTable() {
     return this.categoryService.getPaginatedCategories(
       0,
       this.totalItems,
@@ -218,21 +217,11 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
       this.searchParams
     ).pipe(
       map((response) => {
-          const data = response.content.map(category => ({
-            'Nombre': category.name,
-            'Descripcion': category.description
-          }));
-          const fecha = new Date();
-          const finalName = this.fileName + '-' + moment(fecha).format("DD-MM-YYYY_HH-mm");
-          const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-          const wb: XLSX.WorkBook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(wb, ws, 'Categorias de Gastos');
-          XLSX.writeFile(wb, `${finalName}.xlsx`);
-          return response.content;
-        }
-      )
-    )
+        return response.content;
+      })
+    );
   }
+  
 
   imprimirPDF() {
     let doc = new jsPDF();
@@ -253,7 +242,5 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
         const finalFileName = this.fileName + "-" + moment(fecha).format("DD-MM-YYYY_HH-mm") +".pdf";
         doc.save(finalFileName);
       });
-
   }
-
 }

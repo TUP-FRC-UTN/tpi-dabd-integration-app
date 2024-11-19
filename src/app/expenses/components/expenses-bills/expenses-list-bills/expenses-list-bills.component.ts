@@ -511,28 +511,18 @@ export class ExpensesListBillsComponent implements OnInit {
     return this.billService.getAllBillsAndPaginationAny(
       0,
       5000,
-      this.filters.get('selectedPeriod')?.value as number,
-      this.filters.get('selectedCategory')?.value as number,
-      this.filters.get('selectedSupplier')?.value as number,
-      this.filters.get('selectedType')?.value as number,
-      this.filters.get('selectedProvider')?.value as string,
-      this.filters.get('selectedStatus')?.value as string
+      this.filters.get('selectedPeriod')?.value || undefined,
+      this.filters.get('selectedCategory')?.value || undefined,
+      this.filters.get('selectedSupplier')?.value || undefined,
+      this.filters.get('selectedType')?.value || undefined,
+      this.filters.get('selectedProvider')?.value || undefined,
+      this.filters.get('selectedStatus')?.value || undefined
     ).pipe(
       map((response) => {
-        const data = response.content.map((bill) => ({
-          Periodo: `${bill?.period?.month} / ${bill?.period?.year}`,
-          'Monto Total': `$ ${bill.amount}`,
-          Fecha: bill.date,
-          Proveedor: bill.supplier?.name,
-          Estado: bill.status,
-          Categoría: bill.category.name,
-          'Tipo de gasto': bill.bill_type?.name,
-          Descripción: bill.description,
+        return response.content.map(bill => ({
+          ...bill,
+          billType: bill.bill_type
         }));
-        
-        return response.content;  
-        
-        
       })
     );
   };
