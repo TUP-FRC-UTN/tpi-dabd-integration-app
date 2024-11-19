@@ -15,6 +15,8 @@ import {
 } from 'ckeditor5';
 import { MainContainerComponent } from 'ngx-dabd-grupo01';
 import { UserDataService, UserData } from '../../shared/services/user-data.service';
+import {Rules} from './rules';
+import {ConfigurationService} from '../moderations/sanction-type/services/configuration.service';
 
 @Component({
   selector: 'app-rules',
@@ -26,9 +28,11 @@ import { UserDataService, UserData } from '../../shared/services/user-data.servi
 })
 export class RulesComponent {
   public Editor = ClassicEditor;
+  private configService = inject(ConfigurationService)
 
   rulesContent: string = '';
   editMode: boolean = false;
+  currentRules!:Rules
 
   public config = {
     toolbar: [
@@ -64,8 +68,15 @@ export class RulesComponent {
   }
 
   loadRules(): void {
-    const savedRules = localStorage.getItem('rulesContent');
-    this.rulesContent = savedRules || 'No hay reglas definidas.';
+    // const savedRules = localStorage.getItem('rulesContent');
+    // this.rulesContent = savedRules || 'No hay reglas definidas.';
+
+    this.configService.getRules().subscribe(response => {
+      this.currentRules = response
+      this.rulesContent= response.rules
+    })
+
+
   }
 
   onChange({ editor }: any): void {
@@ -77,7 +88,21 @@ export class RulesComponent {
   }
 
   saveRules(): void {
-    localStorage.setItem('rulesContent', this.rulesContent);
-    this.editMode = false;
+    // localStorage.setItem('rulesContent', this.rulesContent);
+    // this.editMode = false;
+
+    const newRules:Rules = this.currentRules
+    newRules.rules = this.rulesContent
+
+    this.configService.putRules(newRules,1).subscribe({
+      next: (response) => {
+        console.log('new rules: ',response.rules)
+        this.loadRules()
+        this.editMode=false
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    })
   }
 }
