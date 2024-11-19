@@ -18,4 +18,6 @@ export class LotsService {
     return this.http.get<Lots[]>(`${this.apiUrl}`)
     
   }
+
+  
 }

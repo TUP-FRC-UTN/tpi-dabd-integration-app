@@ -76,7 +76,10 @@ export class ExpensesAddChargeComponent implements OnInit{
     });
 
     this.lotsService.get().subscribe((data: Lots[]) => {
-      this.lots = data;
+      
+      let data1 =this.camelToSnake(data);
+      this.lots = data1;
+
     });
 
     this.chargeService.getCategoriesExcFines().subscribe((data: CategoryCharge[]) => {

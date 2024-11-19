@@ -98,7 +98,7 @@ export class ViewChargeModalComponent implements OnInit {
     ]).pipe(
       tap(([periodos, lots, categoryCharges]) => {
         this.periodos = periodos;
-        this.lots = lots;
+        this.lots = this.keysToCamel(lots) as Lots[];
         this.categoryCharges = categoryCharges;
       }),
       map(() => undefined) // Para que el observable de `loadSelect` sea de tipo `Observable<void>`
@@ -107,7 +107,7 @@ export class ViewChargeModalComponent implements OnInit {
 
   getPlotNumber(lotId : number){
     const lot = this.lots.find(lot => lot.id === lotId);
-    return lot ? lot.plot_number : undefined;
+    return lot ? lot.plotNumber : undefined;
   }
 
   loadCategoryCharge(){
@@ -122,6 +122,24 @@ export class ViewChargeModalComponent implements OnInit {
     this.chargeForm.get('fechaEmision')?.disable();
     this.chargeForm.get('lote')?.disable();
 
+  }
+
+  toCamel(s: string) {
+    return s.replace(/([-_][a-z])/ig, ($1) => {
+      return $1.toUpperCase()
+        .replace('-', '')
+        .replace('_', '');
+    });
+  }
+
+  keysToCamel(o: any): any {
+    if (o === Object(o) && !Array.isArray(o) && typeof o !== 'function') {
+      const n: {[key: string]: any} = {};       Object.keys(o).forEach((k) => {
+        n[this.toCamel(k)] = this.keysToCamel(o[k]);
+      });       return n;
+    } else if (Array.isArray(o)) {
+      return o.map((i) => {         return this.keysToCamel(i);       });
+    }     return o;
   }
 
   saveChanges() {    
