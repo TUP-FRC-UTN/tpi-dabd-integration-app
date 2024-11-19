@@ -149,7 +149,7 @@ export class TicketService {
       }
 
       const request = this.buildRequestTicketOwner(ownerId ?? 1, status, firstPeriod, lastPeriod);
-
+   
       return this.getAllByOwner(request, page, size);
 
       return this.http.get<PaginatedResponse<TicketDto>>(this.apiGetAllByOwner, { params, headers: header }).pipe(
@@ -268,22 +268,32 @@ export class TicketService {
   }
 
 
-  buildRequestTicket(status?: string, firstPeriod?: string, lastPeriod?: string): RequestTicket { 
-    return { 
-      status: status ?? null, 
-      firstPeriod: firstPeriod ?? null, 
-      lastPeriod: lastPeriod ?? null 
+  buildRequestTicket(status?: string, firstPeriod?: string, lastPeriod?: string): RequestTicket {
+  
+    const processedFirstPeriod = firstPeriod === '' || firstPeriod === undefined ? null : firstPeriod;
+    const processedLastPeriod = lastPeriod === '' || lastPeriod === undefined ? null : lastPeriod;
+  
+    return {
+      status: status || null, 
+      firstPeriod: processedFirstPeriod,
+      lastPeriod: processedLastPeriod
     };
   }
+  
 
-  buildRequestTicketOwner(ownerId: number, status?: string, firstPeriod?: string, lastPeriod?: string): RequestTicketOwner { 
-    return { 
-      ownerId, 
-      status: status ?? null, 
-      firstPeriod: firstPeriod ?? null, 
-      lastPeriod: lastPeriod ?? null 
+  buildRequestTicketOwner(ownerId: number, status?: string, firstPeriod?: string, lastPeriod?: string): RequestTicketOwner {
+   
+    const processedFirstPeriod = firstPeriod === '' || firstPeriod === undefined ? null : firstPeriod;
+    const processedLastPeriod = lastPeriod === '' || lastPeriod === undefined ? null : lastPeriod;
+  
+    return {
+      ownerId,
+      status: status || null, 
+      firstPeriod: processedFirstPeriod,
+      lastPeriod: processedLastPeriod
     };
   }
+  
 
   updateTicketStatus(id: number, status: string): Observable<TicketDto> {
     const url = `${this.baseUrl}/tickets/updateTicketStatus/${id}`;
