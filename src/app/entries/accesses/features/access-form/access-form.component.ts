@@ -15,6 +15,7 @@ import { AccessService } from '../../../services/access/access.service';
 import { VisitorService } from '../../../services/visitors/visitor.service';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../services/auth.service';
+import { VisitorTypeAccessDictionary, VisitorTypeDictionary } from '../../../models/authorization/authorize.model';
 
 @Component({
   selector: 'app-access-form',
@@ -39,6 +40,9 @@ export class AccessFormComponent implements OnInit {
   @ViewChild('action') action!: NgxScannerQrcodeComponent;
   @ViewChild('infoModal') infoModal!: TemplateRef<any>;
   private toastService = inject(ToastService);
+  typeDictionary = VisitorTypeDictionary;
+  
+  
 
   public qrValue: string | null = null;
 
@@ -49,6 +53,8 @@ export class AccessFormComponent implements OnInit {
       },
     },
   };
+  plots: any[] = [];
+
 
   constructor(
     private fb: FormBuilder,
@@ -73,7 +79,7 @@ export class AccessFormComponent implements OnInit {
     this.accessForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      plotId: ['', Validators.required],
+      plotId: [0, Validators.required],
       docNumber: [null, [Validators.required, Validators.min(0)]],
       action: ['ENTRY', Validators.required], // Nueva acción (ENTRY/SALIDA)
       vehicleType: ['CAR', Validators.required], // Tipo de vehículo (CAR/MOTORBIKE/etc.)
@@ -83,7 +89,7 @@ export class AccessFormComponent implements OnInit {
     });
     this.accessForm.get('lastName')?.disable();
     this.accessForm.get('firstName')?.disable();
-    this.accessForm.get('plotId')?.disable();
+   
 
     const lote = this.url.snapshot.queryParamMap.get('lote');
     const docNumber = this.url.snapshot.queryParamMap.get('docNumber');
@@ -103,9 +109,12 @@ export class AccessFormComponent implements OnInit {
 
   onSubmit() {
     if (this.accessForm.valid) {
-      const formData = this.accessForm.value;
+      let formData = this.accessForm.value;
       let plate = this.accessForm.get('vehicleReg')?.value;
-  
+      console.log(formData.plotId)
+      
+      formData.plot_Id= Number(formData.plotId)
+
       if (plate != null) {
 
         this.visitorService.checkAccess(plate, this.accessForm.get('action')?.value).subscribe((data) => {
@@ -142,8 +151,10 @@ export class AccessFormComponent implements OnInit {
                 }
               });
             } else {
+              
               this.accessService.createAccess(formData).subscribe({
                   next: (data) => {
+                    console.log(data)
                     this.toastService.sendSuccess('Registro exitoso!');
                     
                     if(data.is_Late){
@@ -191,13 +202,12 @@ export class AccessFormComponent implements OnInit {
           this.accessForm.get('lastName')?.setValue(data.body.lastName);
           this.accessForm.get('firstName')?.setValue(data.body.name);
           this.accessForm.get('docNumber')?.setErrors(null);
-          let plots = '';
           this.authService.getValidAuths(document).subscribe((data) => {
+            this.plots = [];
+          
             data.forEach((auth) => {
-              plots += auth.plotId?.toString() + ', ';
+              this.plots.push(auth);
             });
-            plots = plots.slice(0, plots.length - 2);
-            this.accessForm.get('plotId')?.setValue(plots);
           });
       }
     });
@@ -284,14 +294,14 @@ export class AccessFormComponent implements OnInit {
           this.accessForm.get('firstName')?.setValue(data.body.name);
           this.accessForm.get('plotId')?.setValue(lote);
           this.accessForm.get('docNumber')?.setErrors(null);
-          let plots = '';
           this.authService.getValidAuths(document).subscribe((data) => {
+            this.plots = [];
+            console.log(data)
             data.forEach((auth) => {
-              plots += auth.plotId?.toString() + ', ';
+              this.plots.push(auth);
             });
-            plots = plots.slice(0, plots.length - 2);
-            this.accessForm.get('plotId')?.setValue(plots);
           });
+          
       }
     });
   }

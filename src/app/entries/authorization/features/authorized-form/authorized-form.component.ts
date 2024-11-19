@@ -347,7 +347,7 @@ export class AuthFormComponent implements OnInit {
                     ownerData.owner.contacts.length > 0) {
                   
                   const plotData = {
-                    id: element.id,
+                    id: Number(element.plotNumber),
                     desc: '',
                     contacts: ownerData.owner.contacts,
                     name: `${element.plotNumber}- ${element.blockNumber} - ${ownerData.owner.firstName} ${ownerData.owner.lastName}`

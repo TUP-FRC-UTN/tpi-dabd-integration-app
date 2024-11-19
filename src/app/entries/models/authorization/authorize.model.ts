@@ -51,6 +51,17 @@ export const VisitorTypeAccessDictionary: { [key: string]: string } = {
   Entidad: 'PROVIDER_ORGANIZATION',
 };
 
+export const VisitorTypeDictionary: { [key: string]: string } = {
+  VISITOR: 'Visitante',
+  PROVIDER: 'Proveedor',
+  OWNER: 'Propietario',
+  WORKER: 'Trabajador',
+  EMPLOYEE: 'Empleado',
+  COHABITANT: 'Cohabitante',
+  EMERGENCY: 'Emergencia',
+  PROVIDER_ORGANIZATION: 'Entidad',
+};
+
 export const VisitorTypeIconDictionary: { [key: string]: string } = {
   VISITOR: 'bi-person',
   PROVIDER: 'bi-truck',

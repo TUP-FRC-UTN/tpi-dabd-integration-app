@@ -1,7 +1,14 @@
 <app-main-container title="Nuevo acceso" (infoButtonClick)="onInfoButtonClick()">
 
     <form [formGroup]="accessForm" (ngSubmit)="onSubmit()" class="row g-3 m-2">
-        <h5>Ingresante</h5>
+        
+        <div class="d-flex justify-content-between">
+            <h5>Ingresante</h5>
+            <button (click)="openScanner()"
+                class="btn btn-info d-flex justify-content-center align-items-center">
+                <i class="bi bi-qr-code-scan"></i>
+            </button>
+        </div>
         <hr>
         <!-- Número de Documento -->
         <div class="row">
@@ -55,13 +62,6 @@
                         <button type="button" class="btn btn-info" (click)="isAuthorized()"
                             [disabled]="checkButtonDisabled">
                             Consultar
-                        </button>
-                    </div>
-                    <div class="col-2">
-    
-                        <button (click)="openScanner()"
-                            class="btn btn-info d-flex justify-content-center align-items-center">
-                            <i class="bi bi-qr-code-scan"></i>
                         </button>
                     </div>
                 </div>
@@ -120,8 +120,14 @@
                         <label for="firstName" class="form-label">Nro de Lote de Destino</label>
                     </div>
                     <div class="col-9">
-                        <input type="text" id="plotId" class="form-control" formControlName="plotId" />
-                    </div>
+                        
+                        <select class="form-select" formControlName="plotId" id="plotId" >
+
+                            @for (plot of plots; track $index) {
+                             <option [value]="plot.authId">{{plot.plotId}} - {{typeDictionary[plot.visitorType]}}</option>
+                            }
+                        </select>
+                    </div>                    
                 </div>
             </div>
     
