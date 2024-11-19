@@ -49,17 +49,17 @@ export class AuthFormComponent implements OnInit {
 
   ownerPlotService = inject(PlotsByOwnerService);
   plotsservice = inject(PlotService);
-  plotsFromService : Plot[] = [] 
+  plotsFromService : Plot[] = []
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, 
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router,
      private userTypeService: UserTypeService, private route: ActivatedRoute) {
-  
+
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
           this.toastService.clear(); // Limpiar los toasts al cambiar de pantalla
       }
   });
-  
+
   }
 
   @ViewChild('infoModal') infoModal!: TemplateRef<any>;
@@ -75,7 +75,7 @@ export class AuthFormComponent implements OnInit {
 
     this.initPlots()
     this.authForm = this.createForm();
-  
+
     this.userType = this.userTypeService.getType()
     if (this.userType == "OWNER"){
       this.authForm.get('plotId')?.setValue(2)
@@ -226,7 +226,7 @@ export class AuthFormComponent implements OnInit {
       const finalDateFrom = isNewDay ? formatDate(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0)) : dateFrom;
 
       if (formData.authRangeRequest.length === 0) {
-       
+
         const authRange = {
           dateFrom: finalDateFrom,
           dateTo: formatDate(dateTo),
@@ -261,13 +261,13 @@ export class AuthFormComponent implements OnInit {
         }
         this.authService.createAuth(formData).subscribe(data => {
           this.toastService.sendSuccess("Registro exitoso.");
-          
+
         });
       }
       else {
         this.authService.updateAuth(formData).subscribe(data => {
           this.toastService.sendSuccess("Autorización exitosa.");
-          
+
         });
       }
       setTimeout(() => {
@@ -289,7 +289,7 @@ export class AuthFormComponent implements OnInit {
     const modalRef = this.modalService.open(RangeModalComponent, {size: 'xl'});
     console.log('range request ' + this.authForm.get('authRangeRequest')?.value)
     console.log('value ' + this.authForm.controls['visitorType'].value)
-    
+
     modalRef.componentInstance.ranges = this.authForm.get('authRangeRequest')?.value
     modalRef.componentInstance.visitorType = this.authForm.controls['visitorType'].value
 
@@ -316,20 +316,20 @@ export class AuthFormComponent implements OnInit {
 
     // Si no hay plots cacheados, creamos un nuevo observable
     const plotsObservable = new BehaviorSubject<plot[]>([]);
-    
+
     this.plotsservice.getAllPlots(0, 2147483647, true).subscribe({
       next: (data) => {
         console.log('get all ' + data)
         if (!data?.content) {
-          console.warn('no hay lotes');          
+          console.warn('no hay lotes');
           plotsObservable.next([]);
           return;
         }
-      
+
         this.plotsFromService = data.content;
         const tempPlots: plot[] = [];
-        
-        const ownerPromises = this.plotsFromService.map(element => 
+
+        const ownerPromises = this.plotsFromService.map(element =>
           new Promise<void>((resolve) => {
             if (!element?.id) {
               resolve();
@@ -340,17 +340,17 @@ export class AuthFormComponent implements OnInit {
               next: (ownerData) => {
                 console.log(ownerData);
                 // Verificar que tenga owner con firstName, lastName y al menos un contacto
-                if (ownerData?.owner?.firstName && 
-                    ownerData?.owner?.lastName && 
-                    ownerData?.owner?.contacts && 
-                    Array.isArray(ownerData.owner.contacts) && 
+                if (ownerData?.owner?.firstName &&
+                    ownerData?.owner?.lastName &&
+                    ownerData?.owner?.contacts &&
+                    Array.isArray(ownerData.owner.contacts) &&
                     ownerData.owner.contacts.length > 0) {
-                  
+
                   const plotData = {
                     id: Number(element.id),
                     desc: '',
                     contacts: ownerData.owner.contacts,
-                    name: `${element.plotNumber}- ${element.blockNumber} - ${ownerData.owner.firstName} ${ownerData.owner.lastName}`
+                    name: `L:${element.plotNumber}- M:${element.blockNumber} - D:${ownerData.owner.firstName} ${ownerData.owner.lastName}`
                   };
                   tempPlots.push(plotData);
                 }
@@ -371,7 +371,7 @@ export class AuthFormComponent implements OnInit {
             const numB = parseInt(b.name.split('-')[0].trim()) || 0;
             return numA - numB;
           });
-          
+
           this.plots$.next(tempPlots);
           plotsObservable.next(tempPlots);
         }).catch(err => {
