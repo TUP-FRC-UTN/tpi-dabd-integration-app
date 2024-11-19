@@ -67,7 +67,6 @@ export class ProfileDetailComponent {
     if (this.id) {
       this.userService.getUserById(Number(this.id)).subscribe(
         response => {
-          console.log(response)
           this.user = response;
 
           this.userForm.patchValue({
@@ -122,7 +121,6 @@ export class ProfileDetailComponent {
   }
   setContactValue(index: number) {
     const contact = this.contacts[index];
-    console.log(contact)
     if (contact) {
       const contactFormGroup = this.userForm.get('contactsForm') as FormGroup;
 
@@ -154,7 +152,7 @@ export class ProfileDetailComponent {
     this.router.navigate(["users/changepassword"])
 
   }
-  
+
   ngOnInit(): void {
 
     this.id = this.getUserId()

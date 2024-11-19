@@ -125,14 +125,14 @@ export const USER_ROUTES: Routes = [
     component: UserUserFormComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.OWNER] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN] }
   },
   {
     path: 'user/form/:id',
     component: UserUserFormComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard],
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.OWNER] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN] }
   },
   {
     path: 'user/detail/:id',
@@ -251,7 +251,7 @@ export const USER_ROUTES: Routes = [
     component: ChangePasswordComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard] ,
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC, URLTargetType.OWNER] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC, URLTargetType.OWNER, URLTargetType.TENANT] }
 
   },
   {
@@ -259,7 +259,7 @@ export const USER_ROUTES: Routes = [
     component: ProfileDetailComponent,
     canActivate: [authGuard],
     canMatch: [hasRoleCodeGuard] ,
-    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC, URLTargetType.OWNER] }
+    data: { allowedRoleCodes: [URLTargetType.SUPERADMIN , URLTargetType.USER_ADMIN, URLTargetType.KYC, URLTargetType.OWNER, URLTargetType.TENANT] }
 
   },
   {

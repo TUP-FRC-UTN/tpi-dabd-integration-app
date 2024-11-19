@@ -13,6 +13,7 @@
             class="form-control"
             id="filter-text-box"
             (input)="onFilterTextBoxChanged($event)"
+            [(ngModel)]="dinamicFilterInput"
             placeholder="Buscar..."
           />
           <app-table-filters style="z-index: 1;" [filters]="filterConfig" (filterValueChange)="filterChange($event)" (filterValueClear)="clearFilter()"></app-table-filters>

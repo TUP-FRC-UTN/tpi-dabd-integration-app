@@ -20,7 +20,7 @@ import {
   TableComponent,
   TableFiltersComponent,
   ToastService,
-} from 'ngx-dabd-grupo01';
+} from 'ngx-dabd-grupo01'; 
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {
   BarController,
@@ -77,6 +77,7 @@ Chart.register(ChartDataLabels);
   styleUrl: './expenses-report.component.css',
 })
 export class ExpensesReportComponent {
+
   
   private readonly periodService = inject(PeriodService);
   total: number | undefined;
@@ -91,6 +92,7 @@ export class ExpensesReportComponent {
   periods: Period[] = [];
   categories: FilterOption[] = [];
   types: FilterOption[] = [];
+  listYear: number[]=[]
   filterConfig: Filter[] = [
     new SelectFilter(
       'Tipo de Top',
@@ -111,6 +113,7 @@ export class ExpensesReportComponent {
   ngOnInit(): void {
     this.loadSelect();
     this.loadExpenseData();
+    this.loadYear();
     this.loadKpis();
     this.form.valueChanges.subscribe((values) => {
       if (values.anio != null && values.mes != null) {
@@ -129,6 +132,14 @@ export class ExpensesReportComponent {
       }
     });
   }
+    loadYear(){
+      const currentYear = new Date().getFullYear();
+      
+      for (let year = currentYear; year >= 2024; year--) {
+        this.listYear.push(year);
+      }
+    }
+
   form = new FormGroup({
     mes: new FormControl(),
     anio: new FormControl(),
@@ -359,6 +370,7 @@ export class ExpensesReportComponent {
     if (this.top == null) {
       this.top = true;
     }
+
     
     this.service
       .getExpensesByLot(this.top, this.selectedPeriodId, this.countPlots)
@@ -558,18 +570,16 @@ export class ExpensesReportComponent {
       this.titulo = 'menos pagaron';
     }
     if (Number($event['count']) < 1) {
-      this.toast.sendError('El minimo de lotes es 1');
-      this.countPlots = 1;
-      return;
+      this.countPlots = 10;
     }
     if (Number($event['count']) > 15) {
       this.toast.sendError('El máximo de lotes es 15');
-      this.countPlots = 15;
-      return;
+      this.countPlots = 10;
     }
     this.loadExpenseData();
     this.loadKpis();
   }
+  
 
   onPeriodChange($event: Event): void {
     const selectedIndex = ($event.target as HTMLSelectElement).value;
@@ -577,4 +587,5 @@ export class ExpensesReportComponent {
     this.loadExpenseData();
     this.loadKpis();
   }
+  
 }

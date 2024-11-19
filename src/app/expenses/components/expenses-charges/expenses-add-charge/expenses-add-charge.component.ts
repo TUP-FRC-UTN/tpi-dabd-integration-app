@@ -7,7 +7,7 @@ import {
 } from '@angular/forms';
 import { ChargeService } from '../../../services/charge.service';
 import { CategoryCharge, Charge, ChargeType, Periods } from '../../../models/charge';
-import Lot from '../../../models/lot';
+import Lot, { Lots } from '../../../models/lot';
 import { PeriodService } from '../../../services/period.service';
 import { LotsService } from '../../../services/lots.service';
 import { CommonModule } from '@angular/common';
@@ -39,7 +39,7 @@ export class ExpensesAddChargeComponent implements OnInit{
   private router = inject(Router);
   private storage = inject(StorageService);
   toastService:ToastService = inject(ToastService)
-  lots : Lot[] = []
+  lots : Lots[] = []
 
 
   private readonly periodService = inject(PeriodService)
@@ -75,8 +75,11 @@ export class ExpensesAddChargeComponent implements OnInit{
       this.formattedPeriods = formattedPeriods;
     });
 
-    this.lotsService.get().subscribe((data: Lot[]) => {
-      this.lots = data;
+    this.lotsService.get().subscribe((data: Lots[]) => {
+      
+      let data1 =this.camelToSnake(data);
+      this.lots = data1;
+
     });
 
     this.chargeService.getCategoriesExcFines().subscribe((data: CategoryCharge[]) => {

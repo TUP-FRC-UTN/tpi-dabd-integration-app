@@ -15,7 +15,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import autoTable from 'jspdf-autotable';
-import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TableFiltersComponent, Filter, FilterConfigBuilder } from 'ngx-dabd-grupo01';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
@@ -51,7 +51,7 @@ export class InventoryTableComponent implements OnInit {
     .textFilter(
      'Artículo',
      'article',
-     '' 
+     ''
     )
     .selectFilter(
       'Estado',
@@ -101,9 +101,9 @@ export class InventoryTableComponent implements OnInit {
         console.error('Error loading inventories:', error);
         this.isLoading = false;
       }
-    });    
+    });
   }
-  
+
   searchInput:FormControl = new FormControl('');
 
   readonly infoModal = viewChild.required<TemplateRef<any>>('infoModal');
@@ -172,32 +172,6 @@ export class InventoryTableComponent implements OnInit {
      || inv.article.articleType.toLowerCase().includes(this.searchInput.value.toLowerCase() ?? '')
    );
   }
-  /*getInventories(): void {
-  this.isLoading = true;
-  this.searchInput.valueChanges.subscribe( data => {
-    if(data === null || data === ''){
-      this.loadInventories();
-    }
-    this.inventories = this.inventories.filter(
-      x => x.article.name.toLowerCase().includes(data!.toLowerCase())
-      || x.location?.toLowerCase().includes(data!.toLowerCase())
-    )
-  })
-
-  this.inventoryService.getInventories().subscribe((inventories: Inventory[]) => {
-    this.inventories = inventories.map( inventory => ({
-      ...this.mapperService.toCamelCase(inventory),
-    }));
-    this.inventories = inventories;
-    this.filteredInventories = inventories;
-    this.isLoading = false;
-    this.inventoryService.getInventories().subscribe((inventories: any[]) => {
-
-      this.inventories = inventories.map(inventory => ({
-        ...this.mapperService.toCamelCase(inventory),
-      }));
-  console.log(this.inventories)
-  })};*/
 
   // Método para convertir la unidad de medida a una representación amigable
   getDisplayUnit(unit: MeasurementUnit): string {
@@ -214,22 +188,25 @@ export class InventoryTableComponent implements OnInit {
   }
 
   deleteInventory(id: number): void {
-    Swal.fire({
-      title: '¿Estas Seguro?',
-      text: 'No podrás revertir esto',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then(result => {
-      if (result.isConfirmed) {
-        this.inventoryService.deleteInventory(id).subscribe(() => {
-          this.loadInventories();
-          this.toastService.sendSuccess('El inventario ha sido eliminado con éxito.');
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+    modalRef.componentInstance.alertTitle = 'Confirmación';
+    modalRef.componentInstance.alertMessage = '¿Estás seguro de eliminar este inventario? Esta acción no se puede revertir.';
+    modalRef.componentInstance.alertVariant = 'delete';
+
+    modalRef.result.then((result) => {
+      if (result) {
+        this.inventoryService.deleteInventory(id).subscribe({
+          next: () => {
+            this.loadInventories(); // Actualiza la lista de inventarios después de la eliminación.
+            this.toastService.sendSuccess('El inventario ha sido eliminado con éxito.');
+          },
+          error: () => {
+            this.toastService.sendError('Error al eliminar el inventario.');
+          }
         });
       }
+    }).catch(() => {
+      console.log('Eliminación cancelada por el usuario.');
     });
   }
 
@@ -257,8 +234,6 @@ export class InventoryTableComponent implements OnInit {
   }
 
   onRegisterTransactionClose() {
-    console.log('onRegisterTransactionClose');
-    debugger
     this.showRegisterTransactionForm = this.showRegisterTransactionForm;
     this.selectedInventory = null;
     this.loadInventories();
@@ -268,7 +243,6 @@ export class InventoryTableComponent implements OnInit {
     this.selectedInventory = null;
   }
   onInventoryUpdateClose() {
-    debugger
     this.showInventoryUpdate = false;
     this.selectedInventory = null;
     this.loadInventories();
@@ -383,7 +357,6 @@ filterActiveInventories(): void {
     try {
       let element = document.getElementById('inventoryTable');
       if (!element) {
-        console.warn('No se encontró el elemento con el ID "inventoryTable"');
         element = this.createTableFromData();
       }
       const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(element);
@@ -439,7 +412,7 @@ filterActiveInventories(): void {
   loadInventories(): void {
     this.isLoading = true;
     const filters = this.currentFilters;
-    
+
     this.inventoryService.getInventoriesPagedFiltered(
       this.currentPage,
       this.itemsPerPage,

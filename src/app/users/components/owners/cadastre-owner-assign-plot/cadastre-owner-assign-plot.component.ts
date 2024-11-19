@@ -83,13 +83,12 @@ export class CadastreOwnerAssignPlotComponent {
   }
 
   getAllOwners(isActive?: boolean) {
-    let filters : Record<string, any> = {"owner_kyc" : 'VALIDATED'}
+    let filters : Record<string, any> = {"owner_kyc" : 'VALIDATED', "is_active" : true}
     this.ownerService.dinamicFilters(this.currentPage - 1, this.pageSize, filters).subscribe({
       next: (response) => {
         this.owners = response.content;
         this.lastPage = response.last;
         this.totalItems = response.totalElements;
-        console.log(this.owners)
       },
       error: (error) => console.error('Error al obtener owners: ', error),
     });
@@ -114,7 +113,8 @@ export class CadastreOwnerAssignPlotComponent {
   dinamicFilter() {
     this.filters = {
       ...this.filters,
-      "owner_kyc" : 'VALIDATED'
+      "owner_kyc" : 'VALIDATED',
+      "is_active" : true
     }
     this.ownerService.dinamicFilters(this.currentPage - 1, this.pageSize, this.filters).subscribe({
       next : (result) => {
@@ -158,7 +158,6 @@ export class CadastreOwnerAssignPlotComponent {
   }
 
   onSubmit() {
-    console.log(this.plotForm.controls)
     if (this.plotForm.valid && this.selectedOwner?.id) {
       const blockNumber = this.plotForm.controls['blockNumber'].value;
       const plotNumber = this.plotForm.controls['plotNumber'].value;

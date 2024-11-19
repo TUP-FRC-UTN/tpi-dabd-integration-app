@@ -111,7 +111,6 @@ export class FilesFormComponent implements OnInit {
 
   getUserSession() {
     const user = sessionStorage.getItem('user');
-    console.log('Usuario logueado: ', user);
     if (user) {
       const parsedUser = JSON.parse(user);
       const ownerId = parsedUser.value.owner_id;
@@ -158,7 +157,6 @@ export class FilesFormComponent implements OnInit {
       this.plots.forEach((plot) => {
         this.plotService.getPlotFilesById(plot.id).subscribe({
           next: (response) => {
-            console.log('Plot files: ', response);
             if (response.length > 0) {
               this.uploadedFiles.set('plotFile-' + plot.id, response[0]);
             }
@@ -195,7 +193,6 @@ export class FilesFormComponent implements OnInit {
 
   // metodo para solicitar cambio
   requestChange(file: any) {
-    console.log('Solicitar cambio ', file);
   }
 
   openNotes(file?: any) {
@@ -208,9 +205,6 @@ export class FilesFormComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log('Archivos para subir. onUpload() ', this.files);
-    console.log('Archivos para subir del Owner. onUpload() ', this.ownerFiles);
-    console.log('Archivos para subir del Plot. onUpload() ', this.plotFiles);
 
     if (this.ownerFiles.length == 0 && this.plotFiles.length == 0) {
       this.toastService.sendError('No hay archivos seleccionados');
@@ -223,7 +217,6 @@ export class FilesFormComponent implements OnInit {
 
       modalRef.result.then((result) => {
         if (result) {
-          console.log("llamar a los métodos del service");
 
           if (this.owner.id) {
             // archivos del owner (dniFront, dniBack)
@@ -235,7 +228,6 @@ export class FilesFormComponent implements OnInit {
                   if (filePut) {
                     return this.fileService.updateFile(filePut.id, filePut.fileType, file.file).pipe(
                       tap((response) => {
-                        console.log('Owner File updated successfully:', response);
                       }),
                       catchError((error) => {
                         console.error('Error updating file:', error);
@@ -251,7 +243,6 @@ export class FilesFormComponent implements OnInit {
                   const fileTypeMap: FileTypeMap = this.createFileTypeMap([file]);
                   return this.fileService.uploadFilesOwner([file.file], fileTypeMap, this.owner.id!).pipe(
                     tap((response) => {
-                      console.log('Owner File uploaded successfully:', response);
                     }),
                     catchError((error) => {
                       console.error('Error uploading file:', error);
@@ -280,7 +271,6 @@ export class FilesFormComponent implements OnInit {
                 if (filePut) {
                   return this.fileService.updateFile(filePut.id, filePut.fileType, file.file).pipe(
                     tap((response) => {
-                      console.log('Plot File updated successfully:', response);
                     }),
                     catchError((error) => {
                       console.error('Error updating file:', error);
@@ -295,10 +285,9 @@ export class FilesFormComponent implements OnInit {
                 // Llamada al post si el archivo no existe
                 const fileTypeMap: FileTypeMap = this.createFileTypeMap([file]);
                 const plotId = parseInt(file.id.split('-')[1], 10);
-        
+
                 return this.fileService.uploadFilesPlot([file.file], fileTypeMap, plotId).pipe(
                   tap((response) => {
-                    console.log('Plot File uploaded successfully:', response);
                   }),
                   catchError((error) => {
                     console.error('Error uploading file:', error);
@@ -347,7 +336,6 @@ export class FilesFormComponent implements OnInit {
     } else {
       this.ownerFiles.filter((file) => file.id != controlName);
     }
-    console.log('Files del owner: ', this.ownerFiles);
   }
 
   onFileSelectedPlot(event: Event, controlName: string): void {
@@ -362,14 +350,12 @@ export class FilesFormComponent implements OnInit {
     } else {
       this.plotFiles.filter((file) => file.id != controlName);
     }
-    console.log('Files del plot: ', this.plotFiles);
   }
 
   renameFileIfNeeded(originalFile: File): File {
     let counter = 0;
     let newFileName = originalFile.name;
     while (this.isFileNameInMap(newFileName)) {
-      console.log('Colision');
       newFileName = counter + originalFile.name;
       counter++;
     }

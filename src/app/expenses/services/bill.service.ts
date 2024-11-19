@@ -105,8 +105,11 @@ export class BillService {
     if (status && status !== 'undefined') {
       params = params.set('status', status);
     }
+    
 
     let result = this.http.get<PaginatedResponse<BillDto>>(`${this.url}bills`, { params });
+    let completeUrl = `${this.url}bills${ params }`;
+    console.log(`URL: ${completeUrl}`);
     result.subscribe({
       next: (data) => {
         console.log('Response Content:', data.content);
@@ -210,7 +213,7 @@ export class BillService {
       status: 'Nuevo',
       category_id: Number(bill.categoryId),
       supplier_id: Number(bill.supplierId),
-      supplier_employee_type: 'SUPPLIER',
+      supplier_employee_type: bill.supplierEmployeeType,
       type_id: Number(bill.typeId),
       period_id: Number(bill.periodId),
       link_pdf: '',

@@ -39,7 +39,7 @@
       <div class="col-md-6">
         <div class="d-flex align-items-center">
           <label for="total-area" class="col-form-label col-md-3">Área Total<label class="text-danger">*</label></label>
-          <input type="number" class="form-control" id="total-area" formControlName="totalArea"
+          <input type="number" class="form-control" id="total-area" formControlName="totalArea" (ngModelChange)="onTotalAreaChange($event)"
                  [ngClass]="{'is-invalid': plotForm.get('totalArea')?.invalid && plotForm.get('totalArea')?.touched,
                   'is-valid': plotForm.get('totalArea')?.valid && plotForm.get('totalArea')?.touched}">
         </div>
@@ -61,7 +61,8 @@
         <div>
           @if (plotForm.get('builtArea')?.touched && plotForm.get('builtArea')?.invalid) {
             @if (plotForm.get('builtArea')?.getError('required')) {<small class="text-danger ms-2">Requerido</small>}
-            @if (plotForm.get('builtArea')?.getError('min')) {<small class="text-danger ms-2">El número mínimo es 1</small>}
+            @if (plotForm.get('builtArea')?.getError('min')) {<small class="text-danger ms-2">El número mínimo es 0</small>}
+            @if (plotForm.get('builtArea')?.getError('max')) {<small class="text-danger ms-2">No puede ser mayor al área total</small>}
           }
         </div>
       </div>

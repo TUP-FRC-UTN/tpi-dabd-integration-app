@@ -181,7 +181,7 @@
 
 <ng-template #infoModal let-modal>
   <div class="modal-header fs-6 py-1">
-    <h4 class="modal-title">Formulario de Artículos</h4>
+    <h4 class="modal-title">Formulario de Inventarios</h4>
     <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
   </div>
   <div class="modal-body fs-6 py-2">
@@ -190,25 +190,29 @@
       <div class="alert alert-info mb-2 py-2">
         <h5 class="alert-heading">¿Qué es esta pantalla?</h5>
         <p class="mb-0 small">
-          Esta pantalla te permite registrar un nuevo artículo.
+          Esta pantalla te permite registrar un nuevo artículo con su inventario.
         </p>
       </div>
 
       <!-- Campos Principales -->
       <div class="card mb-2">
         <div class="card-header py-1">
-          <h5 class="mb-0">Datos de Artículos</h5>
+          <h5 class="mb-0">Aclaraciones</h5>
         </div>
         <div class="card-body py-2">
           <ul class="list-group list-group-flush">
             <li class="list-group-item py-1">
-              <strong>Campos a ingresar:</strong><br />
-              Se solicitarán: Tipo, Nombre, Categoría, Descripción, Precio,
-              Stock, Stock Mínimo, Ubicación y Medida.
+              <strong>Tipo:</strong> Define si el artículo es registrable o no. <br/>
+              Si es registrable:
+              <ul class="">
+                <li>Se habilitará el campo "Identificador" (opcional).</li>
+                <li>La unidad de medida será en unidades.</li>
+                <li>El stock por defecto será uno, sin mínimo requerido.</li>
+              </ul>
             </li>
             <li class="list-group-item py-1">
-              <strong>CAMPOS OBLIGATORIOS:</strong><br />
-              Los campos marcados con * son obligatorios.
+              <strong>Campos Obligatorios:</strong> Los campos marcados con
+              <span class="text-danger">*</span> son obligatorios.
             </li>
           </ul>
         </div>
@@ -224,10 +228,10 @@
             <li class="list-group-item py-1">
               <strong>Guardar:</strong> En caso de que todos los campos se
               encuentren correctamente completados se guardará el nuevo
-              artículo.
+              artículo inventariado.
             </li>
             <li class="list-group-item py-1">
-              <strong>Cancelar:</strong> Se cancela el registro del artículo
+              <strong>Cancelar:</strong> Se cancela el registro del inventario
               y nos devuelve al listado de inventario.
             </li>
           </ul>
@@ -238,8 +242,7 @@
       <div class="alert alert-warning py-2 mb-0">
         <h5 class="alert-heading">Nota:</h5>
         <p class="mb-0 small">
-          Asegúrate de verificar la información antes de ingresar un
-          artículo.
+          Asegúrate de verificar la información antes de ingresar un inventario.
         </p>
       </div>
     </div>

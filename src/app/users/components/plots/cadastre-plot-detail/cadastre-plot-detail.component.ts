@@ -54,7 +54,6 @@ export class CadastrePlotDetailComponent {
         }
       }
     }
-    console.log("Algo salio mal.");
     return;
   }
 
@@ -104,13 +103,13 @@ export class CadastrePlotDetailComponent {
       keyboard: false,
       centered: true,
       scrollable: true
-    });  
-    
+    });
+
     modalRef.componentInstance.title = 'Detalles de Lotes';
     modalRef.componentInstance.description = 'Esta pantalla permite visualizar los datos detallados de los lotes.';
     modalRef.componentInstance.body = [
-      { 
-        title: 'Datos', 
+      {
+        title: 'Datos',
         content: [
           {
             strong: 'Número de Manzana:',
@@ -142,6 +141,6 @@ export class CadastrePlotDetailComponent {
     modalRef.componentInstance.notes = [
       'La interfaz está diseñada para ofrecer una gestión eficiente y segura de la información de los lotes, manteniendo la integridad y precisión de los datos.'
     ];
-    
+
   }
 }

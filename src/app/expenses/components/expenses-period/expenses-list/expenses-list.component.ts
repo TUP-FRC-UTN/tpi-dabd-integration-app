@@ -7,7 +7,7 @@ import Period from '../../../models/period';
 import {CommonModule, DatePipe} from '@angular/common';
 import { PeriodService } from '../../../services/period.service';
 import { LotsService } from '../../../services/lots.service';
-import Lot from '../../../models/lot';
+import Lot, { Lots } from '../../../models/lot';
 import { BillService } from '../../../services/bill.service';
 import BillType from '../../../models/billType';
 import * as XLSX from 'xlsx'
@@ -84,29 +84,39 @@ export class ExpensesListComponent implements OnInit{
       this.selectedPeriodId = Number(periodPath) ;
     }
     this.loadSelect()
-    this.loadExpenses();
-    const user = this.storageService.getFromLocalStorage('user') as User;
-
+    this.loadExpenses()
   }
+  
   loadExpenses(page: number = 0, size: number = 10): void {
-    debugger
     if (this.periodPath != null) {
       this.selectedPeriodId = Number(this.periodPath)
-    }
-    this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
-      this.expenses = data.content.map(expense => {
-        const expenses = this.keysToCamel(expense) as Expense;
-        return {
-          ...expenses,
-          month: this.getMonthName(expense.period.month),
-        };
+      this.service.getByPeriod(Number(this.periodPath)).subscribe(data=>{
+        this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
+          this.expenses = data.content.map(expense => {
+            const expenses = this.keysToCamel(expense) as Expense;
+            return {
+              ...expenses,
+              month: this.getMonthName(expense.period.month),
+            };
+          });
+        })
 
+      })
+    } else {
+      this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
+        this.expenses = data.content.map(expense => {
+          const expenses = this.keysToCamel(expense) as Expense;
+          return {
+            ...expenses,
+            month: this.getMonthName(expense.period.month),
+          };
+        });
+        this.totalPages = data.totalPages;
+        this.totalItems = data.totalElements;
+        this.currentPage = data.number;
+        this.updateVisiblePages();
       });
-      this.totalPages = data.totalPages;
-      this.totalItems = data.totalElements;
-      this.currentPage = data.number;
-      this.updateVisiblePages();
-    });
+    }
   }
 
   onPageSizeChange() {
@@ -174,7 +184,7 @@ export class ExpensesListComponent implements OnInit{
 
   filterConfig: Filter[] = [
     new SelectFilter('Lote','lot','Seleccione un lote',this.lotss),
-    new SelectFilter('Tipo de lote','type','Seleccione un tipo de lote',this.types),
+    new SelectFilter('Tipo de expensa','type','Seleccione un tipo de expensa',this.types),
     new SelectFilter('Periodos','period','Seleccione un periodo',this.periods)
   ]
 
@@ -195,7 +205,7 @@ export class ExpensesListComponent implements OnInit{
         this.periods.push({value: item.id, label: this.toMonthAbbr(item.month)+'/'+ item.year})
       })
     })}
-    this.lotsService.get().subscribe((data: Lot[]) => {
+    this.lotsService.get().subscribe((data: Lots[]) => {
       // @ts-ignore
       this.lotss.push({value: null, label: 'Todos'})
       data.forEach(l => {

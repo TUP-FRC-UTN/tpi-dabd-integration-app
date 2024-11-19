@@ -35,6 +35,28 @@ export class FilesViewComponent {
   totalItems: number = 0;
   filteredFilesList: ValidateOwner[] = [];
 
+  filterConfig: Filter[] = new FilterConfigBuilder()
+    .selectFilter(
+      'Tipo de Documento',
+      'doc_type',
+      'Seleccione un tipo de documento',
+      [
+        { value: 'DNI', label: 'DNI' },
+        { value: 'ID', label: 'Cédula' },
+        { value: 'PASSPORT', label: 'Pasaporte' },
+      ]
+    )
+    .selectFilter(
+      'Estado del Propietario',
+      'owner_kyc',
+      'Seleccione un estado del propietario',
+      [
+        { value: 'INITIATED', label: 'Iniciado' },
+        { value: 'TO_VALIDATE', label: 'Para Validar' },
+        { value: 'VALIDATED', label: 'Validado' }
+      ]
+    )
+    .build();
 
   owners: Owner[] = [];
   private filteredOwnersList = new BehaviorSubject<Owner[]>([]);
@@ -52,8 +74,7 @@ export class FilesViewComponent {
 
 
   ngOnInit() {
-
-    this.getAllOwners(true);
+    this.confirmSearch();
     this.filteredOwnersList.subscribe(ow => console.log(ow));
 
   }
@@ -62,10 +83,17 @@ export class FilesViewComponent {
     return mapKycStatus(type);
   }
 
+  filters?: Record<string, any>
+
 
   // metodos para obtener owners
-  getAllOwners(isActive?: boolean) {
-    this.ownerService.getOwners(this.currentPage - 1, this.pageSize, isActive).subscribe({
+  getAllOwners() {
+    let fixFilter = {
+      ...this.filters,
+      "is_active" : true,
+      "owner_kyc" : "TO_VALIDATE"
+    }
+    this.ownerService.dinamicFilters(this.currentPage - 1, this.pageSize, fixFilter).subscribe({
       next: (response) => {
         this.owners = response.content;
         this.filteredOwnersList.next([...this.owners]);
@@ -79,7 +107,6 @@ export class FilesViewComponent {
 
 
   ownerFilesDetail(id: number | undefined) {
-    console.log("ver archivos del propietario");
     this.router.navigate([`/users/files/${id}/view`]);
   }
 
@@ -102,12 +129,12 @@ export class FilesViewComponent {
 
   onItemsPerPageChange() {
     this.currentPage = 1;
-    this.getAllOwners();
+    this.confirmSearch();
   }
 
   onPageChange(page: number) {
     this.currentPage = page;
-    this.getAllOwners();
+    this.confirmSearch();
   }
 
   toggleView(type: string){}
@@ -262,53 +289,11 @@ export class FilesViewComponent {
   ownerStatusDictionary = OwnerStatusDictionary;
   ownerDictionaries = [this.documentTypeDictionary, this.ownerTypeDictionary, this.ownerStatusDictionary];
 
-  filterConfig: Filter[] = new FilterConfigBuilder()
-    .selectFilter(
-      'Tipo de Documento',
-      'doc_type',
-      'Seleccione un tipo de documento',
-      [
-        { value: 'DNI', label: 'DNI' },
-        { value: 'ID', label: 'Cédula' },
-        { value: 'PASSPORT', label: 'Pasaporte' },
-      ]
-    )
-    .selectFilter(
-      'Tipo de Propietario',
-      'owner_type',
-      'Seleccione un tipo de propietario',
-      [
-        { value: 'PERSON', label: 'Persona' },
-        { value: 'COMPANY', label: 'Compañía' },
-        { value: 'OTHER', label: 'Otro' },
-      ]
-    )
-    .selectFilter(
-      'Estado del Propietario',
-      'owner_kyc',
-      'Seleccione un estado del propietario',
-      [
-        { value: 'INITIATED', label: 'Iniciado' },
-        { value: 'TO_VALIDATE', label: 'Para Validar' },
-        { value: 'VALIDATED', label: 'Validado' },
-        { value: 'CANCELED', label: 'Cancelado' },
-      ]
-    )
-    .selectFilter('Activo', 'is_active', '', [
-      { value: 'true', label: 'Activo' },
-      { value: 'false', label: 'Inactivo' },
-    ])
-    .build();
 
   filterChange($event: Record<string, any>) {
-    this.ownerService.dinamicFilters(0, this.pageSize, $event).subscribe({
-      next: (result) => {
-        this.owners = result.content;
-        this.filteredOwnersList.next([...result.content]);
-        this.lastPage = result.last;
-        this.totalItems = result.totalElements;
-      },
-    });
+    this.filters = $event;
+    this.currentPage = 0
+    this.confirmSearch();
   }
 
   /**
@@ -406,4 +391,28 @@ export class FilesViewComponent {
   }
   //#end region
 
+  clearFilter() {
+    this.filters = undefined;
+    this.confirmSearch();
+  }
+
+  confirmSearch() {
+    this.filters == undefined ? this.getAllOwners() : this.dinamicFilters()
+  }
+
+  dinamicFilters() {
+    let fixFilter = {
+      ...this.filters,
+      "is_active" : true
+    }
+    this.ownerService.dinamicFilters(this.currentPage - 1, this.pageSize, fixFilter).subscribe({
+      next: (response) => {
+        this.owners = response.content;
+        this.filteredOwnersList.next([...this.owners]);
+        this.lastPage = response.last;
+        this.totalItems = response.totalElements;
+      },
+      error: (error) => console.error('Error al obtener owners: ', error),
+    });
+  }
 }

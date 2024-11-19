@@ -59,7 +59,7 @@ export class UsersCreatedByUserComponent {
   //#endregion
 
   ngOnInit() {
-    let id = this.sessionService.getItem("user").id   
+    let id = this.sessionService.getItem("user").id
 
     if (id) {
       this.userService.getUserById(id).subscribe({
@@ -134,16 +134,16 @@ export class UsersCreatedByUserComponent {
    */
   exportToPdf() {
     const doc = new jsPDF();
-  
+
     doc.setFontSize(18);
-    doc.text('Usuarios creados por' + this.userName, 14, 20);    
+    doc.text('Usuarios creados por ' + this.userName, 14, 20);
 
     this.userService.getUsersCreatedBy(this.userId.toString(), 0, this.LIMIT_32BITS_MAX).subscribe({
       next: (data) => {
         autoTable(doc, {
           startY: 30,
           head: [['Nombre completo', 'Nombre de usuario', 'Email', 'Activo',]],
-          body: data.map(((user: User) => [
+          body: data.content.map(((user: User) => [
             user.firstName + ' ' + user.lastName,
             user.userName,
             user.email,
@@ -159,10 +159,10 @@ export class UsersCreatedByUserComponent {
   exportToExcel() {
     this.userService.getUsersCreatedBy(this.userId.toString(), 0, this.LIMIT_32BITS_MAX).subscribe({
       next: (data) => {
-        const toExcel = data.map((user: User) => ({
+        const toExcel = data.content.map((user: User) => ({
           'Nombre completo': user.firstName + ' ' + user.lastName,
           'Nombre de usuario': user.userName,
-          'Email': user.email,  
+          'Email': user.email,
           'Activo': user.isActive? 'Activo' : 'Inactivo'
         }));
         const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);
@@ -215,7 +215,7 @@ export class UsersCreatedByUserComponent {
 
   //#endregion
   filterChange($event: Record<string, any>) {
-    console.log($event)
+    // console.log($event)
   }
 
   openInfo(){

@@ -154,7 +154,7 @@ export class UserService {
     );
   }
 
-  dinamicFilters(page: number, size: number, params: any) {
+  dinamicFilters(page: number, size: number, params: any): Observable<PaginatedResponse<User>> {
     let httpParams = new HttpParams()
       .set('page', page >= 0 ? page.toString() : '0')
       .set('size', size.toString());
