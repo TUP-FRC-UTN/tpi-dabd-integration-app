@@ -26,7 +26,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { InventoryDashboardInfoComponent } from './inventory-dashboard-info/inventory-dashboard-info.component';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { InventoryStockMinModalComponent } from './inventory-dashboard-StockMin/Inventory-StockMin';
+import { InventoryStockMinModalComponent } from './inventory-dashboard-StockMin/inventory-stockMin';
 Chart.register(...registerables, ChartDataLabels);
 Chart.register(
   ArcElement,
