@@ -234,7 +234,6 @@ export class RolesListComponent implements OnInit {
    * Redirects to the specified form path.
    */
   redirectToForm() {
-    console.log(this.formPath);
     this.router.navigate([this.formPath]);
   }
 

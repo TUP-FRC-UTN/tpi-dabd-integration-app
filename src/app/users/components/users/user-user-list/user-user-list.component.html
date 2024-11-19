@@ -7,13 +7,14 @@
       <div class="col-sm-12 col-md-8 col-xl-8">
         <div class="input-group" >
           <span class="input-group-text" id="search-icon">
-                  <i class="bi bi-search"></i>
-                </span>
+            <i class="bi bi-search"></i>
+          </span>
           <input
             type="text"
             class="form-control flex-grow-1"
             id="filter-text-box"
             (input)="onFilterTextBoxChanged($event)"
+            [(ngModel)]="dinamicFilterInput"
             placeholder="Buscar..."
           />
           <app-table-filters style="z-index: 1;" [filters]="filterConfig" (filterValueChange)="filterChange($event)" (filterValueClear)="clearFilter()"></app-table-filters>
@@ -94,7 +95,7 @@
                   </button>
                   <ul class="dropdown-menu">
                     @if (user.isActive == false) {
-                      <li><a class="dropdown-item btn btn-danger" (click)="reactivateUser(user.id)">Reactivar</a></li>
+                     <!--  <li><a class="dropdown-item btn btn-danger" (click)="reactivateUser(user.id)">Reactivar</a></li> -->
                     } @else {
                       <li><a class="dropdown-item btn btn-info" (click)="updateUser(user.id)" >Editar</a></li>
                       <li><a class="dropdown-item btn btn-danger" (click)="assignUserToDelete(user)" data-bs-target="#exampleModal" data-bs-toggle="modal">Eliminar</a></li>

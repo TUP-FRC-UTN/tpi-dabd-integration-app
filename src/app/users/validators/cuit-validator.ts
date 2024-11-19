@@ -8,8 +8,12 @@ export function cuitValidator(control: AbstractControl): ValidationErrors | null
 
   const cuit = control.parent.get('cuit')?.value;
 
-  if (cuit.length !== 11) {
+  if (cuit.length > 0 && cuit.length !== 11) {
     return { invalidCuit: true }
+  }
+
+  if(cuit.length === 0) {
+    return null;
   }
 
   const [checkDigit, ...rest] = cuit

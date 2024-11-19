@@ -31,7 +31,7 @@ export class OwnerFilesViewComponent implements OnInit {
   // protected fileService = inject(FileService);
   private router = inject(Router)
   private activatedRoute = inject(ActivatedRoute);
-  
+
   private toastService = inject(ToastService)
 
   private ownerPlotService = inject(OwnerPlotService);
@@ -86,13 +86,13 @@ export class OwnerFilesViewComponent implements OnInit {
     }
 
     this.canApproveOwner = this.areAllApproved();
-    
-    
+
+
     // ---------------------------------
     // descomentar estas lineas si se necesita algo mockeado
     // mock
     /* this.callMock();
-    
+
     this.canApproveOwner = this.areAllApproved();
     console.log(this.canApproveOwner) */
     // ------------------------------------
@@ -158,10 +158,7 @@ export class OwnerFilesViewComponent implements OnInit {
       })
     }
     // archivos del owner
-
-    console.log("plots: ", this.plots);
-    console.log("files: ", this.files);
-  } 
+  }
 
     /* getAllFiles(owner: Owner) {
       // Observable para procesar archivos de lotes
@@ -178,7 +175,7 @@ export class OwnerFilesViewComponent implements OnInit {
           )
         )
       );
-    
+
       // Observable para procesar archivos del propietario
       if (owner.id) {
         const ownerFiles$ = this.ownerService.getOwnerFilesById(owner.id).pipe(
@@ -207,12 +204,12 @@ export class OwnerFilesViewComponent implements OnInit {
         })
       ).subscribe();
       }
-    
+
     } */
 
     getOwnerData(ownerId: string) {
       const id = parseInt(ownerId, 10);
-    
+
       this.ownerService.getOwnerById(id).pipe(
         concatMap((ownerResponse) => {
           this.owner = ownerResponse;
@@ -220,7 +217,7 @@ export class OwnerFilesViewComponent implements OnInit {
         }),
         concatMap((plotsResponse) => {
           this.plots = plotsResponse.content;
-          const plotFilesRequests = this.plots.map(plot => 
+          const plotFilesRequests = this.plots.map(plot =>
             this.plotService.getPlotFilesById(plot.id).pipe(catchError(() => of([])))
           );
           return forkJoin(plotFilesRequests);
@@ -237,8 +234,6 @@ export class OwnerFilesViewComponent implements OnInit {
         next: (ownerFiles) => {
           this.files = [...ownerFiles, ...this.plotFiles];
           this.canApproveOwner = this.areAllApproved();
-          console.log('Plots:', this.plots);
-          console.log('Files:', this.files);
         }
       });
     }
@@ -260,10 +255,8 @@ export class OwnerFilesViewComponent implements OnInit {
 
     modalRef.componentInstance.onConfirm = () => {
       if(this.noteForm.valid) {
-        console.log(this.noteForm.value.note)
         this.fileService.updateFileStatus(file.id, status, this.noteForm.value.note).subscribe({
           next: (response) => {
-            console.log(response);
             this.toastService.sendSuccess('Estado cambiado correctamente')
             this.getAllFiles(this.owner);
           },
@@ -275,7 +268,6 @@ export class OwnerFilesViewComponent implements OnInit {
         modalRef.close();
         this.noteForm.reset();
       } else {
-        console.log("HOLA")
         this.noteForm.markAllAsTouched();
       }
 
@@ -287,7 +279,6 @@ export class OwnerFilesViewComponent implements OnInit {
     let result = true;
     if(this.files.length > 0) {
       this.files.forEach((file) => {
-        console.log("status: ", file.approvalStatus)
         if(file.approvalStatus !== 'APPROVED') {
           result = false;
         }
@@ -301,7 +292,6 @@ export class OwnerFilesViewComponent implements OnInit {
   // metodo para aprobar el KYC completo de un owner
   approveOwner() {
     if(this.areAllApproved()) {
-      console.log("aprobar KYC del owner ", this.owner);
 
       const modalRef = this.modalService.open(ConfirmAlertComponent)
       modalRef.componentInstance.alertTitle = 'Confirmación';
@@ -309,12 +299,9 @@ export class OwnerFilesViewComponent implements OnInit {
                                                 con ${this.translateTable(this.owner?.documentType, this.documentTypeDictionary)} ${this.owner?.documentNumber}?`;
       modalRef.componentInstance.alertType = 'warning';
       modalRef.componentInstance.onConfirm = () => {
-        console.log("Aca le pego al back para actualizar el estado del owner");
         if(this.owner.id) {
-          console.log(this.plots)
           this.ownerService.validateOwner(this.owner.id, this.plots[0].id, "VALIDATED").subscribe({
             next: (response) => {
-              console.log(response);
               this.toastService.sendSuccess('Propietario validado correctamente');
               this.getAllFiles(this.owner);
               this.router.navigate(["/files/view"])
@@ -451,7 +438,7 @@ export class OwnerFilesViewComponent implements OnInit {
       {
         title: 'Funcionalidades de los botones',
         content: [
-          
+
           {
             strong: 'Validar Propietario: ',
             detail: 'Botón azul que se habilita solo cuando el propietario tiene al menos 2 archivos de DNI (frente y dorso) y un archivo de escritura en estado "Aprobado". Abre un modal para confirmación.',

@@ -131,22 +131,31 @@
       
       <!-- Paginación y elementos por página -->
       <div class="d-flex justify-content-between align-items-center mt-3">
-        <ngb-pagination
-          [(page)]="currentPage"                   
-          [pageSize]="pageSize"                    
-          [collectionSize]="totalItems"            
-          (pageChange)="onPageChange($event)"      
-          [maxSize]="5"                            
-          [boundaryLinks]="false">
-        </ngb-pagination>
-        
+
         <div class="form-group mb-3 me-2">
-          <select id="itemsPerPage" class="form-select" [(ngModel)]="pageSize" (change)="onItemsPerPageChange()">
-            @for(option of sizeOptions; track $index) {
-              <option [value]="option">{{ option }} Elementos</option>
-            }
+          <select
+            id="itemsPerPage"
+            class="form-select"
+            [(ngModel)]="pageSize"
+            (change)="onItemsPerPageChange()"
+          >
+          @for(option of sizeOptions; track $index) {
+            <option [value]="option">{{ option }} Elementos</option>
+          }
           </select>
         </div>
+    
+        <div class="ms-auto"></div>
+    
+        <ngb-pagination
+        [(page)]="currentPage"
+        [pageSize]="pageSize"
+        [collectionSize]="totalItems"
+        (pageChange)="onPageChange($event)"
+        [maxSize]="5"
+        [boundaryLinks]="false"
+        ></ngb-pagination>
+    
       </div>
     </div>
 
