@@ -1,14 +1,13 @@
 <div class="modal-header fs-6 py-1">
-    <h4 class="modal-title">Información del Formulario de Gastos</h4>
+    <h4 class="modal-title">Información del panel de Expensas</h4>
     <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
   </div>
   <div class="modal-body fs-6 py-2">
     <div class="container-fluid">
       <!-- Introducción -->
       <div class="alert alert-info mb-2 py-2">
-        <h5 class="alert-heading">¿Qué es este formulario?</h5>
-        <p class="mb-0 small">Este formulario te permite registrar los gastos. Cada campo
-          ha sido diseñado para mantener un registro detallado y organizado de tus transacciones.</p>
+        <h5 class="alert-heading">¿Qué es este panel?</h5>
+        <p class="mb-0 small">Aca podras visualizar y realizar gestiones relacionadas con pagos y estados de expensas</p>
       </div>
   
       <!-- Contenido específico según el rol -->
@@ -21,19 +20,19 @@
           <div class="card-body py-2">
             <ul class="list-group list-group-flush">
               <li class="list-group-item py-1">
-                <strong>Propietario:</strong> Nombre de la persona propietaria del gasto.
+                <strong>Propietario:</strong> Nombre de la persona propietaria la expensa.
               </li>
               <li class="list-group-item py-1">
-                <strong>Lote:</strong> Identificación del lote relacionado con el gasto.
+                <strong>Lote:</strong> Identificación del lote relacionado con la expensa.
               </li>
               <li class="list-group-item py-1">
-                <strong>Periodo:</strong> Mes y año al que corresponde el gasto.
+                <strong>Periodo:</strong> Mes y año al que corresponde la expensa.
               </li>
               <li class="list-group-item py-1">
-                <strong>Total:</strong> Monto total de los gastos del periodo.
+                <strong>Total:</strong> Monto total de la expensa del periodo.
               </li>
               <li class="list-group-item py-1">
-                <strong>Estado:</strong> Estado actual del gasto (por ejemplo, pagado o pendiente).
+                <strong>Estado:</strong> Estado actual de la expensa (por ejemplo, pagado o pendiente).
               </li>
             </ul>
           </div>
@@ -75,7 +74,7 @@
                 <strong>Total:</strong> Monto total de los gastos del periodo.
               </li>
               <li class="list-group-item py-1">
-                <strong>Estado:</strong> Estado actual del gasto (por ejemplo, pagado o pendiente).
+                <strong>Estado:</strong> Estado actual del pago (por ejemplo, pagado o pendiente).
               </li>
             </ul>
           </div>
@@ -89,10 +88,10 @@
           <div class="card-body py-2">
             <ul class="list-group list-group-flush">
               <li class="list-group-item py-1">
-                <strong>Ver Ticket:</strong> Muestra el detalle del gasto y las transacciones asociadas.
+                <strong>Ver Ticket:</strong> Muestra el detalle de la expensa y las transacciones asociadas.
               </li>
               <li class="list-group-item py-1">
-                <strong>Cambiar Estado:</strong> Permite actualizar el estado del gasto (ej., de pendiente a pagado).
+                <strong>Descargar Expensa:</strong> Permite descargar la expensa en tu pc .
               </li>
             </ul>
           </div>
@@ -102,7 +101,7 @@
       <!-- Nota -->
       <div class="alert alert-warning py-2 mb-0">
         <h5 class="alert-heading">Nota:</h5>
-        <p class="mb-0 small">Los campos marcados con un asterisco (*) son obligatorios.</p>
+        <p class="mb-0 small">Resumen a titulo informativo.</p>
       </div>
     </div>
   </div>

@@ -134,7 +134,6 @@ export class HomeComponent implements OnInit {
 
   getUserSession() {
     const user = sessionStorage.getItem('user');
-    console.log('Usuario logueado: ', user);
     if (user) {
       const parsedUser = JSON.parse(user);
       return parsedUser.value.first_name;
@@ -155,13 +154,13 @@ export class HomeComponent implements OnInit {
             ...notice,
             priority: translatePriority(notice.priority),
           }));
-  
+
           this.announcements.sort((a, b) => {
             const dateA = new Date(a.date || '').getTime();
             const dateB = new Date(b.date || '').getTime();
             return dateB - dateA; // Orden descendente
           });
-  
+
           this.totalPages = response.totalPages;
           this.totalElements = response.totalElements;
         },
@@ -258,13 +257,13 @@ export class HomeComponent implements OnInit {
           this.newAnnouncement,
           this.currentUserId
         );
-  
+
     operation.subscribe({
       next: () => {
         this.modalService.dismissAll();
         this.filterAnnouncements(this.activeFilter);
         this.resetForm();
-  
+
         if (this.isEditing) {
           this.toastService.sendSuccess('La noticia se editó con éxito.');
         } else {
@@ -320,34 +319,99 @@ export class HomeComponent implements OnInit {
 
     this.http
       .get<ForecastData>(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${apiKey}`
+        `https://api.openweathermap.org/data/2.5/forecast/?q=${city}&units=metric&appid=${apiKey}`
       )
       .subscribe(
         (data) => {
-          const dailyForecasts = data.list.reduce(
-            (acc: WeatherData[], curr) => {
-              const date = new Date(curr.dt_txt || '').toLocaleDateString();
-              if (
-                !acc.find(
-                  (item) =>
-                    new Date(item.dt_txt || '').toLocaleDateString() === date
-                )
-              ) {
-                // Traducir la descripción
-                if (curr.weather[0]) {
-                  curr.weather[0].description =
-                    weatherTranslations[
-                      curr.weather[0].description.toLowerCase()
-                    ] || curr.weather[0].description;
-                }
-                acc.push(curr);
-              }
-              return acc;
-            },
-            []
-          );
+          // Obtener la fecha actual, mañana y pasado mañana
+          const today = new Date();
+          const tomorrow = new Date(today);
+          tomorrow.setDate(today.getDate() + 1); // Aumenta un día
+          const dayAfterTomorrow = new Date(today);
+          dayAfterTomorrow.setDate(today.getDate() + 2); // Aumenta dos días
 
-          this.forecast = dailyForecasts.slice(0, 3);
+          // Formatear las fechas de mañana y pasado mañana
+          const tomorrowStr = tomorrow.toLocaleDateString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
+          const dayAfterTomorrowStr = dayAfterTomorrow.toLocaleDateString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
+
+          // Filtrar los pronósticos de mañana y pasado mañana
+          const forecastsTomorrow = data.list.filter((forecast) => {
+            const forecastDate = new Date(forecast.dt_txt || '').toLocaleDateString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
+            return forecastDate === tomorrowStr;
+          });
+
+          const forecastsDayAfterTomorrow = data.list.filter((forecast) => {
+            const forecastDate = new Date(forecast.dt_txt || '').toLocaleDateString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
+            return forecastDate === dayAfterTomorrowStr;
+          });
+
+          // Obtener la hora actual en milisegundos
+          const now = new Date().getTime();
+
+          // Encontrar el pronóstico de mañana más cercano a la hora actual
+          let closestForecastTomorrow = null;
+          let minTimeDifferenceTomorrow = Infinity;
+
+          forecastsTomorrow.forEach((forecast) => {
+            const forecastTime = new Date(forecast.dt_txt || '').getTime();
+            const timeDifference = Math.abs(forecastTime - now);
+
+            if (timeDifference < minTimeDifferenceTomorrow) {
+              minTimeDifferenceTomorrow = timeDifference;
+              closestForecastTomorrow = forecast;
+            }
+          });
+
+          // Encontrar el pronóstico de pasado mañana más cercano a la hora actual
+          let closestForecastDayAfterTomorrow = null;
+          let minTimeDifferenceDayAfterTomorrow = Infinity;
+
+          forecastsDayAfterTomorrow.forEach((forecast) => {
+            const forecastTime = new Date(forecast.dt_txt || '').getTime();
+            const timeDifference = Math.abs(forecastTime - now);
+
+            if (timeDifference < minTimeDifferenceDayAfterTomorrow) {
+              minTimeDifferenceDayAfterTomorrow = timeDifference;
+              closestForecastDayAfterTomorrow = forecast;
+            }
+          });
+
+          console.log('Pronóstico más cercano de mañana:', closestForecastTomorrow);
+          console.log('Pronóstico más cercano de pasado mañana:', closestForecastDayAfterTomorrow);
+
+          if (closestForecastTomorrow) {
+            this.forecast.push(closestForecastTomorrow);
+          }
+          if (closestForecastDayAfterTomorrow) {
+            this.forecast.push(closestForecastDayAfterTomorrow);
+          }
+          // const dailyForecasts = data.list.reduce(
+          //   (acc: WeatherData[], curr) => {
+          //     const date = new Date(curr.dt_txt || '').toLocaleDateString();
+          //     if (
+          //       !acc.find(
+          //         (item) =>
+          //           new Date(item.dt_txt || '').toLocaleDateString() === date
+          //       )
+          //     ) {
+          //       // Traducir la descripción
+          //       if (curr.weather[0]) {
+          //         curr.weather[0].description =
+          //           weatherTranslations[
+          //             curr.weather[0].description.toLowerCase()
+          //           ] || curr.weather[0].description;
+          //       }
+          //       acc.push(curr);
+          //     }
+          //     return acc;
+          //   },
+          //   []
+          // );
+
+          // this.forecast = dailyForecasts.slice(0, 3);
+          // this.forecast = data.list
+          // this.forecast = this.forecast.slice(0,2)
+          // console.log(this.forecast)
         },
         (error) => {console.error('Error fetching forecast data', error)
           this.toastService.sendError('Ocurrió un error al cargar el clima');

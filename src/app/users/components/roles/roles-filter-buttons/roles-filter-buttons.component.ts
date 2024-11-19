@@ -31,7 +31,7 @@ export class RolesFilterButtonsComponent<T extends Record<string, any>>{
     item["code"],
     item["name"],
     item["prettyName"],
-    item['description'],  
+    item['description'],
     item['isActive']? 'Activo' : 'Inactivo',
   ];
 
@@ -114,7 +114,6 @@ export class RolesFilterButtonsComponent<T extends Record<string, any>>{
    * Redirects to the specified form path.
    */
   redirectToForm() {
-    console.log(this.formPath);
     this.router.navigate([this.formPath]);
   }
 
@@ -125,7 +124,7 @@ export class RolesFilterButtonsComponent<T extends Record<string, any>>{
           'Código': role.code,
           'Nombre': role.name,
           'Nombre especial': role.prettyName,
-          'Descripción': role.description,  
+          'Descripción': role.description,
           'Activo': role.active? 'Activo' : 'Inactivo'
         }));
         const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(toExcel);

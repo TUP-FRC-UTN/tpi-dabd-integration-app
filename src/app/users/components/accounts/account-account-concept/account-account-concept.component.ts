@@ -109,7 +109,6 @@ export class AccountAccountConceptComponent {
         }
       }
     }
-    console.log("Algo salio mal.");
     return;
   }
 
@@ -135,7 +134,7 @@ export class AccountAccountConceptComponent {
     this.getAllConcepts(this.plotId);
   }
   //#endregion
-  
+
   exportToPdf() {
     const table: HTMLTableElement = this.conceptsTable.nativeElement;
     this.accountService.exportTableToPdf(table, `${this.getActualDayFormat()}_${this.objectName}`);

@@ -48,7 +48,9 @@ export class UserUserFormComponent {
     addresses: Address[] = [];
     addressIndex:number | undefined = undefined;
     contact!: Contact;
-    contacts: Contact[] = [];
+    contacts: Contact[] = [
+      { contactType: "EMAIL", contactValue:"" }
+    ];
     contactIndex:number | undefined = undefined;
     rol!: Role;
     plot! : Plot;
@@ -57,25 +59,22 @@ export class UserUserFormComponent {
     provinceOptions!: any;
     countryOptions!: any;
     editMode: boolean = false;
-    emailInput: string = ""
     isSuperAdmin: boolean = false;
     adminRoles: number[] = [999];
+
+  title: string = "Registrar Usuario";
     //#endregion
 
   onEmailChange(userEmail: string): void {
-    if (this.userForm.controls["email"].valid) {
-      const index = this.contacts.findIndex(contact => contact.contactValue === userEmail);
+
+    if (this.userForm.controls["email"].errors == null) {
 
       let userContactEmail : Contact = {
         contactValue: userEmail,
         contactType: "EMAIL"
       }
 
-      if (index !== -1) {
-        this.contacts[index] = userContactEmail;
-      } else {
-        this.contacts.push(userContactEmail);
-      }
+      this.contacts[0] = userContactEmail
     }
   }
 
@@ -170,6 +169,9 @@ export class UserUserFormComponent {
       this.id = this.activatedRoute.snapshot.paramMap.get('id');
       if (this.id !== null) {
         this.userForm.controls['email'].disable();
+        this.userForm.controls['documentType'].disable();
+        this.userForm.controls['documentNumber'].disable();
+        this.title = "Editar Usuario";
         this.editMode = true
         this.setEditValues();
       } else {
@@ -212,11 +214,6 @@ export class UserUserFormComponent {
         this.userService.getUserById(Number(this.id)).subscribe(
           response => {
             this.user = response;
-            let formattedDate: any
-            if (this.user.birthdate) {
-              const [day, month, year] = this.user.birthdate?.split('/');
-              formattedDate = `${year}-${month}-${day}`;
-            }
             this.userForm.patchValue({
               email: this.user.email,
               firstName: this.user.firstName,
@@ -224,7 +221,7 @@ export class UserUserFormComponent {
               userName: this.user.userName,
               documentType: this.user.documentType,
               documentNumber: this.user.documentNumber,
-              birthdate: formattedDate
+              birthdate: this.user.birthdate
             });
 
 
@@ -235,7 +232,6 @@ export class UserUserFormComponent {
             if (this.user.contacts) {
               this.contacts = [...this.user.contacts];
             }
-            console.log(this.user.roles)
             if (this.user.roles) {
               this.roles = [...this.user.roles];
             }
@@ -338,9 +334,7 @@ export class UserUserFormComponent {
     addRol(): void {
       if (this.userForm.get('rolesForm')?.valid) {
         const rolValue = this.getRolValue()
-        console.log(rolValue.rol)
         rolValue && this.roles.push(rolValue.rol);
-        console.log(this.roles)
         this.userForm.get('rolesForm')?.reset();
       } else {
         this.toastService.sendError("Rol no válido")
@@ -392,7 +386,6 @@ export class UserUserFormComponent {
       this.user.isActive = true;
       this.user.roleCodeList = this.transformRoles(this.user)
       this.user = toSnakeCase(this.user);
-      console.log(this.user)
       delete this.user.roles;
       this.userService.addUser(this.user).subscribe({
         // '1' is x-user-id
@@ -412,9 +405,6 @@ export class UserUserFormComponent {
       if (this.user.id) {
         this.user.roles = this.transformRoles(this.user)
         delete this.user.createdDate
-        console.log(this.user)
-        console.log(this.user.documentType)
-        console.log(this.user.documentNumber)
         this.userService.updateUser(this.user.id, toSnakeCase(this.user)).subscribe({
           next: (response) => {
             this.toastService.sendSuccess("Usuario actualizado con éxito")
@@ -480,10 +470,6 @@ export class UserUserFormComponent {
   }
 
   addAddress(): void {
-
-    console.log(this.userForm.get('addressForm'));
-
-
     if (this.userForm.get('addressForm')?.valid) {
       const addressValue = this.getAddressValue()
       if (this.addressIndex == undefined && addressValue) {

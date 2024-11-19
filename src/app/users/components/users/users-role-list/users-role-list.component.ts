@@ -159,7 +159,7 @@ export class UsersRoleListComponent {
               head: [
                 ['Nombre completo', 'Nombre de usuario', 'Email', 'Activo'],
               ],
-              body: data.map((user: User) => [
+              body: data.content.map((user: User) => [
                 user.firstName + ' ' + user.lastName,
                 user.userName,
                 user.email,
@@ -185,7 +185,7 @@ export class UsersRoleListComponent {
         .getUsersByRole(this.roleSelected, 0, this.LIMIT_32BITS_MAX)
         .subscribe({
           next: (data) => {
-            const toExcel = data.map((user: User) => ({
+            const toExcel = data.content.map((user: User) => ({
               'Nombre completo': user.firstName + ' ' + user.lastName,
               'Nombre de usuario': user.userName,
               Email: user.email,

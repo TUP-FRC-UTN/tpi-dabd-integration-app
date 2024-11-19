@@ -124,62 +124,45 @@
     <!-- Asignar un lote -->
     <!-- Asignar un lote -->
     <div formGroupName="plotForm" class="row g-3">
-      <h5 class="mt-2 p-2">Asociar un lote</h5>
-      <div class="col-md-6">
-        <div class="row g-0 align-items-center">
-          <label for="block-number" class="col-form-label col-md-3"
-          >Número de Manzana</label>
-          <div class="col">
-            <input
-              type="number"
-              class="form-control"
-              id="block-number"
-              formControlName="blockNumber"
-              [ngClass]="{'is-invalid': userForm.get('plotForm')?.get('blockNumber')?.invalid && userForm.get('plotForm')?.get('blockNumber')?.touched,
-                   'is-valid': userForm.get('plotForm')?.get('blockNumber')?.valid && userForm.get('plotForm')?.get('blockNumber')?.touched}"
-              disable
-            >
-          </div>
-          <div class="col-12">
-            @if (userForm.get('plotForm.blockNumber')?.touched &&
-            userForm.get('plotForm.blockNumber')?.invalid) {
-              @if (userForm.get('plotForm.blockNumber')?.getError('min')) {
-                <small class="text-danger">El número mínimo es 1</small>
-              }
-            }
+      <h5 class="mt-2 p-2">Lote Asociados</h5>
+      @if(user.plotId) {
+        <div class="col-md-6">
+          <div class="row g-0 align-items-center">
+            <label for="block-number" class="col-form-label col-md-3"
+            >Número de Manzana</label>
+            <div class="col">
+              <input
+                type="number"
+                class="form-control"
+                id="block-number"
+                formControlName="blockNumber"
+                [ngClass]="{'is-invalid': userForm.get('plotForm')?.get('blockNumber')?.invalid && userForm.get('plotForm')?.get('blockNumber')?.touched,
+                     'is-valid': userForm.get('plotForm')?.get('blockNumber')?.valid && userForm.get('plotForm')?.get('blockNumber')?.touched}"
+                disable
+              >
+            </div>
           </div>
         </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="row g-0 align-items-center">
-          <label for="plot-number" class="col-form-label col-md-2">Número de Lote</label>
-          <div class="col">
-            <input
-              type="number"
-              class="form-control"
-              id="plot-number"
-              formControlName="plotNumber"
-              [ngClass]="{'is-invalid': userForm.get('plotForm')?.get('plotNumber')?.invalid && userForm.get('plotForm')?.get('plotNumber')?.touched,
-                   'is-valid': userForm.get('plotForm')?.get('plotNumber')?.valid && userForm.get('plotForm')?.get('plotNumber')?.touched}"
-              disable
-            >
-          </div>
-          <div class="col-12">
-            @if (userForm.get('plotForm.plotNumber')?.touched &&
-            userForm.get('plotForm.plotNumber')?.invalid) {
-              @if (userForm.get('plotForm.plotNumber')?.getError('min')) {
-                <small class="text-danger">El número mínimo es 1</small>
-              } @if (userForm.get('plotForm.plotNumber')?.getError('serverError')) {
-                <small class="text-danger"
-                >Error en el servidor, por favor intenta nuevamente</small
-                >
-              }  @if (userForm.get('plotForm.plotNumber')?.getError('plotExists')) { <small class="text-danger ms-2">
-                No existe un lote con ese número en esa manzana
-              </small> }}
+  
+        <div class="col-md-6">
+          <div class="row g-0 align-items-center">
+            <label for="plot-number" class="col-form-label col-md-2">Número de Lote</label>
+            <div class="col">
+              <input
+                type="number"
+                class="form-control"
+                id="plot-number"
+                formControlName="plotNumber"
+                [ngClass]="{'is-invalid': userForm.get('plotForm')?.get('plotNumber')?.invalid && userForm.get('plotForm')?.get('plotNumber')?.touched,
+                     'is-valid': userForm.get('plotForm')?.get('plotNumber')?.valid && userForm.get('plotForm')?.get('plotNumber')?.touched}"
+                disable
+              >
+            </div>
           </div>
         </div>
-      </div>
+      } @else {
+        <small class="text-secondary">No posees un lote asociado</small>
+      }
     </div>
 
     <div class="mb-3"></div>

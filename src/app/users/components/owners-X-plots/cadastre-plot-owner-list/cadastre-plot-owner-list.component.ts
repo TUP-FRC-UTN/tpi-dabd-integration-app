@@ -161,7 +161,6 @@ export class CadastrePlotOwnerListComponent {
         }
       }
     }
-    console.log('Algo salio mal.');
     return;
   }
 

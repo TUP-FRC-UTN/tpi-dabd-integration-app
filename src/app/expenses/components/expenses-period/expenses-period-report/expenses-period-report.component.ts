@@ -28,7 +28,7 @@ import {
   FilterOption,
   RadioFilter,
 } from 'ngx-dabd-grupo01';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Expense from '../../../models/expense';
 import { ReportPeriodService } from '../../../services/report-period/report-period.service';
 import { ReportPeriod } from '../../../models/report-period/report-period';
@@ -40,6 +40,7 @@ import * as XLSX from 'xlsx';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { ExpensesPeriodsGraphicBarComponent } from './expenses-periods-graphic-bar/expenses-periods-graphic-bar.component';
 import { ExpensesCategoryGraphicComponent } from './expenses-category-graphic/expenses-category-graphic.component';
+import { BillsReportInfoComponent } from '../../modals/info/bills-report-info/bills-report-info.component';
 @Component({
   selector: 'app-expenses-report',
   standalone: true,
@@ -79,21 +80,21 @@ export class ExpensesPeriodReportComponent implements OnInit {
     mes: new FormControl(),
     anio: new FormControl()
   });
-    reportPeriod: ReportPeriod | undefined;
+  reportPeriod: ReportPeriod | undefined;
   periodos: Period[] = [];
   filters: Filter[] = [];
-
-
+  
+  
   ordinaryData: { category: string; percentage: number }[] = [];
   extraordinaryData: { category: string; percentage: number }[] = [];
-
+  
   periodsFilter: FilterOption[] = [];
   lotss: FilterOption[] = [];
   types: FilterOption[] = [];
   
   periodsList: Period[] = [];
   filterConfig: Filter[] = [];
-
+  
   listPeriodFind: Period[] = [];
   expenses: Expense[] = [];
   searchTerm: string = '';
@@ -102,17 +103,21 @@ export class ExpensesPeriodReportComponent implements OnInit {
   resumeReportExtraordinary: any;
   typeFilter:  "Monto" | "Promedio" | "Porcentaje" = "Monto"
   typeGraphic:  "General" | "Proveedores" | "Categorias" = "General"
-
+  
   valueKPI1: number = 0;
   valueKPI2: number = 0;
   valueKPI3: number = 0;
-
+  
+  listYear : number[]=[];
+  modalService = inject(NgbModal);
+  
   constructor() {
     Chart.register(...registerables); 
   }
-
+  
   ngOnInit(): void {
     this.loadPeriodsList();
+    this.loadYear();
     this.form.valueChanges.subscribe(values => {
       if(values.anio!=null && values.mes != null){
         const period = this.periodsList.find((p)=>p.month===Number(values.mes) && p.year===Number(values.anio))
@@ -135,6 +140,15 @@ export class ExpensesPeriodReportComponent implements OnInit {
         this.loadReportPeriod(this.listPeriodFind.map(p=>p.id))
       }
     });
+    
+  }
+  
+  loadYear(){
+    const currentYear = new Date().getFullYear();
+    
+    for (let year = currentYear; year >= 2024; year--) {
+      this.listYear.push(year);
+    }
   }
   
   loadPeriodsList() {
@@ -736,12 +750,21 @@ export class ExpensesPeriodReportComponent implements OnInit {
       { wch: 10 }, // Porcentaje
       { wch: 15 }, // Promedio
     ];
-
+    
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
     XLSX.writeFile(wb, `Expenses_report:${new Date().getTime()}.xlsx`);
   }
-
+  
+  showInfo() {
+    this.modalService.open(BillsReportInfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true,
+    });
+    }
   toCamel(s: string) {
     return s.replace(/([-_][a-z])/ig, ($1) => {
       return $1.toUpperCase()
@@ -760,6 +783,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
     }     return o;
   }
 }
+
 interface Report {
   label: string;
   ordinary: number;

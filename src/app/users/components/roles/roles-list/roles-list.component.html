@@ -87,12 +87,12 @@
                   </button>
                   <ul class="dropdown-menu">
                     @if (role.active == false) {
-                      <li><a class="dropdown-item btn btn-danger" (click)="reactivatePlot(role.id)">Reactivar</a></li>
+<!--                      <li><a class="dropdown-item btn btn-danger" (click)="reactivatePlot(role.id)">Reactivar</a></li>-->
                     } @else {
                       <li><a class="dropdown-item btn btn-info" (click)="updateRole(role.id)">Editar</a></li>
-                      <li><a class="dropdown-item btn btn-danger" (click)="assignPlotToDelete(role)" data-bs-target="#exampleModal" data-bs-toggle="modal">Eliminar</a></li>
+<!--                      <li><a class="dropdown-item btn btn-danger" (click)="assignPlotToDelete(role)" data-bs-target="#exampleModal" data-bs-toggle="modal">Eliminar</a></li>-->
                     }
-                    <li><a class="dropdown-item btn btn-info" (click)="detailRole(role.id)" >Detalle</a></li>
+                    <li><a class="dropdown-item btn btn-info" (click)="detailRole(role.id)">Detalle</a></li>
                   </ul>
                 </div>
               </td>
