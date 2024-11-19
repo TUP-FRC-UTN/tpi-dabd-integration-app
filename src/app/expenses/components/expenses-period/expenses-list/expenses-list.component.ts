@@ -184,7 +184,7 @@ export class ExpensesListComponent implements OnInit{
 
   filterConfig: Filter[] = [
     new SelectFilter('Lote','lot','Seleccione un lote',this.lotss),
-    new SelectFilter('Tipo de lote','type','Seleccione un tipo de lote',this.types),
+    new SelectFilter('Tipo de expensa','type','Seleccione un tipo de expensa',this.types),
     new SelectFilter('Periodos','period','Seleccione un periodo',this.periods)
   ]
 
