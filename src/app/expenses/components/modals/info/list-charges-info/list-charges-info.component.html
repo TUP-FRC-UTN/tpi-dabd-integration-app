@@ -8,11 +8,11 @@
       <div class="alert alert-info mb-3">
         <h5 class="alert-heading fw-bold mb-2">Vista General</h5>
         <p class="mb-0">
-          listado maestro de cargos que permite la gestión integral de registros contables.
+          Listado maestro de cargos que permite la gestión integral de registros contables.
           La vista presenta todos los movimientos ordenados jerárquicamente por fecha,
           lote y categoría para facilitar el análisis y control.
           Cargos que van al lote en el periodo que se cargan, pueden ser de Tipo Multa, Servicios,
-          Limpieza, Reintegro (en caso que se le haga un descuento al lote), Otros, etc;
+          Limpieza, Reintegro (en caso que se le haga un descuento al lote), Otros, etc.
         </p>
       </div>
 
@@ -65,6 +65,26 @@
         </div>
       </div>
 
+      <!-- Acciones Disponibles -->
+      <div class="card mb-2">
+        <div class="card-header py-1">
+          <h5 class="mb-0">Acciones en la Tabla</h5>
+        </div>
+        <div class="card-body py-2">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item py-1">
+              <strong>Editar:</strong> Modifica un cargo existente.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Eliminar:</strong> Elimina un cargo del sistema.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Ver detalle:</strong> Visualiza el detalle de un cargo.
+            </li>
+          </ul>
+        </div>
+      </div>
+
       <!-- Nota Adicional -->
       <div class="alert alert-light border mb-0">
         <p class="mb-0 small">
@@ -76,7 +96,7 @@
     </div>
   </div>
   <div class="modal-footer py-2">
-    <button type="button" class="btn btn-secondary" (click)="activeModal.close()">
-      Volver
+    <button type="button" class="btn btn-primary" (click)="activeModal.close()">
+      Entendido
     </button>
   </div>
