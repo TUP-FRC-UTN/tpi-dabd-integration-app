@@ -22,7 +22,7 @@ export class AccessService {
   private apiUrl: string = environment.production
   ? `${environment.apis.accesses}access`
   : 'http://localhost:8001/access';
- 
+
   sessionService = inject(SessionService);
 
   constructor(
@@ -36,7 +36,7 @@ export class AccessService {
     isActive?: boolean
   ): Observable<{ items: AccessModel[] }> {
     const currentUser = this.sessionService.getItem('user');
-    
+
     if (!currentUser || !currentUser?.roles) {
       return new Observable(subscriber => subscriber.next({ items: [] }));
     }
@@ -63,11 +63,11 @@ export class AccessService {
 
   createAccess(data: any): Observable<AccessModel> {
     const user = this.sessionService.getItem('user');
-    
+
     if(!user) {
       console.error('Error: user es nulo o undefined');
     }
-    
+
     const headers = new HttpHeaders({
       'x-user-id': user.id.toString(),
     });
@@ -77,6 +77,10 @@ export class AccessService {
     return this.http
       .post<AccessModel>(`${this.apiUrl}/authorize`, snakeCaseData, { headers })
       .pipe(map((response) => this.caseTransformer.toCamelCase(response)));
+  }
+
+  getOwnerInfo(plotId: number): Observable<any> {
+    return this.http.get<any>(`${environment.apis.cadastre}/owner/current/plot/${plotId}`);
   }
 
   getByAction(
@@ -106,27 +110,27 @@ export class AccessService {
   getByType(visitorType?: string): Observable<PaginatedResponse<AccessModel>> {
     const currentUser = this.sessionService.getItem('user');
     const isOwner = currentUser?.roles?.some((role: { name: string; }) => role.name === 'OWNER');
-    
+
     let params = new HttpParams();
     if (visitorType) params = params.set('visitorType', visitorType);
-  
+
     return this.http.get<{ items: AccessModel[], total_elements: number }>(this.apiUrl, { params })
       .pipe(
         map((response) => {
           let items = response.items.map(item => this.caseTransformer.toCamelCase(item));
-          
+
           if (isOwner) {
             items = items.filter(item => item.authorizerId === currentUser.id);
           }
-          
+
           return {
-            totalElements: items.length, 
+            totalElements: items.length,
             items: items,
           };
         })
       );
   }
-    
+
 
   getHourlyAccesses(
     from: string,

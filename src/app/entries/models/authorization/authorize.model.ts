@@ -38,6 +38,8 @@ export interface Auth {
   authorizerId: number;
   authFirstName: string;
   authLastName: string | null;
+  ownerName?: string;
+  ownerLastName?: string;
 }
 
 export const VisitorTypeAccessDictionary: { [key: string]: string } = {
