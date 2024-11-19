@@ -424,8 +424,137 @@
     cursor: not-allowed;
 }
 
-.dark-mode li.page-item.disabled a,
-.dark-mode li.page-item.disabled span {
-    color: #888888 !important; /* Texto gris claro */
-    pointer-events: none; /* Desactivar interacción */
+/* Estilos para el modal en modo oscuro */
+.dark-mode .modal-content {
+  background-color: #2b2b2b !important; /* Fondo oscuro */
+  color: #e0e0e0 !important; /* Texto claro */
+  border-color: #444 !important; /* Borde oscuro */
 }
+
+/* Estilos para los inputs y textarea dentro del modal */
+.dark-mode .modal-content input,
+.dark-mode .modal-content textarea {
+  background-color: #333333 !important; /* Fondo oscuro para campos */
+  color: #e0e0e0 !important; /* Texto claro */
+  border: 1px solid #555555 !important; /* Borde oscuro */
+}
+
+/* Estilo para el header del modal */
+.dark-mode .modal-header {
+  background-color: #2b2b2b !important; /* Fondo oscuro */
+  color: #e0e0e0 !important; /* Texto claro */
+  border-bottom: 1px solid #444 !important; /* Borde oscuro */
+}
+
+/* Estilo para el footer del modal */
+.dark-mode .modal-footer {
+  background-color: #2b2b2b !important; /* Fondo oscuro */
+  border-top: 1px solid #444 !important; /* Borde oscuro */
+}
+
+/* Botones dentro del modal */
+.dark-mode .modal-footer .btn {
+  background-color: #444 !important; /* Fondo oscuro para botones */
+  color: #e0e0e0 !important; /* Texto claro */
+  border: 1px solid #555555 !important; /* Borde oscuro */
+}
+
+.dark-mode .modal-footer .btn:hover {
+  background-color: #555555 !important; /* Fondo más claro al pasar el cursor */
+}
+
+/* Placeholder dentro de los inputs */
+.dark-mode .modal-content input::placeholder,
+.dark-mode .modal-content textarea::placeholder {
+  color: #888888 !important; /* Color claro para placeholder */
+}
+
+/* Estilo para tooltip en modo oscuro */
+.dark-mode .tooltip-container {
+  background-color: #2B2B2B !important; /* Fondo oscuro */
+  color: #FFFFFF !important; /* Texto claro */
+  border: 1px solid #444444 !important; /* Borde oscuro */
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.5); /* Sombra para resaltarlo */
+}
+
+//prueba sin ver
+/* Estilo para tablas */
+.dark-mode .table {
+  background-color: #222;
+  color: #e0e0e0;
+}
+
+.dark-mode .table-striped tbody tr:nth-of-type(odd) {
+  background-color: #2a2a2a;
+}
+
+.dark-mode .table thead th {
+  background-color: #333;
+  color: #e0e0e0;
+}
+
+.dark-mode .table tbody td {
+  border-color: #444;
+}
+
+/* Estilo para botones */
+.dark-mode .btn-outline-primary {
+  color: #2196f3;
+  border-color: #2196f3;
+}
+
+.dark-mode .btn-outline-primary:hover {
+  background-color: #2196f3;
+  color: #fff;
+}
+
+.dark-mode .btn-outline-secondary {
+  color: #e0e0e0;
+  border-color: #555;
+}
+
+.dark-mode .btn-outline-secondary:hover {
+  background-color: #444;
+}
+
+/* Estilo para campos de entrada */
+.dark-mode .form-control {
+  background-color: #333;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+.dark-mode .form-select {
+  background-color: #333;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+/* Estilo para modales */
+.dark-mode .modal-content {
+  background-color: #222;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+.dark-mode .modal-header {
+  background-color: #333;
+  color: #e0e0e0;
+}
+
+.dark-mode .modal-footer {
+  background-color: #333;
+  color: #e0e0e0;
+}
+
+/* Estilo para paginación */
+.dark-mode .pagination .btn {
+  color: #e0e0e0;
+  background-color: #333;
+  border-color: #444;
+}
+
+.dark-mode .pagination .btn:hover {
+  background-color: #444;
+}
+
