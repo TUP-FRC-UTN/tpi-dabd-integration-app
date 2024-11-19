@@ -269,7 +269,6 @@ export class PlotsListComponent {
     if (value !== undefined && value !== null) {
       return dictionary[value];
     }
-    console.log('Algo salio mal.');
     return;
   }
 
@@ -281,7 +280,6 @@ export class PlotsListComponent {
         }
       }
     }
-    console.log('Algo salio mal.');
     return;
   }
 

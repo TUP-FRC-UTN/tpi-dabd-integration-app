@@ -61,7 +61,7 @@ export class UserUserFormComponent {
     editMode: boolean = false;
     isSuperAdmin: boolean = false;
     adminRoles: number[] = [999];
-    
+
   title: string = "Registrar Usuario";
     //#endregion
 
@@ -232,7 +232,6 @@ export class UserUserFormComponent {
             if (this.user.contacts) {
               this.contacts = [...this.user.contacts];
             }
-            console.log(this.user.roles)
             if (this.user.roles) {
               this.roles = [...this.user.roles];
             }
@@ -335,9 +334,7 @@ export class UserUserFormComponent {
     addRol(): void {
       if (this.userForm.get('rolesForm')?.valid) {
         const rolValue = this.getRolValue()
-        console.log(rolValue.rol)
         rolValue && this.roles.push(rolValue.rol);
-        console.log(this.roles)
         this.userForm.get('rolesForm')?.reset();
       } else {
         this.toastService.sendError("Rol no válido")
@@ -389,7 +386,6 @@ export class UserUserFormComponent {
       this.user.isActive = true;
       this.user.roleCodeList = this.transformRoles(this.user)
       this.user = toSnakeCase(this.user);
-      console.log(this.user)
       delete this.user.roles;
       this.userService.addUser(this.user).subscribe({
         // '1' is x-user-id
@@ -409,9 +405,6 @@ export class UserUserFormComponent {
       if (this.user.id) {
         this.user.roles = this.transformRoles(this.user)
         delete this.user.createdDate
-        console.log(this.user)
-        console.log(this.user.documentType)
-        console.log(this.user.documentNumber)
         this.userService.updateUser(this.user.id, toSnakeCase(this.user)).subscribe({
           next: (response) => {
             this.toastService.sendSuccess("Usuario actualizado con éxito")
@@ -477,10 +470,6 @@ export class UserUserFormComponent {
   }
 
   addAddress(): void {
-
-    console.log(this.userForm.get('addressForm'));
-
-
     if (this.userForm.get('addressForm')?.valid) {
       const addressValue = this.getAddressValue()
       if (this.addressIndex == undefined && addressValue) {

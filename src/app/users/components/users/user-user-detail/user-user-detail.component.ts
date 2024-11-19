@@ -174,7 +174,6 @@ export class UserUserDetailComponent {
           if (this.user.contacts) {
             this.contacts = [...this.user.contacts];
           }
-          console.log(this.user.roles)
           if (this.user.roles) {
             this.roles = [...this.user.roles];
           }
@@ -197,7 +196,6 @@ export class UserUserDetailComponent {
   //#region FUNCION CONTACTO
   setContactValue(index: number) {
     const contact = this.contacts[index];
-    console.log(contact)
     if (contact) {
       const contactFormGroup = this.userForm.get('contactsForm') as FormGroup;
 
@@ -315,7 +313,6 @@ export class UserUserDetailComponent {
     const plotFormGroup = this.userForm.get('plotForm') as FormGroup;
     this.plotService.getPlotById(plotId).subscribe(
       response => {
-        console.log(response);
         plotFormGroup.patchValue({
           plotNumber: response.plotNumber,
           blockNumber: response.blockNumber

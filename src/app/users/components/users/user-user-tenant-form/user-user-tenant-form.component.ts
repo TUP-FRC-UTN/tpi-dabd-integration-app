@@ -102,10 +102,6 @@ export class UserUserTenantFormComponent {
   //#endregion
 
   onEmailChange(userEmail: string): void {
-
-    console.log(this.userForm.controls["email"].errors);
-
-
     if (this.userForm.controls["email"].errors == null) {
 
       let userContactEmail : Contact = {
@@ -210,13 +206,12 @@ export class UserUserTenantFormComponent {
   //#region SETEAR VALORES AL FORM
   setEditValues() {
     if (this.id) {
-      
+
       // por las dudas dejo estas lineas comentadas
       // this.userForm.controls['documentType'].disable();
       // this.userForm.controls['documentNumber'].disable();
       this.userService.getUserById(Number(this.id)).subscribe(
         response => {
-          console.log(response)
           this.user = response;
 
           const [day, month, year] = this.user.birthdate.split('/');
@@ -231,7 +226,6 @@ export class UserUserTenantFormComponent {
             birthdate: formattedDate
           });
 
-          console.log(this.user.plotId)
           if (this.user.plotId) {
             this.setPlotValue(this.user.plotId)
           }
@@ -265,7 +259,6 @@ export class UserUserTenantFormComponent {
   //#region FUNCION CONTACTO
   setContactValue(index: number) {
     const contact = this.contacts[index];
-    console.log(contact)
     if (contact) {
       const contactFormGroup = this.userForm.get('contactsForm') as FormGroup;
 
@@ -341,7 +334,6 @@ export class UserUserTenantFormComponent {
   }
 
   addRol(): void {
-    console.log(this.userForm.get('plotForm'))
     if (this.userForm.get('rolesForm')?.valid) {
       const rolValue = this.getRolValue()
 
@@ -441,7 +433,6 @@ export class UserUserTenantFormComponent {
     const plotFormGroup = this.userForm.get('plotForm') as FormGroup;
     this.plotService.getPlotById(plotId).subscribe(
       response => {
-        console.log(response);
         plotFormGroup.patchValue({
           plotAssign: response.id
         })
