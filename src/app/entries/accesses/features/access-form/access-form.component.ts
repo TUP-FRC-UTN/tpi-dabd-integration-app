@@ -122,7 +122,7 @@ export class AccessFormComponent implements OnInit {
       let formData = this.accessForm.value;
       let plate = this.accessForm.get('vehicleReg')?.value;
       console.log(formData)
-      return;
+
 
       if (plate != null) {
 
