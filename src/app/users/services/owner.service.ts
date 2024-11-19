@@ -20,6 +20,8 @@ export class OwnerService {
 
   host: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}owners`;
 
+  hostOwnerXPlot: string = `${environment.production ? `${environment.apis.cadastre}` : `${environment.apis.cadastre}`}`;
+
   constructor(private http: HttpClient) {}
 
   getOwners(
@@ -74,7 +76,7 @@ export class OwnerService {
     });
 
     return this.http.post<Owner>(
-      `http://localhost:8004/owner/${ownerId}/plot/${plotId}`,
+      `${this.hostOwnerXPlot}owner/${ownerId}/plot/${plotId}`,
       undefined,
       { headers }
     );

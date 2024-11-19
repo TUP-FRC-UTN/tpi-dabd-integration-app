@@ -55,8 +55,8 @@ export class LoginComponent implements OnInit {
         const img = this.imageElement.nativeElement;
         const rect = img.getBoundingClientRect();
 
-        this.meetsMinimunSize = 
-          rect.width >= 450 && 
+        this.meetsMinimunSize =
+          rect.width >= 450 &&
           rect.height >= 450;
       }
     });
@@ -64,7 +64,7 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      
+
       this.loginService
         .login(this.loginForm.value)
         .pipe(
@@ -72,7 +72,6 @@ export class LoginComponent implements OnInit {
             if (error.status === 401) {
               this.toastService.sendError("La contraseña o el email son inválidos, por favor vuelva a intentar");
             } else {
-              console.log('An unexpected error occurred:', error);
               this.toastService.sendError("Ha sucedido un error inesperado, por favor vuelva a intentar más tarde");
             }
             return of(null);
@@ -85,7 +84,6 @@ export class LoginComponent implements OnInit {
             return of(null);
           }),
           catchError((error: HttpErrorResponse) => {
-            console.log('Error fetching user details:', error);
             this.toastService.sendError("Error al recuperar los datos del usuario, por favor vuelva a intentar más tarde")
             return of(null);
           })
@@ -100,7 +98,7 @@ export class LoginComponent implements OnInit {
   }
 
   signInWithGoogle() {
-    
+
   }
 
   forgotPassword(){

@@ -10,7 +10,7 @@ import { ChargeService } from '../../../services/charge.service';
 import { CategoryCharge } from '../../../models/charge';
 import { ExpensesUpdateChargeComponent } from '../../modals/charges/expenses-update-charge/expenses-update-charge.component';
 import { CommonModule, DatePipe } from '@angular/common';
-import Lot, { Lots } from '../../../models/lot';
+import { Lots } from '../../../models/lot';
 import { LotsService } from '../../../services/lots.service';
 import { PeriodService } from '../../../services/period.service';
 import { BorrarItemComponent } from '../../modals/borrar-item/borrar-item.component';
@@ -172,7 +172,7 @@ addCharge() {
   toMonthAbbr(month:number){
     return this.monthService.getMonthAbbr(month);
   }
-
+  
   createFilters() {
     this.filterConfig = new FilterConfigBuilder()
 
@@ -186,7 +186,7 @@ addCharge() {
   })))
   .selectFilter('Lote','lot','Seleccione un lote', this.lots.map(lot => ({
     value: lot.id.toString(),
-    label: lot.plot_number.toString()
+    label: lot.plotNumber.toString()
   })))
   .selectFilter('Tipo de Cargo','chargeType','Seleccione un tipo', this.chargeType.map(type => ({
     value : type,
@@ -224,11 +224,12 @@ addCharge() {
           });
         });
 
-        this.lots = lots;
+        this.lots = this.keysToCamel(lots) as Lots[];
         lots.forEach(lot => {
           this.lotsFilters.push({
+            
             value: lot.id.toString(),
-            label: lot.plot_number.toString(),
+            label: lot.plotNumber.toString(),
           });
         });
 
@@ -505,7 +506,7 @@ addCharge() {
 
   getPlotNumber(lotId: number) {
     const lot = this.lots.find((lot) => lot.id === lotId);
-    return lot ? lot.plot_number : undefined;
+    return lot ? lot.plotNumber : undefined;
   }
 
   isClosed(period: PeriodCharge): boolean {

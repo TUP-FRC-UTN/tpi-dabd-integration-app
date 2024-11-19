@@ -96,7 +96,7 @@ export class ExpenseServiceService {
     if (quantity !== undefined && quantity !== 0 && quantity !== null) {
       params = params.set('quantity', quantity.toString());
     }
-    console.log(periodId)
+    
     return this.http.get<expenseReport>(`${PORT}report/expense?top=` + top.toString(), {params});
   }
   getLotPercentage() : Observable<number[]> {

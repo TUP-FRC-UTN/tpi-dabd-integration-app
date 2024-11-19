@@ -115,10 +115,23 @@
         <div class="card-body">
           <div class="row">
 
+            <!-- Clima actual -->
+            <div class="col-md-4">
+              @if (weather) {
+              <div class="weather-card text-center" *ngIf="weather">
+                <h6 class="text-muted">Hoy</h6>
+                <img [src]="'http://openweathermap.org/img/w/' + weather.weather[0].icon + '.png'" alt="Clima actual">
+                <h4>{{weather.main.temp.toFixed(1)}}°C</h4>
+                <p class="weather-description">{{weather.weather[0].description}}</p>
+                <p class="text-muted">Humedad: {{weather.main.humidity}}%</p>
+              </div>
+            }
+            </div>
+
             @for (day of forecast; track $index) {
               <div class="col-md-4">
                 <div class="weather-card text-center">
-                  <h6 class="text-muted">{{($index === 0 ? "HOY" : formatDate(day.dt_txt || '')).toUpperCase()}}</h6>
+                  <h6 class="text-muted">{{(formatDate(day.dt_txt || '')).toUpperCase()}}</h6>
                   <img [src]="'http://openweathermap.org/img/w/' + day.weather[0].icon + '.png'" alt="Pronóstico">
                   <h4>{{day.main.temp.toFixed(1)}}°C</h4>
                   <p class="weather-description">{{day.weather[0].description}}</p>

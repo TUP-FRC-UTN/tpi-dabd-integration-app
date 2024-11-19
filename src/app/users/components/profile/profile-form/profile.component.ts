@@ -81,7 +81,6 @@ export class ProfileComponent {
     if (this.id) {
       this.userService.getUserById(Number(this.id)).subscribe(
         response => {
-          console.log(response)
           this.user = response;
 
           this.userForm.patchValue({
@@ -109,7 +108,6 @@ export class ProfileComponent {
   //#region FUNCION CONTACTO
   setContactValue(index: number) {
     const contact = this.contacts[index];
-    console.log(contact)
     if (contact) {
       const contactFormGroup = this.userForm.get('contactsForm') as FormGroup;
 

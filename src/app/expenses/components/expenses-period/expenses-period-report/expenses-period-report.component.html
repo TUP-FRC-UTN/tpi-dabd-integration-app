@@ -1,4 +1,4 @@
-<app-main-container title="Reporte de Gastos">
+<app-main-container title="Reporte de Gastos" (infoButtonClick)="showInfo()">
   <!-- Comment out this section to see if it causes the error -->
   <div class="container" style="overflow-x: hidden">
     <div class="card shadow-sm border border-1 px-2 p-2">
@@ -31,8 +31,10 @@
               formControlName="anio"
             >
               <option value="" disabled selected></option>
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
+              @for (item of listYear; track $index) {
+                <option value={{item}}>{{item}}</option>
+  
+              }
             </select>
           </div>
         </div>
@@ -210,7 +212,7 @@
                   class="card-subtitle mb-2 text-muted d-flex align-items-center"
                 >
                   <div class="icon-circle bg-info">
-                    <i class="bi bi-cash-stack"></i>
+                    <i class="bi bi-cash-stack"></i> 
                   </div>
                   <div class="px-1">
                     @if (typeGraphic==="General") { Gastos totales } @else{
