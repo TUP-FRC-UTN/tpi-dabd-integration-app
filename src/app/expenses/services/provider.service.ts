@@ -15,10 +15,13 @@ export class ProviderService {
 
   constructor() { }
 
-  getAllProviders(type:string):Observable<Provider[]>{
+  getAllProviders(type?:any):Observable<Provider[]>{
     try {
       console.log(type);
-      return this.http.get<Provider[]>(`${this.url}=${type}`);
+      if(type !== null|| type !== undefined){
+        return this.http.get<Provider[]>(`${this.url}=${type}`);
+      }
+      return this.http.get<Provider[]>(`${this.url}=SUPPLIER`);
 
     } catch (error) {
       throw error;

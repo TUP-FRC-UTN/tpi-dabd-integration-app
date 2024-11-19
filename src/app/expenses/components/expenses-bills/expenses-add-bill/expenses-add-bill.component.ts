@@ -119,7 +119,7 @@ export class ExpensesAddBillComponent implements OnInit {
       )
     );
     this.billForm.get('supplierEmployeeType')?.valueChanges.subscribe(() => {
-      this.loadSelectOptions();
+      this.providers = this.providerService.getAllProviders(this.billForm.get('supplierEmployeeType')?.value);
       this.billForm.get('supplierId')?.setValue('');
     })
     
@@ -170,10 +170,11 @@ export class ExpensesAddBillComponent implements OnInit {
             billRequest.amount = Number(formValue.amount);
             billRequest.date = `${formValue.date}T00:00:00Z`;
             billRequest.supplierId = Number(formValue.supplierId);
-            billRequest.supplierEmployeeType = 'SUPPLIER';
+            billRequest.supplierEmployeeType = formValue.supplierEmployeeType;
             billRequest.typeId = Number(formValue.typeId);
             billRequest.periodId = Number(formValue.periodId);
             billRequest.linkPdf = '';
+            console.log(billRequest.toString());
             return billRequest;
           }),
           switchMap((billRequest) => this.billService.addBill(billRequest, this.userID))
