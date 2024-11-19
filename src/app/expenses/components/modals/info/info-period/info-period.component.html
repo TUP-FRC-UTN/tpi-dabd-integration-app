@@ -1,61 +1,63 @@
 <div class="modal-header fs-6 py-1">
-  <h4 class="modal-title">Información de listado de Periodos</h4>
-  <button
-    type="button"
-    class="btn-close"
-    aria-label="Close"
-    (click)="activeModal.dismiss()"
-  ></button>
-</div>
-<div class="modal-body fs-6 py-2">
+  <h4 class="modal-title">Información del Listado de Períodos</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+ </div>
+ <div class="modal-body fs-6 py-2">
   <div class="container-fluid">
     <!-- Introducción -->
     <div class="alert alert-info mb-2 py-2">
-      <h5 class="alert-heading">Funcionalidad de la pantalla</h5>
-      <p class="mb-0 small">
-        Esta pantalla gestiona los periodos. La listado provee en orden
-        descendente los periodos existentes para gestionar su proceso.
-      </p>
+      <h5 class="alert-heading">¿Qué es este listado?</h5>
+      <p class="mb-0 small">Este listado muestra todos los períodos contables del sistema, con sus 
+        respectivos totales de gastos ordinarios y extraordinarios. Permite gestionar las liquidaciones 
+        y el estado de cada período.</p>
     </div>
-
-    <!-- Funcionalidades Principales -->
-    <div class="card mb-3 shadow-sm">
-      <div class="card-header bg-light py-2">
-        <h5 class="mb-0 fw-bold">Funcionalidades Principales</h5>
+ 
+    <!-- Columnas del Listado -->
+    <div class="card mb-2">
+      <div class="card-header py-1">
+        <h5 class="mb-0">Columnas del Listado</h5>
       </div>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item d-flex align-items-start py-2">
-            <div>
-              <strong>Exportación de Datos:</strong>
-              <p class="mb-0 text-muted small">
-                Botones superiores para exportar informes en diferentes formatos
-              </p>
-            </div>
+      <div class="card-body py-2">
+        <ul class="list-group list-group-flush">            
+          <li class="list-group-item py-1">
+            <strong>Fecha:</strong> Período contable en formato MM/YYYY.
           </li>
-          <li class="list-group-item d-flex align-items-start py-2">
-            <div>
-              <strong>Sistema de Filtros:</strong>
-              <p class="mb-0 text-muted small">
-                Búsqueda y filtrado por periodo, categoría, lote y tipo
-              </p>
-            </div>
+          <li class="list-group-item py-1">
+            <strong>Total Extraordinarias:</strong> Suma total de gastos extraordinarios del período.
           </li>
-          <li class="list-group-item d-flex align-items-start py-2">
-            <div>
-              <strong>Gestión de Periodo:</strong>
-              <p class="mb-0 text-muted small">
-                Inicialización de un nuevo periodo. Se creará en el orden
-                correspondiente (si el ultimo mes es diciembr, se crea enero).
-                ingresando la fecha de cierre de ese periodo.
-              </p>
-            </div>
+          <li class="list-group-item py-1">
+            <strong>Total Ordinarias:</strong> Suma total de gastos ordinarios del período.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Estado:</strong> Puede ser:
+            - Cerrado: Período finalizado y enviado a pagos
+            - Calculado: Montos actualizados y correctos
+            - Obsoleto: Existen gastos pendientes de aceptar
           </li>
         </ul>
       </div>
     </div>
-
-    <!-- Acciones -->
+ 
+    <!-- Funcionalidades -->
+    <div class="card mb-2">
+      <div class="card-header py-1">
+        <h5 class="mb-0">Funcionalidades Principales</h5>
+      </div>
+      <div class="card-body py-2">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item py-1">
+            <strong>Nuevo Período:</strong> Permite crear un nuevo período (solo disponible si no hay períodos abiertos).
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Exportación:</strong> 
+            - Botón verde para formato Excel
+            - Botón rojo para formato PDF
+          </li>
+        </ul>
+      </div>
+    </div>
+ 
+    <!-- Acciones por Período -->
     <div class="card mb-2">
       <div class="card-header py-1">
         <h5 class="mb-0">Acciones Disponibles</h5>
@@ -63,36 +65,29 @@
       <div class="card-body py-2">
         <ul class="list-group list-group-flush">
           <li class="list-group-item py-1">
-            <strong>Expensas:</strong> Redirigea a la pagina deexpensas de ese
-            periodo.
+            <strong>Ver Expensas:</strong> Acceso al listado detallado de expensas del período.
           </li>
           <li class="list-group-item py-1">
-            <strong>Liquidacion:</strong> Redirige a la pantalla liquidacion,
-            donde se visualizan cada gasto.
+            <strong>Ver Liquidación:</strong> Muestra la liquidación de expensas del período seleccionado.
           </li>
           <li class="list-group-item py-1">
-            <strong>Finalizar:</strong> Finaliza el periodo. Esta accion se puede
-            realizar despues de la fecha de finalizacion del periodo. Enviará El
-            aviso correspondiente al area de pagos. (Periodos activos)
+            <strong>Cerrar Liquidación:</strong> Disponible solo para períodos abiertos.
           </li>
           <li class="list-group-item py-1">
-            <strong>Cerrar Liquidacion:</strong> Cerrará la liquidación de ese
-            mes, impidiendo la carga de gastos hasta poder finalizar el periodo. (Periodos activos)
-          </li>
-          <li class="list-group-item py-1">
-            <strong>Abrir Liquidacion:</strong> Abrirá la liquidación de ese mes,
-            habilitando la carga de gastos hasta poder finalizar el periodo. (Periodos activos)
-          </li>
-          <li class="list-group-item py-1">
-            <strong>Cambiar fecha de fin:</strong> Permite modificar la fecha de finalizacion del periodo. (Periodos activos)
+            <strong>Modificar Fecha de Cierre:</strong> Permite ajustar la fecha de cierre del período solo si el período se encuentra abierto.
           </li>
         </ul>
       </div>
     </div>
+ 
+    <!-- Nota -->
+    <div class="alert alert-warning py-2 mb-0">
+      <h5 class="alert-heading">Nota:</h5>
+      <p class="mb-0 small">Solo puede existir un período abierto a la vez. Los totales se actualizan 
+        automáticamente según los gastos registrados, y el estado refleja la situación actual de la liquidación.</p>
+    </div>
   </div>
-</div>
-<div class="modal-footer py-2">
-  <button type="button" class="btn btn-primary" (click)="activeModal.close()">
-    Entendido
-  </button>
-</div>
+ </div>
+ <div class="modal-footer py-2">
+  <button type="button" class="btn btn-primary" (click)="activeModal.close()">Entendido</button>
+ </div>
