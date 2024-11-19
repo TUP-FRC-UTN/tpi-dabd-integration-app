@@ -1,77 +1,99 @@
-<div class="modal-header fs-6 py-2">
-  <h4 class="modal-title">Información de listado de Gastos</h4>
+<div class="modal-header fs-6 py-1">
+  <h4 class="modal-title">Información del Listado de Gastos</h4>
   <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
 </div>
-<div class="modal-body fs-6 py-3">
+<div class="modal-body fs-6 py-2">
   <div class="container-fluid">
-    <!-- Descripción General -->
-    <div class="alert alert-info mb-3">
-      <h5 class="alert-heading fw-bold mb-2">Vista General</h5>
-      <p class="mb-0">
-        Listado maestro de gastos que permite la gestión integral de registros contables.
-        La vista presenta todos los movimientos ordenados jerárquicamente por fecha,
-        categoría y proveedor para facilitar el análisis y control.
-      </p>
+    <!-- Introducción -->
+    <div class="alert alert-info mb-2 py-2">
+      <h5 class="alert-heading">¿Qué es este listado?</h5>
+      <p class="mb-0 small">Este listado te permite gestionar y monitorear los gastos del sistema, 
+        diferenciando entre gastos asociados a empleados y proveedores de servicios. Cada registro 
+        contiene información detallada y permite diferentes acciones según su estado.</p>
     </div>
 
-    <!-- Funcionalidades Principales -->
-    <div class="card mb-3 shadow-sm">
-      <div class="card-header bg-light py-2">
-        <h5 class="mb-0 fw-bold">Funcionalidades Principales</h5>
+    <!-- Columnas Principales -->
+    <div class="card mb-2">
+      <div class="card-header py-1">
+        <h5 class="mb-0">Columnas del Listado</h5>
       </div>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item d-flex align-items-start py-2">
-
-            <div>
-              <strong>Exportación de Datos:</strong>
-              <p class="mb-0 text-muted small">Botones superiores para exportar informes en diferentes formatos</p>
-            </div>
+      <div class="card-body py-2">
+        <ul class="list-group list-group-flush">            
+          <li class="list-group-item py-1">
+            <strong>Tipo:</strong> Clasificación entre gastos Ordinarios y Extraordinarios.
           </li>
-          <li class="list-group-item d-flex align-items-start py-2">
-
-            <div>
-              <strong>Edición de Registros:</strong>
-              <p class="mb-0 text-muted small">Modificación de gastos individuales mediante el ícono de lápiz</p>
-            </div>
+          <li class="list-group-item py-1">
+            <strong>Proveedor:</strong> Puede ser un Empleado o un Proveedor de servicios.
           </li>
-          <li class="list-group-item d-flex align-items-start py-2">
-
-            <div>
-              <strong>Visualización de Documentos:</strong>
-              <p class="mb-0 text-muted small">Acceso a documentación respaldatoria para auditoría</p>
-            </div>
+          <li class="list-group-item py-1">
+            <strong>Monto:</strong> Valor monetario del gasto en pesos argentinos ($).
           </li>
-          <li class="list-group-item d-flex align-items-start py-2">
-
-            <div>
-              <strong>Sistema de Filtros:</strong>
-              <p class="mb-0 text-muted small">Búsqueda y filtrado por período, categoría, proveedor, tipo y estado</p>
-            </div>
+          <li class="list-group-item py-1">
+            <strong>Período:</strong> Mes y año correspondiente al gasto.
           </li>
-          <li class="list-group-item d-flex align-items-start py-2">
-
-            <div>
-              <strong>Gestión de Gastos:</strong>
-              <p class="mb-0 text-muted small">Alta de nuevos gastos directamente desde la interfaz</p>
-            </div>
+          <li class="list-group-item py-1">
+            <strong>Categoría:</strong> Clasificación específica para análisis contable.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Fecha:</strong> Día de registro del gasto.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Estado:</strong> Puede ser Nuevo, Cancelado o Activo.
           </li>
         </ul>
       </div>
     </div>
 
-    <!-- Nota Adicional -->
+    <!-- Acciones Disponibles -->
+    <div class="card mb-2">
+      <div class="card-header py-1">
+        <h5 class="mb-0">Acciones por Registro</h5>
+      </div>
+      <div class="card-body py-2">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item py-1">
+            <strong>Ver Detalle:</strong> Disponible para todos los registros.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Editar:</strong> Permite modificar la información en cualquier estado.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Eliminar:</strong> Solo disponible para registros en estado Activo.
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Activar:</strong> Solo disponible para registros en estado Nuevo.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Funcionalidades -->
+    <div class="card mb-2">
+      <div class="card-header py-1">
+        <h5 class="mb-0">Funcionalidades Adicionales</h5>
+      </div>
+      <div class="card-body py-2">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item py-1">
+            <strong>Exportación:</strong> 
+            - Botón verde para formato Excel
+            - Botón rojo para formato PDF
+          </li>
+          <li class="list-group-item py-1">
+            <strong>Filtros:</strong> Búsqueda disponible por todas las columnas y tipo de proveedor.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Nota -->
     <div class="alert alert-warning py-2 mb-0">
-      <p class="mb-0 small">
-        <i class="bi bi-info-circle me-2"></i>
-        La interfaz está diseñada para optimizar el proceso de gestión y control de gastos,
-        manteniendo la trazabilidad documental requerida para procesos contables.
-      </p>
+      <h5 class="alert-heading">Nota:</h5>
+      <p class="mb-0 small">Las acciones disponibles para cada registro varían según su estado. 
+        Utilice los filtros superiores para facilitar la búsqueda de registros específicos.</p>
     </div>
   </div>
 </div>
 <div class="modal-footer py-2">
-  <button type="button" class="btn btn-secondary" (click)="activeModal.close()">
-    Volver
-  </button>
+  <button type="button" class="btn btn-primary" (click)="activeModal.close()">Entendido</button>
 </div>
