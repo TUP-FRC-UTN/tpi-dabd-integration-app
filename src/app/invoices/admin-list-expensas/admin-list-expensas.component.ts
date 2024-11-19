@@ -650,8 +650,8 @@ export class AdminListExpensasComponent implements OnInit {
         this.pageSize,
         $event['status'],
         $event['lotId'],
-        concatDateInit == '/' ? '' : concatDateInit,
-        concatDateEnd == '/' ? '' : concatDateEnd
+        concatDateInit == '/' ? null : concatDateInit,
+        concatDateEnd == '/' ? null : concatDateEnd
       )
       .subscribe(
         (response: PaginatedResponse<TicketDto>) => {

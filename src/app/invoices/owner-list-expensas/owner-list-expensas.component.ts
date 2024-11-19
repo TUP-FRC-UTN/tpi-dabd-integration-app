@@ -167,8 +167,8 @@ export class OwnerListExpensasComponent {
       return;
     }
 
-    const concatDateInit = !this.ticketService.isValidPeriod(monthInit , initYear) ? `${monthInit}/${initYear}` : '/';
-    const concatDateEnd = !this.ticketService.isValidPeriod(monthEnd, endYear) ? `${monthEnd}/${endYear}` : '/';
+    const concatDateInit = !this.ticketService.isValidPeriod(monthInit , initYear) ? `${monthInit}/${initYear}` : null;
+    const concatDateEnd = !this.ticketService.isValidPeriod(monthEnd, endYear) ? `${monthEnd}/${endYear}` : null;
 
     if (!this.ticketService.isValidateFullDate($event['initYear'], $event['initMonth'])) {
       return;
@@ -184,8 +184,8 @@ export class OwnerListExpensasComponent {
         this.pageSize,
         $event['status'],
         $event['lotId'],
-        concatDateInit == '/' ? '' : concatDateInit,
-        concatDateEnd == '/' ? '' : concatDateEnd
+        concatDateInit == '/' ? null : concatDateInit,
+        concatDateEnd == '/' ? null : concatDateEnd
       )
       .subscribe(
         (response: PaginatedResponse<TicketDto>) => {

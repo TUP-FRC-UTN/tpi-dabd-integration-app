@@ -135,7 +135,7 @@ export class TicketService {
       );
     }
 
-    getAllByOwnerWithFilters(page: number, size: number, status?: string, lotId?:string, firstPeriod?: string, lastPeriod?: string, ownerId?: number): Observable<PaginatedResponse<TicketDto>> {
+    getAllByOwnerWithFilters(page: number, size: number, status?: string, lotId?:string, firstPeriod?: string | null, lastPeriod?: string | null, ownerId?: number): Observable<PaginatedResponse<TicketDto>> {
       let params = new HttpParams().set('ownerId', 1);
       // .set('owner;
       // .set('page', page.toString())
@@ -240,7 +240,7 @@ export class TicketService {
       });
     }
 
-  getAllWithFilters(page: number, size: number, status?: string, lotId?:string, firstPeriod?: string, lastPeriod?: string, ownerId?: number): Observable<PaginatedResponse<TicketDto>> {
+  getAllWithFilters(page: number, size: number, status?: string, lotId?:string | null, firstPeriod?: string | null, lastPeriod?: string | null, ownerId?: number): Observable<PaginatedResponse<TicketDto>> {
     let params = new HttpParams();
       params.set('page', page.toString())
       .set('size', size.toString());
@@ -268,29 +268,21 @@ export class TicketService {
   }
 
 
-  buildRequestTicket(status?: string, firstPeriod?: string, lastPeriod?: string): RequestTicket {
-  
-    const processedFirstPeriod = firstPeriod === '' || firstPeriod === undefined ? null : firstPeriod;
-    const processedLastPeriod = lastPeriod === '' || lastPeriod === undefined ? null : lastPeriod;
-  
-    return {
-      status: status || null, 
-      firstPeriod: processedFirstPeriod,
-      lastPeriod: processedLastPeriod
+  buildRequestTicket(status?: string, firstPeriod?: string | null, lastPeriod?: string | null): RequestTicket { 
+    return { 
+      status: status ?? null, 
+      firstPeriod: firstPeriod ?? null, 
+      lastPeriod: lastPeriod ?? null 
     };
   }
   
 
-  buildRequestTicketOwner(ownerId: number, status?: string, firstPeriod?: string, lastPeriod?: string): RequestTicketOwner {
-   
-    const processedFirstPeriod = firstPeriod === '' || firstPeriod === undefined ? null : firstPeriod;
-    const processedLastPeriod = lastPeriod === '' || lastPeriod === undefined ? null : lastPeriod;
-  
-    return {
-      ownerId,
-      status: status || null, 
-      firstPeriod: processedFirstPeriod,
-      lastPeriod: processedLastPeriod
+  buildRequestTicketOwner(ownerId: number, status?: string, firstPeriod?: string | null, lastPeriod?: string | null): RequestTicketOwner { 
+    return { 
+      ownerId, 
+      status: status ?? null, 
+      firstPeriod: firstPeriod ?? null, 
+      lastPeriod: lastPeriod ?? null 
     };
   }
   
