@@ -15,7 +15,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import autoTable from 'jspdf-autotable';
-import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TableFiltersComponent, Filter, FilterConfigBuilder } from 'ngx-dabd-grupo01';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
@@ -51,7 +51,7 @@ export class InventoryTableComponent implements OnInit {
     .textFilter(
      'Artículo',
      'article',
-     '' 
+     ''
     )
     .selectFilter(
       'Estado',
@@ -101,9 +101,9 @@ export class InventoryTableComponent implements OnInit {
         console.error('Error loading inventories:', error);
         this.isLoading = false;
       }
-    });    
+    });
   }
-  
+
   searchInput:FormControl = new FormControl('');
 
   readonly infoModal = viewChild.required<TemplateRef<any>>('infoModal');
@@ -214,22 +214,25 @@ export class InventoryTableComponent implements OnInit {
   }
 
   deleteInventory(id: number): void {
-    Swal.fire({
-      title: '¿Estas Seguro?',
-      text: 'No podrás revertir esto',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then(result => {
-      if (result.isConfirmed) {
-        this.inventoryService.deleteInventory(id).subscribe(() => {
-          this.loadInventories();
-          this.toastService.sendSuccess('El inventario ha sido eliminado con éxito.');
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+    modalRef.componentInstance.alertTitle = 'Confirmación';
+    modalRef.componentInstance.alertMessage = '¿Estás seguro de eliminar este inventario? Esta acción no se puede revertir.';
+    modalRef.componentInstance.alertVariant = 'delete';
+
+    modalRef.result.then((result) => {
+      if (result) {
+        this.inventoryService.deleteInventory(id).subscribe({
+          next: () => {
+            this.loadInventories(); // Actualiza la lista de inventarios después de la eliminación.
+            this.toastService.sendSuccess('El inventario ha sido eliminado con éxito.');
+          },
+          error: () => {
+            this.toastService.sendError('Error al eliminar el inventario.');
+          }
         });
       }
+    }).catch(() => {
+      console.log('Eliminación cancelada por el usuario.');
     });
   }
 
@@ -439,7 +442,7 @@ filterActiveInventories(): void {
   loadInventories(): void {
     this.isLoading = true;
     const filters = this.currentFilters;
-    
+
     this.inventoryService.getInventoriesPagedFiltered(
       this.currentPage,
       this.itemsPerPage,
