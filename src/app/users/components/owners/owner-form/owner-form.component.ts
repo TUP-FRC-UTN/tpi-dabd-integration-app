@@ -211,7 +211,6 @@ export class OwnerFormComponent implements OnInit {
         switchMap((plot) => {
           if (plot) {
             this.plot = plot;
-            console.log(this.owner)
             this.owner.plotId = plot.id
             return this.ownerService.createOwner(this.owner);
           } else {
@@ -236,19 +235,16 @@ export class OwnerFormComponent implements OnInit {
           this.toastService.sendError(
             'Error al vincular el propietario al lote.'
           );
-          console.log('Error creating owner:', error);
         },
       });
   }
 
   updateOwner() {
     this.fillOwner();
-    console.log('Owner->', this.owner);
     if (this.owner.id) {
       this.ownerService.updateOwner(this.owner.id, this.owner).subscribe({
         next: (response) => {
           this.toastService.sendSuccess('Propietario actualizado');
-          console.log("REDIRECT")
           this.router.navigate(['/users/owner/list']);
           if (response.id) {
             this.ownerService
@@ -286,7 +282,6 @@ export class OwnerFormComponent implements OnInit {
   }
 
   fillFieldsToUpdate(owner: any): void {
-    console.log('UPDATE->', owner);
     this.ownerForm.patchValue({
       firstName: owner.firstName,
       secondName: owner.secondName,
@@ -411,7 +406,6 @@ export class OwnerFormComponent implements OnInit {
   //#region FUNCION CONTACTO
   setContactValue(index: number) {
     const contact = this.contacts[index];
-    console.log(contact)
     if (contact) {
       const contactFormGroup = this.ownerForm.get('contactsForm') as FormGroup;
 

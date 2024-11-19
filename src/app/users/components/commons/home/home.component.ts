@@ -134,7 +134,6 @@ export class HomeComponent implements OnInit {
 
   getUserSession() {
     const user = sessionStorage.getItem('user');
-    console.log('Usuario logueado: ', user);
     if (user) {
       const parsedUser = JSON.parse(user);
       return parsedUser.value.first_name;
@@ -155,13 +154,13 @@ export class HomeComponent implements OnInit {
             ...notice,
             priority: translatePriority(notice.priority),
           }));
-  
+
           this.announcements.sort((a, b) => {
             const dateA = new Date(a.date || '').getTime();
             const dateB = new Date(b.date || '').getTime();
             return dateB - dateA; // Orden descendente
           });
-  
+
           this.totalPages = response.totalPages;
           this.totalElements = response.totalElements;
         },
@@ -258,13 +257,13 @@ export class HomeComponent implements OnInit {
           this.newAnnouncement,
           this.currentUserId
         );
-  
+
     operation.subscribe({
       next: () => {
         this.modalService.dismissAll();
         this.filterAnnouncements(this.activeFilter);
         this.resetForm();
-  
+
         if (this.isEditing) {
           this.toastService.sendSuccess('La noticia se editó con éxito.');
         } else {
