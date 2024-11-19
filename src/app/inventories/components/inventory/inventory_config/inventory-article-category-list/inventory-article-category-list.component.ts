@@ -27,7 +27,7 @@ import { StatusType } from '../../../../models/inventory.model';
   ],
   templateUrl: './inventory-article-category-list.component.html',
   styleUrls: ['./inventory-article-category-list.component.css'],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA] 
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class InventoryArticleCategoryListComponent implements OnInit {
   @ViewChild('infoModal') infoModal!: TemplateRef<any>;
@@ -134,26 +134,29 @@ export class InventoryArticleCategoryListComponent implements OnInit {
   }
 
   deleteCategory(id: number): void {
-    console.log(id);
-    Swal.fire({
-      title: '¿Estas Seguro?',
-      text: 'No podrás revertir esto',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then(result => {
-      if (result.isConfirmed) {
-        this.inventoryService.deleteCategories(id).subscribe(() => {
-          this.getCategories();
-          this.toastService.sendSuccess('La categoría ha sido eliminada con éxito.');
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+    modalRef.componentInstance.alertTitle = 'Confirmación';
+    modalRef.componentInstance.alertMessage = '¿Estás seguro de eliminar esta categoría? Esta acción no se puede revertir.';
+    modalRef.componentInstance.alertVariant = 'delete';
+
+    modalRef.result.then((result) => {
+      if (result) {
+        this.inventoryService.deleteCategories(id).subscribe({
+          next: () => {
+            this.getCategories(); // Recarga la lista de categorías después de la eliminación.
+            this.toastService.sendSuccess('La categoría ha sido eliminada con éxito.');
+          },
+          error: () => {
+            this.toastService.sendError('Error al eliminar la categoría.');
+          }
         });
       }
+    }).catch(() => {
+      console.log('Eliminación cancelada por el usuario.');
     });
-  };
-  
+  }
+
+
   onCategoryUpdate(category?: ArticleCateg): void {
     this.selectedCategory = category || null;
     this.showCategoryUpdate = true;

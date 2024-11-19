@@ -103,7 +103,6 @@ isModalOpen : boolean = true;
   }
 
   onClose(){
-    debugger
     this.closeRegisterTransaction.emit();
     this.isModalOpen = false
   }

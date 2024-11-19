@@ -71,8 +71,21 @@ export class ProvideConfigComponent implements OnInit {
   filterChange($event: Record<string, any>) {
     const filters = $event;
     this.currentFilters = filters;
-    this.loadCompanies();
+    this.applyFilter();
+    //this.loadCompanies();
   }
+
+  private applyFilter(){
+    let filteredCompanies = [...this.originalCompanies];
+
+    if (this.currentFilters['enabled'] !== undefined && this.currentFilters['enabled'] !== '') {
+      const enabledValue = this.currentFilters['enabled'] === 'true';
+      filteredCompanies = filteredCompanies.filter(company => company.enabled === enabledValue);
+    }
+
+    this.companies = filteredCompanies;
+  }
+
   private filterCompanies(searchTerm: string): void {
     if (!searchTerm) {
       this.companies = [...this.originalCompanies];
@@ -90,6 +103,7 @@ export class ProvideConfigComponent implements OnInit {
       next: (response) => {
         this.originalCompanies = response;  // Guardar copia original
         this.companies = [...this.originalCompanies];  // Inicializar lista mostrada
+        this.applyFilter();
       },
       error: (error) => {
         console.error('Error loading companies:', error);
