@@ -135,7 +135,7 @@ export class TicketService {
       );
     }
 
-    getAllByOwnerWithFilters(page: number, size: number, status?: string, lotId?:string, firstPeriod?: string, lastPeriod?: string, ownerId?: number): Observable<PaginatedResponse<TicketDto>> {
+    getAllByOwnerWithFilters(page: number, size: number, status?: string, lotId?:string, firstPeriod?: string | null, lastPeriod?: string | null, ownerId?: number): Observable<PaginatedResponse<TicketDto>> {
       let params = new HttpParams().set('ownerId', 1);
       // .set('owner;
       // .set('page', page.toString())
@@ -149,7 +149,7 @@ export class TicketService {
       }
 
       const request = this.buildRequestTicketOwner(ownerId ?? 1, status, firstPeriod, lastPeriod);
-
+   
       return this.getAllByOwner(request, page, size);
 
       return this.http.get<PaginatedResponse<TicketDto>>(this.apiGetAllByOwner, { params, headers: header }).pipe(
@@ -240,7 +240,7 @@ export class TicketService {
       });
     }
 
-  getAllWithFilters(page: number, size: number, status?: string, lotId?:string, firstPeriod?: string, lastPeriod?: string, ownerId?: number): Observable<PaginatedResponse<TicketDto>> {
+  getAllWithFilters(page: number, size: number, status?: string, lotId?:string | null, firstPeriod?: string | null, lastPeriod?: string | null, ownerId?: number): Observable<PaginatedResponse<TicketDto>> {
     let params = new HttpParams();
       params.set('page', page.toString())
       .set('size', size.toString());
@@ -268,15 +268,16 @@ export class TicketService {
   }
 
 
-  buildRequestTicket(status?: string, firstPeriod?: string, lastPeriod?: string): RequestTicket { 
+  buildRequestTicket(status?: string, firstPeriod?: string | null, lastPeriod?: string | null): RequestTicket { 
     return { 
       status: status ?? null, 
       firstPeriod: firstPeriod ?? null, 
       lastPeriod: lastPeriod ?? null 
     };
   }
+  
 
-  buildRequestTicketOwner(ownerId: number, status?: string, firstPeriod?: string, lastPeriod?: string): RequestTicketOwner { 
+  buildRequestTicketOwner(ownerId: number, status?: string, firstPeriod?: string | null, lastPeriod?: string | null): RequestTicketOwner { 
     return { 
       ownerId, 
       status: status ?? null, 
@@ -284,6 +285,7 @@ export class TicketService {
       lastPeriod: lastPeriod ?? null 
     };
   }
+  
 
   updateTicketStatus(id: number, status: string): Observable<TicketDto> {
     const url = `${this.baseUrl}/tickets/updateTicketStatus/${id}`;

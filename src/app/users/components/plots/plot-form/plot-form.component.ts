@@ -67,7 +67,6 @@ export class PlotFormComponent {
         }
       }
     }
-    console.log("Algo salio mal.");
     return;
   }
   //#endregion
@@ -75,17 +74,14 @@ export class PlotFormComponent {
   onTotalAreaChange(event: any) {
     if(this.plotForm.controls['totalArea'].value) {
       const totalArea = parseFloat(this.plotForm.controls['totalArea'].value);
-      console.log("cambiando a ", totalArea);
       this.plotForm.controls['builtArea'].setValidators([Validators.required, Validators.min(0), Validators.max(totalArea)])
       this.plotForm.controls['builtArea'].updateValueAndValidity({onlySelf: true})
     }
-    
+
   }
 
   //#region ON SUBMIT
   onSubmit(): void {
-    console.log(this.plotForm.controls['builtArea']);
-    
     if (this.plotForm.valid) {
       if (this.id === null) {
         let plotFormData: any = {
@@ -100,7 +96,6 @@ export class PlotFormComponent {
         plotFormData.plot_type = this.translateCombo(this.plotForm, 'plotType', this.plotTypeDictionary);
         this.plotService.createPlot(plotFormData).subscribe(
           response => {
-            console.log('Plot created successfully:', response);
             this.router.navigate(["/users/plot/list"])
             this.toastService.sendSuccess("Lote creado con éxito")
           },
@@ -120,7 +115,6 @@ export class PlotFormComponent {
 
         this.plotService.updatePlot(Number.parseInt(this.id), plotForUpdate).subscribe(
           response => {
-            console.log('Plot updated successfully:', response);
             this.toastService.sendSuccess("Lote actualizado con éxito")
             this.router.navigate(["/users/plot/list"])
           },

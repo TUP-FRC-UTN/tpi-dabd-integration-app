@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, inject,  OnInit,  ViewChild } from '@angular/core';
 import {
   AbstractControl,
   AsyncValidatorFn,
@@ -27,6 +27,7 @@ import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 import { NgArrayPipesModule } from 'ngx-pipes';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import {SessionService} from '../../../../users/services/session.service';
+import { ProtectInfo } from 'xlsx';
 
 @Component({
   selector: 'app-expenses-add-bill',
@@ -71,7 +72,9 @@ export class ExpensesAddBillComponent implements OnInit {
   providers: Observable<Provider[]> | undefined;
   periods: Observable<Period[]> | undefined;
   types: Observable<BillType[]> | undefined;
+  employees: Observable<Provider[]>|undefined;
   userID: number;
+  lastSupplierType: string = '';
   //#endregion
 
   constructor() {
@@ -86,6 +89,7 @@ export class ExpensesAddBillComponent implements OnInit {
         [Validators.required],
         [(control) => this.dateValidator(control)],
       ],
+      supplierEmployeeType: ['',Validators.required],
       supplierId: ['', [Validators.required]],
       typeId: ['', [Validators.required]],
       periodId: ['', [Validators.required]],
@@ -101,9 +105,11 @@ export class ExpensesAddBillComponent implements OnInit {
     });
     //#endregion
   }
-
+  
   //#region Lifecycle Hooks
   ngOnInit() {
+    
+    this.billForm.get('supplierEmployeeType')?.setValue('SUPPLIER');
     this.loadSelectOptions();
     this.periods = this.periods?.pipe(
       map((periods) =>
@@ -113,7 +119,37 @@ export class ExpensesAddBillComponent implements OnInit {
         }))
       )
     );
+    this.billForm.get('supplierEmployeeType')?.valueChanges.subscribe(() => {
+      this.providers = this.providerService.getAllProviders(this.billForm.get('supplierEmployeeType')?.value);
+      this.billForm.get('supplierId')?.setValue('');
+    })
+    
   }
+  clearComponent(){
+    this.loadSelectOptions();
+  
+  // Usar setTimeout para asegurar que los datos estén disponibles
+  setTimeout(() => {
+    this.billForm.reset();
+    this.billForm.patchValue({
+      supplierEmployeeType: this.lastSupplierType,
+      description: '',
+    });
+    this.newCategoryForm.reset();
+    
+    
+    // Procesar periods después de que los datos estén cargados
+    this.periods = this.periods?.pipe(
+      map((periods) => periods.map(period => ({
+        ...period,
+        displayPeriod: `${period.month}/${period.year}`
+      })))
+    );
+  });
+    
+  }
+  
+  
   //#endregion
 
   //#region Validators
@@ -133,7 +169,7 @@ export class ExpensesAddBillComponent implements OnInit {
   //#region Data Loading
   loadSelectOptions() {
     this.categories = this.categoryService.getAllCategories();
-    this.providers = this.providerService.getAllProviders();
+    this.providers = this.providerService.getAllProviders(this.billForm.get('supplierEmployeeType')?.value);
     this.periods = this.periodService.getOpenPeriods();
     this.types = this.billService.getBillTypes();
   }
@@ -157,10 +193,11 @@ export class ExpensesAddBillComponent implements OnInit {
             billRequest.amount = Number(formValue.amount);
             billRequest.date = `${formValue.date}T00:00:00Z`;
             billRequest.supplierId = Number(formValue.supplierId);
-            billRequest.supplierEmployeeType = 'SUPPLIER';
+            billRequest.supplierEmployeeType = formValue.supplierEmployeeType;
             billRequest.typeId = Number(formValue.typeId);
             billRequest.periodId = Number(formValue.periodId);
             billRequest.linkPdf = '';
+            console.log(billRequest.toString());
             return billRequest;
           }),
           switchMap((billRequest) => this.billService.addBill(billRequest, this.userID))
@@ -170,7 +207,8 @@ export class ExpensesAddBillComponent implements OnInit {
             this.toastService.sendSuccess(
               'El gasto se ha añadido correctamente.'
             );
-            this.router.navigate([`expenses/gastos`]);
+            this.lastSupplierType = this.billForm.get('supplierEmployeeType')?.value;
+            this.clearComponent();
           },
           error: (error: any) => {
             if (error.status === 409) {

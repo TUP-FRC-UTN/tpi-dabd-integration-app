@@ -145,7 +145,7 @@ export class ChargeService {
   }
 
   getCategoryChargesPagination(page: number, size: number, type?: ChargeType, status? : boolean, excluingFines? : boolean): Observable<Page<CategoryCharge>> {
-    debugger
+    
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);    
@@ -155,11 +155,10 @@ export class ChargeService {
       params = params.set('excluingFines', excluingFines!);
     } 
     if(status != undefined && status != null) {    
-      debugger  
+        
       params = params.set('status', status!);
     }
     if (type != undefined && type != null) {    
-      debugger 
       let tipo = '';
       switch(type){
         case 'Positivo': tipo = 'ABSOLUTE'; break;

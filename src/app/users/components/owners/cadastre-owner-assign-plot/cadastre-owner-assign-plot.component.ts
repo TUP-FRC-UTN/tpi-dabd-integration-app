@@ -89,7 +89,6 @@ export class CadastreOwnerAssignPlotComponent {
         this.owners = response.content;
         this.lastPage = response.last;
         this.totalItems = response.totalElements;
-        console.log(this.owners)
       },
       error: (error) => console.error('Error al obtener owners: ', error),
     });
@@ -159,7 +158,6 @@ export class CadastreOwnerAssignPlotComponent {
   }
 
   onSubmit() {
-    console.log(this.plotForm.controls)
     if (this.plotForm.valid && this.selectedOwner?.id) {
       const blockNumber = this.plotForm.controls['blockNumber'].value;
       const plotNumber = this.plotForm.controls['plotNumber'].value;

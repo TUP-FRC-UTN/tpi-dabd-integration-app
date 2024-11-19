@@ -96,7 +96,6 @@ export class OwnerDetailComponent implements OnInit {
     if(this.addresses.length > 0) {
       this.setAddressValue(0);
     }
-    console.log('DETAIL->', owner);
     this.ownerForm.patchValue({
       firstName: owner.firstName,
       secondName: owner.secondName,

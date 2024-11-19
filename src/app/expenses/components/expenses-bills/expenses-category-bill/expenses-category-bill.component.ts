@@ -86,7 +86,6 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
     this.loadCategories();
   }
 
-  // Handlers for pagination
   onPageChange = (page: number) => {
     this.page = (page);
     this.loadCategories();
@@ -218,22 +217,11 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
       this.searchParams
     ).pipe(
       map((response) => {
-          // Mapear los datos a un formato tabular adecuado
-          const data = response.content.map(category => ({
-            'Nombre': category.name,
-            'Descripcion': category.description
-          }));
-          const fecha = new Date();
-          const finalName = this.fileName + '-' + moment(fecha).format("DD-MM-YYYY_HH-mm");
-          const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-          const wb: XLSX.WorkBook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(wb, ws, 'Categorias de Gastos');
-          XLSX.writeFile(wb, `${finalName}.xlsx`);
-          return response.content;
-        }
-      )
-    )
+        return response.content;
+      })
+    );
   }
+  
 
   imprimirPDF() {
     let doc = new jsPDF();
@@ -241,7 +229,6 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
     doc.text('Reporte de Categorias de Gastos', 14, 20);
     this.categoryService.getPaginatedCategories(0,this.totalItems,this.sortField,this.sortDirection,this.searchParams)
       .subscribe(categories => {
-        // Usando autoTable para agregar la tabla
         autoTable(doc, {
           startY: 30,
           head: [['Nombre', 'Descripcion']],
@@ -251,12 +238,9 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
             ]
           ),
         });
-        // Guardar el PDF después de agregar la tabla
         const fecha = new Date();
         const finalFileName = this.fileName + "-" + moment(fecha).format("DD-MM-YYYY_HH-mm") +".pdf";
         doc.save(finalFileName);
       });
-
   }
-
 }

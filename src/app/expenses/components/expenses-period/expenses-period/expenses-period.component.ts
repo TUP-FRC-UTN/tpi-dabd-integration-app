@@ -67,7 +67,6 @@ export class ExpensesPeriodComponent implements OnInit {
 
   changeFilter(filter: string | null) {
     if (!filter) {
-      debugger
       this.lote = null;
       this.loadList();
     }
