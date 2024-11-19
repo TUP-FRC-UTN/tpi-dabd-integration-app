@@ -1,4 +1,4 @@
-<app-main-container title="Reporte de Gastos">
+<app-main-container title="Reporte de Gastos" (infoButtonClick)="showInfo()">
   <!-- Comment out this section to see if it causes the error -->
   <div class="container" style="overflow-x: hidden">
     <div class="card shadow-sm border border-1 px-2 p-2">
@@ -212,7 +212,7 @@
                   class="card-subtitle mb-2 text-muted d-flex align-items-center"
                 >
                   <div class="icon-circle bg-info">
-                    <i class="bi bi-cash-stack"></i>
+                    <i class="bi bi-cash-stack"></i> 
                   </div>
                   <div class="px-1">
                     @if (typeGraphic==="General") { Gastos totales } @else{
