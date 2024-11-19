@@ -133,7 +133,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   }
 
   private loadSuppliers() {
-    this.supplierService.getAllProviders().subscribe((data) => {
+    this.supplierService.getAllProviders("SUPPLIER").subscribe((data) => {
       data.forEach(e => {
         this.suppliers.push({value: e.id.toString() ,label: e.name})
       })

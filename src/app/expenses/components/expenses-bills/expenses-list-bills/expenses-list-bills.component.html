@@ -90,6 +90,6 @@
     onPageSizeChange: onPageSizeChange
   }" [showSearchBar]="true" [isLoading]="isLoading" (searchValueChange)="onSearchValueChange($event)"
     (headerButtonClick)="nuevoGasto()" [showHeaderButton]="true" (filterValueChange)="onFilterValueChange($event)"
-    [tableFilters]="filterConfig" (pdfButtonClick)="imprimir()" [headerButtonIcon]="'bi bi-plus'" [headerButtonText]="''" [getAllItems]="getAllItems">
+    [tableFilters]="filterConfig" (pdfButtonClick)="imprimir()" [headerButtonIcon]="'bi bi-plus'" [headerButtonText]="''" (excelButtonClick)="getAllItems()">
   </app-table>
 </app-main-container>

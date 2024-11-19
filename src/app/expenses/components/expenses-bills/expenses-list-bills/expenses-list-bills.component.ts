@@ -236,7 +236,7 @@ export class ExpensesListBillsComponent implements OnInit {
   }
 
   getProviders() {
-    this.providerService.getAllProviders().subscribe((providers) => {
+    this.providerService.getAllProviders("SUPPLIER").subscribe((providers) => {
       this.supplierList = providers.map((provider: any) => ({
         value: provider.id,
         label: provider.name,
@@ -514,12 +514,10 @@ export class ExpensesListBillsComponent implements OnInit {
           'Tipo de gasto': bill.bill_type?.name,
           Descripción: bill.description,
         }));
-
-        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-        const wb: XLSX.WorkBook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
-        XLSX.writeFile(wb, this.fileName);
-        return response.content;
+        
+        return response.content;  
+        
+        
       })
     );
   };

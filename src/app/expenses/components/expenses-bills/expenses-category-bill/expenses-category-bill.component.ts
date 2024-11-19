@@ -209,7 +209,7 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
     });
   }
 
-  downloadTable() {
+  downloadTable = () => {
     return this.categoryService.getPaginatedCategories(
       0,
       this.totalItems,

@@ -45,7 +45,7 @@
     [showHeaderButton]="true"
     [tableFilters]="filterConfig"
     (filterValueChange)="onFilterValueChange($event)"
-    [getAllItems]="downloadTable"
+    (onExcelButtonClick)="downloadTable()"
     (pdfButtonClick)="imprimirPDF()"
     [headerButtonIcon]="'bi bi-plus'"
     [headerButtonText]="''"
