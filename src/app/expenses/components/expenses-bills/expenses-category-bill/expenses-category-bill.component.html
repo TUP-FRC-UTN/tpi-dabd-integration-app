@@ -45,10 +45,9 @@
     [showHeaderButton]="true"
     [tableFilters]="filterConfig"
     (filterValueChange)="onFilterValueChange($event)"
-    [getAllItems]="downloadTable"
+    [getAllItems]="downloadTable.bind(this)"
     (pdfButtonClick)="imprimirPDF()"
     [headerButtonIcon]="'bi bi-plus'"
     [headerButtonText]="''"
-
   ></app-table>
 </app-main-container>
