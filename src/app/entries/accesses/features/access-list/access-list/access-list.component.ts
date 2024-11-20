@@ -10,6 +10,8 @@ import { AccessService } from '../../../../services/access/access.service';
 import { TransformResponseService } from '../../../../services/transform-response.service';
 import { CadastrePlotFilterButtonsComponent } from '../../cadastre-access-filter-buttons/cadastre-plot-filter-buttons.component';
 import { AuthorizerCompleterService } from '../../../../services/authorizer-completer.service';
+import { AuthService } from '../../../../services/authorized-range/auth.service';
+
 
 @Component({
   selector: 'app-access-list',
@@ -35,9 +37,9 @@ export class AccessListComponent implements OnInit, AfterViewInit {
   private router = inject(Router)
   private accessService = inject(AccessService)
   private transformResponseService = inject(TransformResponseService)
-  private authorizerCompleterService = inject(AuthorizerCompleterService)
-  //private toastService = inject(ToastService)
   private modalService = inject(NgbModal)
+  auhtService = inject(AuthService)
+  showNewButton : boolean = true;
   //#endregion
 
   //#region ATT de PAGINADO
@@ -202,6 +204,15 @@ export class AccessListComponent implements OnInit, AfterViewInit {
 
   //#region NgOnInit | BUSCAR
   ngOnInit() {
+
+    const roles = this.auhtService.getRoleCode();
+    console.log(roles);
+    for(let role of roles) {  
+      if(role === 102){
+        this.showNewButton = false;
+      }
+    }
+    console.log(this.showNewButton)
     this.confirmFilter();
     this.getAll();
   }
@@ -218,13 +229,7 @@ export class AccessListComponent implements OnInit, AfterViewInit {
   //#region GET_ALL
   getAll() {
     this.accessService.getAll(this.currentPage, this.pageSize, this.retrieveByActive).subscribe(data => {
-       /* data.items.forEach(date => {
-          if (date.authorizerId != undefined && date.authorizerId< 10){
-            date.authorizer = this.authorizerCompleterService.completeAuthorizer(date.authorizerId)
-          } else {
-            date.authorizer = this.authorizerCompleterService.completeAuthorizer(3)
-          }
-        })*/
+       
       this.completeList = this.transformListToTableData(data.items);
         let response = this.transformResponseService.transformResponse(data.items,this.currentPage, this.pageSize, this.retrieveByActive)
 
@@ -245,14 +250,7 @@ export class AccessListComponent implements OnInit, AfterViewInit {
       data.items = data.items.filter(x => (x.firstName?.toLowerCase().includes(filter)
       || x.lastName?.toLowerCase().includes(filter) || x.docNumber?.toString().includes(filter) || x.vehicleReg?.toLowerCase().includes(filter)))
         let response = this.transformResponseService.transformResponse(data.items,this.currentPage, this.pageSize, this.retrieveByActive)
-      /*  response.content.forEach(data => {
-          if (data.authorizerId != undefined && data.authorizerId< 10){
-            data.authorizer = this.authorizerCompleterService.completeAuthorizer(data.authorizerId)
-          } else {
-            data.authorizer = this.authorizerCompleterService.completeAuthorizer(3)
-          }
-        })*/
-
+     
         this.list = response.content;
         this.filteredList = [...this.list]
         this.lastPage = response.last

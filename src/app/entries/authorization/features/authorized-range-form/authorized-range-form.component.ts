@@ -174,8 +174,18 @@ hourRangeValidator: ValidatorFn = (control: AbstractControl): ValidationErrors |
 
 function formatDate() {
   const today = new Date();
-  return today.toISOString().split('T')[0]
+  console.log(today + ' hoy');
+
+  // Formatear la fecha en el formato 'YYYY-MM-DD' usando la zona horaria local
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0'); // Añadir ceros a la izquierda si es necesario
+  const day = String(today.getDate()).padStart(2, '0'); // Añadir ceros a la izquierda si es necesario
+
+  const fecha = `${year}-${month}-${day}`;
+  console.log(fecha + ' fecha local');
+  return fecha;
 }
+
 function formatTime(){
   const today = new Date();
   const hours = today.getHours().toString().padStart(2, '0'); // 00-23

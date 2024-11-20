@@ -9,14 +9,12 @@ import {
 import {Router} from "@angular/router";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AuthService} from "../../../services/authorized-range/auth.service";
-import {AuthorizerCompleterService} from "../../../services/authorized-range/authorizer-completer.service";
 import {CadastrePlotFilterButtonsComponent} from "../../../accesses/features/cadastre-access-filter-buttons/cadastre-plot-filter-buttons.component";
 import {Filter, FilterConfigBuilder, MainContainerComponent, ToastService} from "ngx-dabd-grupo01";
 import {NgbModal, NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {AccessActionDictionary, AccessModel} from "../../../models/accesses/access.model";
 import {TransformResponseService} from "../../../services/transform-response.service";
 import {UserTypeService} from "../../../services/user-type.service";
-import {LoginService} from "../../../services/access/login.service";
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import {NgClass} from "@angular/common";
@@ -47,13 +45,12 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
 
   //#region SERVICIOS
   private router = inject(Router)
-  private authService = inject(AuthService)
+  authService = inject(AuthService)
   private transformResponseService = inject(TransformResponseService)
-  private authorizerCompleterService = inject(AuthorizerCompleterService)
   private toastService = inject(ToastService)
   private modalService = inject(NgbModal)
   private userTypeService = inject(UserTypeService)
-  private loginService = inject(LoginService)
+
   //#endregion
 
   //#region FILTRADO
@@ -209,6 +206,7 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
 
   //#region NgOnInit | BUSCAR
   ngOnInit() {
+    this.authService.getRoleCode();
     this.confirmFilter();
     this.getAll();
   }
@@ -376,21 +374,6 @@ export class AuthListComponent  implements OnInit, AfterViewInit {
         break;
     }
   }
-
-  //#region RUTEO
-  plotOwners(plotId: number) {
-    this.router.navigate(["/owners/plot/" + plotId])
-  }
-
-  updatePlot(plotId: number) {
-    this.router.navigate(["/plot/form/", plotId])
-  }
-
-  plotDetail(plotId: number) {
-    this.router.navigate([`/plot/detail/${plotId}`])
-  }
-
-  //#endregion
 
   //#region USO DE DICCIONARIOS
   getKeys(dictionary: any) {

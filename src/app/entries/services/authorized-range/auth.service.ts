@@ -13,17 +13,34 @@ import { Role } from '../../../users/models/role';
   providedIn: 'root',
 })
 export class AuthService {
- 
+
   private apiUrl: string = environment.production
   ? `${environment.apis.accesses+`auths`}`
   : 'http://localhost:8001/';
-  
+
   sessionService = inject(SessionService);
 
   constructor(
     private http: HttpClient,
     private caseTransformer: CaseTransformerService
   ) {}
+
+
+  
+  //esta variable va a obtener loa roles del usuario actual.
+  role$ : number[]= [];
+  getRoleCode(){
+    const user =  this.sessionService.getItem('user');
+    
+    for(let r of user.roles){
+      console.log(r);
+      if(r.code === 102 || r.code === 999){
+        this.role$?.push(r.code);
+      }
+    }
+    return this.role$
+   }
+
 
   createAuth(
     ownerData: any
@@ -44,6 +61,7 @@ export class AuthService {
       )
       .pipe(map((response) => this.caseTransformer.toCamelCase(response)));
   }
+
 
   updateAuth(
     ownerData: any

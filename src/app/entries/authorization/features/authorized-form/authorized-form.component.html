@@ -9,10 +9,20 @@
               <label for="plot-select" class="form-label mb-2 mb-sm-0">Número de lote<span class="text-danger">*</span></label>
             </div>
             <div class="col-12 col-sm-8">
-              <ng-select id="plot-select" [items]="plots$ | async" bindLabel="name" autofocus 
-                bindValue="id" formControlName="plotId"
-                (change)="onPlotSelected($event)">
-              </ng-select>
+              
+              @if(this.isLoaded === false){
+                <input type="number" id="name" class="form-control" formControlName="plotId">
+              }@else{
+                <ng-select id="plot-select" 
+                [items]="plots$ | async" 
+                bindLabel="name" 
+                bindValue="id" 
+                formControlName="plotId"
+                (change)="onPlotSelected($event)"
+                >
+                </ng-select>
+              }
+              
               <div>
 
                 @if(plot){
