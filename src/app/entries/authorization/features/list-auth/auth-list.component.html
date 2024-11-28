@@ -97,7 +97,7 @@
                   }@else {
                   <button class="btn btn-success ms-1" type="button" (click)="enable(item.authId)"><i class="bi bi-check"></i></button>
                   }
-                    @if (userType == "OWNER") {
+                    @if (authService.role$) {
                         <button class="btn btn-info ms-1" type="button" (click)="qr(item.visitor.docNumber)"><i class="bi bi-qr-code"></i></button>
                     }
                 </td>

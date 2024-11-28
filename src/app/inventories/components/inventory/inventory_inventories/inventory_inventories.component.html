@@ -172,7 +172,7 @@
 <!-- Modal de Información -->
 <ng-template #infoModal let-modal>
   <div class="modal-header fs-6 py-1">
-    <h4 class="modal-title">Información de la Lista de Inventarios</h4>
+    <h4 class="modal-title">Información del Listado de Inventarios</h4>
     <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
   </div>
   <div class="modal-body fs-6 py-2">
@@ -194,27 +194,8 @@
           <ul class="list-group list-group-flush">
             <li class="list-group-item py-1">
               <strong>Lista de Inventarios:</strong> Detalles de cada
-              inventario: Identificador, Artículo, Tipo, Stock, Medida, Stock
+              inventario: Identificador, Artículo, Stock, Medida, Stock
               mínimo, Ubicación y Estado.
-            </li>
-            <li class="list-group-item py-1">
-              <strong>Búsqueda:</strong> Filtro de lista por inventarios
-              activos/inactivos u otros filtros de búsqueda.
-            </li>
-            <li class="list-group-item py-1">
-              <strong>Limpiar:</strong> Limpia los filtros seleccionados para la
-              búsqueda.
-            </li>
-            <li class="list-group-item py-1">
-              <strong>Paginación:</strong> Navega entre múltiples páginas de
-              inventarios.
-            </li>
-            <li class="list-group-item py-1">
-              <strong>Nuevo:</strong> Permite agregar un inventario, redirige a
-              un formulario para completarlo.
-            </li>
-            <li class="list-group-item py-1">
-              <strong>Exportar:</strong> Exporta la lista a PDF o Excel.
             </li>
           </ul>
         </div>
@@ -227,8 +208,28 @@
         <div class="card-body py-2">
           <ul class="list-group list-group-flush">
             <li class="list-group-item py-1">
+              <strong>Nuevo:</strong> Permite agregar un inventario, redirige a
+              un formulario para completarlo.
+            </li>
+            <li class="list-group-item py-1">
               <strong>Ver movimientos:</strong> Muestra los movimientos de cada
               inventario.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Realizar movimiento:</strong> Permite realizar un nuevo movimiento del inventario.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Editar:</strong> Permite editar la ubicación y/o el stock mínimo del inventario.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Eliminar:</strong> Permite eliminar el inventario. Esta acción no se puede deshacer.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Búsqueda:</strong> Filtro de lista por inventarios
+              activos/inactivos u otros filtros de búsqueda.
+            </li>
+            <li class="list-group-item py-1">
+              <strong>Exportar:</strong> Exporta la lista a PDF o Excel.
             </li>
           </ul>
         </div>

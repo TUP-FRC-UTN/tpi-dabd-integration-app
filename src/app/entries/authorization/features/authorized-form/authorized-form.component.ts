@@ -2,7 +2,6 @@ import {Component, inject, OnInit, TemplateRef, ViewChild,} from '@angular/core'
 import {FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule, FormArray} from '@angular/forms';
 import {CommonModule, NgClass} from '@angular/common';
 import {AuthService} from "../../../services/authorized-range/auth.service";
-import {LoginService} from "../../../services/access/login.service";
 import {NgIf} from "@angular/common";
 import {ActivatedRoute, NavigationStart, Router} from "@angular/router";
 import {UserTypeService} from "../../../services/user-type.service";
@@ -45,20 +44,22 @@ export class AuthFormComponent implements OnInit {
   private toastService = inject(ToastService);
   userType: string = "ADMIN"
 
+  private plotsCache = new BehaviorSubject<Plot[]>([]);
+  isLoaded = true;
+
   ownerPlotService = inject(PlotsByOwnerService);
   plotsservice = inject(PlotService);
-  plotsFromService : Plot[] = [] 
+  plotsFromService : Plot[] = []
 
-  constructor(private fb: FormBuilder, private authService: AuthService,
-     private loginService: LoginService, private router: Router, 
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router,
      private userTypeService: UserTypeService, private route: ActivatedRoute) {
-  
+
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
           this.toastService.clear(); // Limpiar los toasts al cambiar de pantalla
       }
   });
-  
+
   }
 
   @ViewChild('infoModal') infoModal!: TemplateRef<any>;
@@ -74,7 +75,7 @@ export class AuthFormComponent implements OnInit {
 
     this.initPlots()
     this.authForm = this.createForm();
-  
+
     this.userType = this.userTypeService.getType()
     if (this.userType == "OWNER"){
       this.authForm.get('plotId')?.setValue(2)
@@ -108,7 +109,6 @@ export class AuthFormComponent implements OnInit {
         this.authForm.get('visitorType')?.disable()
         this.authForm.get('plotId')?.enable()
       }
-
       const documentParam = this.paramRoutes.snapshot.queryParamMap.get('docNumber');
      console.log(documentParam)
 
@@ -121,6 +121,7 @@ export class AuthFormComponent implements OnInit {
     const documentParam = this.paramRoutes.snapshot.queryParamMap.get('authId');
     if (documentParam) {
       this.isUpdate = true
+      this.authForm.get('plotId')?.disable();
       this.authService.getById(parseInt(documentParam, 10)).subscribe(datas => {
         let data = datas[0]
         // Completa el formulario
@@ -225,7 +226,7 @@ export class AuthFormComponent implements OnInit {
       const finalDateFrom = isNewDay ? formatDate(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0)) : dateFrom;
 
       if (formData.authRangeRequest.length === 0) {
-       
+
         const authRange = {
           dateFrom: finalDateFrom,
           dateTo: formatDate(dateTo),
@@ -260,13 +261,13 @@ export class AuthFormComponent implements OnInit {
         }
         this.authService.createAuth(formData).subscribe(data => {
           this.toastService.sendSuccess("Registro exitoso.");
-          
+
         });
       }
       else {
         this.authService.updateAuth(formData).subscribe(data => {
           this.toastService.sendSuccess("Autorización exitosa.");
-          
+
         });
       }
       setTimeout(() => {
@@ -288,7 +289,7 @@ export class AuthFormComponent implements OnInit {
     const modalRef = this.modalService.open(RangeModalComponent, {size: 'xl'});
     console.log('range request ' + this.authForm.get('authRangeRequest')?.value)
     console.log('value ' + this.authForm.controls['visitorType'].value)
-    
+
     modalRef.componentInstance.ranges = this.authForm.get('authRangeRequest')?.value
     modalRef.componentInstance.visitorType = this.authForm.controls['visitorType'].value
 
@@ -308,40 +309,48 @@ export class AuthFormComponent implements OnInit {
   }
 
   initPlots() {
-    this.plotsservice.getAllPlots(0, 300).subscribe({
-      next: (data) => {
+    // Si ya tenemos plots cacheados, retornamos el observable
+    if (this.plotsCache.value.length > 0) {
+      return this.plotsCache.asObservable();
+    }
 
-        console.log( 'get all '+ data )
+    // Si no hay plots cacheados, creamos un nuevo observable
+    const plotsObservable = new BehaviorSubject<plot[]>([]);
+
+    this.plotsservice.getAllPlots(0, 2147483647, true).subscribe({
+      next: (data) => {
+        console.log('get all ' + data)
         if (!data?.content) {
           console.warn('no hay lotes');
+          plotsObservable.next([]);
           return;
         }
-  
+
         this.plotsFromService = data.content;
         const tempPlots: plot[] = [];
-        
-        const ownerPromises = this.plotsFromService.map(element => 
+
+        const ownerPromises = this.plotsFromService.map(element =>
           new Promise<void>((resolve) => {
             if (!element?.id) {
               resolve();
               return;
             }
-  
+
             this.ownerPlotService.actualOwnerByPlot(element.id).subscribe({
               next: (ownerData) => {
                 console.log(ownerData);
                 // Verificar que tenga owner con firstName, lastName y al menos un contacto
-                if (ownerData?.owner?.firstName && 
-                    ownerData?.owner?.lastName && 
-                    ownerData?.owner?.contacts && 
-                    Array.isArray(ownerData.owner.contacts) && 
+                if (ownerData?.owner?.firstName &&
+                    ownerData?.owner?.lastName &&
+                    ownerData?.owner?.contacts &&
+                    Array.isArray(ownerData.owner.contacts) &&
                     ownerData.owner.contacts.length > 0) {
-                  
+
                   const plotData = {
-                    id: element.id,
+                    id: Number(element.id),
                     desc: '',
                     contacts: ownerData.owner.contacts,
-                    name: `${element.plotNumber} - ${ownerData.owner.firstName} ${ownerData.owner.lastName}`
+                    name: `L:${element.plotNumber}- M:${element.blockNumber} - D:${ownerData.owner.firstName} ${ownerData.owner.lastName}`
                   };
                   tempPlots.push(plotData);
                 }
@@ -354,7 +363,7 @@ export class AuthFormComponent implements OnInit {
             });
           })
         );
-  
+
         Promise.all(ownerPromises).then(() => {
           // Ordenar los plots por número
           tempPlots.sort((a, b) => {
@@ -362,19 +371,26 @@ export class AuthFormComponent implements OnInit {
             const numB = parseInt(b.name.split('-')[0].trim()) || 0;
             return numA - numB;
           });
-          
+
           this.plots$.next(tempPlots);
+          plotsObservable.next(tempPlots);
         }).catch(err => {
           console.error('Error procesando lotes:', err);
           this.plots$.next([]);
+          plotsObservable.next([]);
         });
       },
       error: (err) => {
         console.error('Error obteniendo los lotes:', err);
+        this.toastService.sendError("Error al obtener lotes, cargue manualmente.")
+        this.isLoaded = false;
         this.plots$.next([]);
+        plotsObservable.next([]);
       }
     });
-  }
+
+    return plotsObservable.asObservable();
+}
 
   onPlotSelected(selectedPlot: plot) {
     console.log('Plot seleccionado:', selectedPlot);

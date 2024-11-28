@@ -1,10 +1,16 @@
 <app-main-container [title]="'Lista de Accesos'" (infoButtonClick)="onInfoButtonClick()">
     <div class="card-body">
         
-        <app-cadastre-plot-filter-buttons #filterComponent [itemsList]="completeList"
-            [tableName]="tableName.nativeElement" [heads]="heads" [props]="props" formPath="entries/access-form"
-            [tableFilters]="filterConfig" (filterValueChange)="onFilterValueChange($event)"
-            [dictionaries]="dictionaries" objectName="ACCESOS"></app-cadastre-plot-filter-buttons>
+        <app-cadastre-plot-filter-buttons #filterComponent
+         [itemsList]="completeList"
+         [tableName]="tableName.nativeElement" 
+         [heads]="heads" [props]="props" 
+         formPath="entries/access-form"
+         [tableFilters]="filterConfig" 
+         (filterValueChange)="onFilterValueChange($event)"
+         [showNewButtton]="showNewButton"
+         [dictionaries]="dictionaries" 
+         objectName="ACCESOS"></app-cadastre-plot-filter-buttons>
     </div>
 
     <div class="table-container table-responsive">

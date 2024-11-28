@@ -38,6 +38,8 @@ export interface Auth {
   authorizerId: number;
   authFirstName: string;
   authLastName: string | null;
+  ownerName?: string;
+  ownerLastName?: string;
 }
 
 export const VisitorTypeAccessDictionary: { [key: string]: string } = {
@@ -49,6 +51,17 @@ export const VisitorTypeAccessDictionary: { [key: string]: string } = {
   Conviviente: 'COHABITANT',
   Emergencia: 'EMERGENCY',
   Entidad: 'PROVIDER_ORGANIZATION',
+};
+
+export const VisitorTypeDictionary: { [key: string]: string } = {
+  VISITOR: 'Visitante',
+  PROVIDER: 'Proveedor',
+  OWNER: 'Propietario',
+  WORKER: 'Trabajador',
+  EMPLOYEE: 'Empleado',
+  COHABITANT: 'Cohabitante',
+  EMERGENCY: 'Emergencia',
+  PROVIDER_ORGANIZATION: 'Entidad',
 };
 
 export const VisitorTypeIconDictionary: { [key: string]: string } = {

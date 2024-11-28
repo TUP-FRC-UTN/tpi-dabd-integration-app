@@ -26,7 +26,6 @@ import { UserTypeService } from '../../../../services/user-type.service';
 import { EntityFormComponent } from '../../entity-form/entity-form/entity-form.component';
 
 import { AccessActionDictionary, AccessFilters } from '../../../../models/accesses/access.model';
-import { LoginService } from '../../../../services/access/login.service';
 import { CadastrePlotFilterButtonsComponent } from '../../../../accesses/features/cadastre-access-filter-buttons/cadastre-plot-filter-buttons.component';
 
 @Component({
@@ -56,8 +55,6 @@ export class EntityListComponent implements OnInit, AfterViewInit {
   private toastService = inject(ToastService);
   private modalService = inject(NgbModal);
   private userTypeService = inject(UserTypeService);
-  private loginService = inject(LoginService);
-
   //#endregion
 
   //#region ATT de PAGINADO
