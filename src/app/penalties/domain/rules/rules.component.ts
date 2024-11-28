@@ -94,7 +94,7 @@ export class RulesComponent {
     const newRules:Rules = this.currentRules
     newRules.rules = this.rulesContent
 
-    this.configService.putRules(newRules,1).subscribe({
+    this.configService.putRules(newRules,this.userData.id).subscribe({
       next: (response) => {
         console.log('new rules: ',response.rules)
         this.loadRules()
