@@ -8,6 +8,7 @@ import { UserService } from '../../../users/services/user.service';
 import { Role } from '../../../users/models/role';
 import { Plot } from '../../../users/models/plot';
 import { HttpHeaders } from '@angular/common/http';
+import { PlotService } from '../../../users/services/plot.service';
 
 export interface UserData {
   id: number;
@@ -23,6 +24,7 @@ export class UserDataService {
   private sessionService = inject(SessionService);
   private userService = inject(UserService);
   private ownerPlotService = inject(OwnerPlotService);
+  private plotService = inject(PlotService);
   private toastService = inject(ToastService);
 
   loadNecessaryData(): Observable<UserData | null> {
@@ -32,6 +34,21 @@ export class UserDataService {
     return this.userService.getUserById(userId).pipe(
       switchMap((response) => {
         const ownerId = response.ownerId || 1;
+
+        if (this.userHasRole(user as any, 'SUPERADMIN')) {
+          return this.plotService.getAllPlots(0, 100000).pipe(
+            map((plotResponse) => {
+              const userData: UserData = {
+                id: user.id || 1,
+                roles: user.roles || [],
+                plots: plotResponse.content || [],
+                plotIds: (plotResponse.content || []).map((plot) => plot.id),
+              };
+
+              return userData;
+            })
+          );
+        }
 
         return this.ownerPlotService
           .giveAllPlotsByOwner(ownerId, 0, 100000)
@@ -64,6 +81,8 @@ export class UserDataService {
   }
 
   userHasRole(userData: UserData, role: string): boolean {
-    return userData?.roles?.some((userRole) => userRole.name === role || userRole.name === 'SUPERADMIN');
+    return userData?.roles?.some(
+      (userRole) => userRole.name === role || userRole.name === 'SUPERADMIN'
+    );
   }
 }

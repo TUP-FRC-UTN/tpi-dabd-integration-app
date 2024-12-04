@@ -3,6 +3,7 @@ import {
   ElementRef,
   inject,
   Input,
+  OnInit,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
@@ -43,7 +44,7 @@ import { Plot } from '../../../../../../users/models/plot';
   templateUrl: './new-infraction-modal.component.html',
   styleUrl: './new-infraction-modal.component.scss',
 })
-export class NewInfractionModalComponent {
+export class NewInfractionModalComponent implements OnInit {
   //services
   activeModal = inject(NgbActiveModal);
   private sanctionService = inject(SanctionTypeService);
@@ -68,6 +69,10 @@ export class NewInfractionModalComponent {
   closeResult = '';
 
   open(content: TemplateRef<any>) {
+    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
+  }
+
+  ngOnInit(): void {
     this.loadPlots();
 
     this.sanctionService.getPaginatedSanctionTypes(1, 10).subscribe({
@@ -76,8 +81,6 @@ export class NewInfractionModalComponent {
       },
       error: (error) => {},
     });
-
-    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
   }
 
   private getDismissReason(reason: any): string {
